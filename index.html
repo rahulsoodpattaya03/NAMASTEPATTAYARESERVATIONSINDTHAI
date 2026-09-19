@@ -1888,7 +1888,7 @@ Share your exclusive referral link with visitors coming to Pattaya. Whenever the
 
             <h2 class="text-3xl md:text-4xl font-black mt-4 mb-4">Partner With Pattaya Namaste</h2>
 
-            <p class="text-gray-400 text-sm">Fill more tables, increase customer flow from high-spending international tourists, and monetize your venue on a risk-free commission basis or super-priority advertising plans.</p>
+            <p class="text-gray-400 text-sm">Fill more tables, increase customer flow from high-spending international tourists, and monetize your venue on a win-win commission basis (we take our commission only after you get business—before that, we take nothing!).</p>
 
         </div>
 
@@ -1908,25 +1908,25 @@ Share your exclusive referral link with visitors coming to Pattaya. Whenever the
 
                     </div>
 
-                    <span class="text-xs uppercase tracking-widest text-accentgold font-bold">Partnership Proposal & Tiers</span>
+                    <span class="text-xs uppercase tracking-widest text-accentgold font-bold">Partnership Proposal & Growth Model</span>
 
-                    <h3 class="text-2xl md:text-3xl font-black mt-1 mb-4">Venue Partnership & Growth Tiers</h3>
+                    <h3 class="text-2xl md:text-3xl font-black mt-1 mb-4">Grow Your Business Bigger With Us</h3>
 
                     <p class="text-gray-400 text-sm mb-6">
 
-                        Explore our detailed partnership proposal tailored to your business nature. Choose between our **Free Commission-Based Tier** or our **Super-Priority Advertising Plan** to maximize high-spending tourist footfall.
+                        Select your business category to view our custom partnership pitch, 6-month high-volume user projections, and our 100% risk-free win-win model with **24/7 customer support for paid business partners**.
 
                     </p>
 
                     <ul class="space-y-3 text-sm text-gray-300 mb-8">
 
-                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> Tailored proposals for Clubs, Hotels, Spas & Restaurants</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> Customized category proposals for all 13 business types</li>
 
-                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> Plan 1: Free Commission Tier (Pay only on verified bookings)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> 6-Month High-Volume User & Revenue Projections</li>
 
-                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> Plan 2: Super-Priority Plan (Top banner ads & exclusive priority)</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> Win-Win Model: Commission only after you get business (Zero upfront risk)</li>
 
-                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> Dedicated partner operations dashboard access</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> 24/7 dedicated customer support & advertising for partners</li>
 
                     </ul>
 
@@ -2086,7 +2086,7 @@ Share your exclusive referral link with visitors coming to Pattaya. Whenever the
 
 <!-- MODALS -->
 
-<!-- VENUE PARTNER PROPOSAL & TIER SELECTION MODAL -->
+<!-- VENUE PARTNER PROPOSAL & CATEGORY PITCH MODAL -->
 
 <div id="b2bProposalModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
 
@@ -2094,131 +2094,67 @@ Share your exclusive referral link with visitors coming to Pattaya. Whenever the
 
 <button onclick="closePartnerProposalModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
 
-<div class="text-center max-w-2xl mx-auto mb-8">
+<div class="text-center max-w-2xl mx-auto mb-6">
 
-<span class="bg-amber-950 text-amber-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-amber-500/40">🤝 Official B2B Partnership Proposal</span>
+<span class="bg-amber-950 text-amber-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-amber-500/40">🤝 Official B2B Partnership Pitch</span>
 
-<h3 class="text-2xl font-black text-white uppercase mt-3">Why Your Business Needs Pattaya Namaste</h3>
+<h3 class="text-2xl font-black text-white uppercase mt-3">Select Your Business Category & See How We Grow You</h3>
 
-<p class="text-gray-300 text-xs mt-2 font-medium">We connect high-spending international tourists directly to Pattaya's premier venues. Discover how our partnership model guarantees zero risk and maximum revenue.</p>
-
-</div>
-
-<!-- Business Nature Benefit Cards -->
-
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-
-<div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
-
-<div class="text-cyan-400 text-lg"><i class="fa-solid fa-champagne-glasses"></i></div>
-
-<h4 class="font-black text-white uppercase text-xs">Clubs & Nightlife</h4>
-
-<p class="text-gray-400 text-[11px]">Fill VIP tables on weekdays, reduce empty bottle service slots, and capture high-roller tourist bookings.</p>
+<p class="text-gray-300 text-xs mt-2 font-medium">Choose your business below to unlock our tailored partnership pitch, 6-month high-volume user projections, and our risk-free win-win commission model.</p>
 
 </div>
 
-<div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
+<!-- Category Selector Dropdown -->
 
-<div class="text-amber-400 text-lg"><i class="fa-solid fa-utensils"></i></div>
+<div class="mb-6 bg-slate-900 p-4 rounded-2xl border border-slate-800">
 
-<h4 class="font-black text-white uppercase text-xs">Restaurants & Cafes</h4>
+<label class="text-amber-400 block font-black uppercase mb-2">Select Your Business Category:</label>
 
-<p class="text-gray-400 text-[11px]">Direct hungry tourists craving authentic dining and seaside seafood feasts directly to your reservation desk.</p>
+<select id="proposalCategorySelect" onchange="updateProposalContent()" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white font-bold text-sm cursor-pointer">
 
-</div>
+<option value="clubs">1. Clubs & Nightlife</option>
 
-<div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
+<option value="events">2. Premium Events</option>
 
-<div class="text-pink-400 text-lg"><i class="fa-solid fa-spa"></i></div>
+<option value="dating">3. Dating & Find a Buddy</option>
 
-<h4 class="font-black text-white uppercase text-xs">Spas & Wellness</h4>
+<option value="spa">4. Massage & Spa</option>
 
-<p class="text-gray-400 text-[11px]">Monetize post-party recovery wellness, traditional Thai massage packages, and couple sessions.</p>
+<option value="food">5. Food & Restaurants</option>
 
-</div>
+<option value="tours">6. Tours & Daytime Excursions</option>
 
-<div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
+<option value="hotels">7. Hotels & Villas</option>
 
-<div class="text-indigo-400 text-lg"><i class="fa-solid fa-hotel"></i></div>
+<option value="rentals">8. Supercars & Superbikes Rentals</option>
 
-<h4 class="font-black text-white uppercase text-xs">Hotels & Villas</h4>
+<option value="property">9. Buy, Rent & Sell Property</option>
 
-<p class="text-gray-400 text-[11px]">Secure high-yield pool party villa rentals and luxury resort bookings from verified executive travelers.</p>
+<option value="security">10. Elite Security on Rent</option>
 
-</div>
+<option value="yacht">11. Yacht & Pool Party Bash</option>
 
-</div>
+<option value="gala">12. Grand Gala & Villa Celebration</option>
 
-<!-- TWO PARTNERSHIP PLANS COMPARISON -->
+<option value="cars_bikes">13. Luxury Cars & Super Bikes Rentals</option>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-
-<!-- Plan 1: Free Plan -->
-
-<div class="bg-slate-900 border-2 border-emerald-500/50 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
-
-<span class="absolute top-3 right-3 bg-emerald-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full uppercase">100% Free Setup</span>
-
-<div>
-
-<h4 class="text-lg font-black text-emerald-400 uppercase mb-1">Plan 1: The Free Partner Tier</h4>
-
-<p class="text-gray-300 text-xs mb-4 font-medium">Risk-free commission basis. Ideal for businesses wanting guaranteed customer acquisition with zero upfront software or listing fees.</p>
-
-<ul class="space-y-2 text-xs text-gray-300 mb-6">
-
-<li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Listed on Pattaya Namaste Super-App directory</li>
-
-<li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> We send you verified table/service covers</li>
-
-<li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Pay only a small commission on confirmed bookings</li>
-
-<li class="flex items-center"><i class="fa-solid fa-check text-emerald-400 mr-2"></i> Zero monthly software overhead</li>
-
-</ul>
+</select>
 
 </div>
 
-<button onclick="openPartnerAuthModalFromProposal('Free')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-black py-3 rounded-xl uppercase tracking-wider shadow-lg">Choose Free Plan & Sign Up</button>
+<!-- Dynamic Pitch Container -->
+
+<div id="proposalContentBox" class="space-y-6 mb-8">
+
+<!-- Populated dynamically by JS -->
 
 </div>
 
-<!-- Plan 2: Super-Priority Plan -->
+<div class="flex flex-col sm:flex-row gap-3">
 
-<div class="bg-slate-900 border-2 border-amber-500/70 rounded-3xl p-6 flex flex-col justify-between shadow-xl relative overflow-hidden">
+<button onclick="openPartnerAuthModalFromProposalFromBox()" class="flex-1 bg-amber-500 hover:bg-amber-400 text-black font-black py-3.5 rounded-xl uppercase tracking-wider shadow-lg">Sign Up As Venue Partner Now</button>
 
-<span class="absolute top-3 right-3 bg-amber-500 text-black text-[9px] font-black px-2.5 py-1 rounded-full uppercase">Top Priority Ad</span>
-
-<div>
-
-<h4 class="text-lg font-black text-amber-400 uppercase mb-1">Plan 2: Super-Priority Growth Plan</h4>
-
-<p class="text-gray-300 text-xs mb-4 font-medium">Heavy advertising & spotlight priority. We put your business at the top of every category, deploy banner push notifications, and feature you in our influencer campaigns.</p>
-
-<ul class="space-y-2 text-xs text-gray-300 mb-6">
-
-<li class="flex items-center"><i class="fa-solid fa-check text-amber-400 mr-2"></i> Top priority placement on App home screen & banners</li>
-
-<li class="flex items-center"><i class="fa-solid fa-check text-amber-400 mr-2"></i> Dedicated social media & influencer shoutouts</li>
-
-<li class="flex items-center"><i class="fa-solid fa-check text-amber-400 mr-2"></i> Featured in our weekly Top Glamour Star broadcasts</li>
-
-<li class="flex items-center"><i class="fa-solid fa-check text-amber-400 mr-2"></i> Dedicated account manager & VIP concierge backing</li>
-
-</ul>
-
-</div>
-
-<button onclick="openPartnerAuthModalFromProposal('Super-Priority')" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-3 rounded-xl uppercase tracking-wider shadow-lg">Choose Super-Priority Plan</button>
-
-</div>
-
-</div>
-
-<div class="text-center">
-
-<button onclick="closePartnerProposalModal()" class="text-xs text-gray-400 hover:text-white uppercase font-bold underline">Close Proposal & Return to App</button>
+<button onclick="closePartnerProposalModal()" class="bg-slate-900 hover:bg-slate-800 text-gray-300 font-black py-3.5 px-6 rounded-xl uppercase">Close Proposal</button>
 
 </div>
 
@@ -2746,9 +2682,9 @@ Share your exclusive referral link with visitors coming to Pattaya. Whenever the
 
 <div>
 
-<label class="text-gray-400 block mb-1 font-bold">Selected Partnership Plan</label>
+<label class="text-gray-400 block mb-1 font-bold">Selected Business Category</label>
 
-<input type="text" id="selectedPlanInput" readonly value="Free Commission Tier" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-emerald-400 font-bold">
+<input type="text" id="selectedCategoryInput" readonly value="Clubs & Nightlife" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-cyan-400 font-bold">
 
 </div>
 
@@ -3774,7 +3710,7 @@ function initPattayaMap() {
 
 function openFindYourFriendModal() {
 
-    document.getElementById('findYourFriendModal').classList.remove('hidden');
+    document.getElementById('findYourFriendModal').classList.add('hidden');
 
     initPattayaMap();
 
@@ -3832,50 +3768,156 @@ function addSharedExpense() {
 
 // ==========================================
 
-// VENUE PARTNER PROPOSAL & AUTH MODALS
+// VENUE PARTNER PROPOSAL & PITCH DATA
 
 // ==========================================
 
+const categoryPitches = {
+    clubs: {
+        title: "Clubs & Nightlife Partnership Pitch",
+        desc: "Fill your VIP tables, reduce empty bottle service slots on weekdays, and capture high-roller tourist bookings directly from our high-spending platform users.",
+        projection: "Month 1: +120 Tables | Month 3: +450 Tables | Month 6: +1,250 VIP Tables",
+        revenue: "Estimated 6-Month Additional Revenue: ฿2,500,000+ THB"
+    },
+    events: {
+        title: "Premium Events Partnership Pitch",
+        desc: "Sell out your festival tickets, international concerts, and celebrity DJ takeovers instantly to an audience eager for high-energy entertainment.",
+        projection: "Month 1: +300 Tickets | Month 3: +1,200 Tickets | Month 6: +3,800 Festival Passes",
+        revenue: "Estimated 6-Month Additional Revenue: ฿1,900,000+ THB"
+    },
+    dating: {
+        title: "Dating & Find a Buddy Partnership Pitch",
+        desc: "Connect verified travelers with secure group experiences, dinner meetups, and social party passes across Pattaya.",
+        projection: "Month 1: +500 Matches | Month 3: +2,100 Meetups | Month 6: +6,500 Active Connections",
+        revenue: "Estimated 6-Month Additional Revenue: ฿1,200,000+ THB"
+    },
+    spa: {
+        title: "Massage & Spa Partnership Pitch",
+        desc: "Monetize post-party recovery wellness, traditional Thai massage packages, and luxury couple sessions for executive tourists.",
+        projection: "Month 1: +180 Sessions | Month 3: +750 Sessions | Month 6: +2,200 Spa Bookings",
+        revenue: "Estimated 6-Month Additional Revenue: ฿1,400,000+ THB"
+    },
+    food: {
+        title: "Food & Restaurants Partnership Pitch",
+        desc: "Direct hungry tourists craving authentic dining, seaside seafood feasts, and late-night deliveries straight to your tables.",
+        projection: "Month 1: +400 Diners | Month 3: +1,600 Diners | Month 6: +5,000 Restaurant Covers",
+        revenue: "Estimated 6-Month Additional Revenue: ฿2,100,000+ THB"
+    },
+    tours: {
+        title: "Tours & Daytime Excursions Partnership Pitch",
+        desc: "Fill your speedboat seats, island tours, water sports bundles, and wildlife park admissions with verified international tourists.",
+        projection: "Month 1: +250 Bookings | Month 3: +980 Bookings | Month 6: +3,100 Tour Passes",
+        revenue: "Estimated 6-Month Additional Revenue: ฿2,800,000+ THB"
+    },
+    hotels: {
+        title: "Hotels & Villas Partnership Pitch",
+        desc: "Secure high-yield beachfront resort stays and private pool party villa bookings in Jomtien from high-spending visitors.",
+        projection: "Month 1: +60 Stays | Month 3: +240 Stays | Month 6: +850 Luxury Bookings",
+        revenue: "Estimated 6-Month Additional Revenue: ฿4,500,000+ THB"
+    },
+    rentals: {
+        title: "Supercars & Superbikes Rentals Partnership Pitch",
+        desc: "Put your exotic fleet (Ferrari, Lamborghini, Ducati) in front of high-net-worth petrolheads looking for adrenaline on the coastal roads.",
+        projection: "Month 1: +25 Rentals | Month 3: +110 Rentals | Month 6: +380 Exotic Bookings",
+        revenue: "Estimated 6-Month Additional Revenue: ฿3,200,000+ THB"
+    },
+    property: {
+        title: "Buy, Rent & Sell Property Partnership Pitch",
+        desc: "Connect high-net-worth investors directly with luxury condominiums, Jomtien pool villas, and commercial real estate assets.",
+        projection: "Month 1: +15 Inquiries | Month 3: +65 Inquiries | Month 6: +220 Verified Leads",
+        revenue: "Estimated 6-Month Additional Revenue: ฿5,000,000+ THB"
+    },
+    security: {
+        title: "Elite Security on Rent Partnership Pitch",
+        desc: "Provide close protection operatives, bilingual security details, and VIP bodyguards for high-profile executive visitors.",
+        projection: "Month 1: +40 Details | Month 3: +170 Details | Month 6: +600 Security Deployments",
+        revenue: "Estimated 6-Month Additional Revenue: ฿2,700,000+ THB"
+    },
+    yacht: {
+        title: "Yacht & Pool Party Bash Partnership Pitch",
+        desc: "Monetize private luxury yacht charters, Koh Larn cruises, and Jomtien villa pool party takeovers effortlessly.",
+        projection: "Month 1: +12 Charters | Month 3: +50 Charters | Month 6: +180 Luxury Bashes",
+        revenue: "Estimated 6-Month Additional Revenue: ฿4,800,000+ THB"
+    },
+    gala: {
+        title: "Grand Gala & Villa Celebration Partnership Pitch",
+        desc: "Coordinate red carpet gala dinners, celebrity-hosted mansion parties, and high-production milestone celebrations.",
+        projection: "Month 1: +8 Galas | Month 3: +30 Galas | Month 6: +110 Mega Celebrations",
+        revenue: "Estimated 6-Month Additional Revenue: ฿6,000,000+ THB"
+    },
+    cars_bikes: {
+        title: "Luxury Cars & Super Bikes Rentals Partnership Pitch",
+        desc: "Maximize fleet utilization with premium chauffeur-driven luxury vehicle bundles and track-ready superbike rentals.",
+        projection: "Month 1: +20 Bundles | Month 3: +90 Bundles | Month 6: +320 Rental Packages",
+        revenue: "Estimated 6-Month Additional Revenue: ฿3,800,000+ THB"
+    }
+};
+
 function openPartnerProposalModal() {
-
+    document.getElementById('proposalCategorySelect').value = 'clubs';
+    updateProposalContent();
     document.getElementById('b2bProposalModal').classList.remove('hidden');
-
 }
 
 function closePartnerProposalModal() {
-
     document.getElementById('b2bProposalModal').classList.add('hidden');
-
 }
 
-function openPartnerAuthModalFromProposal(planName) {
+function updateProposalContent() {
+    const catKey = document.getElementById('proposalCategorySelect').value;
+    const data = categoryPitches[catKey] || categoryPitches.clubs;
+    const box = document.getElementById('proposalContentBox');
+    
+    box.innerHTML = `
+        <div class="bg-slate-900 border border-amber-500/40 rounded-2xl p-6 space-y-4 shadow-xl">
+            <div class="border-b border-slate-800 pb-4">
+                <span class="text-amber-400 font-black uppercase text-[10px] bg-amber-950 px-3 py-1 rounded-full border border-amber-500/30">Targeted Business Growth Strategy</span>
+                <h4 class="text-lg font-black text-white uppercase mt-2">${data.title}</h4>
+                <p class="text-gray-300 text-xs mt-1 leading-relaxed">${data.desc}</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <span class="text-cyan-400 font-bold block text-[11px] uppercase mb-1">📈 6-Month High-Volume User Projections</span>
+                    <p class="text-white text-xs font-black">${data.projection}</p>
+                </div>
+                <div class="bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <span class="text-emerald-400 font-bold block text-[11px] uppercase mb-1">💰 Estimated Revenue Impact</span>
+                    <p class="text-emerald-400 text-xs font-black">${data.revenue}</p>
+                </div>
+            </div>
 
+            <div class="bg-gradient-to-r from-amber-950/60 to-slate-950 p-4 rounded-xl border border-amber-500/40 space-y-2">
+                <div class="flex items-center space-x-2 text-amber-400 font-black text-xs">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <span>Our Win-Win Partnership Guarantee</span>
+                </div>
+                <p class="text-gray-200 text-xs leading-relaxed">
+                    We aggressively advertise your business across our Super-App and direct verified high-spending tourists straight to you. **We take our commission only after you get business—before that, we take nothing!** Plus, paid business partners receive **24/7 dedicated customer support** and top-priority spotlight placement.
+                </p>
+            </div>
+        </div>
+    `;
+}
+
+function openPartnerAuthModalFromProposalFromBox() {
+    const sel = document.getElementById('proposalCategorySelect');
+    const text = sel.options[sel.selectedIndex].text;
     closePartnerProposalModal();
-
-    document.getElementById('selectedPlanInput').value = planName === 'Free' ? 'Free Commission Tier' : 'Super-Priority Growth Plan';
-
-    document.getElementById('authPlanBadge').textContent = planName === 'Free' ? '🤝 Free Partner Tier' : '⚡ Super-Priority Ad Plan';
-
+    document.getElementById('selectedCategoryInput').value = text;
+    document.getElementById('authPlanBadge').textContent = '🤝 Venue Partner Sign Up';
     document.getElementById('b2bAuthModal').classList.remove('hidden');
-
     switchPartnerAuthTab('signup');
-
 }
 
 function openPartnerAuthModal() {
-
-    document.getElementById('selectedPlanInput').value = 'Free Commission Tier';
-
+    document.getElementById('selectedCategoryInput').value = 'Clubs & Nightlife';
     document.getElementById('authPlanBadge').textContent = '🤝 Business Portal';
-
     document.getElementById('b2bAuthModal').classList.remove('hidden');
-
 }
 
 function closePartnerAuthModal() {
-
     document.getElementById('b2bAuthModal').classList.add('hidden');
-
 }
 
 function switchPartnerAuthTab(type) {
@@ -3930,9 +3972,9 @@ function handlePartnerSignupSubmit(event) {
 
     const bizName = document.getElementById('bizNameInput').value.trim() || 'Your Business';
 
-    const plan = document.getElementById('selectedPlanInput').value;
+    const cat = document.getElementById('selectedCategoryInput').value;
 
-    alert(`Business Sign Up successful under "${plan}"! Welcome to Pattaya Namaste, ${bizName}. Unlocking live reports dashboard.`);
+    alert(`Business Sign Up successful for "${bizName}" under category "${cat}"! Welcome to Pattaya Namaste. Unlocking live reports dashboard & 24/7 partner support.`);
 
     closePartnerAuthModal();
 
@@ -3950,7 +3992,7 @@ function unlockPartnerDashboard(bizName) {
 
     if(welcomeEl) {
 
-        welcomeEl.textContent = `Welcome back, ${bizName}! Accessing your real-time business reports, revenue tables, and VIP reservations below.`;
+        welcomeEl.textContent = `Welcome back, ${bizName}! Accessing your real-time business reports, revenue tables, and 24/7 partner support desk below.`;
 
     }
 
