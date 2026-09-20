@@ -3,17 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pattaya Namaste — All Services</title>
+<title>Namaste Pattaya Reservations — Super-App</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <style>
-  :root{--darkbg:#0b0f19;--cardbg:#131c2e;--gold:#f59e0b;--purple:#8b5cf6}
+  :root{--darkbg:#0b0f19;--cardbg:#131c2e;--gold:#f59e0b;--purple:#8b5cf6;--cyan:#22d3ee}
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef}
-  header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#0b0f19,#0b0f19ee);padding:16px 18px;border-bottom:1px solid #1e2740}
-  .brand{font-size:20px;font-weight:800}
-  .brand span{color:var(--gold)}
-  .sub{color:#8b93a7;font-size:12px;margin-top:2px}
+  body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef;padding-bottom:90px}
+  header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#0b0f19,#0b0f19f2);padding:14px 18px;border-bottom:1px solid #1e2740}
+  .brandrow{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto}
+  .logo{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;
+        background:linear-gradient(135deg,#f59e0b,#8b5cf6,#22d3ee);box-shadow:0 4px 18px rgba(139,92,246,.5)}
+  .brand{font-size:19px;font-weight:900;letter-spacing:.3px;line-height:1.05;
+         background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b,#22d3ee);background-size:300% auto;
+         -webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
+  @keyframes shine{to{background-position:300% center}}
+  .tag{color:#8b93a7;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
   .controls{max-width:1100px;margin:0 auto;padding:12px 18px}
+  a.back{color:#8b93a7;text-decoration:none;font-size:13px}
   #q{width:100%;padding:11px 14px;border-radius:12px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px}
   #tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
   .tab{padding:7px 13px;border-radius:20px;border:1px solid #26314d;background:#0d1424;color:#c7cddb;font-size:12px;cursor:pointer;white-space:nowrap}
@@ -27,20 +33,48 @@
   .body{padding:11px 13px;display:flex;flex-direction:column;flex:1}
   .name{font-weight:700;font-size:14px}
   .desc{color:#9aa3b7;font-size:12px;margin:5px 0 10px;flex:1}
-  .row{display:flex;align-items:center;justify-content:space-between}
+  .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
   .price{color:#34d399;font-weight:800}
   .unit{color:#7b8398;font-size:11px}
-  .enq{padding:6px 11px;border:none;border-radius:9px;background:#25D366;color:#04351a;font-weight:700;font-size:11px;cursor:pointer}
+  .add{padding:7px 12px;border:none;border-radius:9px;background:var(--gold);color:#1a1204;font-weight:800;font-size:12px;cursor:pointer}
+  .step{display:flex;align-items:center;gap:8px}
+  .step button{width:28px;height:28px;border:none;border-radius:8px;background:#26314d;color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+  .step span{min-width:20px;text-align:center;font-weight:800}
   .empty{color:#8b93a7;text-align:center;padding:40px}
-  a.back{color:#8b93a7;text-decoration:none;font-size:13px}
+  /* Cart bar */
+  #cartbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;justify-content:space-between;align-items:center;
+           max-width:1100px;margin:0 auto;padding:14px 18px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);color:#06121f;font-weight:800;
+           border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.5);cursor:pointer}
+  #cartbar .go{background:#06121f;color:#fff;padding:9px 16px;border-radius:10px;font-weight:800}
+  /* Drawer / modal */
+  .overlay{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.7);display:none}
+  .drawer{position:absolute;right:0;top:0;bottom:0;width:100%;max-width:440px;background:#0e1524;display:flex;flex-direction:column}
+  .dhead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #1e2740}
+  .dhead b{font-size:17px}
+  .dhead .x{background:none;border:none;color:#aaa;font-size:26px;cursor:pointer}
+  .ditems{flex:1;overflow-y:auto;padding:12px 18px}
+  .drow{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #182238}
+  .drow .n{flex:1;font-size:13px}
+  .drow .n small{color:#7b8398;display:block}
+  .dfoot{padding:16px 18px;border-top:1px solid #1e2740}
+  .tot{display:flex;justify-content:space-between;font-size:18px;font-weight:900;margin-bottom:12px}
+  .tot .amt{color:#34d399}
+  .pay{display:grid;gap:8px;margin:10px 0 14px}
+  .pay label{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid #26314d;border-radius:10px;font-size:14px;cursor:pointer}
+  .pay label.sel{border-color:var(--gold);background:#1a1608}
+  .cta{width:100%;padding:14px;border:none;border-radius:12px;background:#25D366;color:#04351a;font-weight:900;font-size:15px;cursor:pointer}
+  .note{color:#7b8398;font-size:11px;text-align:center;margin-top:8px}
 </style>
 </head>
 <body>
 <header>
-  <div class="controls" style="padding-top:0;padding-bottom:0">
-    <a class="back" href="/">&larr; Back to home</a>
-    <div class="brand">🙏 Pattaya <span>Namaste</span> — All Services</div>
-    <div class="sub" id="count">Loading listings…</div>
+  <div class="controls" style="padding:0 0 6px 0"><a class="back" href="/">&larr; Back to home</a></div>
+  <div class="brandrow">
+    <div class="logo">🙏</div>
+    <div>
+      <div class="brand">NAMASTE PATTAYA RESERVATIONS</div>
+      <div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div>
+    </div>
   </div>
 </header>
 <div class="controls">
@@ -49,22 +83,48 @@
 </div>
 <main id="list"></main>
 
+<!-- Cart bar -->
+<div id="cartbar" onclick="openCart()">
+  <span id="cartsummary">🛒 0 items</span>
+  <span class="go">View cart →</span>
+</div>
+
+<!-- Cart drawer -->
+<div class="overlay" id="overlay">
+  <div class="drawer">
+    <div class="dhead"><b>🛒 Your Bucket</b><button class="x" onclick="closeCart()">&times;</button></div>
+    <div class="ditems" id="ditems"></div>
+    <div class="dfoot">
+      <div class="tot"><span>Total</span><span class="amt" id="grand">฿0</span></div>
+      <div id="paywrap" style="display:none">
+        <div style="font-weight:800;margin-bottom:6px">Payment method</div>
+        <div class="pay" id="pay"></div>
+      </div>
+      <button class="cta" id="cta" onclick="checkoutStep()">Checkout</button>
+      <div class="note">Online card payment coming soon — for now your order is confirmed & paid via WhatsApp.</div>
+    </div>
+  </div>
+</div>
+
 <script>
-  // EDIT THIS to your WhatsApp number (country code, no +)
   var WHATSAPP = "66947623990";
   var DATA = [], cats = ["All"], active = "All";
+  var cart = {};            // index -> qty
+  var stage = "cart";       // cart -> pay
+  var payMethods = ["PromptPay / QR", "Credit / Debit Card", "Bank Transfer", "Cash on Arrival"];
+  var payChoice = payMethods[0];
 
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+  function baht(n){ return '฿' + Number(n).toLocaleString(); }
 
   fetch('./pn-catalog.json').then(function(r){return r.json();}).then(function(rows){
     DATA = rows;
     rows.forEach(function(x){ if(cats.indexOf(x.category)<0) cats.push(x.category); });
-    document.getElementById('count').textContent = rows.length + ' listings · ' + (cats.length-1) + ' categories · prices in ฿';
     var params = new URLSearchParams(location.search);
     var c = params.get('cat');
     if (c) { var hit = cats.filter(function(x){return x.toLowerCase()===c.toLowerCase();})[0]; if(hit) active = hit; }
     var qp = params.get('q'); if (qp) { document.getElementById('q').value = qp; }
-    renderTabs(); render();
+    renderTabs(); render(); updateBar();
   }).catch(function(e){
     document.getElementById('list').innerHTML = '<div class="empty">Could not load listings. Make sure pn-catalog.json is deployed.</div>';
   });
@@ -75,11 +135,6 @@
     }).join('');
   }
   window.pick = function(i){ active = cats[i]; renderTabs(); render(); };
-  window.enquire = function(i){
-    var r = DATA[i];
-    var msg = encodeURIComponent('Hi Pattaya Namaste! I would like to enquire about: '+r.item+' (฿'+r.price_thb+' '+r.unit+').');
-    window.open('https://wa.me/'+WHATSAPP+'?text='+msg,'_blank');
-  };
   function imgErr(el,emoji){ var w=el.parentNode; el.style.display='none'; w.innerHTML='<span style="font-size:42px">'+emoji+'</span>'; }
   window._imgErr = imgErr;
 
@@ -90,15 +145,68 @@
       if (active!=='All' && r.category!==active) continue;
       if (q){ var hay=(r.item+' '+r.notes+' '+r.category+' '+r.price_thb).toLowerCase(); if(hay.indexOf(q)<0) continue; }
       if (r.category!==last){ if(open) h+='</div>'; h+='<h3 class="cat">'+esc(r.category)+'</h3><div class="grid">'; open=true; last=r.category; }
+      var ctrl;
+      if (cart[i]) {
+        ctrl = '<div class="step"><button onclick="dec('+i+')">−</button><span>'+cart[i]+'</span><button onclick="inc('+i+')">+</button></div>';
+      } else {
+        ctrl = '<button class="add" onclick="inc('+i+')">Add +</button>';
+      }
       h += '<div class="card"><div class="ph"><img src="'+esc(r.image_url)+'" loading="lazy" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>'
         + '<div class="body"><div class="name">'+esc(r.item)+'</div><div class="desc">'+esc(r.notes)+'</div>'
-        + '<div class="row"><div><span class="price">฿'+Number(r.price_thb).toLocaleString()+'</span> <span class="unit">'+esc(r.unit)+'</span></div>'
-        + '<button class="enq" onclick="enquire('+i+')"><i class="fa-brands fa-whatsapp"></i> Enquire</button></div></div></div>';
+        + '<div class="row"><div><span class="price">'+baht(r.price_thb)+'</span> <span class="unit">'+esc(r.unit)+'</span></div>'
+        + ctrl + '</div></div></div>';
       shown++;
     }
     if(open) h+='</div>';
     if(!shown) h='<div class="empty">No results.</div>';
     document.getElementById('list').innerHTML = h;
+  };
+
+  window.inc = function(i){ cart[i]=(cart[i]||0)+1; render(); updateBar(); if(document.getElementById('overlay').style.display==='block') renderCart(); };
+  window.dec = function(i){ if(cart[i]){ cart[i]--; if(cart[i]<=0) delete cart[i]; } render(); updateBar(); if(document.getElementById('overlay').style.display==='block') renderCart(); };
+
+  function totals(){ var items=0,sum=0; for(var k in cart){ items+=cart[k]; sum+=cart[k]*Number(DATA[k].price_thb); } return {items:items,sum:sum}; }
+
+  function updateBar(){
+    var t=totals(); var bar=document.getElementById('cartbar');
+    if(t.items>0){ bar.style.display='flex'; document.getElementById('cartsummary').textContent='🛒 '+t.items+' item'+(t.items>1?'s':'')+' · '+baht(t.sum); }
+    else bar.style.display='none';
+  }
+
+  window.openCart = function(){ stage='cart'; document.getElementById('overlay').style.display='block'; renderCart(); };
+  window.closeCart = function(){ document.getElementById('overlay').style.display='none'; };
+
+  function renderCart(){
+    var h=''; var keys=Object.keys(cart);
+    if(!keys.length){ h='<div class="empty">Your bucket is empty.</div>'; }
+    keys.forEach(function(k){ var r=DATA[k];
+      h+='<div class="drow"><div class="n">'+esc(r.item)+'<small>'+baht(r.price_thb)+' · '+esc(r.unit)+'</small></div>'
+       + '<div class="step"><button onclick="dec('+k+')">−</button><span>'+cart[k]+'</span><button onclick="inc('+k+')">+</button></div>'
+       + '<div style="min-width:64px;text-align:right;font-weight:800">'+baht(cart[k]*r.price_thb)+'</div></div>';
+    });
+    document.getElementById('ditems').innerHTML=h;
+    document.getElementById('grand').textContent=baht(totals().sum);
+    var paywrap=document.getElementById('paywrap'); var cta=document.getElementById('cta');
+    if(stage==='pay'){
+      paywrap.style.display='block';
+      document.getElementById('pay').innerHTML = payMethods.map(function(m){
+        return '<label class="'+(m===payChoice?'sel':'')+'" onclick="choosePay(\''+m.replace(/'/g,"")+'\')"><i class="fa-solid fa-circle'+(m===payChoice?'-check':'')+'"></i> '+m+'</label>';
+      }).join('');
+      cta.textContent='Place Order · '+baht(totals().sum);
+    } else {
+      paywrap.style.display='none';
+      cta.textContent='Checkout';
+    }
+  }
+
+  window.choosePay = function(m){ payChoice=m; renderCart(); };
+
+  window.checkoutStep = function(){
+    var t=totals(); if(!t.items){ return; }
+    if(stage==='cart'){ stage='pay'; renderCart(); return; }
+    var lines=[]; Object.keys(cart).forEach(function(k){ var r=DATA[k]; lines.push('• '+r.item+' x'+cart[k]+' = '+baht(cart[k]*r.price_thb)); });
+    var text='🙏 Namaste Pattaya Reservations — NEW ORDER\n\n'+lines.join('\n')+'\n\nTotal: '+baht(t.sum)+'\nPayment: '+payChoice+'\n\nPlease confirm my booking.';
+    window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(text),'_blank');
   };
 </script>
 </body>
