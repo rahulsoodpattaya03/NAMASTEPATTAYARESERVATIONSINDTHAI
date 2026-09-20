@@ -3,59 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Logo Preview — Namaste Pattaya Reservations</title>
+<title>Logo Designs — Namaste Pattaya Reservations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Great+Vibes&family=Poppins:wght@600;800&display=swap" rel="stylesheet">
 <style>
-  :root{--darkbg:#0b0f19;--gold:#f59e0b;--purple:#8b5cf6;--cyan:#22d3ee}
-  body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef;padding:0 0 40px}
+  body{margin:0;font-family:'Poppins',system-ui,Arial,sans-serif;background:#0b0f19;color:#e8e8ef;padding:0 0 50px}
   .wrap{max-width:760px;margin:0 auto;padding:18px}
   h1{font-size:18px}
   .muted{color:#8b93a7;font-size:13px}
-  .box{background:#131c2e;border:1px solid #1e2740;border-radius:14px;padding:16px;margin:14px 0}
-  .lbl{color:var(--gold);font-weight:800;font-size:13px;margin-bottom:10px}
-  .brandrow{display:flex;align-items:center;gap:12px}
-  .logo{width:46px;height:46px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#f59e0b,#8b5cf6,#22d3ee);display:flex;align-items:center;justify-content:center}
-  .logo img{width:100%;height:100%;object-fit:cover}
-  .logoC{width:46px;height:46px;border-radius:14px;overflow:hidden;background:#0d1424;display:flex;align-items:center;justify-content:center}
-  .logoC img{width:100%;height:100%;object-fit:contain}
-  .brand{font-size:19px;font-weight:900;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .tag{color:#8b93a7;font-size:11px;letter-spacing:2px;text-transform:uppercase}
-  .banner img{width:100%;border-radius:12px;display:block}
-  .fav{display:flex;align-items:center;gap:10px}
-  .fav img{width:32px;height:32px;border-radius:7px;object-fit:cover}
+  .box{background:#0e1524;border:1px solid #1e2740;border-radius:16px;padding:22px;margin:16px 0;text-align:center}
+  .lbl{color:#f59e0b;font-weight:800;font-size:13px;margin-bottom:16px;text-align:left}
+
+  .A{display:inline-flex;align-items:center;gap:14px}
+  .A .em{width:66px;height:66px;border-radius:50%;background:radial-gradient(circle at 30% 25%,#ffe6a7,#f59e0b 55%,#b45309);box-shadow:0 0 0 3px #0b0f19,0 0 0 5px #f59e0b,0 8px 24px rgba(245,158,11,.45);display:flex;align-items:center;justify-content:center;font-size:34px}
+  .A .txt{text-align:left;line-height:1}
+  .A .n1{font-family:'Cinzel',serif;font-weight:800;font-size:24px;letter-spacing:1px;background:linear-gradient(90deg,#fcd34d,#f59e0b,#fcd34d);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .A .n2{font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:5px;color:#cbd5e1;margin-top:4px}
+
+  .B{display:inline-flex;align-items:center;gap:14px}
+  .B .em{width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,#8b5cf6,#22d3ee);display:flex;align-items:center;justify-content:center;font-size:32px;box-shadow:0 0 18px rgba(139,92,246,.8),0 0 34px rgba(34,211,238,.5)}
+  .B .txt{text-align:left;line-height:1.05}
+  .B .n1{font-family:'Poppins';font-weight:800;font-size:22px;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f472b6,#22d3ee);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 5s linear infinite;text-shadow:0 0 20px rgba(139,92,246,.3)}
+  @keyframes sh{to{background-position:300% center}}
+  .B .n2{font-size:11px;letter-spacing:3px;color:#8b93a7;text-transform:uppercase;margin-top:3px}
+
+  .C .em{font-size:40px}
+  .C .n1{font-family:'Great Vibes',cursive;font-size:44px;background:linear-gradient(90deg,#fcd34d,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent;line-height:1}
+  .C .n2{font-family:'Cinzel',serif;font-weight:600;font-size:13px;letter-spacing:6px;color:#e8e8ef;margin-top:2px}
+  .C .n3{font-size:11px;letter-spacing:3px;color:#8b93a7;text-transform:uppercase;margin-top:6px}
+
+  .D{display:inline-flex;align-items:center;gap:14px}
+  .D .em{width:66px;height:66px;border-radius:16px;border:2px solid #f59e0b;background:#0d1424;display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 6px 20px rgba(0,0,0,.5)}
+  .D .em .mono{font-family:'Cinzel',serif;font-weight:800;font-size:22px;background:linear-gradient(90deg,#22d3ee,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .D .em .h{font-size:16px;margin-top:-2px}
+  .D .txt{text-align:left}
+  .D .n1{font-family:'Poppins';font-weight:800;font-size:20px;color:#fff}
+  .D .n1 span{color:#f59e0b}
+  .D .n2{font-size:11px;letter-spacing:3px;color:#8b93a7;text-transform:uppercase;margin-top:3px}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <h1>🙏 Logo Preview</h1>
-  <p class="muted">This shows your uploaded <b>logo-test.png</b> in each place it would be used. If it doesn't appear, upload the file first (see chat).</p>
+  <h1>🙏 Logo Designs (text-based, no image needed)</h1>
+  <p class="muted">Pick the one you like — tell me "A", "B", "C", or "D" — and I'll set it as your app logo everywhere.</p>
 
   <div class="box">
-    <div class="lbl">1) Header logo — CROPPED to square (fills the tile)</div>
-    <div class="brandrow">
-      <div class="logo"><img src="./logo-test.png" alt="logo" onerror="this.parentNode.innerHTML='<span style=&quot;font-size:26px&quot;>🙏</span>'"></div>
-      <div><div class="brand">NAMASTE PATTAYA RESERVATIONS</div><div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div></div>
-    </div>
+    <div class="lbl">Design A — Royal Gold Medallion</div>
+    <div class="A"><div class="em">🙏</div><div class="txt"><div class="n1">Namaste Pattaya</div><div class="n2">RESERVATIONS · SUPER-APP</div></div></div>
   </div>
 
   <div class="box">
-    <div class="lbl">2) Header logo — WHOLE image fitted (no crop, may show gaps)</div>
-    <div class="brandrow">
-      <div class="logoC"><img src="./logo-test.png" alt="logo"></div>
-      <div><div class="brand">NAMASTE PATTAYA RESERVATIONS</div><div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div></div>
-    </div>
+    <div class="lbl">Design B — Neon Party</div>
+    <div class="B"><div class="em">🙏</div><div class="txt"><div class="n1">NAMASTE PATTAYA</div><div class="n2">Reservations · Super-App</div></div></div>
   </div>
 
   <div class="box">
-    <div class="lbl">3) Full-width banner (top of services page)</div>
-    <div class="banner"><img src="./logo-test.png" alt="banner"></div>
+    <div class="lbl">Design C — Elegant Script</div>
+    <div class="C"><div class="em">🙏</div><div class="n1">Namaste Pattaya</div><div class="n2">RESERVATIONS</div><div class="n3">Super-App · Book · Party · Enjoy</div></div>
   </div>
 
   <div class="box">
-    <div class="lbl">4) Browser tab icon (favicon) size</div>
-    <div class="fav"><img src="./logo-test.png" alt="favicon"> <span class="muted">≈ how it looks as the tiny tab icon</span></div>
+    <div class="lbl">Design D — Monogram Badge</div>
+    <div class="D"><div class="em"><div class="mono">NPR</div><div class="h">🙏</div></div><div class="txt"><div class="n1">Namaste <span>Pattaya</span></div><div class="n2">Reservations · Super-App</div></div></div>
   </div>
 
-  <p class="muted">Tell me which option you like (1, 2, 3, or a mix) and I'll set it as the real logo across the app.</p>
+  <p class="muted">All are pure text + CSS, so they’re crisp on every screen. Reply with your favourite (A/B/C/D) and any colour tweaks.</p>
 </div>
 </body>
 </html>
