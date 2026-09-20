@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Radar GPS & Bill Splitter — Namaste Pattaya Reservations</title>
+<link rel="icon" href="/logo.png">
+<style>
+  :root{--darkbg:#0b0f19;--cardbg:#131c2e;--gold:#f59e0b;--cyan:#22d3ee}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef}
+  header{padding:16px 18px;border-bottom:1px solid #1e2740;background:linear-gradient(180deg,#0b0f19,#0b0f19f2)}
+  a.back{color:#8b93a7;text-decoration:none;font-size:13px}
+  .brand{font-size:19px;font-weight:900;margin-top:6px;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b,#22d3ee);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}
+  @keyframes sh{to{background-position:300% center}}
+  .wrap{max-width:640px;margin:0 auto;padding:18px}
+  .card{background:var(--cardbg);border:1px solid #1e2740;border-radius:16px;padding:18px;margin:14px 0}
+  h2{font-size:16px;margin:0 0 12px;color:var(--gold)}
+  .btn{width:100%;padding:13px;border:none;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer}
+  .btn.primary{background:var(--cyan);color:#06121f}
+  .btn.wa{background:#25D366;color:#04351a;margin-top:10px}
+  .btn.sec{background:#26314d;color:#fff;margin-top:10px}
+  .muted{color:#8b93a7;font-size:12px}
+  .loc{margin-top:12px;font-size:14px;line-height:1.6;display:none}
+  .loc a{color:var(--cyan)}
+  label{display:block;font-size:13px;color:#c7cddb;margin:12px 0 5px}
+  input{width:100%;padding:12px;border-radius:10px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:16px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+  .result{margin-top:16px;border-top:1px solid #1e2740;padding-top:14px}
+  .rrow{display:flex;justify-content:space-between;font-size:14px;padding:6px 0}
+  .rrow.big{font-size:20px;font-weight:900}
+  .rrow.big .v{color:#34d399}
+  .chips{display:flex;gap:8px;margin-top:6px}
+  .chip{flex:1;padding:9px;border:1px solid #26314d;border-radius:10px;text-align:center;font-weight:700;cursor:pointer;font-size:13px}
+  .chip.on{border-color:var(--gold);background:#1a1608;color:var(--gold)}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap" style="padding-top:0;padding-bottom:0">
+    <a class="back" href="/">&larr; Back to home</a>
+    <div class="brand">📍 Radar GPS & Bill Splitter</div>
+  </div>
+</header>
+<div class="wrap">
+
+  <!-- GPS -->
+  <div class="card">
+    <h2>📍 My Location (Radar)</h2>
+    <p class="muted">Share your live spot so friends can find you in Pattaya. Uses your phone's GPS (you'll be asked to allow location).</p>
+    <button class="btn primary" onclick="getLoc()">Get My Location</button>
+    <div class="loc" id="loc">
+      <div>📌 <b id="coords"></b></div>
+      <div><a id="maplink" href="#" target="_blank">Open in Google Maps →</a></div>
+      <button class="btn wa" id="shareBtn">Share My Location on WhatsApp</button>
+      <button class="btn sec" id="copyBtn">Copy Location Link</button>
+    </div>
+    <div class="muted" id="locErr" style="margin-top:10px;color:#f87171"></div>
+  </div>
+
+  <!-- Bill splitter -->
+  <div class="card">
+    <h2>🧮 Bill Splitter</h2>
+    <label>Total bill (฿)</label>
+    <input id="bill" type="number" inputmode="decimal" placeholder="e.g. 3000" oninput="calc()">
+    <label>Split between how many people?</label>
+    <input id="people" type="number" inputmode="numeric" value="2" min="1" oninput="calc()">
+    <label>Tip</label>
+    <div class="chips" id="tips">
+      <div class="chip on" data-t="0" onclick="setTip(0,this)">No tip</div>
+      <div class="chip" data-t="10" onclick="setTip(10,this)">10%</div>
+      <div class="chip" data-t="15" onclick="setTip(15,this)">15%</div>
+      <div class="chip" data-t="20" onclick="setTip(20,this)">20%</div>
+    </div>
+    <div class="result" id="result">
+      <div class="rrow"><span>Tip amount</span><span class="v" id="tipAmt">฿0</span></div>
+      <div class="rrow"><span>Grand total</span><span class="v" id="grand">฿0</span></div>
+      <div class="rrow big"><span>Each person pays</span><span class="v" id="each">฿0</span></div>
+      <button class="btn wa" id="splitWa">Send Split to WhatsApp</button>
+    </div>
+  </div>
+
+</div>
+<script>
+  var WHATSAPP = "66947623990";
+  var tip = 0, lastMaps = "";
+  function baht(n){ return '฿' + (Math.round(n*100)/100).toLocaleString(); }
+
+  // ---- GPS ----
+  window.getLoc = function(){
+    var err = document.getElementById('locErr'); err.textContent = '';
+    if(!navigator.geolocation){ err.textContent = 'GPS not supported on this device.'; return; }
+    err.textContent = 'Locating…';
+    navigator.geolocation.getCurrentPosition(function(pos){
+      err.textContent = '';
+      var lat = pos.coords.latitude.toFixed(6), lon = pos.coords.longitude.toFixed(6);
+      lastMaps = 'https://www.google.com/maps?q=' + lat + ',' + lon;
+      document.getElementById('coords').textContent = lat + ', ' + lon;
+      document.getElementById('maplink').href = lastMaps;
+      document.getElementById('loc').style.display = 'block';
+    }, function(e){
+      err.textContent = 'Could not get location: ' + (e.message || 'permission denied') + '. Please allow location access.';
+    }, { enableHighAccuracy:true, timeout:10000 });
+  };
+  document.getElementById('shareBtn').onclick = function(){
+    if(!lastMaps) return;
+    var msg = encodeURIComponent('📍 My live location in Pattaya: ' + lastMaps);
+    window.open('https://wa.me/?text=' + msg, '_blank');
+  };
+  document.getElementById('copyBtn').onclick = function(){
+    if(!lastMaps) return;
+    if(navigator.clipboard){ navigator.clipboard.writeText(lastMaps); this.textContent='Copied!'; var b=this; setTimeout(function(){b.textContent='Copy Location Link';},1500); }
+  };
+
+  // ---- Bill splitter ----
+  window.setTip = function(t, el){ tip = t; var cs=document.querySelectorAll('#tips .chip'); for(var i=0;i<cs.length;i++) cs[i].classList.remove('on'); el.classList.add('on'); calc(); };
+  window.calc = function(){
+    var bill = parseFloat(document.getElementById('bill').value) || 0;
+    var people = parseInt(document.getElementById('people').value) || 1; if(people<1) people=1;
+    var tipAmt = bill * tip / 100;
+    var grand = bill + tipAmt;
+    var each = grand / people;
+    document.getElementById('tipAmt').textContent = baht(tipAmt);
+    document.getElementById('grand').textContent = baht(grand);
+    document.getElementById('each').textContent = baht(each);
+  };
+  document.getElementById('splitWa').onclick = function(){
+    var bill = parseFloat(document.getElementById('bill').value) || 0;
+    var people = parseInt(document.getElementById('people').value) || 1;
+    var tipAmt = bill*tip/100, grand = bill+tipAmt, each = grand/people;
+    var text = '🧮 Bill Split — Namaste Pattaya\n\nBill: '+baht(bill)+'\nTip ('+tip+'%): '+baht(tipAmt)+'\nTotal: '+baht(grand)+'\nPeople: '+people+'\nEach pays: '+baht(each);
+    window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  };
+  calc();
+</script>
+</body>
+</html>
