@@ -11,7 +11,6 @@
     '🍛 Late-Night Desi Feast': '🍛 Indian Food — Only Veg Delivery',
     '🚀 Zoom VIP Ride': '🛵 Cars & Bikes for Rent',
     '🏰 Jomtien Party Villa': '🏝️ Villa & Pool Parties',
-    '📍 Radar & Split Bill': '📍 Find Your Friend GPS & Split Bills',
     '📸 Screen Spotlight': '📸 Display Your Photo on Screen',
     '🔥 Squad & Buddy Match': '🍻 Find Strangers to Split Club Bill',
     '🎁 Secret Admirer Gift': '🎁 Send Gift to Anyone in Pattaya 24/7',
