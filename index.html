@@ -4393,7 +4393,1241 @@ function generateAIBundle() {
     
     <button onclick="loadInventoryItem('gifts', 0)" class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-xl text-xs font-black uppercase shadow-lg">Send Rose Bouquet Gift</button>
 </div>
+ left
 
+0/1000 Executions
+ 
+Indian groceries list for Pattaya
+Wait i give you html of my project first
+Sounds good — go ahead and paste your project's HTML. Once I have it, I'll add the Indian groceries list (items available in Pattaya with prices) and the "Chai & Spices" button/action for you.
+
+How many words can add?
+
+Finished thinking
+You can paste a lot — don't worry about the size. A typical HTML file (even several thousand lines / tens of thousands of characters) is fine. If it's very large, I'll save it to a file in my workspace and edit it there.
+
+Feel free to paste it all in one message. If it gets cut off, just send it in parts and tell me "continued" so I know to join them.
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Pattaya Namaste - Executive Nightlife & Concierge Platform</title>
+
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    darkbg: '#0b0f19',
+                    cardbg: '#131c2e',
+                    accentgold: '#f59e0b',
+                    accentpurple: '#8b5cf6'
+                }
+            }
+        }
+    }
+</script>
+
+<!-- FontAwesome for Icons -->
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<!-- Leaflet CSS for Real GPS Map -->
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+
+<!-- Supabase JS Client Library -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+.hero-pattaya-bg {
+
+background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 27, 75, 0.88), rgba(15, 23, 42, 0.95)),
+
+url('https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1920&q=80');
+
+background-size: cover;
+
+background-position: center;
+
+}
+
+.glass-card {
+
+background: rgba(15, 23, 42, 0.85);
+
+backdrop-filter: blur(16px);
+
+-webkit-backdrop-filter: blur(16px);
+
+border: 1px solid rgba(56, 189, 248, 0.2);
+
+}
+
+.executive-glow {
+
+box-shadow: 0 0 30px rgba(56, 189, 248, 0.25);
+
+}
+
+html {
+
+scroll-behavior: smooth;
+
+}
+
+</style>
+
+</head>
+
+<body class="bg-slate-950 text-gray-100 font-sans antialiased selection:bg-cyan-500 selection:text-slate-950">
+
+<!-- SITE-WIDE DISCOUNT BANNER -->
+
+<div class="bg-gradient-to-r from-emerald-600 via-cyan-600 to-indigo-600 text-white text-center py-2 px-4 text-xs font-black uppercase tracking-wider sticky top-0 z-50 shadow-md">
+
+🎁 Special Promotion: Enjoy 30% OFF across ALL Super-App Services & Namaste Pattaya Mall Shopping! ⚡
+
+</div>
+
+<!-- TOP NAVIGATION -->
+
+<header class="bg-slate-950/90 backdrop-blur-md border-b border-cyan-500/30 sticky top-8 z-40">
+
+<div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
+
+<div class="flex items-center space-x-3">
+
+<!-- MODERN LOGO BADGE -->
+
+<div class="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-800 p-0.5 shadow-lg executive-glow">
+
+<div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
+
+<svg class="w-6 h-6 text-cyan-400 animate-pulse" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+
+</div>
+
+</div>
+
+<div>
+
+<span class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 block leading-tight">PATTAYA NAMASTE</span>
+
+<span class="text-[9px] text-cyan-400 font-extrabold tracking-widest uppercase block">BHARAT KE LEA EK BHARTIYE KA TOHFA JAI HIND</span>
+
+</div>
+
+</div>
+
+<!-- Nav links -->
+
+<nav class="hidden lg:flex space-x-3 text-xs font-black uppercase text-gray-300 tracking-wider">
+
+<a href="#overview" class="hover:text-cyan-400 transition">Overview</a>
+
+<a href="#desi-clubs" class="text-cyan-400 transition">Clubs Hub #1 ⚡</a>
+
+<a href="#services" class="hover:text-sky-400 transition">Services (16)</a>
+
+<a href="#vip-packages" class="text-indigo-400 transition">VIP & Security</a>
+
+<a href="#girls-hub" class="text-pink-400 transition">Girls & Premium ✨</a>
+
+<a href="#dating-buddy" class="text-teal-400 transition">Social & Photos 🔥</a>
+
+<a href="#services-6-tours" class="text-amber-400 transition">Tours & Day ☀️</a>
+
+<a href="#refer-earn" class="text-emerald-400 transition animate-pulse">Refer & Earn 💸</a>
+
+<a href="#b2b-partners" class="text-accentgold transition">Partners & Venues 🤝</a>
+
+<a href="#club-dashboard" id="navDashboardLink" class="text-indigo-400 transition hidden">Partner Hub</a>
+
+</nav>
+
+<div class="flex items-center space-x-2 sm:space-x-3">
+
+<!-- DUAL CLOCKS -->
+
+<div class="hidden md:flex flex-col items-end text-[9px] font-black tracking-widest text-gray-400 bg-slate-900 border border-slate-800 px-2 py-1 rounded-lg">
+
+<div>🇮🇳 IND: <span id="clockIND" class="text-amber-400">00:00</span></div>
+
+<div>🇹🇭 THA: <span id="clockTHA" class="text-cyan-400">00:00</span></div>
+
+</div>
+
+<div id="activeBudgetDisplay" class="hidden sm:inline-flex items-center space-x-1 bg-slate-900 px-3 py-1.5 rounded-xl border border-slate-800 text-[11px] text-gray-300">
+
+<span>Cap:</span> <strong class="text-emerald-400">None</strong>
+
+</div>
+
+<!-- LANGUAGE DROPDOWN -->
+
+<div class="relative">
+
+<select id="languageSelect" onchange="changeLanguage(this.value)" class="bg-slate-900 text-cyan-400 font-bold text-xs border border-cyan-500/40 rounded-xl px-2.5 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 cursor-pointer">
+
+<option value="en" selected>English</option>
+
+<option value="hi">हिंदी (Hindi)</option>
+
+<option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+
+<option value="gu">ગુજરાતી (Gujarati)</option>
+
+<option value="mr">मराठी (Marathi)</option>
+
+<option value="ta">தமிழ் (Tamil)</option>
+
+<option value="th">ไทย (Thai)</option>
+
+</select>
+
+</div>
+
+<!-- JOIN US BUTTON -->
+
+<button onclick="openCustomerModal()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white px-3.5 py-2 rounded-xl text-xs font-black uppercase transition shadow-lg flex items-center space-x-1.5">
+
+<i class="fa-solid fa-user-plus"></i>
+
+<span class="hidden sm:inline">Join Us</span>
+
+</button>
+
+<button onclick="openPartnerAuthModal()" class="bg-gradient-to-r from-cyan-600 to-blue-600 hover:opacity-90 text-white px-3.5 py-2 rounded-xl text-xs font-black uppercase transition shadow-lg flex items-center space-x-1.5">
+
+<i class="fa-solid fa-handshake"></i>
+
+<span class="hidden sm:inline">Partner Portal</span>
+
+</button>
+
+<button onclick="openCustomerModal()" class="bg-slate-900 hover:bg-slate-800 text-gray-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-black uppercase transition flex items-center space-x-1.5">
+
+<i class="fa-solid fa-user text-cyan-400"></i>
+
+<span id="navLoginText">Login</span>
+
+</button>
+
+<button onclick="openLiveChat()" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:opacity-90 text-white px-3.5 py-2 rounded-xl text-xs font-black uppercase transition shadow-xl flex items-center space-x-1.5 animate-pulse">
+
+<i class="fa-solid fa-comments"></i>
+
+<span class="hidden sm:inline">Live Chat</span>
+
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+<!-- HERO SECTION -->
+
+<section id="overview" class="hero-pattaya-bg text-white py-28 px-4 text-center relative overflow-hidden">
+
+<div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/15 via-transparent to-transparent pointer-events-none"></div>
+
+<div class="max-w-4xl mx-auto relative z-10">
+
+<div class="inline-flex items-center space-x-2 bg-slate-950/85 px-5 py-2 rounded-full text-xs font-black tracking-widest uppercase mb-6 border border-cyan-500/40 executive-glow">
+
+<span class="text-cyan-400">🇮🇳 BHARAT KE LEA EK BHARTIYE KA TOHFA JAI HIND 🇮🇳</span>
+
+</div>
+
+<h1 class="text-4xl md:text-6xl font-black mb-6 leading-none tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-blue-400">
+
+EXECUTIVE PATTAYA NIGHTLIFE & CONCIERGE SUPER-APP
+
+</h1>
+
+<p class="text-base md:text-lg text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed font-medium">
+
+Your high-performance digital gateway to Pattaya's elite superclubs, VIP beach clubs, private jet charters, supercar rentals, and exclusive social circles.
+
+</p>
+
+<div class="mb-8">
+
+<a href="#desi-clubs" class="inline-flex items-center space-x-3 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:opacity-95 text-white font-black px-10 py-5 rounded-2xl shadow-2xl executive-glow transition transform hover:scale-105 text-sm md:text-base uppercase tracking-widest border border-cyan-400/50 animate-pulse">
+
+<i class="fa-solid fa-chair text-cyan-200 text-xl"></i>
+
+<span>Reserve Your Table in Club with Up to 30% Discount ⚡</span>
+
+</a>
+
+</div>
+
+<div class="flex flex-col sm:flex-row justify-center gap-4">
+
+<a href="#desi-clubs" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-8 py-4 rounded-2xl shadow-xl transition flex items-center justify-center space-x-2 text-xs uppercase tracking-widest">
+
+<i class="fa-solid fa-fire text-cyan-200"></i>
+
+<span>Explore Clubs Hub</span>
+
+</a>
+
+<a href="#b2b-partners" onclick="openPartnerProposalModal()" class="bg-amber-600 hover:bg-amber-500 text-black font-black px-8 py-4 rounded-2xl shadow-xl transition flex items-center justify-center space-x-2 text-xs uppercase tracking-widest cursor-pointer">
+
+<i class="fa-solid fa-handshake text-black"></i>
+
+<span>Venue Partners & Proposal</span>
+
+</a>
+
+<a href="#services-6-tours" class="bg-slate-900 hover:bg-slate-800 border border-slate-700 text-white font-black px-8 py-4 rounded-2xl shadow-xl transition flex items-center justify-center space-x-2 text-xs uppercase tracking-widest">
+
+<i class="fa-solid fa-sun text-amber-400"></i>
+
+<span>Tours & Day Activities ☀️</span>
+
+</a>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- ENTERTAINING ACTION BUTTONS BAR -->
+
+<section class="py-8 bg-slate-900 border-b border-cyan-500/30">
+
+<div class="container mx-auto px-4 max-w-7xl">
+
+<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3">
+
+<button onclick="openPayBillGeneralModal()" class="bg-slate-950 hover:bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-emerald-950 text-emerald-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-receipt"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">💸 Settle Bill Like a Boss</span>
+
+</button>
+
+<button onclick="openFoodModal()" class="bg-slate-950 hover:bg-slate-900 border border-amber-500/40 hover:border-amber-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-amber-950 text-amber-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-burger"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🍛 Late-Night Desi Feast</span>
+
+</button>
+
+<button onclick="openTaxiModal()" class="bg-slate-950 hover:bg-slate-900 border border-cyan-500/40 hover:border-cyan-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-cyan-950 text-cyan-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-gauge-high"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🚀 Zoom VIP Ride</span>
+
+</button>
+
+<button onclick="openProductPage('Air Ticket & Visa Services', 1500, 'Comprehensive flight booking assistance, fast-track immigration, and Thai visa services.')" class="bg-slate-950 hover:bg-slate-900 border border-sky-500/40 hover:border-sky-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-sky-950 text-sky-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-passport"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">✈️ Express Flight & Visa</span>
+
+</button>
+
+<button onclick="openCheckStatusModal()" class="bg-slate-950 hover:bg-slate-900 border border-purple-500/40 hover:border-purple-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-purple-950 text-purple-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-satellite"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🕵️ Track My Booking</span>
+
+</button>
+
+<button onclick="openProductPage('Luxury Hotel & Villa Booking', 5000, 'Beachfront luxury resorts, private pool party villas in Jomtien, and central Walking Street accommodations.')" class="bg-slate-950 hover:bg-slate-900 border border-indigo-500/40 hover:border-indigo-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-indigo-950 text-indigo-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-umbrella-beach"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🏰 Jomtien Party Villa</span>
+
+</button>
+
+<button onclick="openModifyCancelModal()" class="bg-slate-950 hover:bg-slate-900 border border-rose-500/40 hover:border-rose-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-rose-950 text-rose-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">⚡ Quick Switch Plans</span>
+
+</button>
+
+<button onclick="document.getElementById('girls-hub').scrollIntoView(); switchGirlsTab('namasteMall');" class="bg-slate-950 hover:bg-slate-900 border border-pink-500/40 hover:border-pink-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-pink-950 text-pink-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-bag-shopping"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🛍️ Namaste Mall Loot</span>
+
+</button>
+
+<button onclick="openFindYourFriendModal()" class="bg-slate-950 hover:bg-slate-900 border border-blue-500/40 hover:border-blue-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-blue-950 text-blue-400 flex items-center justify-center text-lg group-hover:scale-110 transition animate-pulse"><i class="fa-solid fa-radar"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">📍 Radar & Split Bill</span>
+
+</button>
+
+<button onclick="document.getElementById('desi-clubs').scrollIntoView();" class="bg-slate-950 hover:bg-slate-900 border border-fuchsia-500/40 hover:border-fuchsia-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-fuchsia-950 text-fuchsia-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-clapperboard"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">📸 Screen Spotlight</span>
+
+</button>
+
+<button onclick="document.getElementById('dating-buddy').scrollIntoView();" class="bg-slate-950 hover:bg-slate-900 border border-teal-500/40 hover:border-teal-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-teal-950 text-teal-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-champagne-glasses"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🔥 Squad & Buddy Match</span>
+
+</button>
+
+<button onclick="openPayBillGeneralModal()" class="bg-slate-950 hover:bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-emerald-950 text-emerald-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-gift"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🎁 Secret Admirer Gift</span>
+
+</button>
+
+<button onclick="openGroceryModal()" class="bg-slate-950 hover:bg-slate-900 border border-emerald-500/40 hover:border-emerald-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-emerald-950 text-emerald-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-mortar-pestle"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🫚 Desi Chai & Spices</span>
+
+</button>
+
+<button onclick="openCurrencyModal()" class="bg-slate-950 hover:bg-slate-900 border border-indigo-500/40 hover:border-indigo-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-indigo-950 text-indigo-400 flex items-center justify-center text-lg group-hover:scale-110 transition"><i class="fa-solid fa-sack-dollar"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">💰 INR to Baht Wizard</span>
+
+</button>
+
+<button onclick="openEmergencyModal()" class="col-span-2 sm:col-span-1 md:col-span-2 lg:col-span-1 bg-slate-950 hover:bg-slate-900 border border-rose-500/40 hover:border-rose-400 p-4 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-2 shadow-lg group">
+
+<div class="w-10 h-10 rounded-xl bg-rose-950 text-rose-400 flex items-center justify-center text-lg group-hover:scale-110 transition animate-pulse"><i class="fa-solid fa-shield-dog"></i></div>
+
+<span class="text-xs font-black text-white uppercase tracking-wider">🚨 SOS Fast Lifeline</span>
+
+</button>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- REFER & EARN CASHBACK SYSTEM -->
+
+<section id="refer-earn" class="py-16 bg-slate-950 border-b border-emerald-500/30">
+
+<div class="container mx-auto px-4 max-w-4xl">
+
+<div class="glass-card rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden">
+
+<div class="absolute -right-10 -bottom-10 text-emerald-500/10 text-9xl font-black pointer-events-none">1%</div>
+
+<span class="absolute top-4 right-6 bg-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md">1% Lifetime Reward</span>
+
+<div class="text-center md:text-left flex flex-col md:flex-row items-center gap-6 relative z-10">
+
+<div class="bg-emerald-950 border border-emerald-500/40 p-5 rounded-3xl text-emerald-400 text-4xl flex-shrink-0 shadow-lg">
+
+<i class="fa-solid fa-wallet"></i>
+
+</div>
+
+<div class="flex-1 space-y-2">
+
+<h2 class="text-2xl font-black text-white uppercase tracking-tight">Refer Friends & Earn 1% Cash on All Spend!</h2>
+
+<p class="text-gray-300 text-xs leading-relaxed font-medium">
+
+Share your exclusive referral link with visitors coming to Pattaya. Whenever they book tables, security details, or VIP packages through the app, <strong class="text-emerald-400">you automatically earn 1% of their total spend!</strong>
+
+</p>
+
+</div>
+
+</div>
+
+<div class="mt-8 pt-6 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs relative z-10">
+
+<div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
+
+<span class="text-gray-400 block mb-1 font-bold">Your Referral Link:</span>
+
+<div class="flex items-center bg-slate-900 border border-slate-800 rounded-xl px-3 py-2 text-cyan-400 font-bold truncate">
+
+<span id="refLinkText" class="truncate">https://pattayanamaste.com/ref/VIP90</span>
+
+<button onclick="copyRefLink()" class="ml-2 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-[10px] uppercase flex-shrink-0 font-bold"><i class="fa-solid fa-copy"></i></button>
+
+</div>
+
+</div>
+
+<div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
+
+<span class="text-gray-400 block font-bold">Total Referrals Downloaded:</span>
+
+<span class="text-xl font-black text-white mt-1 block">18 Visitors <span class="text-[10px] text-emerald-400 font-normal">Active Today</span></span>
+
+</div>
+
+<div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 flex flex-col justify-between">
+
+<span class="text-gray-400 block font-bold">Total 1% Commission Balance:</span>
+
+<span class="text-xl font-black text-emerald-400 mt-1 block">฿4,200 THB <button onclick="alert('Withdrawal request initiated to your connected bank account!')" class="text-[10px] bg-cyan-600 hover:bg-cyan-700 text-white px-2.5 py-1 rounded-lg ml-2 uppercase font-black">Withdraw</button></span>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+<!-- #1. PREMIER WALKING STREET CLUBS & FLOOR MAP -->
+
+<section id="desi-clubs" class="py-20 bg-slate-900 border-b border-cyan-500/20">
+
+<div class="container mx-auto px-4">
+
+<div class="text-center max-w-3xl mx-auto mb-14">
+
+<span class="text-xs font-black uppercase tracking-widest text-cyan-400 bg-cyan-950/80 px-4 py-1.5 rounded-full border border-cyan-500/40 shadow-sm">#1 Priority Epicenter</span>
+
+<h2 class="text-3xl md:text-4xl font-black text-white tracking-tight mt-4">PREMIER WALKING STREET CLUBS & AFTERPARTIES</h2>
+
+<div class="h-1.5 w-24 bg-gradient-to-r from-cyan-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
+
+<p class="text-gray-300 text-xs md:text-sm mt-4 font-medium">Select your venue, inspect the live floor plan, check tonight's resident DJ and live act schedule, and lock in your <strong class="text-emerald-400">30% billing discount!</strong></p>
+
+</div>
+
+<div id="desiClubsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+</div>
+
+</section>
+
+<!-- #2. COMPREHENSIVE SUPER-APP SERVICES (16 CATEGORIES) -->
+
+<section id="services" class="py-20 bg-slate-950 border-b border-cyan-500/20">
+
+<div class="container mx-auto px-4">
+
+<div class="text-center max-w-3xl mx-auto mb-14">
+
+<span class="text-xs font-black uppercase tracking-widest text-cyan-400 bg-cyan-950/80 px-4 py-1.5 rounded-full border border-cyan-500/40 shadow-sm">All-In-One Ecosystem</span>
+
+<h2 class="text-3xl md:text-4xl font-black text-white tracking-tight mt-4">COMPREHENSIVE SUPER-APP SERVICES (16 CATEGORIES)</h2>
+
+<div class="h-1.5 w-24 bg-gradient-to-r from-cyan-500 to-blue-500 mx-auto mt-4 rounded-full"></div>
+
+<p class="text-gray-300 text-xs md:text-sm mt-4 font-medium">Tailored categories for executive patrons. <span class="text-cyan-400 font-bold">Book with us and score up to 30% discount on billing!</span></p>
+
+</div>
+
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+
+<!-- 1 -->
+
+<div onclick="openProductPage('Clubs & Nightlife VIP Pass', 1500, 'VIP access pass and 30% billing discount across all featured Walking Street superclubs.')" class="glass-card rounded-3xl border border-slate-800 hover:border-cyan-500/50 transition transform hover:-translate-y-1 duration-300 relative flex flex-col justify-between cursor-pointer overflow-hidden shadow-xl">
+
+<span class="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-md z-10">UP TO 30% OFF</span>
+
+<div class="h-40 w-full overflow-hidden relative"><img src="https://images.unsplash.com/photo-1574391884720-bbc3740c59d1?auto=format&fit=crop&w=600&q=80" alt="Clubs" class="w-full h-full object-cover hover:scale-110 transition duration-700"><div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div></div>
+
+<div class="p-6 pt-2"><h3 class="font-black text-white text-sm uppercase mb-1 text-cyan-400">1. Clubs & Nightlife</h3><p class="text-gray-300 text-xs leading-relaxed mb-3 font-medium">VIP bottle service tables, fast-track entry passes, and up to 30% billing discounts across our featured Walking Street clubs.</p></div>
+
+<div class="px-6 pb-6 pt-0"><div class="text-[10px] text-cyan-400 font-bold border-t border-slate-800 pt-3 flex items-center justify-between"><span>⚡ Instant VIP Seating</span><i class="fa-solid fa-arrow-right"></i></div></div>
+
+</div>
+
+<!-- 2 -->
+
+<div onclick="openProductPage('Premium Concert & DJ Event Ticket', 2500, 'Front-row priority access ticket to international concerts and celebrity DJ takeovers.')" class="glass-card rounded-3xl border border-slate-800 hover:border-cyan-500/50 transition transform hover:-translate-y-1 duration-300 relative flex flex-col justify-between cursor-pointer overflow-hidden shadow-xl">
+
+<span class="absolute top-3 right-3 bg-red-600 text-white text-[9px] font-black px-2.5 py-1 rounded-full shadow-md z-10">UP TO 30% OFF</span>
+
+<div class="h-40 w-full overflow-hidden rela
+
+Finished thinking
+I can see your file — it got cut off partway, but I found the key part. You already have this button in your action bar:
+
+<button onclick="openGroceryModal()" ...>🫚 Desi Chai & Spices</button>
+So what's missing is the openGroceryModal() modal + its grocery list with prices. Here's a ready-to-paste, self-contained block that matches your dark/glass theme. Add it just before the closing </body> tag (it includes its own HTML modal + JavaScript, so no other changes needed).
+
+<!-- ================= DESI CHAI & SPICES — GROCERY MODAL ================= -->
+<div id="groceryModal" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+  <div class="glass-card w-full max-w-3xl max-h-[90vh] overflow-y-auto rounded-3xl border border-emerald-500/40 shadow-2xl">
+    <!-- Header -->
+    <div class="sticky top-0 bg-slate-950/95 backdrop-blur-md border-b border-emerald-500/30 px-6 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-11 h-11 rounded-2xl bg-emerald-950 text-emerald-400 flex items-center justify-center text-xl"><i class="fa-solid fa-mortar-pestle"></i></div>
+        <div>
+          <h2 class="text-lg font-black text-white uppercase tracking-tight">🫚 Desi Chai & Spices</h2>
+          <p class="text-[10px] text-emerald-400 font-bold uppercase tracking-widest">Indian Groceries Available in Pattaya</p>
+        </div>
+      </div>
+      <button onclick="closeGroceryModal()" class="w-9 h-9 rounded-xl bg-slate-900 hover:bg-slate-800 text-gray-300 border border-slate-700"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+
+    <!-- Body -->
+    <div class="p-6" id="groceryListBody"></div>
+
+    <!-- Footer / Cart -->
+    <div class="sticky bottom-0 bg-slate-950/95 backdrop-blur-md border-t border-emerald-500/30 px-6 py-4 flex items-center justify-between">
+      <div class="text-xs text-gray-300 font-bold">Total: <span id="groceryTotal" class="text-emerald-400 text-base">฿0</span></div>
+      <button onclick="orderGroceries()" class="bg-gradient-to-r from-emerald-600 to-cyan-600 hover:opacity-90 text-white px-5 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider shadow-lg">
+        <i class="fa-brands fa-whatsapp"></i> Order on WhatsApp
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Indian groceries available in Pattaya — prices in Thai Baht (THB)
+  const GROCERY_CATALOG = [
+    { group: "☕ Chai & Beverages", items: [
+      { name: "Masala Chai Tea (Tata / 250g)", price: 180 },
+      { name: "Assam CTC Loose Tea (500g)", price: 260 },
+      { name: "Bru / Nescafé Instant Coffee (200g)", price: 220 },
+      { name: "Cardamom Green (Elaichi, 50g)", price: 150 },
+      { name: "Ginger Tea Premix (10 sachets)", price: 120 },
+    ]},
+    { group: "🌶️ Spices & Masalas", items: [
+      { name: "Turmeric Powder (Haldi, 200g)", price: 90 },
+      { name: "Red Chilli Powder (Lal Mirch, 200g)", price: 100 },
+      { name: "Garam Masala (100g)", price: 140 },
+      { name: "Cumin Seeds (Jeera, 200g)", price: 110 },
+      { name: "Coriander Powder (Dhania, 200g)", price: 90 },
+      { name: "Mustard Seeds (Rai, 200g)", price: 80 },
+      { name: "Chaat Masala (100g)", price: 120 },
+    ]},
+    { group: "🫘 Lentils, Rice & Flour", items: [
+      { name: "Toor Dal (1kg)", price: 160 },
+      { name: "Basmati Rice (1kg)", price: 150 },
+      { name: "Chana Dal (1kg)", price: 140 },
+      { name: "Atta / Whole Wheat Flour (1kg)", price: 130 },
+      { name: "Besan / Gram Flour (1kg)", price: 120 },
+    ]},
+    { group: "🍪 Snacks & Ready-to-Eat", items: [
+      { name: "Parle-G Biscuits (Pack)", price: 60 },
+      { name: "Haldiram's Bhujia (200g)", price: 130 },
+      { name: "MTR Ready Meal (per pouch)", price: 120 },
+      { name: "Maggi Noodles (Pack of 4)", price: 110 },
+      { name: "Papad (Lijjat, 200g)", price: 90 },
+    ]},
+    { group: "🧈 Essentials", items: [
+      { name: "Pure Ghee (500ml)", price: 320 },
+      { name: "Paneer (200g)", price: 150 },
+      { name: "Mango Pickle (Achaar, 400g)", price: 140 },
+      { name: "Tamarind Paste (200g)", price: 90 },
+    ]},
+  ];
+
+  const groceryCart = {}; // name -> { price, qty }
+
+  function renderGroceryList() {
+    const body = document.getElementById('groceryListBody');
+    body.innerHTML = GROCERY_CATALOG.map(cat => `
+      <div class="mb-6">
+        <h3 class="text-sm font-black text-emerald-400 uppercase tracking-wider mb-3">${cat.group}</h3>
+        <div class="space-y-2">
+          ${cat.items.map(it => `
+            <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5">
+              <span class="text-xs text-gray-200 font-medium">${it.name}</span>
+              <div class="flex items-center space-x-3">
+                <span class="text-xs font-black text-white">฿${it.price}</span>
+                <button onclick="addGrocery('${it.name.replace(/'/g,"\\'")}', ${it.price})"
+                  class="bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-lg">Add</button>
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  function addGrocery(name, price) {
+    if (!groceryCart[name]) groceryCart[name] = { price, qty: 0 };
+    groceryCart[name].qty++;
+    updateGroceryTotal();
+  }
+
+  function updateGroceryTotal() {
+    let total = 0;
+    Object.values(groceryCart).forEach(i => total += i.price * i.qty);
+    document.getElementById('groceryTotal').textContent = '฿' + total;
+  }
+
+  function openGroceryModal() {
+    renderGroceryList();
+    updateGroceryTotal();
+    const m = document.getElementById('groceryModal');
+    m.classList.remove('hidden');
+    m.classList.add('flex');
+  }
+
+  function closeGroceryModal() {
+    const m = document.getElementById('groceryModal');
+    m.classList.add('hidden');
+    m.classList.remove('flex');
+  }
+
+  function orderGroceries() {
+    const lines = Object.entries(groceryCart).filter(([,i]) => i.qty > 0)
+      .map(([name, i]) => `${name} x${i.qty} = ฿${i.price * i.qty}`);
+    if (!lines.length) { alert('Please add some items first!'); return; }
+    let total = 0; Object.values(groceryCart).forEach(i => total += i.price * i.qty);
+    const msg = encodeURIComponent(`🫚 Namaste! I'd like to order:\n\n${lines.join('\n')}\n\nTotal: ฿${total}`);
+    // TODO: replace with your real WhatsApp business number (international format, no +)
+    window.open(`https://wa.me/66000000000?text=${msg}`, '_blank');
+  }
+</script>
+<!-- ================= END GROCERY MODAL ================= -->
+A few notes:
+
+The prices are sample estimates in THB — edit the numbers in GROCERY_CATALOG to your real Pattaya prices.
+Replace 66000000000 in orderGroceries() with your actual WhatsApp business number (country code, no +), or tell me and I'll wire it to a form/n8n workflow instead.
+It reuses your existing glass-card style and FontAwesome icons, so it fits your theme automatically.
+Do you want me to:
+
+Keep it as this client-side modal (just paste and go), or
+Wire the "Order on WhatsApp" / checkout to an n8n workflow (so orders get saved / emailed / sent to you automatically)?
+And if you'd like the list to match exact products and prices you stock, paste your real list and I'll drop them straight in.
+
+Can to join gemini with you?
+
+Finished thinking
+What would you like to use Google Gemini for?
+Accortion to categories i want to add data in its
+
+Finished thinking
+Where should Gemini's generated grocery data go?
+Skipped
+
+Thought for 1s
+You stopped this run
+I want you to collect the data for 16 categories  and I want you to make a backup of this data and give me the file after making full details and after HTML
+
+Thought for 1m 45s
+Done. I've built the full 16-category Indian grocery catalog with prices and saved two deliverable files in the workspace:
+
+File	What it is
+deliverables/pattaya-namaste-groceries.json	Backup — all 16 categories + items + prices as structured data
+deliverables/desi-chai-spices-modal.html	HTML to paste into your site (renders all 16 categories, cart + WhatsApp order)
+The 16 categories (≈130 items total):
+
+☕ Chai & Beverages · 2. 🌶️ Spices & Masalas · 3. 🫘 Lentils & Pulses · 4. 🍚 Rice & Grains · 5. 🌾 Flours · 6. 🧈 Oils & Ghee · 7. 🍿 Snacks & Namkeen · 8. 🍛 Ready-to-Eat · 9. 🥒 Pickles & Chutneys · 10. 🍮 Sweets & Mithai · 11. 🥛 Dairy & Paneer · 12. ❄️ Frozen Foods · 13. 🫓 Papad & Wafers · 14. 🥜 Dry Fruits & Nuts · 15. 🥣 Instant Mixes · 16. 🪔 Puja & Household
+How to use it: paste the contents of desi-chai-spices-modal.html just before </body> in your project. Your existing 🫚 Desi Chai & Spices button already calls openGroceryModal(), so it will open automatically. The modal has category chips, an Add-to-cart total, and a WhatsApp order button (replace 66000000000 with your real number).
+
+⚠️ Prices are indicative estimates in THB — edit them in GROCERY_CATALOG (HTML) or the JSON to your real Pattaya stock prices.
+
+Since these files live in my sandbox, tell me how you'd like them delivered:
+
+Paste the full HTML here so you can copy it directly (I can also paste the JSON), or
+Email the two files to you, or
+Let me build the n8n + Google Gemini workflow so Gemini regenerates/updates this catalog by category on demand and saves it to a Data Table (this is where Gemini "joins in").
+Which would you like?
+
+best here also email me also and tell the process how to do and with the content
+
+Thought for 2m 35s
+The workflow is built (ID uHIM95kId40pmDB5). To actually send the email it needs a Gmail account connected — you have no email credential yet. Let me open setup so you can connect Gmail.
+
+
+Thought for 31s
+No problem — I've left the Gmail connection unconfigured for now. Here's where everything stands and exactly how to use it.
+
+✅ Done
+16-category Indian grocery catalog built (items + prices in THB) — pasted in full above.
+Backup + HTML files created.
+Email workflow built and saved (ID uHIM95kId40pmDB5) — ready to send both files, just needs Gmail connected.
+📌 How to add the groceries to your website (process)
+Open your HTML project file.
+Copy the entire FILE 1 block I pasted above (starts with <!-- PATTAYA NAMASTE — DESI CHAI & SPICES and ends at <!-- END ... MODAL -->).
+Paste it just before the closing </body> tag.
+Save. Your existing button 🫚 Desi Chai & Spices already calls openGroceryModal(), so it opens automatically — no other change needed.
+Edit prices/items inside GROCERY_CATALOG, and replace 66000000000 with your real WhatsApp number.
+📧 To email the files to yourself (rahulsood30071990@gmail.com)
+This part is paused because no Gmail account is connected. The Email Grocery Files node stays unconfigured, so the workflow can't send yet.
+
+When you're ready, just say "connect Gmail" — I'll reopen the connection card. Once connected, I'll run the workflow (with your approval) and both files (desi-chai-spices-modal.html + pattaya-namaste-groceries.json) land in your inbox as attachments.
+🤖 About Gemini
+The Gemini part (auto-generating/updating this catalog by category on demand) is a separate next step I can build after the email is working — it would use Google Gemini inside a workflow to regenerate categories and save them to a Data Table.
+
+What would you like next?
+
+Connect Gmail so I can email you the files, or
+Build the Gemini auto-generate workflow, or
+Adjust the grocery items/prices first.
+Uconnect Germany with you  you going to Germany with you Germany Pro  Google Germany  Gemini Google
+
+Finished thinking
+What do you want the Gemini workflow to do?
+Skipped
+
+Thought for 1m 47s
+Verified — the wiring works end-to-end. The Gemini output was parsed correctly into individual rows with the right fields (category, item, price_thb, unit, notes), then routed to the Data Table. Two nodes were simulated in this check (no real writes happened): the Gemini call and the Data Table insert.
+
+Done so far
+
+✅ Created reusable Data Table grocery_catalog (columns: category, item, price_thb, unit, notes)
+✅ Built workflow "Generate Grocery Catalog with Gemini" (ZsgeHAdcb3y5jTL4): Manual trigger → Gemini generates ~6–10 items × 16 categories in THB → parse → save rows
+✅ Gemini runs on Gateway credits — no API key needed
+Next
+Run it live once so Gemini actually generates the catalog and fills the table with real data. Since it's a manual trigger, I just need your go-ahead — the run will populate grocery_catalog with real rows.
+
+Want me to run it now? After it succeeds I'll read back the rows and we can then export the result to JSON (and optionally wire it into your website / email).
+
+you save this make new folder in my phone and by name of cancel  Namaste but I  Namaste of that reservations make new folder and put all the data in that photo
+
+Finished thinking
+I can't create a folder on your phone or save files directly to it — I don't have access to your phone's storage, and n8n can't write to a device's local folders. That's a genuine limit, not something I can work around.
+
+What I can do to get everything onto your phone, so you can put it in a folder called "Namaste Reservations" yourself:
+
+Give you downloadable files here — I've already saved these in your workspace:
+
+deliverables/pattaya-namaste-groceries.json (the 16-category grocery data backup)
+deliverables/desi-chai-spices-modal.html (the website modal)
+You download them, then on your phone create a folder "Namaste Reservations" and move the files in.
+
+Email them to you — I already built the email workflow "Email Grocery Files — Pattaya Namaste". It needs Gmail connected (you skipped that earlier). If you connect Gmail, I'll email all the files to rahulsood30071990@gmail.com and you save them into your phone folder from the email attachments.
+
+Run the Gemini workflow first so the data is fresh/complete, then export the generated catalog to JSON and include it in whatever I send.
+
+Which do you want?
+
+Connect Gmail and email me the files, or
+Just download the files from here, or
+Run Gemini first, then send?
+Tell me and I'll do it. Note: on a phone, folders are created in your Files/Gallery app — I can prepare and deliver the files, but the folder itself you create on the device.
+
+like this first you make for all 16 categories make tables then I have to tell you what to do
+
+Thought for 2m 8s
+Rebuilt with the fix. Now running it live so it actually fills the table across all 16 categories.
+
+
+Finished thinking
+You stopped this run
+I want you to put data according to the category  if Restaurant Depot restaurant if cars and bikes put cars and bikes like that all 16 category
+
+Finished thinking
+List your 16 categories (one per line, e.g. Restaurants, Cars & Bikes, ...). I'll generate data for each.
+Skipped
+For each listing, what info should Gemini fill in? (I'll adapt per category)
+Skipped
+
+Thought for 37s
+Updated to your 16 service categories. Now running it live so Gemini fills the table with listings for each category. You'll get an approval card — approve it and it'll run (this generates 16 categories × ~8–10 listings, so it may take a minute or two).
+
+
+Thought for 1m 57s
+All 16 categories are populated — 148 total listings, and the last category (Concierge & VIP Services) has its 9 entries, confirming the whole set ran through.
+
+Done ✅
+
+Workflow "Generate Grocery Catalog with Gemini" (ZsgeHAdcb3y5jTL4) — Manual trigger → 16 categories → Gemini generates ~8–10 listings each → parse → save. Runs on Gateway credits (no API key).
+Data Table grocery_catalog now holds 148 rows, organized by category:
+Restaurants, Cars & Bikes Rental, Nightlife & Bars, Hotels & Resorts, Spa & Massage, Tours & Excursions, Water Sports, Golf Courses, Yacht & Boat Charter, Airport Transfers, Shopping & Markets, Desi Chai & Spices (Indian Groceries), Indian Restaurants, Event & Party Planning, Medical & Pharmacy, Concierge & VIP Services
+Each row: category, item (name), price_thb, unit, notes (with Pattaya area/description)
+Note: prices and listings are AI-generated indicative estimates — verify real names/prices before publishing them live.
+
+Now you tell me what to do next. Some options:
+
+Export all 148 rows to a JSON file (downloadable, so you can save into your phone's "Namaste Reservations" folder).
+Email the data to you (needs Gmail connected — you skipped it earlier).
+Regenerate/adjust a specific category, or rename/add categories.
+Re-run to refresh with new listings.
+What would you like?
+
+Download all data on my phone add new folder name 21th NPR 1205
+
+Thought for 2m 17s
+All files are ready in a folder named 21th NPR 1205. Here's what's inside:
+
+📁 deliverables/21th NPR 1205/
+
+pattaya-namaste-catalog.json — all 148 listings (data backup, 30 KB)
+pattaya-namaste-catalog.csv — spreadsheet format, opens in Excel/Google Sheets (24 KB)
+pattaya-namaste-catalog.html — nicely formatted, mobile-friendly page grouped by all 16 categories with prices in ฿ (33 KB)
+All 3 hold the same data: 148 listings × 16 categories (category, item, price in THB, unit, notes with Pattaya area).
+
+How to get them on your phone:
+
+Download the files from this workspace (use the download/file panel in the chat interface).
+On your phone, create a new folder — you can name it "21th NPR 1205" — in Files / My Files / Google Drive.
+Move the downloaded files into that folder.
+I can't create folders or write directly to your phone storage — only your device can do that — but the files are packaged and named ready for you.
+
+⚠️ Reminder: prices and business names are AI-generated indicative estimates — verify real names/prices before using them publicly.
+
+Want me to also:
+
+Email these files to you (needs Gmail connected — you skipped it earlier), or
+Build a ready-to-paste HTML modal for your website using this full 16-category catalog (like the grocery one)?
+Can you add everything in my app?
+
+Thought for 57s
+The full "Services Explorer" is built and syntax-checked. Since I can't edit your app's source directly (I don't have your live HTML file), I've made it a drop-in block you paste into your page once — it contains all 148 listings across all 16 categories.
+
+📁 deliverables/21th NPR 1205/services-explorer.html — the paste-in block (35 KB, JS verified valid)
+
+How to add it to your app (2 steps):
+
+Paste the block — open services-explorer.html, copy everything, and paste it right before the closing </body> tag in your website's HTML.
+
+Add a button anywhere you want people to open it:
+
+<button onclick="openCatalogModal()">Explore All Services</button>
+What it does:
+
+Opens a full-screen modal with category tabs (All + your 16 categories)
+Live search across service names, notes, and prices
+Every listing shows name, price in ฿, unit, description, and an Enquire button that opens a pre-filled WhatsApp message
+Mobile-friendly, dark theme, self-contained (no external libraries)
+⚠️ One thing you must change: near the top of the script, replace the placeholder WhatsApp number:
+
+var WHATSAPP = "66000000000"; // <-- put your real number here (country code, no +)
+Note: the data is the same AI-generated indicative catalog — verify real names/prices before going live.
+
+Want me to also:
+
+Wire this to pull live from the grocery_catalog data table (so updates in n8n auto-reflect, instead of static), or
+Email you all the files in this folder (needs Gmail connected)?
+you have to add photos also
+
+Thought for 1m 24s
+Photos are in and the render is verified — 148 image cards, 16 category headers, 17 tabs (All + 16), 148 Enquire buttons.
+
+📁 deliverables/21th NPR 1205/services-explorer.html — updated (51 KB, JS syntax + render both verified)
+
+What changed — every listing now has a photo:
+
+Cards render as a photo grid (image on top, name, description, ฿ price, unit, Enquire button).
+Each photo uses a thematic image keyed to its category (restaurants → dining, hotels → resort, bikes → scooter/car, etc.), with a ?lock= seed so each item keeps a consistent picture.
+If any image fails to load, it falls back to a colored tile with the category emoji (🍽️ 🏨 🛵 🍸 ⛳ 🛥️ …) — no broken images ever.
+Each listing has an image field in the data — put a real photo URL there and it automatically overrides the placeholder.
+Paste steps are unchanged: copy the whole block into your page before </body>, add a <button onclick="openCatalogModal()">Explore All Services</button>, and replace the WHATSAPP number.
+
+⚠️ Important honesty note: these photos are generic thematic stock, NOT the actual venues (I can't verify or license real photos of each specific business automatically). They make the app look complete now, but before going public you should replace them with real venue photos via the image field.
+
+To make replacing photos easy, I can:
+
+Add an image_url column to the grocery_catalog data table so you can paste real photo links per listing, and wire the explorer to load live from the table (auto-updates, no re-paste), or
+Leave it static as-is.
+Want me to add the image_url column and switch it to live data?
+
+open just save it with yourself we work on this after and leave all the access to other apps and service
+
+Finished thinking
+Done — everything is saved in the workspace and I'll leave all external app/service connections alone (no Gmail or other integrations touched).
+
+Saved and parked here in deliverables/21th NPR 1205/:
+
+pattaya-namaste-catalog.json — all 148 listings (data backup)
+pattaya-namaste-catalog.csv — spreadsheet version
+pattaya-namaste-catalog.html — readable page, all 16 categories
+services-explorer.html — the drop-in app block with photos + Enquire buttons
+Also saved in n8n (untouched, nothing connected):
+
+Data Table grocery_catalog — 148 rows across 16 categories
+Workflow "Generate Grocery Catalog with Gemini" (ZsgeHAdcb3y5jTL4) — unpublished
+Workflow "Email Grocery Files" (uHIM95kId40pmDB5) — unpublished, Gmail still not connected (as you wanted)
+Whenever you're ready to pick this back up, just tell me — some things we can do then:
+
+Add an image_url column + switch the explorer to live data
+Replace placeholder photos with real venue photos
+Connect Gmail to email the files
+Adjust any categories, items, or prices
+No action needed from you right now. 👍
+
+Bye now no need to work anytwhere in my phone till the time i no ask to
+Understood, Rahul. 👍
+
+Everything is saved and paused. I won't touch your phone, any external apps, or services — and nothing is published or connected. I'll only pick this back up when you explicitly ask.
+
+Your files are safe in deliverables/21th NPR 1205/, and both n8n workflows + the grocery_catalog table are sitting ready (unpublished) for whenever you return.
+
+Bye for now — talk soon! 🙏
+
+Hi
+Hi Rahul! 👋 Welcome back.
+
+Everything from before is right where we left it — nothing published, nothing connected, all saved:
+
+Files in deliverables/21th NPR 1205/ (JSON, CSV, catalog HTML, services-explorer with photos)
+Data Table grocery_catalog — 148 listings across 16 categories
+Workflows (both unpublished): "Generate Grocery Catalog with Gemini" and "Email Grocery Files"
+Whenever you're ready, we could:
+
+Add an image_url column and switch the explorer to live data
+Swap placeholder photos for real venue photos
+Connect Gmail to email you the files
+Tweak any categories, items, or prices
+Or start something new entirely
+What would you like to do?
+
+Can you direct add the html code in my app?
+
+Finished thinking
+Honest answer: no, I can't directly edit your app's files. I don't have access to where your website/app code actually lives — that's on your device, your hosting, or your code editor, and I can only read and write inside this n8n workspace sandbox.
+
+To make edits directly on your machine, you'd need to connect Computer Use with filesystem access (the "+" button beside the chat input → "Connect local computer") — but you asked me not to touch your phone, so I'm not going to do that unless you tell me to.
+
+So the realistic ways to get the code into your app:
+
+You paste it (fastest, 2 minutes) — open deliverables/21th NPR 1205/services-explorer.html, copy everything, paste it right before the </body> tag in your app's HTML, then add a <button onclick="openCatalogModal()">Explore All Services</button> where you want the entry point.
+
+Connect your computer (not your phone) via Computer Use → filesystem, and tell me which file to edit — then I can insert it for you directly.
+
+If your app is hosted somewhere with an API or repo (e.g. GitHub), tell me where and we can look at a path for that.
+
+Which would you like? If it helps, I can paste the full ready-to-copy block right here in the chat so you can grab it easily.
+
+Download more free versions of ai toold and make best mvp to maken my app really a super app
+
+Finished thinking
+Which super-app feature should I build first? (I'll add more after each one works)
+4
+
+Thought for 6m 53s
+Verification passed — it read all 148 listings, generated a correct photo link for each (e.g. .../restaurant,dining?lock=1), and the update step was simulated (no real write happened yet). The build simulates external writes for safety.
+
+To actually save the links into your table, I need to run it live. Here's the approval card — approve it and it'll write image_url for all 148 rows. Nothing else is touched.
+
+
+Thought for 1m 0s
+Confirmed — all 148 listings now have a photo link (count: 148 with a valid image_url). Step 1 of the auto-expand is done and verified live.
+
+✅ Done this round
+
+New workflow "Add Photo Links to Catalog" (i0tDlo08o00fFOR0) — reads all listings → builds a category-matched photo link per row → saves it.
+Added image_url column to grocery_catalog and populated a working link for every one of the 148 rows (e.g. Restaurants → dining photos, Hotels → resort photos, Cars & Bikes → scooter/car photos).
+Real photos later: just replace any row's image_url with the actual venue URL — the app already prefers a real URL when present.
+📋 Roadmap for the "auto-expand" (Next)
+
+✅ Photo links for all listings — done
+⏭ Generate MORE listings per category with Gemini (append net-new, no duplicates)
+⏭ Richer AI descriptions for existing items
+⏭ Live-data explorer — wire the app block to pull from the table (so photo/price edits show instantly, no re-paste)
+Reminder: the photos are thematic stock, not the actual venues — swap in real ones before going fully public.
+
+Want me to move on to Step 2 — generate more listings per category? (Runs on free Gateway credits, non-destructive.)
+
+Youbcan take access of my website my versal app and make changes
+
+Thought for 1s
+Good news: the realistic path exists. Most Vercel apps deploy automatically from a GitHub repo — so if your website's code lives on GitHub, I can connect to it, edit the files (add the Services Explorer, wire things up), and commit the change. Vercel then auto-redeploys your live site. There's no direct "Vercel" connector, but GitHub is the standard way in.
+
+Connecting GitHub lets me read and edit your website's repository and commit changes, which Vercel will auto-deploy to your live app.
+
+Available tools
+
+Connect to the GitHub MCP Server
+
+Connected
+You stopped this run
+In authentication whichbcode they asking
+
+Thought for 1s
+The GitHub connection uses OAuth — that means you log in on GitHub's own page and click Authorize. There's no code that I give you. Here's what each prompt means:
+
+Username & password → your own GitHub login (the account where your website's code lives).
+A verification code → if you have two-factor authentication (2FA) on GitHub, GitHub sends/generates a code. That code comes from your authenticator app, SMS, or email — not from me. Type in whatever GitHub shows you to get (e.g. "enter the 6-digit code from your authenticator app").
+Authorize / Grant access → this is the final button that lets me read and edit your repos.
+Important safety notes:
+
+Never paste any password, code, or token to me in this chat. Enter them only on GitHub's real page (check the URL starts with https://github.com).
+I never see your password or 2FA code — OAuth keeps those private between you and GitHub.
+If you're unsure what a specific screen says, tell me the exact words on it and I'll tell you what to do. Once you finish authorizing, come back and I'll look for your website's repo.
+
+Ready to continue? Just complete the GitHub authorize screen — nothing to send me.
+
+Screenshot_20260921-021416_GitHub.jpg
+My github app
+
+Thought for 2s
+That's GitHub's 2-factor authentication for your account @rahulsoodpattaya03 — it's normal and safe. Here's exactly what it wants:
+
+When you logged in (entered your password on the GitHub login/authorize page), GitHub showed a 2-digit number on that screen. This popup on your phone is asking you to type those same digits into the "Confirm digits" box, then tap APPROVE.
+
+So:
+
+Go back to the screen/browser where you typed your GitHub password — it displays a 2-digit code (e.g. "47").
+Type that number into the Confirm digits box in this popup.
+Tap APPROVE.
+Important:
+
+The digits come from your own GitHub login screen, not from me — I never have that code.
+Don't type the code here in chat — enter it only in the GitHub app popup.
+If you didn't start a login and don't see a matching number anywhere, tap REJECT (that would mean the request wasn't from you).
+Since you are connecting GitHub for me right now, this is expected — find the 2 digits on your login screen, enter them, and tap APPROVE. Then come back and tell me it's done. 👍
+
+Screenshot_20260921-021552_Chrome.jpg
+Screenshot_20260921-021543_GitHub.jpg
+
+Thought for 32s
+No worries — that's just a hiccup with the phone-approval method. The browser is showing the code 81, and GitHub Mobile failed to approve it (a common transient error). Let's use the easier, more reliable method instead:
+
+Do this:
+
+Go back to the Chrome "Confirm access" page (the one showing "81").
+Under "Having problems?", tap "Send a code via email".
+Open your Gmail (rahulsood30071990@gmail.com) — GitHub will send a short verification code.
+Enter that emailed code on the GitHub page.
+That skips the phone-approve step that's failing.
+
+If you'd rather retry the phone method: on the GitHub Mobile popup, type the digits 81 (matching the browser) into the "Confirm digits" box, then tap APPROVE — but if it fails again, just use the email option above.
+
+Reminders:
+
+Don't paste the code here in chat — enter it only on GitHub's page.
+After the code is accepted, you'll land on an "Authorize" screen — tap Authorize to finish.
+Once you've done that, tell me "done" and I'll reconnect and look for your website's repo. 👍
+
+Rone connect yourself to anything
+
+Thought for 9s
+Available tools
+
+Connect to the GitHub MCP Server
+
+Connected
+
+Thought for 24s
+Which repository is your LIVE website (the one Vercel deploys)?
+Namastepattayareservationsindthai
+
+Thought for 11m 35s
+Got it — NAMASTEPATTAYARESERVATIONSINDTHAI. Let me look at its files to find where to add the code.
+
+The site is a single index.html (214 KB). To add the Services Explorer I'll insert the block before </body> and add a floating "Explore All Services" button, then commit — Vercel will auto-deploy. Let me pull the current file first.
+
+Connected and located — your live repo NAMASTEPATTAYARESERVATIONSINDTHAI is a single index.html (214 KB, Tailwind-based).
+
+One honest technical decision before I touch anything: GitHub's edit API replaces a whole file, and rewriting your entire 214 KB homepage in one shot risks corrupting your live site if anything mismatches. So the safe, non-destructive way is to add the Services Explorer as new files (a page + data file) that don't alter your existing homepage, then optionally wire a button on the homepage as a small follow-up edit.
+
+Let me build those two files (a data file + a self-contained services page with photos).
+
+Now the standalone services page that loads that data (styled to match your dark/gold theme).
+
+Let me syntax-check the page's script, then commit both files to the repo.
+
+Both valid. Now I'll commit them to your repo (Vercel will auto-deploy). First the services page.
+
+Services page committed ✅. Now the data file it loads.
+
+Now committing the data file with all 148 listings.
+
+
+Thought for 21m 13s
+Done — I've committed both files directly to your live repo NAMASTEPATTAYARESERVATIONSINDTHAI (branch main). Vercel will auto-deploy in ~1 minute.
+
+What I added (2 commits, no changes to your existing homepage — safe):
+
+services.html — a full Services Explorer page styled to match your dark/gold theme: category tabs, live search, photo cards, ฿ prices, and a WhatsApp Enquire button on each listing.
+pn-catalog.json — all 148 listings across 16 categories (with photo links) that the page loads.
+Your new page will be live at:
+https://<your-vercel-domain>/services.html
+(e.g. if your site is namastepattayareservationsindthai.vercel.app, then .../services.html. Use whatever your real live domain is.)
+
+Two things you'll want to do:
+
+Set your WhatsApp number — in services.html, line with var WHATSAPP = "66000000000"; → replace with your real number (country code, no +). I can do this for you if you give me the number.
+Photos are still thematic stock (not the real venues) — replaceable anytime via image_url in pn-catalog.json.
+I deliberately did NOT touch your index.html — rewriting your 214 KB homepage through the API risks breaking the live site. So right now the explorer is a standalone page. To make it reachable from your homepage, I can add an "Explore All Services" button/link on index.html — that's a bigger, more careful edit I'd do next with your go-ahead.
+
+Want me to:
+
+Add the homepage button linking to /services.html, and/or
+Set your WhatsApp number (tell me the number)?
++66947623990
+
+Thought for 26s
+Setting your WhatsApp number (66947623990) in the services page and committing it.
+
+
+Thought for 27s
+WhatsApp number set ✅ — committed (a6548e0). Vercel will redeploy in ~1 minute.
+
+Now every Enquire button opens a chat to +66 94 762 3990 with a pre-filled message like:
+"Hi Pattaya Namaste! I would like to enquire about: Horizon Rooftop Restaurant & Bar (฿3500 avg for 2)."
+
+Status of your live app:
+
+✅ services.html — Services Explorer page (16 categories, 148 listings, photos, search, WhatsApp enquiry) — live at https://<your-vercel-domain>/services.html
+✅ pn-catalog.json — the data it loads
+⚠️ Homepage (index.html) — not yet linked to the new page (I left it untouched for safety)
+Next step I'd recommend: add an "Explore All Services" button on your homepage that links to /services.html, so visitors can actually find it. This means editing index.html — I'll do it carefully.
+
+Want me to add that homepage button now? If yes, I'll make the edit and commit it.
+
+Yes
+
+Thought for 34s
+Here's the honest constraint before I break anything: GitHub's write API replaces a whole file, and your index.html is 214 KB. I can't reliably reproduce a file that large character-for-character in one write — one wrong byte could corrupt your live homepage. So auto-rewriting the entire homepage is the one thing I shouldn't do blindly.
+
+The safe, reliable way to add the button is a tiny snippet you paste once into index.html. It's a floating button that works no matter where you put it — just add it right before the closing </body> tag:
+
+<!-- Explore All Services — floating launcher -->
+<a href="/services.html"
+   style="position:fixed;right:16px;bottom:16px;z-index:9999;background:#f59e0b;color:#0b0f19;
+          font-weight:800;text-decoration:none;padding:12px 18px;border-radius:30px;
+          box-shadow:0 6px 20px rgba(0,0,0,.4);font-family:system-ui,Arial,sans-serif;font-size:14px">
+   🧭 Explore All Services
+</a>
+How to add it (2 minutes, safe):
+
+On GitHub, open index.html in your repo → tap the ✏️ edit pencil.
+Scroll to the bottom, find </body>, and paste the snippet just above it.
+Commit — Vercel auto-deploys. A gold "🧭 Explore All Services" button appears on your homepage, opening the new page.
+If you'd rather I do it automatically, I can attempt the full-file rewrite through the API — but I want your explicit OK since it carries a small risk to the live homepage. Given that risk, I recommend the paste method above (it's genuinely quick and can't break anything else).
+
+Which do you prefer — paste it yourself (safest), or I attempt the automated edit (you accept the small risk)?
+
+I l paste give me and tell me where to paste
+
+Thought for 1s
+Here's your button. Copy this exact block:
+
+<!-- Explore All Services — floating launcher -->
+<a href="/services.html"
+   style="position:fixed;right:16px;bottom:16px;z-index:9999;background:#f59e0b;color:#0b0f19;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:30px;box-shadow:0 6px 20px rgba(0,0,0,.4);font-family:system-ui,Arial,sans-serif;font-size:14px">
+   🧭 Explore All Services
+</a>
 </body>
 </html>
 
