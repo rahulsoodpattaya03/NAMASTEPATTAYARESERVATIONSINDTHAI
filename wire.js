@@ -11,6 +11,7 @@
     '🍛 Late-Night Desi Feast': '🍛 Indian Food — Only Veg Delivery',
     '🚀 Zoom VIP Ride': '🛵 Cars & Bikes for Rent',
     '🏰 Jomtien Party Villa': '🏝️ Villa & Pool Parties',
+    '📍 Radar & Split Bill': '📍 Radar GPS & Bill Splitter',
     '📸 Screen Spotlight': '📸 Display Your Photo on Screen',
     '🔥 Squad & Buddy Match': '🍻 Find Strangers to Split Club Bill',
     '🎁 Secret Admirer Gift': '🎁 Send Gift to Anyone in Pattaya 24/7',
@@ -25,6 +26,11 @@
     { kw: 'bikes for rent', cat: 'Cars & Bikes Rental' },
     { kw: 'villa', cat: 'Event & Party Planning' },
     { kw: 'mall loot', cat: 'Shopping & Markets' }
+  ];
+
+  // Distinctive phrase -> a tool page to open.
+  var NAV = [
+    { kw: 'radar', path: '/radar.html' }
   ];
 
   function applyBranding() {
@@ -66,6 +72,9 @@
     if (!el) return;
     var text = (el.innerText || el.textContent || '').toLowerCase();
     if (text.length > 60) return;
+    for (var n = 0; n < NAV.length; n++) {
+      if (text.indexOf(NAV[n].kw) >= 0) { e.preventDefault(); e.stopPropagation(); window.location.href = NAV[n].path; return; }
+    }
     for (var i = 0; i < LINKS.length; i++) {
       if (text.indexOf(LINKS[i].kw) >= 0) {
         e.preventDefault(); e.stopPropagation();
