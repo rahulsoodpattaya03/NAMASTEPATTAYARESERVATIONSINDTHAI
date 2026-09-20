@@ -60,6 +60,10 @@
     DATA = rows;
     rows.forEach(function(x){ if(cats.indexOf(x.category)<0) cats.push(x.category); });
     document.getElementById('count').textContent = rows.length + ' listings · ' + (cats.length-1) + ' categories · prices in ฿';
+    var params = new URLSearchParams(location.search);
+    var c = params.get('cat');
+    if (c) { var hit = cats.filter(function(x){return x.toLowerCase()===c.toLowerCase();})[0]; if(hit) active = hit; }
+    var qp = params.get('q'); if (qp) { document.getElementById('q').value = qp; }
     renderTabs(); render();
   }).catch(function(e){
     document.getElementById('list').innerHTML = '<div class="empty">Could not load listings. Make sure pn-catalog.json is deployed.</div>';
