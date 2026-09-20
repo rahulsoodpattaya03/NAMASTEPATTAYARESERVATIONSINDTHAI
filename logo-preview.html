@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Logo Preview — Namaste Pattaya Reservations</title>
+<style>
+  :root{--darkbg:#0b0f19;--gold:#f59e0b;--purple:#8b5cf6;--cyan:#22d3ee}
+  body{margin:0;font-family:system-ui,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef;padding:0 0 40px}
+  .wrap{max-width:760px;margin:0 auto;padding:18px}
+  h1{font-size:18px}
+  .muted{color:#8b93a7;font-size:13px}
+  .box{background:#131c2e;border:1px solid #1e2740;border-radius:14px;padding:16px;margin:14px 0}
+  .lbl{color:var(--gold);font-weight:800;font-size:13px;margin-bottom:10px}
+  .brandrow{display:flex;align-items:center;gap:12px}
+  .logo{width:46px;height:46px;border-radius:14px;overflow:hidden;background:linear-gradient(135deg,#f59e0b,#8b5cf6,#22d3ee);display:flex;align-items:center;justify-content:center}
+  .logo img{width:100%;height:100%;object-fit:cover}
+  .logoC{width:46px;height:46px;border-radius:14px;overflow:hidden;background:#0d1424;display:flex;align-items:center;justify-content:center}
+  .logoC img{width:100%;height:100%;object-fit:contain}
+  .brand{font-size:19px;font-weight:900;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .tag{color:#8b93a7;font-size:11px;letter-spacing:2px;text-transform:uppercase}
+  .banner img{width:100%;border-radius:12px;display:block}
+  .fav{display:flex;align-items:center;gap:10px}
+  .fav img{width:32px;height:32px;border-radius:7px;object-fit:cover}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🙏 Logo Preview</h1>
+  <p class="muted">This shows your uploaded <b>logo-test.png</b> in each place it would be used. If it doesn't appear, upload the file first (see chat).</p>
+
+  <div class="box">
+    <div class="lbl">1) Header logo — CROPPED to square (fills the tile)</div>
+    <div class="brandrow">
+      <div class="logo"><img src="./logo-test.png" alt="logo" onerror="this.parentNode.innerHTML='<span style=&quot;font-size:26px&quot;>🙏</span>'"></div>
+      <div><div class="brand">NAMASTE PATTAYA RESERVATIONS</div><div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="lbl">2) Header logo — WHOLE image fitted (no crop, may show gaps)</div>
+    <div class="brandrow">
+      <div class="logoC"><img src="./logo-test.png" alt="logo"></div>
+      <div><div class="brand">NAMASTE PATTAYA RESERVATIONS</div><div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div></div>
+    </div>
+  </div>
+
+  <div class="box">
+    <div class="lbl">3) Full-width banner (top of services page)</div>
+    <div class="banner"><img src="./logo-test.png" alt="banner"></div>
+  </div>
+
+  <div class="box">
+    <div class="lbl">4) Browser tab icon (favicon) size</div>
+    <div class="fav"><img src="./logo-test.png" alt="favicon"> <span class="muted">≈ how it looks as the tiny tab icon</span></div>
+  </div>
+
+  <p class="muted">Tell me which option you like (1, 2, 3, or a mix) and I'll set it as the real logo across the app.</p>
+</div>
+</body>
+</html>
