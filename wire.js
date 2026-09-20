@@ -40,6 +40,21 @@
     return el.closest('button, a, [onclick], [role="button"], .card, .service-card, .grid > div, .cursor-pointer');
   }
 
+  // --- Rebrand the app name (safe, runs on load) ---
+  function applyBranding() {
+    try { document.title = 'Namaste Pattaya Reservations Super-App'; } catch (e) {}
+    var NEW = 'NAMASTE PATTAYA RESERVATIONS SUPER-APP';
+    var nodes = document.querySelectorAll('span, h1, h2, div, a, p');
+    for (var i = 0; i < nodes.length; i++) {
+      var el = nodes[i];
+      if (el.children.length === 0 && (el.textContent || '').trim().toUpperCase() === 'PATTAYA NAMASTE') {
+        el.textContent = NEW;
+      }
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyBranding);
+  else applyBranding();
+
   // Capture-phase listener so we run before the page's own modal handlers.
   document.addEventListener('click', function (e) {
     var el = clickable(e.target);
