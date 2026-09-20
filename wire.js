@@ -1,71 +1,61 @@
-/* Pattaya Namaste — auto-wire homepage service buttons to category listings.
+/* Pattaya Namaste — homepage helper.
    Loaded once from index.html: <script src="/wire.js" defer></script>
-   It maps a button's visible text to a service category and opens
-   /services.html?cat=<category>. Non-matching buttons are left untouched. */
+   1) Rebrands the app name.
+   2) Renames selected service buttons.
+   3) Routes service buttons to their category listings on /services.html. */
 (function () {
   var BASE = '/services.html?cat=';
 
-  // Ordered: more specific keywords first so they win over generic ones.
-  var MAP = [
-    { cat: 'Desi Chai & Spices (Indian Groceries)', kw: ['chai', 'spice', 'masala', 'grocery', 'groceries', 'namkeen'] },
-    { cat: 'Indian Restaurants', kw: ['desi feast', 'indian food', 'indian restaurant', 'tandoor', 'curry', 'biryani', 'thali', 'feast'] },
-    { cat: 'Nightlife & Bars', kw: ['nightlife', 'night club', 'nightclub', 'walking street', 'bar', 'club', 'party night'] },
-    { cat: 'Yacht & Boat Charter', kw: ['yacht', 'boat', 'catamaran', 'cruise', 'sail'] },
-    { cat: 'Water Sports', kw: ['water sport', 'jet ski', 'jetski', 'parasail', 'scuba', 'dive', 'snorkel', 'flyboard', 'wakeboard'] },
-    { cat: 'Golf Courses', kw: ['golf'] },
-    { cat: 'Spa & Massage', kw: ['spa', 'massage', 'wellness', 'reflexology'] },
-    { cat: 'Airport Transfers', kw: ['airport transfer', 'airport pickup', 'transfer', 'pickup'] },
-    { cat: 'Cars & Bikes Rental', kw: ['ride', 'car rental', 'bike', 'scooter', 'rent a car', 'rental', 'taxi', 'cab', 'drive'] },
-    { cat: 'Hotels & Resorts', kw: ['hotel', 'resort', 'stay', 'room booking', 'accommodation'] },
-    { cat: 'Tours & Excursions', kw: ['tour', 'excursion', 'sightsee', 'island', 'day trip', 'cabaret', 'show ticket'] },
-    { cat: 'Event & Party Planning', kw: ['villa', 'party', 'event', 'celebration', 'birthday', 'bachelor'] },
-    { cat: 'Shopping & Markets', kw: ['mall', 'shopping', 'loot', 'market', 'shop'] },
-    { cat: 'Medical & Pharmacy', kw: ['medical', 'pharmacy', 'doctor', 'hospital', 'clinic', 'dental'] },
-    { cat: 'Concierge & VIP Services', kw: ['concierge', 'vip service', 'personal assistant', 'butler', 'vip'] },
-    { cat: 'Restaurants', kw: ['restaurant', 'dining', 'eat', 'food'] }
+  // Old button label -> new label (exact text incl. emoji)
+  var RENAME = {
+    '🍛 Late-Night Desi Feast': '🍛 Indian Food — Only Veg Delivery',
+    '🚀 Zoom VIP Ride': '🛵 Cars & Bikes for Rent',
+    '🏰 Jomtien Party Villa': '🏝️ Villa & Pool Parties',
+    '📍 Radar & Split Bill': '📍 Find Your Friend GPS & Split Bills',
+    '📸 Screen Spotlight': '📸 Display Your Photo on Screen',
+    '🔥 Squad & Buddy Match': '🍻 Find Strangers to Split Club Bill',
+    '🎁 Secret Admirer Gift': '🎁 Send Gift to Anyone in Pattaya 24/7',
+    '🫚 Desi Chai & Spices': '🫚 Indian Groceries Delivery',
+    '🚨 SOS Fast Lifeline': '🚨 Emergency Numbers'
+  };
+
+  // Distinctive phrase in a (renamed) button -> category page to open.
+  var LINKS = [
+    { kw: 'indian groceries', cat: 'Desi Chai & Spices (Indian Groceries)' },
+    { kw: 'indian food', cat: 'Indian Restaurants' },
+    { kw: 'bikes for rent', cat: 'Cars & Bikes Rental' },
+    { kw: 'villa', cat: 'Event & Party Planning' },
+    { kw: 'mall loot', cat: 'Shopping & Markets' }
   ];
 
-  function matchCategory(text) {
-    var t = (text || '').toLowerCase();
-    for (var i = 0; i < MAP.length; i++) {
-      for (var j = 0; j < MAP[i].kw.length; j++) {
-        if (t.indexOf(MAP[i].kw[j]) >= 0) return MAP[i].cat;
-      }
-    }
-    return null;
-  }
-
-  // Find the clickable "card/button" the user actually tapped.
-  function clickable(el) {
-    return el.closest('button, a, [onclick], [role="button"], .card, .service-card, .grid > div, .cursor-pointer');
-  }
-
-  // --- Rebrand the app name (safe, runs on load) ---
   function applyBranding() {
     try { document.title = 'Namaste Pattaya Reservations Super-App'; } catch (e) {}
-    var NEW = 'NAMASTE PATTAYA RESERVATIONS SUPER-APP';
-    var nodes = document.querySelectorAll('span, h1, h2, div, a, p');
+    var nodes = document.querySelectorAll('span, h1, h2, div, a, p, button');
     for (var i = 0; i < nodes.length; i++) {
       var el = nodes[i];
-      if (el.children.length === 0 && (el.textContent || '').trim().toUpperCase() === 'PATTAYA NAMASTE') {
-        el.textContent = NEW;
-      }
+      if (el.children.length !== 0) continue;
+      var t = (el.textContent || '').trim();
+      if (t.toUpperCase() === 'PATTAYA NAMASTE') { el.textContent = 'NAMASTE PATTAYA RESERVATIONS SUPER-APP'; continue; }
+      if (RENAME[t]) { el.textContent = RENAME[t]; }
     }
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyBranding);
   else applyBranding();
 
-  // Capture-phase listener so we run before the page's own modal handlers.
+  function clickable(el) {
+    return el.closest('button, a, [onclick], [role="button"], .card, .service-card, .grid > div, .cursor-pointer');
+  }
   document.addEventListener('click', function (e) {
     var el = clickable(e.target);
     if (!el) return;
-    var text = el.innerText || el.textContent || '';
-    // Ignore very long text blocks (containers), only act on button-sized labels.
+    var text = (el.innerText || el.textContent || '').toLowerCase();
     if (text.length > 60) return;
-    var cat = matchCategory(text);
-    if (!cat) return;
-    e.preventDefault();
-    e.stopPropagation();
-    window.location.href = BASE + encodeURIComponent(cat);
+    for (var i = 0; i < LINKS.length; i++) {
+      if (text.indexOf(LINKS[i].kw) >= 0) {
+        e.preventDefault(); e.stopPropagation();
+        window.location.href = BASE + encodeURIComponent(LINKS[i].cat);
+        return;
+      }
+    }
   }, true);
 })();
