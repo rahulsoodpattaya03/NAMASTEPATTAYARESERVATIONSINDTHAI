@@ -4230,44 +4230,170 @@ let finalizeReceipt = function() {
 
     document.getElementById('receiptSection').classList.remove('hidden');
 
-};
-
-function checkActualReservationStatus() {
-
+}; function checkActualReservationStatus() {
     const savedBooking = localStorage.getItem('latest_booking');
-
     if (savedBooking) {
-
         try {
-
             const data = JSON.parse(savedBooking);
-
             alert(`Record Found!\nRef: ${data.ref}\nVenue: ${data.club}\nTable: ${data.table}\nStatus: ${data.status}\n\nAn SMS update has been sent to your mobile.`);
-
         } catch(e) {
-
             alert("No recent bookings found in this session.");
-
         }
-
     } else {
-
         alert("No recent bookings found in this session. Please check your reference number.");
-
     }
-
     closeCheckStatusModal();
-
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-
     updateUIAfterLogin();
-
 });
 
+// ==========================================
+// MASTER INVENTORY CATALOG
+// ==========================================
+const superAppInventory = {
+    events: [
+        { id: "e1", name: "Rolling Loud VIP Pass", price: 15000, desc: "3-day VIP access with fast-track entry, premium viewing deck, and private bar access.", img: "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14" },
+        { id: "e2", name: "Songkran Water Festival VIP Table", price: 25000, desc: "Elevated dry-zone VIP table on Beach Road with unlimited premium spirits and private water cannons.", img: "https://images.unsplash.com/photo-1533174000273-a8098c8c502b" }
+    ],
+    spa: [
+        { id: "s1", name: "Hangover Detox Package", price: 2500, desc: "2-hour deep tissue massage, herbal steam room, and IV hydration therapy.", img: "https://images.unsplash.com/photo-1540555700478-4be289fbecef" },
+        { id: "s2", name: "Royal Thai Couple's Retreat", price: 4500, desc: "Private VIP spa room with jacuzzi, aromatherapy, and traditional Thai stretching.", img: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1" }
+    ],
+    hotels: [
+        { id: "h1", name: "Jomtien Party Villa (4 BR)", price: 18000, desc: "Private pool, DJ sound system setup, and BBQ grill. Perfect for bachelor parties.", img: "https://images.unsplash.com/photo-1582268611958-ebfd161ef9cf" },
+        { id: "h2", name: "Walking Street Penthouse Suite", price: 12000, desc: "Luxury 2-bedroom suite steps away from the clubs. Includes 24/7 guest privileges.", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9" }
+    ],
+    rentals: [
+        { id: "r1", name: "Ferrari 488 Spider (24 Hrs)", price: 45000, desc: "Self-drive exotic rental. Includes comprehensive insurance and delivery to your hotel.", img: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d" },
+        { id: "r2", name: "Ducati Panigale V4", price: 8000, desc: "High-performance track bike for coastal highway cruising. Helmet and gear included.", img: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87" }
+    ],
+    gifts: [
+        { id: "g1", name: "100 Red Roses Bouquet", price: 3500, desc: "Delivered immediately to any club table or hotel in Pattaya with a custom anonymous note.", img: "https://images.unsplash.com/photo-1513201099705-a9746e1e201f" },
+        { id: "g2", name: "Dom Pérignon Luminous", price: 14000, desc: "Sent directly to her VIP table with a sparkler presentation by the club staff.", img: "https://images.unsplash.com/photo-1599507593499-a3f7d7d97667" }
+    ]
+};
+
+function loadInventoryItem(category, index) {
+    const item = superAppInventory[category][index];
+    if (item) {
+        openProductPage(item.name, item.price, item.desc, item.img + '?auto=format&fit=crop&w=600&q=80');
+    } else {
+        console.error("Item not found in inventory catalog.");
+    }
+}
+
+// ==========================================
+// AI VIP NIGHT ARCHITECT LOGIC
+// ==========================================
+let aiSelectedGroupSize = 2;
+
+function setAiGroupSize(size, btnElement) {
+    aiSelectedGroupSize = size;
+    const buttons = document.querySelectorAll('.ai-group-btn');
+    buttons.forEach(btn => {
+        btn.className = 'ai-group-btn flex-1 py-2 text-xs font-black rounded-lg text-gray-400 hover:text-white transition';
+    });
+    btnElement.className = 'ai-group-btn flex-1 py-2 text-xs font-black rounded-lg bg-fuchsia-600 text-white transition';
+}
+
+function generateAIBundle() {
+    const budget = parseInt(document.getElementById('aiBudgetSlider').value);
+    const vibe = document.getElementById('aiVibeSelect').value;
+    const outputBox = document.getElementById('aiOutputContainer');
+    
+    outputBox.innerHTML = `
+        <div class="flex flex-col items-center justify-center h-full text-fuchsia-400 space-y-4">
+            <i class="fa-solid fa-circle-notch fa-spin text-5xl"></i>
+            <p class="font-black uppercase tracking-widest text-xs animate-pulse">Calculating optimal asset deployment...</p>
+        </div>
+    `;
+
+    setTimeout(() => {
+        let clubTier, transport, security, food;
+        let totalCost = 0;
+
+        if (vibe === 'wild') {
+            clubTier = budget >= 50000 ? { name: "Nashaa Superclub - Platinum Deck", cost: 35000, icon: "fa-champagne-glasses" } : { name: "Jalwa Club - VIP Table", cost: 12000, icon: "fa-chair" };
+            transport = { name: "VIP SUV Roundtrip", cost: 1200, icon: "fa-car" };
+            security = budget >= 30000 ? { name: "1x Personal Close Protection Guard", cost: 4500, icon: "fa-shield-halved" } : { name: "Trusted Peer Network Alert", cost: 500, icon: "fa-user-shield" };
+            food = { name: "Late Night Biryani & Kebabs Delivery", cost: Math.max(800, aiSelectedGroupSize * 300), icon: "fa-utensils" };
+        } else if (vibe === 'luxury') {
+            clubTier = budget >= 80000 ? { name: "Private Yacht Charter (Sunset to Midnight)", cost: 65000, icon: "fa-ship" } : { name: "Rooftop Elite Lounge - Owner's Table", cost: 25000, icon: "fa-crown" };
+            transport = { name: "Chauffeur Driven Porsche/Alphard", cost: 8500, icon: "fa-car-side" };
+            security = { name: "2x Executive Protection Operatives", cost: 9000, icon: "fa-shield-halved" };
+            food = { name: "Premium Seafood & Gourmet Platter", cost: Math.max(2500, aiSelectedGroupSize * 800), icon: "fa-fish" };
+        } else {
+            clubTier = budget >= 25000 ? { name: "Jomtien Beach Pool Villa Bash", cost: 15000, icon: "fa-house-water" } : { name: "Sutraa Lounge - Sunset Deck", cost: 8000, icon: "fa-martini-glass" };
+            transport = { name: "Comfort Sedan Roundtrip", cost: 600, icon: "fa-taxi" };
+            security = { name: "No Security Required (Chill Vibe)", cost: 0, icon: "fa-check" };
+            food = { name: "Authentic Thai Massage & Herbal Steam (Post-Dinner)", cost: Math.max(1200, aiSelectedGroupSize * 600), icon: "fa-spa" };
+        }
+
+        totalCost = clubTier.cost + transport.cost + security.cost + food.cost;
+        let remaining = budget - totalCost;
+        let walletStatus = remaining >= 0 ? `<span class="text-emerald-400">Under Budget (+฿${remaining.toLocaleString()})</span>` : `<span class="text-rose-400">Over Budget (-฿${Math.abs(remaining).toLocaleString()})</span>`;
+
+        outputBox.innerHTML = `
+            <div class="space-y-4">
+                <div class="flex justify-between items-end border-b border-slate-800 pb-4">
+                    <div>
+                        <span class="bg-fuchsia-950 text-fuchsia-400 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest border border-fuchsia-500/40">Generated Itinerary</span>
+                        <h3 class="text-2xl font-black text-white uppercase mt-2">The Ultimate ${vibe} Package</h3>
+                    </div>
+                    <div class="text-right">
+                        <span class="block text-[10px] font-bold text-gray-400 uppercase">Total Bundle Cost</span>
+                        <strong class="text-2xl font-black text-cyan-400">฿${totalCost.toLocaleString()}</strong>
+                        <div class="text-[10px] font-black mt-1 uppercase">${walletStatus}</div>
+                    </div>
+                </div>
+                <div class="space-y-2 mt-4">
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3"><div class="w-8 h-8 rounded-full bg-purple-950 text-purple-400 flex items-center justify-center"><i class="fa-solid ${clubTier.icon}"></i></div><span class="text-sm font-bold text-white">${clubTier.name}</span></div>
+                        <span class="text-sm font-black text-gray-300">฿${clubTier.cost.toLocaleString()}</span>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3"><div class="w-8 h-8 rounded-full bg-blue-950 text-blue-400 flex items-center justify-center"><i class="fa-solid ${transport.icon}"></i></div><span class="text-sm font-bold text-white">${transport.name}</span></div>
+                        <span class="text-sm font-black text-gray-300">฿${transport.cost.toLocaleString()}</span>
+                    </div>
+                    ${security.cost > 0 ? `
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3"><div class="w-8 h-8 rounded-full bg-rose-950 text-rose-400 flex items-center justify-center"><i class="fa-solid ${security.icon}"></i></div><span class="text-sm font-bold text-white">${security.name}</span></div>
+                        <span class="text-sm font-black text-gray-300">฿${security.cost.toLocaleString()}</span>
+                    </div>` : ''}
+                    <div class="bg-slate-950 border border-slate-800 p-3 rounded-xl flex items-center justify-between">
+                        <div class="flex items-center space-x-3"><div class="w-8 h-8 rounded-full bg-amber-950 text-amber-400 flex items-center justify-center"><i class="fa-solid ${food.icon}"></i></div><span class="text-sm font-bold text-white">${food.name}</span></div>
+                        <span class="text-sm font-black text-gray-300">฿${food.cost.toLocaleString()}</span>
+                    </div>
+                </div>
+                <div class="pt-4 grid grid-cols-2 gap-3">
+                    <button onclick="alert('Bundle Saved! Proceeding to one-click checkout for ฿${totalCost.toLocaleString()}.')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition shadow-lg col-span-2 sm:col-span-1">
+                        <i class="fa-solid fa-cart-shopping mr-2"></i> Book Entire Package
+                    </button>
+                    <button onclick="generateAIBundle()" class="bg-slate-800 hover:bg-slate-700 text-gray-200 font-black py-3.5 rounded-xl text-xs uppercase tracking-wider transition col-span-2 sm:col-span-1 border border-slate-700">
+                        <i class="fa-solid fa-rotate mr-2"></i> Re-roll Options
+                    </button>
+                </div>
+            </div>
+        `;
+    }, 1200); 
+}
 </script>
 
-</body>
+<!-- PLACE YOUR NEW HTML INVENTORY CARDS HERE, ABOVE THE CLOSING BODY TAG -->
+<div class="container mx-auto px-4 py-8 max-w-7xl">
+    <div onclick="loadInventoryItem('events', 0)" class="glass-card rounded-3xl border border-slate-800 hover:border-cyan-500/50 transition transform hover:-translate-y-1 duration-300 relative flex flex-col justify-between cursor-pointer overflow-hidden shadow-xl mb-4 p-4">
+        <p class="text-white font-bold">VIP Event Pass: Click to view details.</p>
+    </div>
+    
+    <div onclick="loadInventoryItem('rentals', 0)" class="glass-card rounded-3xl border border-slate-800 hover:border-blue-500/50 transition transform hover:-translate-y-1 duration-300 relative flex flex-col justify-between cursor-pointer overflow-hidden shadow-xl mb-4 p-4">
+        <p class="text-white font-bold">Ferrari Rental: Click to view details.</p>
+    </div>
+    
+    <button onclick="loadInventoryItem('gifts', 0)" class="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-xl text-xs font-black uppercase shadow-lg">Send Rose Bouquet Gift</button>
+</div>
 
+</body>
 </html>
+
