@@ -79,9 +79,29 @@
     } catch (e) {}
   }
 
-  function runAll(){ applyBranding(); fixDiscounts(); }
+  // Homepage tidy-up: hide duplicate category cards + ensure pictures.
+  function fixHome() {
+    try {
+      var hide = ['10. Elite Security on Rent', '14. Luxury Cars & Super Bikes Rentals'];
+      var pics = {
+        '15. Special Day Packages': 'https://loremflickr.com/600/400/celebration%2Cparty?lock=15',
+        "16. Girls Night: Don't Tell My Mamma": 'https://loremflickr.com/600/400/nightlife%2Cfriends%2Cparty?lock=16'
+      };
+      var hs = document.querySelectorAll('h2, h3');
+      for (var i = 0; i < hs.length; i++) {
+        var t = (hs[i].textContent || '').trim();
+        var card = hs[i];
+        while (card && card !== document.body && !(card.querySelector && card.querySelector('img'))) card = card.parentElement;
+        if (hide.indexOf(t) >= 0) { if (card && card !== document.body) card.style.display = 'none'; }
+        else if (pics[t]) { var img = (card && card.querySelector) ? card.querySelector('img') : null; if (img) { img.onerror = null; img.src = pics[t]; } }
+      }
+    } catch (e) {}
+  }
+
+  function runAll(){ applyBranding(); fixDiscounts(); fixHome(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runAll);
   else runAll();
+  setTimeout(fixHome, 900);
 
   function clickable(el) {
     return el.closest('button, a, [onclick], [role="button"], .card, .service-card, .grid > div, .cursor-pointer');
