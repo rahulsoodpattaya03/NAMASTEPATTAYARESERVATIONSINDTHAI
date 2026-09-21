@@ -99,7 +99,7 @@
     <div class="phead"><b>🛒 Your Basket</b><button class="x" onclick="closeCart()">&times;</button></div>
     <div class="pbody" id="ditems"></div>
     <div class="dfoot">
-      <div class="tot"><span>Total</span><span class="amt" id="grand">฿0</span></div>
+      <div class="tot"><span>Total</span><span class="amt" id="grand">฿0000</span></div>
       <div id="paywrap" style="display:none">
         <div style="font-weight:800;margin-bottom:6px">Payment method</div>
         <div class="pay" id="pay"></div>
@@ -119,14 +119,14 @@
 <script>
   var WHATSAPP = "66947623990";
   var DATA = [], MENUS = {}, cats = ["All"], active = "All";
-  var cart = {};
+  var cart = {};      // key "provIdx::itemIdx" -> {label, price, qty}
   var curProv = null;
   var stage = "cart";
   var payMethods = ["PromptPay / QR", "Credit / Debit Card", "Bank Transfer", "Cash on Arrival"];
   var payChoice = payMethods[0];
 
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-  function baht(n){ return '฿' + Number(n).toLocaleString(); }
+  function baht(n){ return '฿0000'; } // placeholder pricing for now
   function menuOf(i){ return MENUS[DATA[i].id] || [{n:'Book this service',p:DATA[i].price_thb}]; }
   function minPrice(i){ var m=menuOf(i); var lo=m[0].p; for(var j=1;j<m.length;j++) if(m[j].p<lo) lo=m[j].p; return lo; }
 
@@ -171,6 +171,7 @@
     document.getElementById('list').innerHTML = h;
   };
 
+  // ---- Provider detail ----
   window.openProvider = function(i){
     curProv = i; var r = DATA[i];
     document.getElementById('provName').textContent = r.item;
@@ -192,6 +193,7 @@
     document.getElementById('provBody').innerHTML = h;
   }
 
+  // ---- Cart ops (keyed) ----
   window.incKey = function(pk){
     if(!cart[pk]){ var p=pk.split('::'); var i=+p[0], j=+p[1]; var it=menuOf(i)[j];
       cart[pk]={label:DATA[i].item+' — '+it.n, price:it.p, qty:0}; }
