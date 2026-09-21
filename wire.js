@@ -112,7 +112,35 @@
     } catch (e) {}
   }
 
-  function runAll(){ applyBranding(); fixDiscounts(); fixHome(); cleanStray(); }
+  // AI Concierge chat widget (calls the secure n8n endpoint; Gemini answers from the catalog).
+  function injectConcierge() {
+    try {
+      if (document.getElementById('pnConciergeBtn')) return;
+      var EP = 'https://namastepattayareservation.app.n8n.cloud/webhook/concierge';
+      var btn = document.createElement('button');
+      btn.id = 'pnConciergeBtn';
+      btn.innerHTML = '\uD83D\uDCAC Ask Concierge';
+      btn.style.cssText = 'position:fixed;left:16px;bottom:16px;z-index:99998;border:none;border-radius:30px;padding:12px 16px;font-weight:800;font-size:14px;color:#06121f;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b);box-shadow:0 6px 20px rgba(0,0,0,.4);cursor:pointer;font-family:system-ui,Arial,sans-serif';
+      document.body.appendChild(btn);
+      var panel = document.createElement('div');
+      panel.id = 'pnConciergePanel';
+      panel.style.cssText = 'position:fixed;left:16px;bottom:74px;z-index:99999;width:min(360px,calc(100vw - 32px));height:min(70vh,520px);background:#0e1524;border:1px solid #26314d;border-radius:16px;display:none;flex-direction:column;overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,.55);font-family:system-ui,Arial,sans-serif';
+      panel.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:#12121a;border-bottom:1px solid #26314d"><div style="font-weight:800;color:#e8e8ef">\uD83D\uDE4F Namaste Concierge</div><button id="pnCcClose" style="background:none;border:none;color:#aaa;font-size:22px;cursor:pointer;line-height:1">&times;</button></div><div id="pnCcMsgs" style="flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px;background:#0b0f19"></div><div style="display:flex;gap:8px;padding:10px;border-top:1px solid #26314d;background:#12121a"><input id="pnCcInput" placeholder="Ask about clubs, food, rentals..." style="flex:1;padding:10px 12px;border-radius:10px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px"><button id="pnCcSend" style="border:none;border-radius:10px;padding:0 14px;font-weight:800;background:#25D366;color:#04351a;cursor:pointer">Send</button></div>';
+      document.body.appendChild(panel);
+      var msgs = panel.querySelector('#pnCcMsgs');
+      function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+      function fmt(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>'); }
+      function add(who, html){ var b=document.createElement('div'); b.style.cssText='max-width:85%;padding:9px 12px;border-radius:12px;font-size:14px;line-height:1.45;'+(who==='me'?'align-self:flex-end;background:#22d3ee;color:#06121f':'align-self:flex-start;background:#1a2336;color:#e8e8ef'); b.innerHTML=html; msgs.appendChild(b); msgs.scrollTop=msgs.scrollHeight; return b; }
+      add('bot','Namaste! \uD83D\uDE4F I am your Pattaya concierge. Ask me for clubs, restaurants, hotels, rentals, spa or tours and I will suggest options with prices.');
+      function send(){ var inp=panel.querySelector('#pnCcInput'); var q=(inp.value||'').trim(); if(!q) return; inp.value=''; add('me',esc(q)); var typing=add('bot','<span style="opacity:.7">Typing...</span>'); fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})}).then(function(r){return r.json();}).then(function(d){ typing.innerHTML=fmt((d&&d.reply)||'Sorry, no reply.'); msgs.scrollTop=msgs.scrollHeight; }).catch(function(){ typing.innerHTML='Sorry, I could not connect. Please try again.'; }); }
+      panel.querySelector('#pnCcSend').onclick=send;
+      panel.querySelector('#pnCcInput').addEventListener('keydown',function(e){ if(e.key==='Enter') send(); });
+      panel.querySelector('#pnCcClose').onclick=function(){ panel.style.display='none'; };
+      btn.onclick=function(){ panel.style.display = (panel.style.display==='flex'?'none':'flex'); if(panel.style.display==='flex') panel.querySelector('#pnCcInput').focus(); };
+    } catch (e) {}
+  }
+
+  function runAll(){ applyBranding(); fixDiscounts(); fixHome(); cleanStray(); injectConcierge(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runAll);
   else runAll();
   setTimeout(function(){ fixHome(); cleanStray(); }, 900);
