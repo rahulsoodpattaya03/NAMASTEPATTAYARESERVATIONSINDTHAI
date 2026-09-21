@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Namaste Truth or Drink</title>
+<style>
+  body {
+    background-color: #0a0a0a;
+    color: #ffffff;
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    box-sizing: border-box;
+    text-align: center;
+  }
+
+  h1 {
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    margin-bottom: 5px;
+    font-size: 28px;
+  }
+  
+  .highlight {
+    background: -webkit-linear-gradient(45deg, #00ffcc, #ff0055);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  p.subtitle {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 40px;
+  }
+
+  /* Card Flip Container */
+  .card-container {
+    perspective: 1000px;
+    width: 100%;
+    max-width: 320px;
+    height: 250px;
+    margin-bottom: 30px;
+  }
+
+  .card {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
+    transform-style: preserve-3d;
+  }
+
+  .card.flipped {
+    transform: rotateY(180deg);
+  }
+
+  .card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 2px solid #333;
+  }
+
+  /* Front of Card (Waiting State) */
+  .card-front {
+    background: #111;
+  }
+  
+  .card-front h2 {
+    color: #555;
+    font-size: 24px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Back of Card (Result State) */
+  .card-back {
+    background: #1a1a1a;
+    transform: rotateY(180deg);
+  }
+
+  .card-back.truth-theme { border-color: #00ffcc; box-shadow: 0 0 20px rgba(0, 255, 204, 0.2); }
+  .card-back.dare-theme { border-color: #ff0055; box-shadow: 0 0 20px rgba(255, 0, 85, 0.2); }
+
+  .card-type {
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    letter-spacing: 2px;
+  }
+
+  .truth-theme .card-type { color: #00ffcc; }
+  .dare-theme .card-type { color: #ff0055; }
+
+  .prompt-text {
+    font-size: 18px;
+    line-height: 1.4;
+    margin-bottom: 20px;
+  }
+
+  .penalty-text {
+    background: #222;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: #ffaa00;
+    font-weight: bold;
+  }
+
+  /* Buttons */
+  .button-group {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .btn {
+    flex: 1;
+    border: none;
+    padding: 15px 20px;
+    font-size: 16px;
+    font-weight: 900;
+    border-radius: 30px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: transform 0.1s, box-shadow 0.2s;
+  }
+  
+  .btn:active { transform: scale(0.95); }
+
+  .btn-truth {
+    background: #00ffcc;
+    color: #000;
+    box-shadow: 0 4px 15px rgba(0, 255, 204, 0.3);
+  }
+  
+  .btn-dare {
+    background: #ff0055;
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+  }
+
+  .btn-reset {
+    background: #333;
+    color: #fff;
+    width: 100%;
+    max-width: 320px;
+    margin-top: 15px;
+    display: none; /* Hidden until a card is flipped */
+  }
+
+</style>
+</head>
+<body>
+
+  <h1><span class="highlight">Namaste</span><br>Truth or Dare</h1>
+  <p class="subtitle">Spill the tea or take a shot.</p>
+
+  <div class="card-container">
+    <div class="card" id="gameCard">
+      <!-- FRONT -->
+      <div class="card-face card-front">
+        <h2>Who's Next?</h2>
+      </div>
+      <!-- BACK -->
+      <div class="card-face card-back" id="cardBack">
+        <div class="card-type" id="cardType">Truth</div>
+        <div class="prompt-text" id="promptText">Question goes here.</div>
+        <div class="penalty-text" id="penaltyText">Or take 1 shot</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="button-group" id="actionButtons">
+    <button class="btn btn-truth" onclick="playTurn('truth')">Truth</button>
+    <button class="btn btn-dare" onclick="playTurn('dare')">Dare</button>
+  </div>
+  
+  <button class="btn btn-reset" id="resetBtn" onclick="resetCard()">Next Turn</button>
+
+  <script>
+    // Funny & Drinking-Focused Truths
+    const truths = [
+      "Who in this group is the most likely to get kicked out of a club tonight?",
+      "What is the most embarrassing text you sent last night? Read it out loud.",
+      "Rank everyone at this table from best dressed to worst dressed.",
+      "Have you ever faked an emergency to get out of a bad date?",
+      "Who at this table do you think has the highest screen time?",
+      "What is the most shameful thing you've done to get free drinks?",
+      "If you had to swap lives with someone in this room for 24 hours, who would it be?",
+      "Have you ever stalked an ex's new partner on Instagram using a fake account?",
+      "What is your most controversial opinion about Pattaya nightlife?"
+    ];
+
+    // Funny & Drinking-Focused Dares
+    const dares = [
+      "Let the person to your left send a single text to anyone in your contacts.",
+      "Swap drinks with the person across from you and take a healthy gulp.",
+      "Show the group the very last photo in your camera roll.",
+      "Do your best impression of the person to your right. If they don't laugh, you drink twice.",
+      "Yell 'I love this place!' as loud as you can.",
+      "Speak in a British accent for the next 3 rounds. If you break character, drink.",
+      "Let the group choose a cocktail for your next drink order.",
+      "Give your phone to the person across from you for 60 seconds. No complaining.",
+      "Do a 15-second runway walk past the nearest table."
+    ];
+
+    // Penalties for backing out
+    const penalties = [
+      "Chicken out? Take 1 Shot 🥃",
+      "Chicken out? Take 2 massive sips 🍻",
+      "Chicken out? Finish your drink 🍺",
+      "Chicken out? Buy a shot for the person to your left 💸",
+      "Chicken out? Take 1 Shot 🥃"
+    ];
+
+    const card = document.getElementById('gameCard');
+    const cardBack = document.getElementById('cardBack');
+    const cardType = document.getElementById('cardType');
+    const promptText = document.getElementById('promptText');
+    const penaltyText = document.getElementById('penaltyText');
+    const actionButtons = document.getElementById('actionButtons');
+    const resetBtn = document.getElementById('resetBtn');
+
+    function playTurn(type) {
+      let selectedPrompt = "";
+      let selectedPenalty = penalties[Math.floor(Math.random() * penalties.length)];
+
+      if (type === 'truth') {
+        selectedPrompt = truths[Math.floor(Math.random() * truths.length)];
+        cardType.innerText = "TRUTH";
+        cardBack.className = "card-face card-back truth-theme";
+      } else {
+        selectedPrompt = dares[Math.floor(Math.random() * dares.length)];
+        cardType.innerText = "DARE";
+        cardBack.className = "card-face card-back dare-theme";
+      }
+
+      // Update card content
+      promptText.innerText = selectedPrompt;
+      penaltyText.innerText = selectedPenalty;
+
+      // Flip card and toggle buttons
+      card.classList.add('flipped');
+      actionButtons.style.display = 'none';
+      
+      // Delay showing the 'Next Turn' button slightly so they focus on the prompt
+      setTimeout(() => {
+        resetBtn.style.display = 'block';
+      }, 600);
+    }
+
+    function resetCard() {
+      // Flip back to front
+      card.classList.remove('flipped');
+      resetBtn.style.display = 'none';
+      
+      // Wait for flip animation to finish before showing Truth/Dare buttons again
+      setTimeout(() => {
+        actionButtons.style.display = 'flex';
+      }, 300);
+    }
+  </script>
+</body>
+</html>
