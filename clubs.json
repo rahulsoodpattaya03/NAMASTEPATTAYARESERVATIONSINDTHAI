@@ -1,0 +1,18 @@
+{
+  "providers": [
+    {"id":149,"category":"Nightlife & Bars","item":"World Club House","price_thb":15000,"unit":"VIP table","notes":"Multi-level international superclub on Walking Street — massive LED walls, world-famous guest DJs, and VIP skyboxes overlooking the main floor.","emoji":"🍸","image_url":"https://loremflickr.com/300/200/nightclub%2Cconcert?lock=149"},
+    {"id":150,"category":"Nightlife & Bars","item":"Space Club","price_thb":8000,"unit":"per night","notes":"High-energy EDM club with immersive galaxy lighting, aerial performers and go-go shows, centre of Walking Street.","emoji":"🍸","image_url":"https://loremflickr.com/300/200/nightclub%2Claser?lock=150"},
+    {"id":151,"category":"Nightlife & Bars","item":"Insomnia","price_thb":12000,"unit":"VIP table","notes":"One of Pattaya's largest clubs — multiple themed rooms (EDM, hip-hop and live band) under one roof on Walking Street.","emoji":"🍸","image_url":"https://loremflickr.com/300/200/nightclub%2Ccrowd?lock=151"},
+    {"id":152,"category":"Nightlife & Bars","item":"808 Club","price_thb":8000,"unit":"per night","notes":"Hip-hop and R&B hotspot with resident DJs, hype MCs and premium bottle service, Walking Street.","emoji":"🍸","image_url":"https://loremflickr.com/300/200/nightclub%2Cdj?lock=152"},
+    {"id":153,"category":"Nightlife & Bars","item":"Lucifer Disco","price_thb":6000,"unit":"per night","notes":"Iconic long-running club with a cave-themed dance floor mixing rock, EDM and Thai hits, Walking Street.","emoji":"🍸","image_url":"https://loremflickr.com/300/200/nightclub%2Cparty?lock=153"},
+    {"id":154,"category":"Nightlife & Bars","item":"Myst Pattaya","price_thb":10000,"unit":"VIP table","notes":"Upscale nightclub hosting big international DJ events and themed nights, just off Walking Street.","emoji":"🍸","image_url":"https://loremflickr.com/300/200/nightclub%2Cneon?lock=154"}
+  ],
+  "menus": {
+    "149":[{"n":"Entry + 1 Drink","p":700},{"n":"House Cocktail","p":320},{"n":"Beer Bucket (5)","p":1100},{"n":"VIP Table (min spend)","p":15000},{"n":"Bottle — Vodka","p":5500},{"n":"Bottle — Champagne","p":9000},{"n":"Shisha","p":700}],
+    "150":[{"n":"Entry + 1 Drink","p":600},{"n":"House Cocktail","p":300},{"n":"Beer Bucket (5)","p":1000},{"n":"VIP Table (min spend)","p":8000},{"n":"Bottle — Vodka","p":4800},{"n":"Shisha","p":650}],
+    "151":[{"n":"Entry + 1 Drink","p":700},{"n":"House Cocktail","p":320},{"n":"Beer Bucket (5)","p":1100},{"n":"VIP Table (min spend)","p":12000},{"n":"Bottle — Vodka","p":5200},{"n":"Bottle — Champagne","p":8500},{"n":"Shisha","p":700}],
+    "152":[{"n":"Entry + 1 Drink","p":600},{"n":"House Cocktail","p":300},{"n":"Beer Bucket (5)","p":1000},{"n":"VIP Table (min spend)","p":8000},{"n":"Bottle — Hennessy","p":6500},{"n":"Shisha","p":650}],
+    "153":[{"n":"Entry + 1 Drink","p":500},{"n":"House Cocktail","p":260},{"n":"Beer Bucket (5)","p":900},{"n":"VIP Table (min spend)","p":6000},{"n":"Bottle — Vodka","p":4200},{"n":"Shisha","p":600}],
+    "154":[{"n":"Entry + 1 Drink","p":700},{"n":"House Cocktail","p":340},{"n":"Beer Bucket (5)","p":1100},{"n":"VIP Table (min spend)","p":10000},{"n":"Bottle — Vodka","p":5200},{"n":"Bottle — Champagne","p":8800},{"n":"Shisha","p":700}]
+  }
+}
