@@ -3,160 +3,132 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Offline Club Map — Namaste Pattaya Reservations</title>
+<title>Club Map — Namaste Pattaya Reservations</title>
 <link rel="icon" href="/logo.png">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 <style>
-  :root{--darkbg:#0b0f19;--cardbg:#131c2e;--gold:#f59e0b;--cyan:#22d3ee}
+  :root{--gold:#f59e0b;--in:#ff9933;--cyan:#22d3ee}
   *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef}
-  header{padding:14px 16px;border-bottom:1px solid #1e2740;background:linear-gradient(180deg,#0b0f19,#0b0f19f2)}
-  a.back{color:#8b93a7;text-decoration:none;font-size:13px}
-  .brand{font-weight:900;font-size:17px;margin-top:6px;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b,#22d3ee);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:sh 6s linear infinite}
-  @keyframes sh{to{background-position:300% center}}
-  .sub{color:#8b93a7;font-size:12px;margin-top:2px}
-  .wrap{max-width:640px;margin:0 auto;padding:16px}
-  .mapbox{background:#0e1524;border:1px solid #1e2740;border-radius:16px;overflow:hidden}
-  svg{width:100%;height:auto;display:block;background:#0a1020}
-  .btn{width:100%;padding:13px;border:none;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer;background:var(--cyan);color:#06121f;margin-top:14px}
-  .btn:active{transform:scale(.98)}
-  .err{color:#f87171;font-size:13px;margin-top:8px;min-height:18px}
-  h2{font-size:15px;color:var(--gold);margin:20px 0 8px}
-  .clist{display:flex;flex-direction:column;gap:8px}
-  .crow{display:flex;align-items:center;gap:10px;background:#131c2e;border:1px solid #1e2740;border-radius:12px;padding:11px 13px}
-  .cdot{width:12px;height:12px;border-radius:50%;background:var(--gold);flex:none;box-shadow:0 0 8px rgba(245,158,11,.7)}
-  .cinfo{flex:1}
-  .cname{font-weight:700;font-size:14px}
-  .cmeta{color:#8b93a7;font-size:12px}
-  .cnav{color:var(--cyan);font-size:12px;font-weight:700;text-decoration:none;white-space:nowrap}
-  .legend{color:#7b8398;font-size:11px;margin-top:10px;line-height:1.5}
+  html,body{margin:0;height:100%;background:#0a0e17;font-family:system-ui,-apple-system,Arial,sans-serif;color:#e8e8ef}
+  #map{position:fixed;inset:0;z-index:1}
+  .top{position:fixed;top:0;left:0;right:0;z-index:1000;padding:12px 12px 6px;pointer-events:none}
+  .barrow{display:flex;gap:8px;align-items:center;max-width:720px;margin:0 auto;pointer-events:auto}
+  .back{background:#0e1524cc;border:1px solid #26314d;color:#cfe0ff;border-radius:12px;padding:10px 12px;text-decoration:none;font-size:16px;backdrop-filter:blur(6px)}
+  #q{flex:1;padding:12px 14px;border-radius:14px;border:1px solid #26314d;background:#0e1524d9;color:#e8e8ef;font-size:14px;backdrop-filter:blur(6px)}
+  .chips{display:flex;gap:8px;overflow-x:auto;max-width:720px;margin:8px auto 0;pointer-events:auto;-webkit-overflow-scrolling:touch}
+  .chip{white-space:nowrap;background:#0e1524d9;border:1px solid #26314d;color:#dbe4f3;border-radius:20px;padding:8px 13px;font-size:13px;font-weight:700;cursor:pointer;backdrop-filter:blur(6px);display:flex;align-items:center;gap:5px}
+  .chip.on{background:var(--gold);color:#1a1204;border-color:var(--gold)}
+  .locate{position:fixed;right:16px;bottom:80px;z-index:1000;width:48px;height:48px;border-radius:50%;border:none;background:#0e1524;color:#22d3ee;font-size:20px;box-shadow:0 4px 16px rgba(0,0,0,.6);cursor:pointer;border:1px solid #26314d}
+  .book{position:fixed;left:16px;bottom:20px;z-index:1000;background:#0e1524e6;border:1px solid #ff993355;color:#ffcf99;border-radius:22px;padding:9px 14px;font-size:12px;font-weight:800;box-shadow:0 4px 16px rgba(0,0,0,.6);backdrop-filter:blur(6px)}
+  /* markers */
+  .mk{display:flex;align-items:center;gap:5px;background:rgba(14,21,36,.92);border:1.5px solid var(--in);border-radius:11px;padding:3px 9px 3px 4px;box-shadow:0 3px 12px rgba(0,0,0,.6);white-space:nowrap;transform:translate(-8px,-50%)}
+  .mk .lg{background:var(--in);color:#1a1204;border-radius:7px;font-size:11px;padding:2px 5px;font-weight:900;line-height:1}
+  .mk .nm{color:#fff;font-size:12px;font-weight:800}
+  .dot{width:13px;height:13px;border-radius:50%;background:#3b82f6;border:2px solid #cfe0ff;box-shadow:0 0 8px rgba(59,130,246,.9);transform:translate(-6px,-6px)}
+  .leaflet-popup-content-wrapper{background:#0e1524;color:#e8e8ef;border:1px solid #26314d;border-radius:12px}
+  .leaflet-popup-tip{background:#0e1524}
+  .pop b{font-size:14px}
+  .pop .pp{color:#34d399;font-weight:800;font-size:13px;margin:4px 0}
+  .pop a{display:inline-block;margin-top:6px;background:#25D366;color:#04351a;font-weight:800;text-decoration:none;padding:7px 12px;border-radius:9px;font-size:12px}
+  .pop a.v{background:#22d3ee;color:#06121f;margin-left:6px}
 </style>
 </head>
 <body>
-<header>
-  <div class="wrap" style="padding-top:0;padding-bottom:0">
-    <a class="back" href="/">&larr; Back to home</a>
-    <div class="brand">🗺️ Offline Club Map — Pattaya</div>
-    <div class="sub">Works without internet · GPS distance & direction to every club</div>
+<div id="map"></div>
+<div class="top">
+  <div class="barrow">
+    <a class="back" href="/">&larr;</a>
+    <input id="q" placeholder="Search club, area, vibe…" oninput="applyFilter()">
   </div>
-</header>
-<div class="wrap">
-  <div class="mapbox">
-    <svg id="map" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet"></svg>
+  <div class="chips" id="chips">
+    <span class="chip on" data-f="all" onclick="setFilter(this,'all')">📍 All</span>
+    <span class="chip" data-f="indian" onclick="setFilter(this,'indian')">⭐ Our Indian Clubs</span>
+    <span class="chip" data-f="after" onclick="setFilter(this,'after')">🌙 Afterparty</span>
+    <span class="chip" data-f="book" onclick="setFilter(this,'all')">⚡ Book now</span>
   </div>
-  <button class="btn" onclick="locate()">📍 Find My Location</button>
-  <div class="err" id="err"></div>
-
-  <h2>Clubs — nearest first</h2>
-  <div class="clist" id="clist"></div>
-
-  <div class="legend">🟠 Indian club (our clubs) &nbsp; 🟡 Other club &nbsp; 🔵 You &nbsp;·&nbsp; Distances/directions use your phone GPS and work fully offline. The "Navigate" link opens Google Maps (needs internet). Coordinates are approximate to the Walking Street area.</div>
 </div>
+<button class="locate" onclick="locate()" title="My location">◎</button>
+<div class="book">⚡ Instant booking</div>
 
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
-  // Approx coordinates around Walking Street, Pattaya
+  var WHATSAPP = "66947623990";
   var CLUBS = [
-    // Indian clubs (flagship) - orange
-    {name:'Ikka Club',        lat:12.9231, lon:100.8709, in:true},
-    {name:'The Nashaa Club',  lat:12.9245, lon:100.8716, in:true},
-    {name:'Jalwa Club',       lat:12.9238, lon:100.8712, in:true},
-    {name:'Jannaat Club',     lat:12.9224, lon:100.8719, in:true},
-    {name:'Leela Club',       lat:12.9241, lon:100.8707, in:true},
-    {name:'Kamaa Club',       lat:12.9234, lon:100.8714, in:true},
-    {name:'Sutraa by Kamaa',  lat:12.9237, lon:100.8717, in:true},
-    {name:'Tonys Club',       lat:12.9229, lon:100.8711, in:true},
-    {name:'Boss Club',        lat:12.9252, lon:100.8703, in:true},
-    {name:'Mashaal',          lat:12.9256, lon:100.8712, in:true},
-    {name:'Barone by Nashaa', lat:12.9247, lon:100.8719, in:true},
-    {name:'Nashaa Space',     lat:12.9249, lon:100.8714, in:true},
-    // International clubs - gold
-    {name:'World Club House', lat:12.9232, lon:100.8712},
-    {name:'Insomnia',         lat:12.9236, lon:100.8709},
-    {name:'Space Club',       lat:12.9240, lon:100.8706},
-    {name:'808 Club',         lat:12.9228, lon:100.8715},
-    {name:'Lucifer Disco',    lat:12.9233, lon:100.8710},
-    {name:'Myst Pattaya',     lat:12.9250, lon:100.8722}
+    {name:'Ikka Club', lat:12.9231, lon:100.8709, price:8000, in:true},
+    {name:'The Nashaa Club', lat:12.9245, lon:100.8716, price:15000, in:true},
+    {name:'Jalwa Club', lat:12.9238, lon:100.8712, price:12000, in:true},
+    {name:'Jannaat Club', lat:12.9224, lon:100.8719, price:10000, in:true},
+    {name:'Leela Club', lat:12.9241, lon:100.8707, price:12000, in:true},
+    {name:'Kamaa Club', lat:12.9234, lon:100.8714, price:10000, in:true},
+    {name:'Sutraa by Kamaa', lat:12.9237, lon:100.8717, price:8000, in:true, after:true},
+    {name:'Tonys Club', lat:12.9229, lon:100.8711, price:10000, in:true},
+    {name:'Boss Club', lat:12.9252, lon:100.8703, price:10000, in:true},
+    {name:'Mashaal', lat:12.9256, lon:100.8712, price:8000, in:true, after:true},
+    {name:'Barone by Nashaa', lat:12.9247, lon:100.8719, price:8000, in:true, after:true},
+    {name:'Nashaa Space', lat:12.9249, lon:100.8714, price:8000, in:true, after:true},
+    {name:'World Club House', lat:12.9232, lon:100.8712, price:15000},
+    {name:'Insomnia', lat:12.9236, lon:100.8709, price:12000},
+    {name:'Space Club', lat:12.9240, lon:100.8706, price:8000},
+    {name:'808 Club', lat:12.9228, lon:100.8715, price:8000},
+    {name:'Lucifer Disco', lat:12.9233, lon:100.8710, price:6000},
+    {name:'Myst Pattaya', lat:12.9250, lon:100.8722, price:10000}
   ];
-  // Bounding box for the schematic
-  var B = {latMin:12.9205, latMax:12.9262, lonMin:100.8690, lonMax:100.8730};
-  var VW=360, VH=460, PAD=34;
-  function toXY(lat, lon){
-    var x = PAD + (lon - B.lonMin)/(B.lonMax - B.lonMin) * (VW-2*PAD);
-    var y = PAD + (B.latMax - lat)/(B.latMax - B.latMin) * (VH-2*PAD);
-    return {x:x, y:y};
-  }
-  function haversine(a,b,c,d){ // km
-    function r(x){return x*Math.PI/180;}
-    var R=6371, dLat=r(c-a), dLon=r(d-b);
-    var s=Math.sin(dLat/2)*Math.sin(dLat/2)+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dLon/2)*Math.sin(dLon/2);
-    return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
-  }
-  function bearing(a,b,c,d){
-    function r(x){return x*Math.PI/180;}
-    var y=Math.sin(r(d-b))*Math.cos(r(c));
-    var x=Math.cos(r(a))*Math.sin(r(c))-Math.sin(r(a))*Math.cos(r(c))*Math.cos(r(d-b));
-    var br=(Math.atan2(y,x)*180/Math.PI+360)%360;
-    var dirs=['N','NE','E','SE','S','SW','W','NW'];
-    return dirs[Math.round(br/45)%8];
-  }
-  function dist(km){ return km<1 ? Math.round(km*1000)+' m' : (Math.round(km*10)/10)+' km'; }
 
-  var userPos=null;
+  var map = L.map('map', { zoomControl:false, attributionControl:false }).setView([12.9236, 100.8712], 16);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    maxZoom: 20, subdomains:'abcd'
+  }).addTo(map);
+  L.control.zoom({ position:'bottomright' }).addTo(map);
 
-  function drawMap(){
-    var s='';
-    // sea (left) + land
-    s+='<rect x="0" y="0" width="360" height="460" fill="#0a1020"/>';
-    s+='<rect x="0" y="0" width="120" height="460" fill="#0e2036"/>';
-    s+='<text x="14" y="30" fill="#3b5b7a" font-size="12" font-weight="700">GULF OF THAILAND</text>';
-    // Beach Road
-    s+='<rect x="120" y="20" width="16" height="420" fill="#182238"/>';
-    s+='<text x="128" y="450" fill="#5b6b86" font-size="9" transform="rotate(90 128,300)">BEACH ROAD</text>';
-    // Walking Street (diagonal strip)
-    s+='<rect x="150" y="60" width="150" height="26" rx="6" fill="#241a08" stroke="#f59e0b" stroke-opacity="0.5"/>';
-    s+='<text x="158" y="77" fill="#f5c542" font-size="11" font-weight="800">WALKING STREET</text>';
-    // Second Road
-    s+='<rect x="300" y="20" width="14" height="420" fill="#182238"/>';
-    s+='<text x="306" y="450" fill="#5b6b86" font-size="9" transform="rotate(90 306,300)">SECOND ROAD</text>';
-    // club pins (dots; names are in the list below to keep the map clean)
-    CLUBS.forEach(function(c,i){ var p=toXY(c.lat,c.lon);
-      s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="6" fill="'+(c.in?'#ff9933':'#f59e0b')+'" stroke="#1a1204" stroke-width="1.2"/>';
-    });
-    // user pin
-    if(userPos){ var u=toXY(userPos.lat,userPos.lon);
-      u.x=Math.max(6,Math.min(VW-6,u.x)); u.y=Math.max(6,Math.min(VH-6,u.y));
-      s+='<circle cx="'+u.x.toFixed(1)+'" cy="'+u.y.toFixed(1)+'" r="8" fill="#22d3ee" stroke="#04202b" stroke-width="2"/>';
-      s+='<text x="'+(u.x+11).toFixed(1)+'" y="'+(u.y+4).toFixed(1)+'" fill="#22d3ee" font-size="10" font-weight="800">YOU</text>';
+  function popupHtml(c){
+    var order = 'https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent('Namaste! I would like to book '+c.name+' (VIP table). Please confirm availability.');
+    var view = '/services.html?cat=' + encodeURIComponent('Nightlife & Bars') + '&q=' + encodeURIComponent(c.name);
+    return '<div class="pop"><b>'+c.name+'</b>'+(c.in?' <span style="color:#ff9933;font-weight:800;font-size:11px">INDIAN</span>':'')+
+      '<div class="pp">VIP table from THB '+c.price.toLocaleString()+'</div>'+
+      '<a href="'+order+'" target="_blank">Book on WhatsApp</a><a class="v" href="'+view+'">View menu</a></div>';
+  }
+
+  var markers = [];
+  CLUBS.forEach(function(c){
+    var icon;
+    if (c.in) {
+      icon = L.divIcon({ className:'', html:'<div class="mk"><span class="lg">\u26A1</span><span class="nm">'+c.name+'</span></div>', iconSize:null });
+    } else {
+      icon = L.divIcon({ className:'', html:'<div class="dot"></div>', iconSize:null });
     }
-    document.getElementById('map').innerHTML=s;
-  }
+    var m = L.marker([c.lat, c.lon], { icon:icon }).addTo(map).bindPopup(popupHtml(c));
+    markers.push({ c:c, m:m });
+  });
 
-  function renderList(){
-    var list = CLUBS.map(function(c){
-      var d=null, dir=null;
-      if(userPos){ d=haversine(userPos.lat,userPos.lon,c.lat,c.lon); dir=bearing(userPos.lat,userPos.lon,c.lat,c.lon); }
-      return {c:c, d:d, dir:dir};
+  var filter = 'all', qstr = '';
+  window.setFilter = function(el, f){
+    filter = f;
+    var chips = document.querySelectorAll('.chip'); for (var i=0;i<chips.length;i++) chips[i].classList.remove('on');
+    el.classList.add('on');
+    applyFilter();
+  };
+  window.applyFilter = function(){
+    qstr = (document.getElementById('q').value||'').toLowerCase();
+    markers.forEach(function(x){
+      var ok = true;
+      if (filter==='indian' && !x.c.in) ok = false;
+      if (filter==='after' && !x.c.after) ok = false;
+      if (qstr && x.c.name.toLowerCase().indexOf(qstr) < 0) ok = false;
+      if (ok) { if(!map.hasLayer(x.m)) x.m.addTo(map); }
+      else { if(map.hasLayer(x.m)) map.removeLayer(x.m); }
     });
-    if(userPos) list.sort(function(a,b){ return a.d-b.d; });
-    document.getElementById('clist').innerHTML = list.map(function(x){
-      var meta = x.d!=null ? (dist(x.d)+' · '+x.dir+' of you') : 'Walking Street area';
-      var nav = 'https://www.google.com/maps?q='+x.c.lat+','+x.c.lon;
-      return '<div class="crow"><span class="cdot" style="background:'+(x.c.in?'#ff9933':'#f59e0b')+'"></span><div class="cinfo"><div class="cname">'+x.c.name+(x.c.in?' <span style=\"color:#ff9933;font-size:10px;font-weight:800\">INDIAN</span>':'')+'</div><div class="cmeta">'+meta+'</div></div><a class="cnav" href="'+nav+'" target="_blank">Navigate ›</a></div>';
-    }).join('');
-  }
-
-  window.locate=function(){
-    var err=document.getElementById('err'); err.textContent='';
-    if(!navigator.geolocation){ err.textContent='GPS not supported on this device.'; return; }
-    err.textContent='Locating…';
-    navigator.geolocation.getCurrentPosition(function(pos){
-      err.textContent=''; userPos={lat:pos.coords.latitude, lon:pos.coords.longitude};
-      drawMap(); renderList();
-    }, function(e){
-      err.textContent='Could not get location: '+(e.message||'permission denied')+'. Allow location access and retry.';
-    }, {enableHighAccuracy:true, timeout:10000});
   };
 
-  drawMap(); renderList();
+  var youMarker = null;
+  window.locate = function(){
+    if(!navigator.geolocation) return;
+    navigator.geolocation.getCurrentPosition(function(pos){
+      var ll = [pos.coords.latitude, pos.coords.longitude];
+      if(youMarker) map.removeLayer(youMarker);
+      youMarker = L.circleMarker(ll, { radius:8, color:'#22d3ee', fillColor:'#22d3ee', fillOpacity:1 }).addTo(map).bindPopup('You are here').openPopup();
+      map.setView(ll, 16);
+    }, function(){ alert('Could not get your location. Please allow location access.'); }, { enableHighAccuracy:true, timeout:10000 });
+  };
 </script>
 </body>
 </html>
