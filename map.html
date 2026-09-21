@@ -49,19 +49,32 @@
   <h2>Clubs — nearest first</h2>
   <div class="clist" id="clist"></div>
 
-  <div class="legend">🟡 Club &nbsp; 🟠 Indian club &nbsp; 🔵 You &nbsp;·&nbsp; Distances/directions use your phone GPS and work fully offline. The "Navigate" link opens Google Maps (needs internet). Coordinates are approximate to the Walking Street area.</div>
+  <div class="legend">🟠 Indian club (our clubs) &nbsp; 🟡 Other club &nbsp; 🔵 You &nbsp;·&nbsp; Distances/directions use your phone GPS and work fully offline. The "Navigate" link opens Google Maps (needs internet). Coordinates are approximate to the Walking Street area.</div>
 </div>
 
 <script>
   // Approx coordinates around Walking Street, Pattaya
   var CLUBS = [
+    // Indian clubs (flagship) - orange
+    {name:'Ikka Club',        lat:12.9231, lon:100.8709, in:true},
+    {name:'The Nashaa Club',  lat:12.9245, lon:100.8716, in:true},
+    {name:'Jalwa Club',       lat:12.9238, lon:100.8712, in:true},
+    {name:'Jannaat Club',     lat:12.9224, lon:100.8719, in:true},
+    {name:'Leela Club',       lat:12.9241, lon:100.8707, in:true},
+    {name:'Kamaa Club',       lat:12.9234, lon:100.8714, in:true},
+    {name:'Sutraa by Kamaa',  lat:12.9237, lon:100.8717, in:true},
+    {name:'Tonys Club',       lat:12.9229, lon:100.8711, in:true},
+    {name:'Boss Club',        lat:12.9252, lon:100.8703, in:true},
+    {name:'Mashaal',          lat:12.9256, lon:100.8712, in:true},
+    {name:'Barone by Nashaa', lat:12.9247, lon:100.8719, in:true},
+    {name:'Nashaa Space',     lat:12.9249, lon:100.8714, in:true},
+    // International clubs - gold
     {name:'World Club House', lat:12.9232, lon:100.8712},
-    {name:'Space Club',       lat:12.9240, lon:100.8707},
     {name:'Insomnia',         lat:12.9236, lon:100.8709},
+    {name:'Space Club',       lat:12.9240, lon:100.8706},
     {name:'808 Club',         lat:12.9228, lon:100.8715},
-    {name:'Lucifer Disco',    lat:12.9234, lon:100.8710},
-    {name:'Myst Pattaya',     lat:12.9250, lon:100.8720},
-    {name:'Ikka Club (Indian)', lat:12.9231, lon:100.8709, in:true}
+    {name:'Lucifer Disco',    lat:12.9233, lon:100.8710},
+    {name:'Myst Pattaya',     lat:12.9250, lon:100.8722}
   ];
   // Bounding box for the schematic
   var B = {latMin:12.9205, latMax:12.9262, lonMin:100.8690, lonMax:100.8730};
@@ -104,10 +117,9 @@
     // Second Road
     s+='<rect x="300" y="20" width="14" height="420" fill="#182238"/>';
     s+='<text x="306" y="450" fill="#5b6b86" font-size="9" transform="rotate(90 306,300)">SECOND ROAD</text>';
-    // club pins
+    // club pins (dots; names are in the list below to keep the map clean)
     CLUBS.forEach(function(c,i){ var p=toXY(c.lat,c.lon);
-      s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="7" fill="'+(c.in?'#ff9933':'#f59e0b')+'" stroke="#1a1204" stroke-width="1.5"/>';
-      s+='<text x="'+(p.x+10).toFixed(1)+'" y="'+(p.y+4).toFixed(1)+'" fill="#e8e8ef" font-size="10" font-weight="700">'+c.name+'</text>';
+      s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="6" fill="'+(c.in?'#ff9933':'#f59e0b')+'" stroke="#1a1204" stroke-width="1.2"/>';
     });
     // user pin
     if(userPos){ var u=toXY(userPos.lat,userPos.lon);
@@ -128,7 +140,7 @@
     document.getElementById('clist').innerHTML = list.map(function(x){
       var meta = x.d!=null ? (dist(x.d)+' · '+x.dir+' of you') : 'Walking Street area';
       var nav = 'https://www.google.com/maps?q='+x.c.lat+','+x.c.lon;
-      return '<div class="crow"><span class="cdot" style="background:'+(x.c.in?'#ff9933':'#f59e0b')+'"></span><div class="cinfo"><div class="cname">'+x.c.name+'</div><div class="cmeta">'+meta+'</div></div><a class="cnav" href="'+nav+'" target="_blank">Navigate ›</a></div>';
+      return '<div class="crow"><span class="cdot" style="background:'+(x.c.in?'#ff9933':'#f59e0b')+'"></span><div class="cinfo"><div class="cname">'+x.c.name+(x.c.in?' <span style=\"color:#ff9933;font-size:10px;font-weight:800\">INDIAN</span>':'')+'</div><div class="cmeta">'+meta+'</div></div><a class="cnav" href="'+nav+'" target="_blank">Navigate ›</a></div>';
     }).join('');
   }
 
