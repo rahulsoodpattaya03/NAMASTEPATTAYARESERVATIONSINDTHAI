@@ -165,3 +165,20 @@
     }
   }, true);
 })();
+
+/* Namaste Pattaya — Full Catalog button (added separately; does not modify the code above). */
+(function () {
+  function addCatalogBtn() {
+    try {
+      if (document.getElementById('pnCatalogBtn')) return;
+      var a = document.createElement('a');
+      a.id = 'pnCatalogBtn';
+      a.href = '/catalog.html';
+      a.textContent = '\uD83D\uDCD6 Full Catalog';
+      a.style.cssText = 'position:fixed;right:16px;bottom:16px;z-index:99998;text-decoration:none;border-radius:30px;padding:12px 16px;font-weight:800;font-size:14px;color:#06121f;background:linear-gradient(90deg,#f59e0b,#a78bfa,#22d3ee);box-shadow:0 6px 20px rgba(0,0,0,.4);font-family:system-ui,Arial,sans-serif';
+      document.body.appendChild(a);
+    } catch (e) {}
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addCatalogBtn);
+  else addCatalogBtn();
+})();
