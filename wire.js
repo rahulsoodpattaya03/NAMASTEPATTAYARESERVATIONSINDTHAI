@@ -13,7 +13,7 @@
     '🏰 Jomtien Party Villa': '🏝️ Villa & Pool Parties',
     '📍 Radar & Split Bill': '📍 Radar GPS & Bill Splitter',
     '📸 Screen Spotlight': '📸 Display Your Photo on Screen',
-    '🔥 Squad & Buddy Match': '🍻 Find Strangers to Split Club Bill',
+    '🔥 Squad & Buddy Match': '🎮 Party Games',
     '🎁 Secret Admirer Gift': '🎁 Send Gift to Anyone in Pattaya 24/7',
     '🫚 Desi Chai & Spices': '🫚 Indian Groceries Delivery',
     '🚨 SOS Fast Lifeline': '🚨 Emergency Numbers'
@@ -30,6 +30,7 @@
 
   // Distinctive phrase -> a tool page to open.
   var NAV = [
+    { kw: 'party games', path: '/games.html' },
     { kw: 'radar', path: '/radar.html' }
   ];
 
