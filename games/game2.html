@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pok Deng — Who Loses Drinks</title>
+<style>
+  body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Tahoma,sans-serif;margin:0;padding:18px;text-align:center}
+  h1{text-transform:uppercase;letter-spacing:2px;font-size:24px;margin:6px 0}
+  .hl{background:-webkit-linear-gradient(45deg,#f5c542,#ff0055);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:#888;font-size:13px;margin-bottom:16px}
+  .row{display:flex;gap:10px;justify-content:center;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+  label{font-size:13px;color:#bbb}
+  select,button{font-family:inherit}
+  select{padding:8px 10px;border-radius:8px;background:#111;color:#fff;border:1px solid #333;font-size:15px}
+  .btn{border:none;padding:13px 22px;font-size:15px;font-weight:900;border-radius:30px;cursor:pointer;text-transform:uppercase}
+  .btn:active{transform:scale(.96)}
+  .deal{background:#f5c542;color:#000;box-shadow:0 4px 15px rgba(245,197,66,.35)}
+  .players{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:8px}
+  .pl{background:#141414;border:2px solid #2a2a2a;border-radius:14px;padding:12px}
+  .pl.win{border-color:#00ffcc;box-shadow:0 0 18px rgba(0,255,204,.25)}
+  .pl.lose{border-color:#ff0055;box-shadow:0 0 18px rgba(255,0,85,.3)}
+  .pname{font-weight:800;font-size:13px;color:#ccc;margin-bottom:8px}
+  .cards{display:flex;gap:6px;justify-content:center;margin-bottom:8px}
+  .cd{width:40px;height:56px;border-radius:6px;background:#fff;color:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;font-size:15px;box-shadow:0 2px 6px rgba(0,0,0,.5)}
+  .cd.red{color:#e0004d}
+  .score{font-size:22px;font-weight:900}
+  .tag{font-size:11px;font-weight:800;text-transform:uppercase;margin-top:4px}
+  .tag.w{color:#00ffcc}.tag.l{color:#ff0055}
+  .verdict{margin:16px 0;font-size:16px;font-weight:800;min-height:24px}
+</style>
+</head>
+<body>
+  <h1><span class="hl">Pok Deng</span></h1>
+  <p class="sub">Thai card game — lowest score DRINKS 🥃 (A=1, 2–9 = face, 10/J/Q/K = 0, score = total mod 10)</p>
+  <div class="row">
+    <label>Players:
+      <select id="np">
+        <option>2</option><option>3</option><option selected>4</option><option>5</option><option>6</option><option>7</option><option>8</option>
+      </select>
+    </label>
+    <button class="btn deal" onclick="deal()">Deal Cards</button>
+  </div>
+  <div class="verdict" id="verdict"></div>
+  <div class="players" id="players"></div>
+
+<script>
+  var suits=[{s:'\u2660',r:false},{s:'\u2663',r:false},{s:'\u2665',r:true},{s:'\u2666',r:true}];
+  var ranks=['A','2','3','4','5','6','7','8','9','10','J','Q','K'];
+  function val(r){ if(r==='A')return 1; if(r==='10'||r==='J'||r==='Q'||r==='K')return 0; return parseInt(r,10); }
+  function newDeck(){ var d=[]; for(var s=0;s<suits.length;s++) for(var r=0;r<ranks.length;r++) d.push({rank:ranks[r],suit:suits[s].s,red:suits[s].r}); for(var i=d.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=d[i];d[i]=d[j];d[j]=t;} return d; }
+
+  window.deal=function(){
+    var n=parseInt(document.getElementById('np').value,10);
+    var deck=newDeck(); var hands=[];
+    for(var p=0;p<n;p++){ var c1=deck.pop(), c2=deck.pop(); var sc=(val(c1.rank)+val(c2.rank))%10; hands.push({cards:[c1,c2],score:sc}); }
+    var hi=Math.max.apply(null,hands.map(function(h){return h.score;}));
+    var lo=Math.min.apply(null,hands.map(function(h){return h.score;}));
+    var html='';
+    hands.forEach(function(h,i){
+      var cls = h.score===lo ? 'lose' : (h.score===hi ? 'win' : '');
+      var cardsHtml = h.cards.map(function(c){ return '<div class="cd'+(c.red?' red':'')+'">'+c.rank+'<span>'+c.suit+'</span></div>'; }).join('');
+      var tag = h.score===lo ? '<div class="tag l">Drinks 🥃</div>' : (h.score===hi ? '<div class="tag w">Winner</div>' : '');
+      html+='<div class="pl '+cls+'"><div class="pname">Player '+(i+1)+'</div><div class="cards">'+cardsHtml+'</div><div class="score">'+h.score+'</div>'+tag+'</div>';
+    });
+    document.getElementById('players').innerHTML=html;
+    var losers=[]; hands.forEach(function(h,i){ if(h.score===lo) losers.push('Player '+(i+1)); });
+    document.getElementById('verdict').innerHTML = (losers.length>1?'Tie — ':'')+losers.join(' & ')+' must drink! 🍻';
+  };
+  deal();
+</script>
+</body>
+</html>
