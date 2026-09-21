@@ -62,8 +62,26 @@
       }
     } catch (e) {}
   }
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', applyBranding);
-  else applyBranding();
+  // Rewrite discount text: no specific number, use "up to".
+  function fixDiscounts() {
+    try {
+      var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+      var nodes = []; while (w.nextNode()) nodes.push(w.currentNode);
+      nodes.forEach(function (tn) {
+        var v = tn.nodeValue; if (!v || v.indexOf('%') < 0) return;
+        var nv = v;
+        nv = nv.replace(/up to\s+\d+%\s*/gi, 'up to ');
+        nv = nv.replace(/\d+%\s*OFF/gi, 'UP TO discounts');
+        nv = nv.replace(/\d+%\s*(billing\s*)?discount/gi, 'up to $1discount');
+        nv = nv.replace(/\d+%/g, 'up to');
+        if (nv !== v) tn.nodeValue = nv;
+      });
+    } catch (e) {}
+  }
+
+  function runAll(){ applyBranding(); fixDiscounts(); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runAll);
+  else runAll();
 
   function clickable(el) {
     return el.closest('button, a, [onclick], [role="button"], .card, .service-card, .grid > div, .cursor-pointer');
