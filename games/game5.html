@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Never Have I Ever</title>
+<style>
+  body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Tahoma,sans-serif;margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;box-sizing:border-box;text-align:center}
+  h1{text-transform:uppercase;letter-spacing:2px;font-size:24px;margin:0}
+  .hl{background:-webkit-linear-gradient(45deg,#00ffcc,#ffaa00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:#888;font-size:13px;margin:6px 0 30px;max-width:340px}
+  .card{background:#101a18;border:2px solid #1f4d45;border-radius:18px;padding:30px 22px;max-width:340px;width:100%;min-height:180px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(0,255,204,.18);margin-bottom:24px}
+  .prompt{font-size:20px;line-height:1.45;font-weight:700}
+  .btn{border:none;padding:15px 26px;font-size:16px;font-weight:900;border-radius:30px;cursor:pointer;text-transform:uppercase;background:#00ffcc;color:#003;box-shadow:0 4px 15px rgba(0,255,204,.35)}
+  .btn:active{transform:scale(.96)}
+  .hint{color:#666;font-size:12px;margin-top:16px;max-width:320px}
+</style>
+</head>
+<body>
+  <h1><span class="hl">Never Have I Ever</span></h1>
+  <p class="sub">If you HAVE done it — take a sip! 🍹</p>
+  <div class="card"><div class="prompt" id="prompt">Tap below to start 👇</div></div>
+  <button class="btn" onclick="next()">Next</button>
+  <p class="hint">Read it out loud. Everyone who has done it drinks. Honesty = more fun.</p>
+<script>
+  var items=[
+    "…sent a text to the wrong person.",
+    "…pretended to be on a call to avoid someone.",
+    "…gone to work/college with a hangover.",
+    "…danced on a table.",
+    "…lied about my age to get a discount.",
+    "…forgotten someone's name right after meeting them.",
+    "…eaten street food at 3 AM.",
+    "…gotten lost in a new city and loved it.",
+    "…sung karaoke completely sober.",
+    "…had a crush on a friend's sibling.",
+    "…stayed out until sunrise.",
+    "…re-gifted a present.",
+    "…ordered the same dish every time at a restaurant.",
+    "…taken a selfie more than 10 times to get one right.",
+    "…pretended to like a gift I hated.",
+    "…snuck snacks into a cinema.",
+    "…fallen asleep at a party.",
+    "…booked a trip on impulse."
+  ];
+  var last=-1;
+  window.next=function(){
+    var i; do { i=Math.floor(Math.random()*items.length); } while(i===last && items.length>1);
+    last=i;
+    document.getElementById('prompt').innerText='Never have I ever '+items[i];
+  };
+</script>
+</body>
+</html>
