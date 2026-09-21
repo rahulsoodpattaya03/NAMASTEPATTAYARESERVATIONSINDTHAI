@@ -98,10 +98,24 @@
     } catch (e) {}
   }
 
-  function runAll(){ applyBranding(); fixDiscounts(); fixHome(); }
+  // Remove stray/broken bits: a leftover "CLOSE STORE" control and a leaked "-->" comment marker.
+  function cleanStray() {
+    try {
+      var els = document.querySelectorAll('button, a, div, span, p');
+      for (var i = 0; i < els.length; i++) {
+        var el = els[i]; if (el.children.length) continue;
+        var t = (el.textContent || '').trim().toUpperCase();
+        if (t === 'CLOSE STORE' || t === 'OPEN STORE') el.style.display = 'none';
+      }
+      var w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null);
+      while (w.nextNode()) { var tn = w.currentNode; var v = tn.nodeValue; if (v && v.replace(/\s/g, '') === '-->') tn.nodeValue = ''; }
+    } catch (e) {}
+  }
+
+  function runAll(){ applyBranding(); fixDiscounts(); fixHome(); cleanStray(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', runAll);
   else runAll();
-  setTimeout(fixHome, 900);
+  setTimeout(function(){ fixHome(); cleanStray(); }, 900);
 
   function clickable(el) {
     return el.closest('button, a, [onclick], [role="button"], .card, .service-card, .grid > div, .cursor-pointer');
