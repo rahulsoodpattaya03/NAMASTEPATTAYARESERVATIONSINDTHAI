@@ -99,7 +99,7 @@
     <div class="phead"><b>🛒 Your Basket</b><button class="x" onclick="closeCart()">&times;</button></div>
     <div class="pbody" id="ditems"></div>
     <div class="dfoot">
-      <div class="tot"><span>Total</span><span class="amt" id="grand">฿0000</span></div>
+      <div class="tot"><span>Total</span><span class="amt" id="grand">฿0</span></div>
       <div id="paywrap" style="display:none">
         <div style="font-weight:800;margin-bottom:6px">Payment method</div>
         <div class="pay" id="pay"></div>
@@ -126,7 +126,7 @@
   var payChoice = payMethods[0];
 
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-  function baht(n){ return '฿0000'; } // placeholder pricing for now
+  function baht(n){ return '฿' + Number(n||0).toLocaleString('en-US'); }
   function menuOf(i){ return MENUS[DATA[i].id] || [{n:'Book this service',p:DATA[i].price_thb}]; }
   function minPrice(i){ var m=menuOf(i); var lo=m[0].p; for(var j=1;j<m.length;j++) if(m[j].p<lo) lo=m[j].p; return lo; }
 
@@ -171,7 +171,7 @@
       if (r.category!==last){ if(open) h+='</div>'; h+='<h3 class="cat">'+esc(r.category)+'</h3><div class="grid">'; open=true; last=r.category; }
       h += '<div class="card" onclick="openProvider('+i+')"><div class="ph"><img src="'+esc(r.image_url)+'" loading="lazy" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>'
         + '<div class="body"><div class="name">'+esc(r.item)+'</div><div class="desc">'+esc(r.notes)+'</div>'
-        + '<div class="row"><span class="from">from '+baht(minPrice(i))+'</span><span class="viewmenu">View menu →</span></div></div></div>';
+        + '<div class="row"><span class="from">from '+baht(minPrice(i))+' <span style="color:#7b8398;font-weight:500;font-size:11px">'+esc(r.unit||'')+'</span></span><span class="viewmenu">View menu →</span></div></div></div>';
       shown++;
     }
     if(open) h+='</div>';
@@ -191,7 +191,7 @@
     var i=curProv, r=DATA[i], m=menuOf(i);
     var h = '<div class="pimg"><img src="'+esc(r.image_url)+'" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>';
     h += '<div class="desc" style="margin:0 0 6px">'+esc(r.notes)+'</div>';
-    h += '<div style="color:#8b93a7;font-size:12px;margin-bottom:6px">'+esc(r.category)+'</div>';
+    h += '<div style="color:#8b93a7;font-size:12px;margin-bottom:6px">'+esc(r.category)+(r.unit?(' · '+esc(r.unit)):'')+'</div>';
     for (var j=0;j<m.length;j++){
       var pk=i+'::'+j; var it=m[j]; var ctrl;
       if (cart[pk]){ ctrl='<div class="step"><button onclick="decKey(\''+pk+'\')">−</button><span>'+cart[pk].qty+'</span><button onclick="incKey(\''+pk+'\')">+</button></div>'; }
