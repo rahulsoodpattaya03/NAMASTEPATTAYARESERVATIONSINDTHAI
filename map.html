@@ -49,7 +49,7 @@
   <h2>Clubs — nearest first</h2>
   <div class="clist" id="clist"></div>
 
-  <div class="legend">🟡 Club &nbsp; 🔵 You &nbsp;·&nbsp; Distances/directions use your phone GPS and work fully offline. The "Navigate" link opens Google Maps (needs internet). Coordinates are approximate to the Walking Street area.</div>
+  <div class="legend">🟡 Club &nbsp; 🟠 Indian club &nbsp; 🔵 You &nbsp;·&nbsp; Distances/directions use your phone GPS and work fully offline. The "Navigate" link opens Google Maps (needs internet). Coordinates are approximate to the Walking Street area.</div>
 </div>
 
 <script>
@@ -60,10 +60,11 @@
     {name:'Insomnia',         lat:12.9236, lon:100.8709},
     {name:'808 Club',         lat:12.9228, lon:100.8715},
     {name:'Lucifer Disco',    lat:12.9234, lon:100.8710},
-    {name:'Myst Pattaya',     lat:12.9250, lon:100.8720}
+    {name:'Myst Pattaya',     lat:12.9250, lon:100.8720},
+    {name:'Ikka Club (Indian)', lat:12.9285, lon:100.8792, in:true}
   ];
   // Bounding box for the schematic
-  var B = {latMin:12.9205, latMax:12.9262, lonMin:100.8690, lonMax:100.8730};
+  var B = {latMin:12.9195, latMax:12.9300, lonMin:100.8680, lonMax:100.8805};
   var VW=360, VH=460, PAD=34;
   function toXY(lat, lon){
     var x = PAD + (lon - B.lonMin)/(B.lonMax - B.lonMin) * (VW-2*PAD);
@@ -105,7 +106,7 @@
     s+='<text x="306" y="450" fill="#5b6b86" font-size="9" transform="rotate(90 306,300)">SECOND ROAD</text>';
     // club pins
     CLUBS.forEach(function(c,i){ var p=toXY(c.lat,c.lon);
-      s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="7" fill="#f59e0b" stroke="#1a1204" stroke-width="1.5"/>';
+      s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="7" fill="'+(c.in?'#ff9933':'#f59e0b')+'" stroke="#1a1204" stroke-width="1.5"/>';
       s+='<text x="'+(p.x+10).toFixed(1)+'" y="'+(p.y+4).toFixed(1)+'" fill="#e8e8ef" font-size="10" font-weight="700">'+c.name+'</text>';
     });
     // user pin
@@ -127,7 +128,7 @@
     document.getElementById('clist').innerHTML = list.map(function(x){
       var meta = x.d!=null ? (dist(x.d)+' · '+x.dir+' of you') : 'Walking Street area';
       var nav = 'https://www.google.com/maps?q='+x.c.lat+','+x.c.lon;
-      return '<div class="crow"><span class="cdot"></span><div class="cinfo"><div class="cname">'+x.c.name+'</div><div class="cmeta">'+meta+'</div></div><a class="cnav" href="'+nav+'" target="_blank">Navigate ›</a></div>';
+      return '<div class="crow"><span class="cdot" style="background:'+(x.c.in?'#ff9933':'#f59e0b')+'"></span><div class="cinfo"><div class="cname">'+x.c.name+'</div><div class="cmeta">'+meta+'</div></div><a class="cnav" href="'+nav+'" target="_blank">Navigate ›</a></div>';
     }).join('');
   }
 
