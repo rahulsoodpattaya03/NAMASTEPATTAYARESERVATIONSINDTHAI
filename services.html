@@ -139,8 +139,8 @@
     var extra = res[2] || {providers:[],menus:{}};
     if(extra.menus){ for(var mk in extra.menus) MENUS[mk]=extra.menus[mk]; }
     if(extra.providers && extra.providers.length){
-      var lastIdx=-1; for(var k=0;k<DATA.length;k++){ if(DATA[k].category==='Nightlife & Bars') lastIdx=k; }
-      if(lastIdx>=0){ Array.prototype.splice.apply(DATA,[lastIdx+1,0].concat(extra.providers)); }
+      var firstIdx=-1; for(var k=0;k<DATA.length;k++){ if(DATA[k].category==='Nightlife & Bars'){ firstIdx=k; break; } }
+      if(firstIdx>=0){ Array.prototype.splice.apply(DATA,[firstIdx,0].concat(extra.providers)); }
       else { DATA=DATA.concat(extra.providers); }
     }
     DATA.forEach(function(x){ if(cats.indexOf(x.category)<0) cats.push(x.category); });
