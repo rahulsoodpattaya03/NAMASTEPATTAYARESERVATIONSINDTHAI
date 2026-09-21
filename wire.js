@@ -112,7 +112,7 @@
     } catch (e) {}
   }
 
-  // AI Concierge chat widget (calls the secure n8n endpoint; Gemini answers from the catalog).
+  // AI Concierge chat widget (calls the secure n8n endpoint; the AI answers from the catalog).
   function injectConcierge() {
     try {
       if (document.getElementById('pnConciergeBtn')) return;
@@ -129,7 +129,7 @@
       document.body.appendChild(panel);
       var msgs = panel.querySelector('#pnCcMsgs');
       function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
-      function fmt(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>'); }
+      function fmt(s){ return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(https?:\/\/[^\s<]+|\/[A-Za-z0-9_\-]+\.html[^\s<]*)/g,'<a href="$1" style="color:#22d3ee;font-weight:700;text-decoration:underline">$1</a>').replace(/\n/g,'<br>'); }
       function add(who, html){ var b=document.createElement('div'); b.style.cssText='max-width:85%;padding:9px 12px;border-radius:12px;font-size:14px;line-height:1.45;'+(who==='me'?'align-self:flex-end;background:#22d3ee;color:#06121f':'align-self:flex-start;background:#1a2336;color:#e8e8ef'); b.innerHTML=html; msgs.appendChild(b); msgs.scrollTop=msgs.scrollHeight; return b; }
       add('bot','Namaste! \uD83D\uDE4F I am your Pattaya concierge. Ask me for clubs, restaurants, hotels, rentals, spa or tours and I will suggest options with prices.');
       function send(){ var inp=panel.querySelector('#pnCcInput'); var q=(inp.value||'').trim(); if(!q) return; inp.value=''; add('me',esc(q)); var typing=add('bot','<span style="opacity:.7">Typing...</span>'); fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})}).then(function(r){return r.json();}).then(function(d){ typing.innerHTML=fmt((d&&d.reply)||'Sorry, no reply.'); msgs.scrollTop=msgs.scrollHeight; }).catch(function(){ typing.innerHTML='Sorry, I could not connect. Please try again.'; }); }
