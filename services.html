@@ -132,9 +132,17 @@
 
   Promise.all([
     fetch('./pn-catalog.json').then(function(r){return r.json();}),
-    fetch('./menus.json').then(function(r){return r.json();}).catch(function(){return {};})
+    fetch('./menus.json').then(function(r){return r.json();}).catch(function(){return {};}),
+    fetch('./clubs.json').then(function(r){return r.json();}).catch(function(){return {providers:[],menus:{}};})
   ]).then(function(res){
     DATA = res[0]; MENUS = res[1] || {};
+    var extra = res[2] || {providers:[],menus:{}};
+    if(extra.menus){ for(var mk in extra.menus) MENUS[mk]=extra.menus[mk]; }
+    if(extra.providers && extra.providers.length){
+      var lastIdx=-1; for(var k=0;k<DATA.length;k++){ if(DATA[k].category==='Nightlife & Bars') lastIdx=k; }
+      if(lastIdx>=0){ Array.prototype.splice.apply(DATA,[lastIdx+1,0].concat(extra.providers)); }
+      else { DATA=DATA.concat(extra.providers); }
+    }
     DATA.forEach(function(x){ if(cats.indexOf(x.category)<0) cats.push(x.category); });
     var params = new URLSearchParams(location.search);
     var c = params.get('cat');
