@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Most Likely To</title>
+<style>
+  body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Tahoma,sans-serif;margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;box-sizing:border-box;text-align:center}
+  h1{text-transform:uppercase;letter-spacing:2px;font-size:26px;margin:0}
+  .hl{background:-webkit-linear-gradient(45deg,#a78bfa,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:#888;font-size:13px;margin:6px 0 30px}
+  .card{background:#141425;border:2px solid #3b2f66;border-radius:18px;padding:30px 22px;max-width:340px;width:100%;min-height:170px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 24px rgba(139,92,246,.25);margin-bottom:24px}
+  .prompt{font-size:21px;line-height:1.4;font-weight:700}
+  .btn{border:none;padding:15px 26px;font-size:16px;font-weight:900;border-radius:30px;cursor:pointer;text-transform:uppercase;background:linear-gradient(90deg,#a78bfa,#22d3ee);color:#06121f;box-shadow:0 4px 15px rgba(139,92,246,.4)}
+  .btn:active{transform:scale(.96)}
+  .hint{color:#666;font-size:12px;margin-top:16px;max-width:320px}
+</style>
+</head>
+<body>
+  <h1><span class="hl">Most Likely To</span></h1>
+  <p class="sub">Everyone points at one person on 3… 2… 1! Most votes DRINKS 🍸</p>
+  <div class="card"><div class="prompt" id="prompt">Tap below to start 👇</div></div>
+  <button class="btn" onclick="next()">Next Question</button>
+  <p class="hint">Point on the count of three. The person with the most fingers pointed at them takes a sip.</p>
+<script>
+  var prompts=[
+    "…get kicked out of a club tonight",
+    "…text their ex after 2 drinks",
+    "…lose their phone by the end of the night",
+    "…end up on the dance floor first",
+    "…fall asleep at the table",
+    "…flirt with the bartender",
+    "…start a karaoke session uninvited",
+    "…spend the most money tonight",
+    "…get a tattoo on holiday",
+    "…cry happy tears after 3 shots",
+    "…lead everyone to the after-party",
+    "…forget everyone's name tomorrow",
+    "…take the most selfies tonight",
+    "…order the weirdest cocktail",
+    "…still be awake at sunrise",
+    "…become best friends with a stranger",
+    "…lose a bet and regret it",
+    "…dare someone else to drink"
+  ];
+  var last=-1;
+  window.next=function(){
+    var i; do { i=Math.floor(Math.random()*prompts.length); } while(i===last && prompts.length>1);
+    last=i;
+    document.getElementById('prompt').innerText='Who is most likely to '+prompts[i]+'?';
+  };
+</script>
+</body>
+</html>
