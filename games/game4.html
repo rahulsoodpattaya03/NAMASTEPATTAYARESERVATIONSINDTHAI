@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Drink Roulette</title>
+<style>
+  body{background:#0a0a0a;color:#fff;font-family:'Segoe UI',Tahoma,sans-serif;margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px;box-sizing:border-box;text-align:center}
+  h1{text-transform:uppercase;letter-spacing:2px;font-size:26px;margin:0}
+  .hl{background:-webkit-linear-gradient(45deg,#ff0055,#ffaa00);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  .sub{color:#888;font-size:13px;margin:6px 0 26px}
+  .wheel{width:220px;height:220px;border-radius:50%;border:8px solid #222;display:flex;align-items:center;justify-content:center;margin-bottom:26px;background:radial-gradient(circle at 50% 40%,#2a0015,#0a0a0a);box-shadow:0 0 30px rgba(255,0,85,.25);font-size:60px;transition:transform .1s}
+  .wheel.spin{animation:sp .6s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  .result{font-size:20px;font-weight:800;min-height:56px;max-width:340px;line-height:1.4;margin-bottom:22px}
+  .btn{border:none;padding:16px 30px;font-size:16px;font-weight:900;border-radius:30px;cursor:pointer;text-transform:uppercase;background:#ff0055;color:#fff;box-shadow:0 4px 15px rgba(255,0,85,.4)}
+  .btn:active{transform:scale(.96)}
+  .btn[disabled]{opacity:.5}
+</style>
+</head>
+<body>
+  <h1><span class="hl">Drink Roulette</span></h1>
+  <p class="sub">Spin the wheel. Do what it says. No arguments. 🎰</p>
+  <div class="wheel" id="wheel">🎰</div>
+  <div class="result" id="result">Press SPIN to tempt fate…</div>
+  <button class="btn" id="spinBtn" onclick="spin()">Spin</button>
+<script>
+  var outcomes=[
+    {e:"🥃",t:"You DRINK. No mercy."},
+    {e:"👉",t:"Pick someone — THEY drink."},
+    {e:"🌊",t:"WATERFALL! Everyone drinks until the person on your right stops."},
+    {e:"😇",t:"Safe! Pass the turn, no drink."},
+    {e:"👯",t:"You + the person on your left both drink."},
+    {e:"🤳",t:"Take a group selfie or drink twice."},
+    {e:"🎤",t:"Sing one line of any song or drink."},
+    {e:"🫵",t:"Everyone points — most pointed drinks."},
+    {e:"💸",t:"Buy the next round… or take 2 shots."},
+    {e:"🔁",t:"Reverse! The last person to drink, drinks again."},
+    {e:"🤐",t:"No talking for 2 mins. Slip up = drink."},
+    {e:"🍾",t:"Ladies' choice — girls pick who drinks."}
+  ];
+  var last=-1;
+  window.spin=function(){
+    var w=document.getElementById('wheel'), r=document.getElementById('result'), b=document.getElementById('spinBtn');
+    b.disabled=true; w.classList.add('spin'); r.innerText='Spinning…';
+    var ticks=0, iv=setInterval(function(){ w.innerText=outcomes[Math.floor(Math.random()*outcomes.length)].e; ticks++; if(ticks>12){clearInterval(iv);finish();} },90);
+    function finish(){
+      var i; do { i=Math.floor(Math.random()*outcomes.length); } while(i===last && outcomes.length>1);
+      last=i; w.classList.remove('spin'); w.innerText=outcomes[i].e; r.innerText=outcomes[i].t; b.disabled=false;
+    }
+  };
+</script>
+</body>
+</html>
