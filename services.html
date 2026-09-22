@@ -59,8 +59,10 @@
   .tot{display:flex;justify-content:space-between;font-size:18px;font-weight:900;margin-bottom:12px}
   .tot .amt{color:#34d399}
   .pay{display:grid;gap:8px;margin:10px 0 14px}
+  .pay input{padding:11px 12px;border-radius:10px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px}
   .pay label{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid #26314d;border-radius:10px;font-size:14px;cursor:pointer}
   .pay label.sel{border-color:var(--gold);background:#1a1608}
+  .payhead{font-weight:800;color:#c7cddb;margin-top:6px;font-size:13px}
   .cta{width:100%;padding:14px;border:none;border-radius:12px;background:#25D366;color:#04351a;font-weight:900;font-size:15px;cursor:pointer}
   .note{color:#7b8398;font-size:11px;text-align:center;margin-top:8px}
   #cartbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding:14px 18px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);color:#06121f;font-weight:800;border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.5);cursor:pointer}
@@ -101,11 +103,11 @@
     <div class="dfoot">
       <div class="tot"><span>Total</span><span class="amt" id="grand">฿0</span></div>
       <div id="paywrap" style="display:none">
-        <div style="font-weight:800;margin-bottom:6px">Payment method</div>
+        <div style="font-weight:800;margin-bottom:6px">Your details &amp; payment method</div>
         <div class="pay" id="pay"></div>
       </div>
       <button class="cta" id="cta" onclick="checkoutStep()">Checkout</button>
-      <div class="note">Online card payment coming soon — for now your order is confirmed &amp; paid via WhatsApp.</div>
+      <div class="note">Pay on confirmation — our team will contact you to complete payment via your chosen method.</div>
     </div>
   </div>
 </div>
@@ -117,13 +119,17 @@
 </div>
 
 <script>
-  var WHATSAPP = "66947623990";
+  var ORDERS_EP = "https://namastepattayareservation.app.n8n.cloud/webhook/orders";
   var DATA = [], MENUS = {}, cats = ["All"], active = "All";
   var cart = {};      // key "provIdx::itemIdx" -> {label, price, qty}
   var curProv = null;
   var stage = "cart";
-  var payMethods = ["PromptPay / QR", "Credit / Debit Card", "Bank Transfer", "Cash on Arrival"];
-  var payChoice = payMethods[0];
+  var payGroups = [
+    { region: "🇮🇳 India", methods: ["UPI", "Scan QR Code", "Credit / Debit Card"] },
+    { region: "🇹🇭 Thailand", methods: ["PromptPay", "Wallet", "Credit / Debit Card"] }
+  ];
+  var payChoice = "🇮🇳 India · UPI";
+  var ordName = "", ordContact = "";
 
   function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
   function baht(n){ return '฿' + Number(n||0).toLocaleString('en-US'); }
@@ -220,8 +226,11 @@
     else bar.style.display='none';
   }
 
-  window.openCart = function(){ stage='cart'; document.getElementById('cartOverlay').style.display='block'; renderCart(); };
-  window.closeCart = function(){ document.getElementById('cartOverlay').style.display='none'; };
+  window.setOrdName = function(v){ ordName=v; };
+  window.setOrdContact = function(v){ ordContact=v; };
+
+  window.openCart = function(){ stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; document.getElementById('cartOverlay').style.display='block'; renderCart(); };
+  window.closeCart = function(){ document.getElementById('cartOverlay').style.display='none'; stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; };
   function renderCart(){
     var h=''; var keys=Object.keys(cart);
     if(!keys.length) h='<div class="empty">Your basket is empty.</div>';
@@ -235,9 +244,17 @@
     var paywrap=document.getElementById('paywrap'), cta=document.getElementById('cta');
     if(stage==='pay'){
       paywrap.style.display='block';
-      document.getElementById('pay').innerHTML = payMethods.map(function(m){
-        return '<label class="'+(m===payChoice?'sel':'')+'" onclick="choosePay(\''+m.replace(/'/g,"")+'\')"><i class="fa-solid fa-circle'+(m===payChoice?'-check':'')+'"></i> '+m+'</label>';
-      }).join('');
+      var ph='';
+      ph+='<input id="ordName" placeholder="Your Name" value="'+esc(ordName)+'" oninput="setOrdName(this.value)">';
+      ph+='<input id="ordContact" placeholder="Mobile / WhatsApp" value="'+esc(ordContact)+'" oninput="setOrdContact(this.value)">';
+      payGroups.forEach(function(g){
+        ph+='<div class="payhead">'+g.region+'</div>';
+        g.methods.forEach(function(m){
+          var key=g.region+' · '+m;
+          ph+='<label class="'+(key===payChoice?'sel':'')+'" onclick="choosePay(\''+key.replace(/'/g,"")+'\')"><i class="fa-solid fa-circle'+(key===payChoice?'-check':'')+'"></i> '+m+'</label>';
+        });
+      });
+      document.getElementById('pay').innerHTML = ph;
       cta.textContent='Place Order · '+baht(totals().sum);
     } else { paywrap.style.display='none'; cta.textContent='Checkout'; }
   }
@@ -245,10 +262,37 @@
   window.checkoutStep = function(){
     var t=totals(); if(!t.items) return;
     if(stage==='cart'){ stage='pay'; renderCart(); return; }
-    var lines=[]; Object.keys(cart).forEach(function(k){ var c=cart[k]; lines.push('• '+c.label+' x'+c.qty+' = '+baht(c.qty*c.price)); });
-    var text='🙏 Namaste Pattaya Reservations — NEW ORDER\n\n'+lines.join('\n')+'\n\nTotal: '+baht(t.sum)+'\nPayment: '+payChoice+'\n\nPlease confirm my booking.';
-    window.open('https://wa.me/'+WHATSAPP+'?text='+encodeURIComponent(text),'_blank');
+    if(!ordName.trim() || !ordContact.trim()){ alert('Please enter your name and contact number.'); return; }
+    placeOrder(t);
   };
+  function placeOrder(t){
+    var lines=[]; Object.keys(cart).forEach(function(k){ var c=cart[k]; lines.push('• '+c.label+' x'+c.qty+' = '+baht(c.qty*c.price)); });
+    var summary=lines.join('\n');
+    var ref='NAM-'+Math.floor(1000+Math.random()*9000);
+    var payload={ name:ordName, contact:ordContact, payment:payChoice, total:Number(t.sum).toLocaleString('en-US'), summary:summary, ref:ref };
+    var cta=document.getElementById('cta'); cta.textContent='Placing order...'; cta.disabled=true;
+    fetch(ORDERS_EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){return r.json();}).catch(function(){return {};})
+      .then(function(){
+        var method=(payChoice.split(' · ')[1]||'payment');
+        document.getElementById('ditems').innerHTML =
+          '<div style="text-align:center;padding:16px 4px">'
+          +'<i class="fa-solid fa-circle-check" style="color:#34d399;font-size:48px"></i>'
+          +'<h3 style="margin:12px 0 4px">Order Received!</h3>'
+          +'<p style="color:#9aa3b7;font-size:13px">Ref '+ref+' · '+baht(t.sum)+'</p>'
+          +'<p style="color:#9aa3b7;font-size:13px">Payment: '+esc(payChoice)+'</p>'
+          +'<p style="color:#7b8398;font-size:12px;margin-top:10px">Our team will contact you on '+esc(ordContact)+' to confirm your booking and share the '+esc(method)+' payment details.</p>'
+          +'</div>';
+        document.getElementById('paywrap').style.display='none';
+        document.getElementById('grand').textContent=baht(t.sum);
+        cta.style.display='none';
+        cart={}; updateBar();
+      })
+      .catch(function(){
+        cta.disabled=false; cta.textContent='Place Order · '+baht(t.sum);
+        alert('Sorry, we could not place your order. Please try again.');
+      });
+  }
 </script>
 </body>
 </html>
