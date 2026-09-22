@@ -120,6 +120,7 @@
 
 <script>
   var ORDERS_EP = "https://namastepattayareservation.app.n8n.cloud/webhook/orders";
+  try { var _rp = new URLSearchParams(location.search).get('ref'); if(_rp) localStorage.setItem('np_ref', _rp); } catch(e){}
   var DATA = [], MENUS = {}, cats = ["All"], active = "All";
   var cart = {};      // key "provIdx::itemIdx" -> {label, price, qty}
   var curProv = null;
@@ -269,7 +270,8 @@
     var lines=[]; Object.keys(cart).forEach(function(k){ var c=cart[k]; lines.push('• '+c.label+' x'+c.qty+' = '+baht(c.qty*c.price)); });
     var summary=lines.join('\n');
     var ref='NAM-'+Math.floor(1000+Math.random()*9000);
-    var payload={ name:ordName, contact:ordContact, payment:payChoice, total:Number(t.sum).toLocaleString('en-US'), summary:summary, ref:ref };
+    var refCode=''; try { refCode = localStorage.getItem('np_ref') || ''; } catch(e){}
+    var payload={ name:ordName, contact:ordContact, payment:payChoice, total:Number(t.sum).toLocaleString('en-US'), total_num:t.sum, summary:summary, ref:ref, referral_code:refCode };
     var cta=document.getElementById('cta'); cta.textContent='Placing order...'; cta.disabled=true;
     fetch(ORDERS_EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
       .then(function(r){return r.json();}).catch(function(){return {};})
