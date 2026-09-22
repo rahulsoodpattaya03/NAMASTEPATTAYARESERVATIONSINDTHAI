@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Club Updates | Namaste Pattaya</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="/logo.png">
+</head>
+<body class="bg-slate-950 text-gray-100" style="font-family:system-ui,Arial,sans-serif">
+
+<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
+  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
+  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-fuchsia-400 mt-1">📢 Club Updates</h1>
+  <p class="text-[11px] text-gray-500">Tonight's lady-drink times, promos &amp; table prices</p>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-6">
+  <div id="feed" class="space-y-3"><div class="text-gray-500 text-center py-10">Loading tonight's updates…</div></div>
+</main>
+
+<script>
+var EP='https://namastepattayareservation.app.n8n.cloud/webhook/club-updates';
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+fetch(EP).then(function(r){return r.json();}).then(function(d){
+  var feed=document.getElementById('feed');
+  if(!d || !d.updates || !d.updates.length){ feed.innerHTML='<div class="text-gray-500 text-center py-10">No updates right now. Check back soon!</div>'; return; }
+  feed.innerHTML = d.updates.map(function(u){
+    return '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">'
+      +'<div class="flex justify-between items-start"><div class="font-black text-white text-base">'+esc(u.club)+'</div><span class="text-[10px] bg-cyan-600 text-white font-bold px-2 py-1 rounded-lg whitespace-nowrap">'+esc(u.area)+'</span></div>'
+      +(u.lady_drink_time?'<div class="text-fuchsia-300 text-sm mt-2">🍸 '+esc(u.lady_drink_time)+'</div>':'')
+      +(u.promo?'<div class="text-amber-300 text-sm mt-1">🎉 '+esc(u.promo)+'</div>':'')
+      +(u.table_price?'<div class="text-emerald-400 text-sm font-bold mt-1">💺 '+esc(u.table_price)+'</div>':'')
+      +'<a href="/services.html?cat=Nightlife%20%26%20Bars" class="inline-block mt-3 bg-amber-500 text-black text-xs font-black px-3 py-1.5 rounded-lg uppercase">Book a table</a>'
+      +'</div>';
+  }).join('');
+}).catch(function(){ document.getElementById('feed').innerHTML='<div class="text-gray-500 text-center py-10">Could not load updates. Please try again.</div>'; });
+</script>
+</body>
+</html>
