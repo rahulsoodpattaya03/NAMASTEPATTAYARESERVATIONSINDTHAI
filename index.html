@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pattaya Namaste - Executive Nightlife & Concierge Super-App</title>
+<title>Namaste Pattaya Reservations Super-App Services</title>
  
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
@@ -22,17 +22,18 @@
 .executive-glow { box-shadow: 0 0 30px rgba(56, 189, 248, 0.25); }
 html { scroll-behavior: smooth; }
 
-/* Creative Quick Action Scroller with Image Backgrounds */
+/* Clean Picture-First Quick Action Scroller */
 .qa-row { display:flex; gap:14px; overflow-x:auto; padding:6px 4px 16px; -webkit-overflow-scrolling:touch; }
 .qa-row::-webkit-scrollbar { height:6px; } .qa-row::-webkit-scrollbar-thumb { background:#26314d; border-radius:10px; }
-.qa { flex:0 0 auto; width:85px; height:95px; display:flex; flex-direction:column; align-items:center; justify-content:space-between; text-decoration:none; cursor:pointer; background:none; border:1px solid rgba(56, 189, 248, 0.25); border-radius:18px; padding:8px 4px; position:relative; overflow:hidden; transition:all .2s ease; }
-.qa-bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.35; transition:opacity .2s; z-index:0; }
-.qa:hover .qa-bg { opacity:0.55; transform:scale(1.05); }
-.qa .ic { width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; background:rgba(11, 15, 25, 0.85); border:1px solid rgba(56, 189, 248, 0.4); position:relative; z-index:1; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
-.qa .lb { font-size:10px; font-weight:800; color:#ffffff; text-align:center; line-height:1.1; position:relative; z-index:1; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
+.qa { flex:0 0 auto; width:95px; height:105px; display:flex; flex-direction:column; align-items:center; justify-content:flex-end; text-decoration:none; cursor:pointer; background:#131c2e; border:1px solid rgba(56, 189, 248, 0.3); border-radius:18px; padding:10px 6px; position:relative; overflow:hidden; transition:all .2s ease; }
+.qa-bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.45; transition:opacity .2s; z-index:0; }
+.qa:hover .qa-bg { opacity:0.65; transform:scale(1.05); }
+.qa .lb { font-size:10px; font-weight:800; color:#ffffff; text-align:center; line-height:1.15; position:relative; z-index:1; text-shadow: 0 2px 4px rgba(0,0,0,0.9); }
 
-.service-card-bg { background-size: cover; background-position: center; position: relative; overflow: hidden; }
-.service-card-overlay { background: linear-gradient(to top, rgba(11, 15, 25, 0.95), rgba(11, 15, 25, 0.45)); }
+/* Picture-First Browse All Services Cards */
+.service-card-bg { background-size: cover; background-position: center; position: relative; overflow: hidden; border-radius: 1rem; border: 1px solid rgba(56, 189, 248, 0.25); transition: transform .2s, border-color .2s; }
+.service-card-bg:hover { transform: translateY(-3px); border-color: #38bdf8; }
+.service-card-overlay { background: linear-gradient(to top, rgba(11, 15, 25, 0.95), rgba(11, 15, 25, 0.35)); }
 </style>
 </head>
  
@@ -51,7 +52,7 @@ html { scroll-behavior: smooth; }
                 </div>
             </div>
             <div>
-                <span class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 block leading-tight">PATTAYA NAMASTE</span>
+                <span class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 block leading-tight">NAMASTE PATTAYA RESERVATIONS SUPER-APP SERVICES</span>
                 <span class="text-[9px] text-cyan-400 font-extrabold tracking-widest uppercase block">Namaste Pattaya Reservations · Super-App · Jai Hind 🇮🇳</span>
             </div>
         </div>
@@ -111,7 +112,7 @@ html { scroll-behavior: smooth; }
     </div>
 </section>
 
-<!-- ⚡ QUICK ACTIONS (WITH CREATIVE PICTURE BACKGROUNDS & ALL ITEMS PRESERVED) -->
+<!-- ⚡ QUICK ACTIONS (RAJU GUIDE PINNED FIRST WITH PICTURE BACKGROUND) -->
 <section id="quick-actions" class="py-8 bg-slate-900 border-b border-cyan-500/30">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="flex items-center justify-between mb-3">
@@ -119,112 +120,111 @@ html { scroll-behavior: smooth; }
             <span class="text-[10px] text-gray-500 font-bold uppercase">swipe →</span>
         </div>
         <div class="qa-row">
-            <a href="/packages.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">💎</div><div class="lb">Packages</div></a>
-            <button onclick="openClubs()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🍸</div><div class="lb">Indian Clubs</div></button>
-            <a href="/club-updates.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">📢</div><div class="lb">Club Updates</div></a>
-            <a href="/services.html?q=beach" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🌆</div><div class="lb">Rooftop & Beach</div></a>
-            <a href="/services.html?cat=Airport%20Transfers" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🚕</div><div class="lb">Book Taxi</div></a>
-            <a href="/services.html?q=indian" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🍛</div><div class="lb">Food & Grocery</div></a>
-            <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🛵</div><div class="lb">Cars & Bikes</div></a>
-            <a href="/services.html?q=supercar" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🏎️</div><div class="lb">Supercars & Bikes</div></a>
-            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🏨</div><div class="lb">Hotels & Villa</div></a>
-            <a href="/mall.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🛍️</div><div class="lb">Namaste Mall</div></a>
-            <a href="/property.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🏠</div><div class="lb">Property</div></a>
-            <a href="/visa.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🛂</div><div class="lb">Visa & Tickets</div></a>
-            <a href="/jet.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🛩️</div><div class="lb">Private Jet</div></a>
-            <button onclick="openCustomerModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">⭐</div><div class="lb">Namaste Premium</div></button>
-            <a href="/map.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🗺️</div><div class="lb">Offline Map</div></a>
-            <a href="/radar.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">📍</div><div class="lb">Find Friend</div></a>
-            <a href="/radar.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🧮</div><div class="lb">Split Bill</div></a>
-            <a href="/pay.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">💸</div><div class="lb">Pay a Friend</div></a>
-            <a href="/games.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🎮</div><div class="lb">Party Games</div></a>
-            <a href="/dating.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">💑</div><div class="lb">Dating & Buddy</div></a>
-            <a href="/ladies.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">👯</div><div class="lb">Ladies Night</div></a>
-            <a href="#refer-earn" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🎁</div><div class="lb">Refer & Earn</div></a>
-            <a href="#agents" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">🧳</div><div class="lb">Agents</div></a>
-            <button onclick="openLiveChat()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=300&q=80')"></div><div class="ic">💬</div><div class="lb">Ask Raju</div></button>
+            <button onclick="openLiveChat()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🙏 Ask Raju Guide</div></button>
+            <a href="/packages.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💎 Packages</div></a>
+            <button onclick="openClubs()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🍸 Indian Clubs</div></button>
+            <a href="/club-updates.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">📢 Club Updates</div></a>
+            <a href="/services.html?cat=VIP%20Beach%20Clubs" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🌆 Rooftop & Beach</div></a>
+            <a href="/services.html?cat=Airport%20Transfers" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🚕 Book Taxi</div></a>
+            <a href="/services.html?cat=Indian%20Restaurants" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🍛 Indian Food</div></a>
+            <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🛵 Cars & Bikes</div></a>
+            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🏨 Hotels & Villa</div></a>
+            <a href="/mall.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🛍️ Namaste Mall</div></a>
+            <a href="/property.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🏠 Property</div></a>
+            <a href="/visa.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🛂 Visa & Tickets</div></a>
+            <a href="/jet.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1540959733332-eab4deabeeaf?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🛩️ Private Jet</div></a>
+            <button onclick="openCustomerModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">⭐ Namaste Premium</div></button>
+            <a href="/map.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🗺️ Offline Map</div></a>
+            <a href="/radar.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">📍 Find Friend</div></a>
+            <a href="/radar.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🧮 Split Bill</div></a>
+            <a href="/pay.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💸 Pay a Friend</div></a>
+            <a href="/games.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🎮 Party Games</div></a>
+            <a href="/dating.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💑 Dating & Buddy</div></a>
+            <a href="/ladies.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">👯 Ladies Night</div></a>
+            <a href="#refer-earn" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🎁 Refer & Earn</div></a>
+            <a href="#agents" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🧳 Agents</div></a>
         </div>
         <p class="text-[11px] text-gray-500 mt-1">⭐ Namaste Premium — <span class="text-amber-400 font-bold">No Money No Honey</span></p>
     </div>
 </section>
  
-<!-- 🗂️ BROWSE ALL SERVICES (ALL 17+ CATEGORIES RESTORED WITH PICTURE CARDS) -->
+<!-- 🗂️ BROWSE ALL SERVICES (PICTURE-FIRST CARDS LINKING DIRECTLY TO SPECIFIC CATEGORY VIEWS) -->
 <section id="all-services" class="py-16 bg-slate-950 border-b border-cyan-500/20">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="text-center mb-12">
-            <h2 class="text-3xl font-black text-white uppercase tracking-tight">🗂️ Browse All Services</h2>
+            <h2 class="text-3xl font-black text-white uppercase tracking-tight">🗂️ NAMASTE PATTAYA RESERVATIONS SUPER-APP SERVICES</h2>
             <div class="h-1 w-16 bg-cyan-500 mx-auto mt-3 rounded-full"></div>
-            <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 font-bold">Tap any category to explore verified options</p>
+            <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 font-bold">Tap any category to open its specific service page instantly</p>
         </div>
         
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-            <a href="/services.html?cat=Nightlife%20%26%20Bars" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Nightlife%20%26%20Bars" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-cyan-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-champagne-glasses"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Nightlife & Bars</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Nightlife & Bars</h3></div>
             </a>
-            <a href="/services.html?cat=VIP%20Beach%20Clubs" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=VIP%20Beach%20Clubs" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-sky-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-umbrella-beach"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">VIP Beach Clubs</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">VIP Beach Clubs</h3></div>
             </a>
-            <a href="/services.html?cat=Restaurants" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Restaurants" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-rose-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-utensils"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Restaurants</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Restaurants</h3></div>
             </a>
-            <a href="/services.html?cat=Indian%20Restaurants" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Indian%20Restaurants" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-amber-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-bowl-food"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Indian Restaurants</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Indian Restaurants</h3></div>
             </a>
-            <a href="/services.html?cat=Desi%20Chai%20%26%20Spices%20(Indian%20Groceries)" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Desi%20Chai%20%26%20Spices%20(Indian%20Groceries)" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-emerald-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-basket-shopping"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Desi Chai & Spices</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Desi Chai & Spices</h3></div>
             </a>
-            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-indigo-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-hotel"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Hotels & Resorts</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Hotels & Resorts</h3></div>
             </a>
-            <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-red-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-motorcycle"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Cars & Bikes Rental</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Cars & Bikes Rental</h3></div>
             </a>
-            <a href="/services.html?cat=Spa%20%26%20Massage" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Spa%20%26%20Massage" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-fuchsia-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-spa"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Spa & Massage</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Spa & Massage</h3></div>
             </a>
-            <a href="/services.html?cat=Tours%20%26%20Excursions" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Tours%20%26%20Excursions" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-orange-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-map-location-dot"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Tours & Excursions</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Tours & Excursions</h3></div>
             </a>
-            <a href="/services.html?cat=Water%20Sports" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Water%20Sports" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-cyan-300 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-water"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Water Sports</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Water Sports</h3></div>
             </a>
-            <a href="/services.html?cat=Golf%20Courses" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Golf%20Courses" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-green-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-golf-ball-tee"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Golf Courses</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Golf Courses</h3></div>
             </a>
-            <a href="/services.html?cat=Yacht%20%26%20Boat%20Charter" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1569263979104-865ab9cd8d5c?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Yacht%20%26%20Boat%20Charter" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1569263979104-865ab9cd8d5c?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-blue-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-sailboat"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Yacht & Boats</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Yacht & Boats</h3></div>
             </a>
-            <a href="/services.html?cat=Airport%20Transfers" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Airport%20Transfers" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-slate-300 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-plane-arrival"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Airport Transfers</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Airport Transfers</h3></div>
             </a>
-            <a href="/services.html?cat=Shopping%20%26%20Markets" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Shopping%20%26%20Markets" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-pink-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-bag-shopping"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Shopping & Markets</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Shopping & Markets</h3></div>
             </a>
-            <a href="/services.html?cat=Event%20%26%20Party%20Planning" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Event%20%26%20Party%20Planning" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-yellow-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-calendar-check"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Event & Party Planning</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Event & Party Planning</h3></div>
             </a>
-            <a href="/services.html?cat=Medical%20%26%20Pharmacy" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Medical%20%26%20Pharmacy" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-rose-500 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-notes-medical"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Medical & Pharmacy</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Medical & Pharmacy</h3></div>
             </a>
-            <a href="/services.html?cat=Concierge%20%26%20VIP%20Services" class="service-card-bg rounded-2xl border border-slate-800 hover:border-cyan-500 transition h-44 flex flex-col justify-end p-4 group shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80');">
+            <a href="/services.html?cat=Concierge%20%26%20VIP%20Services" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
-                <div class="relative z-10"><div class="text-xl text-purple-400 mb-1 group-hover:scale-110 transition"><i class="fa-solid fa-user-tie"></i></div><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Concierge & VIP Services</h3></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Concierge & VIP Services</h3></div>
             </a>
         </div>
     </div>
