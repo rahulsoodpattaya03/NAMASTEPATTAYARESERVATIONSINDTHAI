@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visa & Air Tickets | Namaste Pattaya</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="/logo.png">
+</head>
+<body class="bg-slate-950 text-gray-100" style="font-family:system-ui,Arial,sans-serif">
+
+<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
+  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
+  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-amber-400 mt-1">🛂 Visa &amp; Air Tickets</h1>
+  <p class="text-[11px] text-gray-500">Flights, visa guidance &amp; documents — India ⇄ Thailand</p>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+  <!-- Tabs -->
+  <div class="grid grid-cols-2 gap-2">
+    <button onclick="tab('air')" id="tAir" class="py-2.5 rounded-xl font-black text-xs uppercase bg-amber-500 text-black">✈️ Book Air Tickets</button>
+    <button onclick="tab('visa')" id="tVisa" class="py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🛂 Visa Help</button>
+  </div>
+
+  <!-- AIR TICKETS -->
+  <div id="airPane" class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+    <h2 class="text-sm font-black uppercase text-amber-400">Air Ticket Enquiry</h2>
+    <div class="grid grid-cols-2 gap-2">
+      <input id="aFrom" placeholder="From (e.g. Delhi)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="aTo" placeholder="To (e.g. Bangkok)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <input id="aDate" type="date" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="aPax" type="number" min="1" value="1" placeholder="Passengers" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    </div>
+    <input id="aName" placeholder="Your Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="aContact" placeholder="Mobile / WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="aEmail" placeholder="Email (optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <button onclick="submitAir(this)" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3 rounded-xl uppercase text-sm">Get Best Fares</button>
+  </div>
+
+  <!-- VISA -->
+  <div id="visaPane" style="display:none" class="space-y-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+      <h2 class="text-sm font-black uppercase text-amber-400 mb-2">Thailand Visa — Quick Guide (Indian passport)</h2>
+      <ul class="text-xs text-gray-300 space-y-2 leading-relaxed">
+        <li>• <b>Visa on Arrival / Exemption:</b> rules change often — many Indian passport holders can enter for short tourism stays under current schemes.</li>
+        <li>• <b>Tourist Visa (TR):</b> for longer leisure stays.</li>
+        <li>• <b>Common documents:</b> passport valid 6+ months, passport photos, return/onward ticket, proof of accommodation, bank statement / funds proof, completed application.</li>
+      </ul>
+      <p class="text-[11px] text-amber-300/80 mt-3">⚠️ Visa rules change frequently. This is general guidance only — always confirm current requirements with the Royal Thai Embassy/Consulate or a licensed visa agent before travel.</p>
+    </div>
+
+    <div>
+      <h2 class="text-sm font-black uppercase text-amber-400 mb-3">Licensed Visa Agents (reference)</h2>
+      <div id="visaFirms" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+      <p class="text-[11px] text-gray-500 mt-2">Listed for reference only — verify licensing before engaging. Not yet verified partners.</p>
+    </div>
+
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+      <h2 class="text-sm font-black uppercase text-cyan-400">Visa Document Enquiry</h2>
+      <input id="vName" placeholder="Your Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="vContact" placeholder="Mobile / WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="vEmail" placeholder="Email (optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="vType" placeholder="Visa type / purpose (tourist, retirement...)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <textarea id="vMsg" placeholder="Your question about documents / process" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm"></textarea>
+      <button onclick="submitVisa(this)" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3 rounded-xl uppercase text-sm">Send Visa Enquiry</button>
+    </div>
+  </div>
+</main>
+
+<script>
+var EP='https://namastepattayareservation.app.n8n.cloud/webhook/enquiry';
+function esc(s){return String(s==null?'':s);}
+function tab(t){
+  document.getElementById('airPane').style.display = t==='air'?'block':'none';
+  document.getElementById('visaPane').style.display = t==='visa'?'block':'none';
+  document.getElementById('tAir').className = t==='air'?'py-2.5 rounded-xl font-black text-xs uppercase bg-amber-500 text-black':'py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300';
+  document.getElementById('tVisa').className = t==='visa'?'py-2.5 rounded-xl font-black text-xs uppercase bg-amber-500 text-black':'py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300';
+}
+var VFIRMS=[{n:'Key Visa Company',s:'Pattaya visa & work permits'},{n:'Pattaya Visa Services',s:'Tourist, retirement, ED visas'},{n:'Thai Visa Centre',s:'Extensions & renewals'},{n:'Siam Legal (Pattaya)',s:'Visa + legal services'}];
+document.getElementById('visaFirms').innerHTML=VFIRMS.map(function(x){return '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="font-bold text-sm text-white">'+esc(x.n)+'</div><div class="text-gray-400 text-[11px] mt-1">'+esc(x.s)+'</div></div>';}).join('');
+function post(type,name,contact,email,details,btn,okText){
+  if(!name||!contact){ alert('Please enter your name and contact.'); return; }
+  btn.textContent='Submitting...'; btn.disabled=true;
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:type,name:name,contact:contact,email:email,details:details})})
+    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Thank you! Our team will contact you.'); btn.textContent=okText; })
+    .catch(function(){ btn.disabled=false; alert('Could not submit. Please try again.'); });
+}
+function submitAir(btn){
+  var details='Route: '+document.getElementById('aFrom').value.trim()+' → '+document.getElementById('aTo').value.trim()+'\nDate: '+document.getElementById('aDate').value+'\nPassengers: '+document.getElementById('aPax').value;
+  post('Air Ticket', document.getElementById('aName').value.trim(), document.getElementById('aContact').value.trim(), document.getElementById('aEmail').value.trim(), details, btn, 'Sent ✓');
+}
+function submitVisa(btn){
+  var details='Visa type/purpose: '+document.getElementById('vType').value.trim()+'\nQuestion: '+document.getElementById('vMsg').value.trim();
+  post('Visa Help', document.getElementById('vName').value.trim(), document.getElementById('vContact').value.trim(), document.getElementById('vEmail').value.trim(), details, btn, 'Sent ✓');
+}
+</script>
+</body>
+</html>
