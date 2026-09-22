@@ -284,16 +284,16 @@ html { scroll-behavior: smooth; }
 <section id="refer-earn" class="py-16 bg-slate-950 border-b border-emerald-500/30">
     <div class="container mx-auto px-4 max-w-4xl">
         <div class="glass-card rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden">
-            <div class="absolute -right-10 -bottom-10 text-emerald-500/10 text-9xl font-black pointer-events-none">1%</div>
-            <span class="absolute top-4 right-6 bg-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md">1% Lifetime Reward</span>
+            <div class="absolute -right-10 -bottom-10 text-emerald-500/10 text-9xl font-black pointer-events-none">5%</div>
+            <span class="absolute top-4 right-6 bg-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md">Up to 5% · Lifetime</span>
             <div class="text-center md:text-left flex flex-col md:flex-row items-center gap-6 relative z-10">
                 <div class="bg-emerald-950 border border-emerald-500/40 p-5 rounded-3xl text-emerald-400 text-4xl flex-shrink-0 shadow-lg">
                     <i class="fa-solid fa-wallet"></i>
                 </div>
                 <div class="flex-1 space-y-2">
-                    <h2 class="text-2xl font-black text-white uppercase tracking-tight">Refer Friends & Earn 1% Cash on All Spend!</h2>
+                    <h2 class="text-2xl font-black text-white uppercase tracking-tight">Refer Friends & Earn Up To 5% — For Life!</h2>
                     <p class="text-gray-300 text-xs leading-relaxed font-medium">
-                        Share your exclusive referral link. When your friends book and complete a paid service through the app, <strong class="text-emerald-400">you earn 1% of their spend — for life.</strong> Withdraw once you reach ฿500 (Thailand) or ₹1,000 (India).
+                        Share your exclusive referral link. Every time your friends book a paid service through the app, <strong class="text-emerald-400">you earn 1% of their spend — for life.</strong> And when a friend spends <strong class="text-emerald-400">฿25,000 or more on a single booking, you earn 5% on that booking!</strong> Withdraw once you reach ฿500 (Thailand) or ₹1,000 (India).
                     </p>
                 </div>
             </div>
@@ -476,9 +476,9 @@ function copyRefLink() {
         if (!code) { alert('Could not create your referral link. Please try again.'); return; }
         var link = refLink(code);
         document.getElementById('refLinkText').textContent = link;
-        var share = 'Book Pattaya clubs, cars, hotels & more on Namaste Pattaya with my link — I earn 1%! ' + link;
+        var share = 'Book Pattaya clubs, cars, hotels & more on Namaste Pattaya with my link — I earn up to 5%! ' + link;
         if (navigator.share) { navigator.share({ title: 'Namaste Pattaya', text: share, url: link }).catch(function(){}); }
-        else if (navigator.clipboard) { navigator.clipboard.writeText(link).then(function(){ alert('Referral link copied! Share it and earn 1%.'); }); }
+        else if (navigator.clipboard) { navigator.clipboard.writeText(link).then(function(){ alert('Referral link copied! Share it and earn up to 5%.'); }); }
         else { alert(link); }
         loadRefStats();
     });
@@ -494,7 +494,7 @@ function loadRefStats() {
             if (document.getElementById('refCount')) document.getElementById('refCount').textContent = (d.referrals || 0);
             if (document.getElementById('refBalance')) document.getElementById('refBalance').textContent = cur + ' ' + (d.available || 0);
             var pend = document.getElementById('refPending');
-            if (pend) pend.textContent = (d.pending ? ('Pending: ' + cur + ' ' + d.pending + ' (unlocks after your friends\\' bookings complete)') : '');
+            if (pend) pend.textContent = (d.pending ? ('Pending: ' + cur + ' ' + d.pending + ' (unlocks after your friends bookings complete)') : '');
         })
         .catch(function () {});
 }
