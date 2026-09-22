@@ -16,7 +16,6 @@
     background-size: cover; background-position: center;
 }
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(56, 189, 248, 0.2); }
-.executive-glow { box-shadow: 0 0 30px rgba(56, 189, 248, 0.25); }
 html { scroll-behavior: smooth; }
 .qa-row { display:flex; gap:14px; overflow-x:auto; padding:6px 4px 16px; -webkit-overflow-scrolling:touch; }
 .qa-row::-webkit-scrollbar { height:6px; } .qa-row::-webkit-scrollbar-thumb { background:#26314d; border-radius:10px; }
@@ -50,7 +49,7 @@ html { scroll-behavior: smooth; }
     <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
         <div class="flex items-center space-x-3">
             <div class="flex flex-col">
-                <span class="text-sm md:text-base font-black tracking-wider text-white uppercase leading-tight">NAMASTE PATTAYA RESERVATIONS SUPER-APP</span>
+                <span class="text-sm md:text-base font-black tracking-wider bg-gradient-to-r from-amber-400 via-cyan-400 to-white bg-clip-text text-transparent uppercase leading-tight">NAMASTE PATTAYA RESERVATIONS SUPER-APP</span>
                 <span class="text-[9px] text-amber-400 font-extrabold tracking-widest uppercase mt-0.5">BHARTIYO KE LEA EK BHARTIYE KA TOHFA 🇮🇳</span>
             </div>
         </div>
@@ -73,8 +72,10 @@ html { scroll-behavior: smooth; }
 <!-- MAIN HERO: JOIN & CONNECT PORTALS -->
 <section class="py-8 bg-slate-950 hero-pattaya-bg relative">
     <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-0"></div>
-    <div class="container mx-auto px-4 max-w-2xl relative z-10">
-        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl">
+    <div class="container mx-auto px-4 max-w-4xl relative z-10 space-y-6">
+        
+        <!-- Login Portals Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl max-w-2xl mx-auto">
             <div class="text-center mb-6">
                 <span class="bg-slate-950 border border-cyan-500/30 text-cyan-400 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-md inline-block mb-4">Welcome to Namaste Pattaya</span>
                 <h1 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight leading-tight">Choose How You Want To<br>Join & Connect</h1>
@@ -96,103 +97,59 @@ html { scroll-behavior: smooth; }
                 </button>
             </div>
         </div>
-    </div>
-</section>
 
-<!-- 🌟 RAJU GUIDE CONCIERGE & REFERRAL / COMMISSIONS BAR (PLACED WHERE MARKED IN YELLOW) -->
-<section class="py-6 bg-slate-900 border-y border-cyan-500/40">
-    <div class="container mx-auto px-4 max-w-4xl space-y-4">
-        <!-- Raju Guide Banner -->
-        <div onclick="openLiveChat()" class="bg-gradient-to-r from-cyan-900 via-slate-900 to-cyan-950 border border-cyan-500/50 p-4 rounded-2xl cursor-pointer hover:border-cyan-400 transition flex items-center justify-between shadow-xl">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-full bg-cyan-600 flex items-center justify-center text-white font-black text-sm animate-pulse">🙏</div>
+        <!-- SPLIT SECTION: A (PARTNERS & VENUES) AND R (REFERRAL & COMMISSION) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- SECTION A: JOIN US FOR PARTNERS / VENUES -->
+            <div class="bg-slate-900/90 border border-cyan-500/40 p-5 rounded-3xl shadow-xl flex flex-col justify-between">
                 <div>
-                    <span class="text-xs font-black text-cyan-400 uppercase tracking-wide block">Raju Guide Concierge — 24/7 Support & Instant Help</span>
-                    <span class="text-[11px] text-gray-300">Tap anytime to ask questions, check tables, or get instant assistance!</span>
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-8 h-8 rounded-xl bg-cyan-600 text-white font-black flex items-center justify-center text-sm">🤝</div>
+                        <div>
+                            <h3 class="text-white font-black text-sm uppercase">Join Us — Partners / Venues</h3>
+                            <span class="text-cyan-400 text-[10px] font-bold uppercase tracking-wider">Grow Your Business in Pattaya</span>
+                        </div>
+                    </div>
+                    <p class="text-gray-300 text-xs leading-relaxed mb-4">Register your club, hotel, restaurant, or spa with Namaste Pattaya. Connect with thousands of Indian and international travellers, get listed on top recommendations, and boost your daily reservations instantly.</p>
                 </div>
+                <button onclick="openPartnerDetailsModal()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-2.5 rounded-xl uppercase tracking-wider text-xs shadow-md transition">View Partner Details →</button>
             </div>
-            <span class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase shadow-md">Chat Now</span>
-        </div>
 
-        <!-- Referral & Commissions Bar -->
-        <div class="bg-slate-950 border border-amber-500/40 p-5 rounded-2xl shadow-xl">
-            <div class="flex items-center space-x-3 mb-3">
-                <div class="w-8 h-8 rounded-xl bg-amber-500 text-black font-black flex items-center justify-center text-sm">🎁</div>
+            <!-- SECTION R: REFERRAL & COMMISSION PROGRAM -->
+            <div class="bg-slate-900/90 border border-amber-500/40 p-5 rounded-3xl shadow-xl flex flex-col justify-between">
                 <div>
-                    <h3 class="text-white font-black text-sm uppercase">Referral & Commission Program</h3>
-                    <span class="text-amber-400 text-[10px] font-bold uppercase tracking-wider">Earn While You Explore Pattaya</span>
+                    <div class="flex items-center space-x-3 mb-3">
+                        <div class="w-8 h-8 rounded-xl bg-amber-500 text-black font-black flex items-center justify-center text-sm">🎁</div>
+                        <div>
+                            <h3 class="text-white font-black text-sm uppercase">Referral & Commission Program</h3>
+                            <span class="text-amber-400 text-[10px] font-bold uppercase tracking-wider">Earn While You Explore</span>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs mb-3">
+                        <div onclick="openCommissionModal('Users', '5% Fixed Commission on Bookings (Min. ฿5,000)')" class="bg-slate-950 p-2 rounded-xl border border-slate-800 hover:border-cyan-500 cursor-pointer transition">
+                            <span class="text-cyan-400 font-black block text-[11px]">👤 Users</span>
+                            <span class="text-[10px] text-gray-400">5% Earn</span>
+                        </div>
+                        <div onclick="openCommissionModal('Ladies', '5% Commission + Free Pro Social Media Marketing for 50 App Downloads')" class="bg-slate-950 p-2 rounded-xl border border-slate-800 hover:border-purple-500 cursor-pointer transition">
+                            <span class="text-purple-300 font-black block text-[11px]">🌸 Ladies</span>
+                            <span class="text-[10px] text-gray-400">Free Promo</span>
+                        </div>
+                        <div onclick="openCommissionModal('Agents', 'Tiered 10% - 15% VIP Commission + Direct Payouts')" class="bg-slate-950 p-2 rounded-xl border border-slate-800 hover:border-amber-500 cursor-pointer transition">
+                            <span class="text-amber-400 font-black block text-[11px]">🇹🇭/🇮🇳 Agents</span>
+                            <span class="text-[10px] text-gray-400">10-15% Tier</span>
+                        </div>
+                    </div>
                 </div>
+                <button onclick="openCommissionModal('Full Program', 'Explore all user, lady, and agent referral tiers and commission payouts in detail.')" class="w-full bg-amber-500 hover:bg-amber-600 text-black font-black py-2.5 rounded-xl uppercase tracking-wider text-xs shadow-md transition">View Full Breakdown →</button>
             </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                    <span class="text-emerald-400 font-black block text-sm mb-1">5% Fixed Commission</span>
-                    <p class="text-gray-300">Invite friends with your referral code and earn fixed 5% on any paid service booking (min. ฿5,000).</p>
-                </div>
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                    <span class="text-purple-400 font-black block text-sm mb-1">Free Pro Marketing</span>
-                    <p class="text-gray-300">Refer <strong>50 app downloads</strong> and get free social media marketing services for your profile/business.</p>
-                </div>
-                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
-                    <span class="text-cyan-400 font-black block text-sm mb-1">Agent Perks & Bonuses</span>
-                    <p class="text-gray-300">Thailand & India official agents enjoy higher tier commissions, VIP table access, and direct payouts.</p>
-                </div>
-            </div>
+
         </div>
+
     </div>
 </section>
 
-<!-- 💎 VIP ALL-INCLUSIVE PASS SECTION -->
-<section id="vip-package-section" class="py-12 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-b border-amber-500/30">
-    <div class="container mx-auto px-4 max-w-4xl">
-        <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-500/60 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
-            <div class="absolute -right-12 -top-12 text-amber-500/10 text-9xl font-black pointer-events-none">👑</div>
-            <div class="text-center max-w-xl mx-auto mb-8">
-                <span class="bg-amber-500 text-black text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-md inline-block mb-3">🔥 Ultimate Pattaya Access Pass</span>
-                <h2 class="text-2xl md:text-4xl font-black text-white uppercase tracking-tight">Join Us for Just <span class="text-amber-400">฿2,999</span> Baht!</h2>
-                <p class="text-gray-300 text-xs md:text-sm mt-3">Unlock the ultimate Pattaya nightlife and concierge experience with a single VIP membership pass.</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-8">
-                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
-                    <div class="text-amber-400 text-lg"><i class="fa-solid fa-tags"></i></div>
-                    <div>
-                        <h4 class="text-white font-black text-sm mb-0.5">Discounted Prices on All Services</h4>
-                        <p class="text-gray-400">Avail up to 30% off across all super-app services, clubs, beach parties, and restaurants.</p>
-                    </div>
-                </div>
-                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
-                    <div class="text-purple-400 text-lg"><i class="fa-solid fa-crown"></i></div>
-                    <div>
-                        <h4 class="text-white font-black text-sm mb-0.5">Full Access to Girls Lounge</h4>
-                        <p class="text-gray-400">Exclusive entry into the Empowered Girls & VIP Ladies Lounge with special concierge perks.</p>
-                    </div>
-                </div>
-                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
-                    <div class="text-pink-400 text-lg"><i class="fa-solid fa-heart"></i></div>
-                    <div>
-                        <h4 class="text-white font-black text-sm mb-0.5">Dating App Full Access</h4>
-                        <p class="text-gray-400">Connect instantly on our Open Dating & Buddy Finder radar to plan your nights out.</p>
-                    </div>
-                </div>
-                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
-                    <div class="text-cyan-400 text-lg"><i class="fa-solid fa-glass-cheers"></i></div>
-                    <div>
-                        <h4 class="text-white font-black text-sm mb-0.5">Elite Party Invitations</h4>
-                        <p class="text-gray-400">Receive VIP invitations to private yacht gatherings, celebrity DJ nights, and secret club bashes.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="text-center">
-                <button onclick="alert('🎉 Redirecting to secure checkout for the ฿2,999 VIP Pass! BHARTIYO KE LEA EK BHARTIYE KA TOHFA!')" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 text-black font-black px-8 py-4 rounded-2xl uppercase tracking-wider text-sm shadow-xl transition transform hover:scale-105">
-                    🚀 Get VIP All-Inclusive Pass (฿2,999)
-                </button>
-            </div>
-        </div>
-    </div>
-</section>
-
-<!-- ⚡ QUICK ACTIONS BAR -->
+<!-- ⚡ QUICK ACTIONS BAR (WITH RAJU GUIDE PLACED IN BLUE/CYAN HIGHLIGHTED POSITION) -->
 <section id="quick-actions" class="py-8 bg-slate-900 border-b border-cyan-500/35">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="flex items-center justify-between mb-3">
@@ -200,7 +157,8 @@ html { scroll-behavior: smooth; }
             <span class="text-[10px] text-gray-400 font-bold uppercase">swipe →</span>
         </div>
         <div class="qa-row">
-            <button onclick="openLiveChat()" class="qa border-cyan-400 shadow-lg shadow-cyan-500/20"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=300&q=80')"></div><div class="lb text-cyan-300">🙏 Raju Guide</div></button>
+            <!-- Raju Guide placed right here in the primary slot as requested -->
+            <button onclick="openLiveChat()" class="qa border-2 border-cyan-400 shadow-lg shadow-cyan-500/30 bg-cyan-950/60"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=300&q=80')"></div><div class="lb text-cyan-300 text-xs font-black">🙏 Raju Guide</div></button>
             <a href="/packages.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💎 Packages</div></a>
             <button onclick="openClubBooking('Nashaa')" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🍸 Indian Clubs</div></button>
             <button onclick="openLadiesLoungeModal()" class="qa border-purple-500/50"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=300&q=80')"></div><div class="lb text-purple-300">🌸 Ladies Lounge</div></button>
@@ -222,8 +180,7 @@ html { scroll-behavior: smooth; }
 <section id="all-services" class="py-16 bg-slate-950 border-b border-cyan-500/20">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="text-center mb-12">
-            <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">📁 NAMASTE PATTAYA RESERVATIONS SUPER-APP SERVICES</h2>
-            <div class="h-1 w-16 bg-cyan-500 mx-auto mt-3 rounded-full"></div>
+            <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">NAMASTE PATTAYA RESERVATIONS SUPER-APP SERVICES</h2>
             <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 font-bold">BHARTIYO KE LEA EK BHARTIYE KA TOHFA • RATE & REVIEW EVERY SERVICE</p>
         </div>
         
@@ -467,6 +424,57 @@ html { scroll-behavior: smooth; }
     </div>
 </section>
 
+<!-- 💎 VIP ALL-INCLUSIVE PASS SECTION (MOVED TO THE BOTTOM AS REQUESTED) -->
+<section id="vip-package-section" class="py-12 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-b border-amber-500/30">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-500/60 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 text-amber-500/10 text-9xl font-black pointer-events-none">👑</div>
+            <div class="text-center max-w-xl mx-auto mb-8">
+                <span class="bg-amber-500 text-black text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-md inline-block mb-3">🔥 Ultimate Pattaya Access Pass</span>
+                <h2 class="text-2xl md:text-4xl font-black text-white uppercase tracking-tight">Join Us for Just <span class="text-amber-400">฿2,999</span> Baht!</h2>
+                <p class="text-gray-300 text-xs md:text-sm mt-3">Unlock the ultimate Pattaya nightlife and concierge experience with a single VIP membership pass.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-8">
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-amber-400 text-lg"><i class="fa-solid fa-tags"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Discounted Prices on All Services</h4>
+                        <p class="text-gray-400">Avail up to 30% off across all super-app services, clubs, beach parties, and restaurants.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-purple-400 text-lg"><i class="fa-solid fa-crown"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Full Access to Girls Lounge</h4>
+                        <p class="text-gray-400">Exclusive entry into the Empowered Girls & VIP Ladies Lounge with special concierge perks.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-pink-400 text-lg"><i class="fa-solid fa-heart"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Dating App Full Access</h4>
+                        <p class="text-gray-400">Connect instantly on our Open Dating & Buddy Finder radar to plan your nights out.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-cyan-400 text-lg"><i class="fa-solid fa-glass-cheers"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Elite Party Invitations</h4>
+                        <p class="text-gray-400">Receive VIP invitations to private yacht gatherings, celebrity DJ nights, and secret club bashes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="alert('🎉 Redirecting to secure checkout for the ฿2,999 VIP Pass! BHARTIYO KE LEA EK BHARTIYE KA TOHFA!')" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 text-black font-black px-8 py-4 rounded-2xl uppercase tracking-wider text-sm shadow-xl transition transform hover:scale-105">
+                    🚀 Get VIP All-Inclusive Pass (฿2,999)
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- 🇮🇳 AUTHENTIC INDIAN TRAVELLER REVIEWS SECTION -->
 <section id="indian-reviews" class="py-16 bg-slate-900 border-b border-cyan-500/30">
     <div class="container mx-auto px-4 max-w-6xl">
@@ -519,7 +527,42 @@ html { scroll-behavior: smooth; }
 
 <!-- ================= MODALS ================= -->
 
-<!-- 1. RATING & REVIEW SUBMISSION MODAL -->
+<!-- 1. PARTNER DETAILS MODAL -->
+<div id="partnerDetailsModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-cyan-500/50 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl text-xs">
+        <button onclick="closePartnerDetailsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-600 flex items-center justify-center text-white font-black text-xl">🤝</div>
+            <div><h3 class="text-lg font-black text-white uppercase">Partner With Us</h3><span class="text-cyan-400 font-bold uppercase tracking-wider">Venues & Businesses in Pattaya</span></div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 mb-6 space-y-3">
+            <p class="text-gray-200 leading-relaxed">Join Namaste Pattaya as an official partner venue (Clubs, Beach Clubs, Restaurants, Hotels, Spas).</p>
+            <ul class="list-disc list-inside text-gray-300 space-y-1">
+                <li>Direct table reservation integration</li>
+                <li>Targeted marketing to Indian tourists</li>
+                <li>Dedicated partner dashboard access</li>
+            </ul>
+        </div>
+        <button onclick="alert('Redirecting to Partner Registration Portal...'); closePartnerDetailsModal();" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-xs shadow-lg">Register Your Business</button>
+    </div>
+</div>
+
+<!-- 2. COMMISSION / REFERRAL DETAILS MODAL -->
+<div id="commissionModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-amber-500/50 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl text-xs">
+        <button onclick="closeCommissionModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <div class="flex items-center space-x-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-amber-500 flex items-center justify-center text-black font-black text-xl">🎁</div>
+            <div><h3 id="commModalTitle" class="text-lg font-black text-white uppercase">Category Details</h3><span class="text-amber-400 font-bold uppercase tracking-wider">Referral & Commission Program</span></div>
+        </div>
+        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 mb-6">
+            <p id="commModalText" class="text-gray-200 text-sm leading-relaxed font-medium">Details will load here...</p>
+        </div>
+        <button onclick="closeCommissionModal()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-xs shadow-lg">Got It</button>
+    </div>
+</div>
+
+<!-- 3. RATING & REVIEW SUBMISSION MODAL -->
 <div id="ratingModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-cyan-500/50 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl text-xs">
         <button onclick="closeRatingModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -551,7 +594,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 2. LADIES LOUNGE MODAL -->
+<!-- 4. LADIES LOUNGE MODAL -->
 <div id="ladiesLoungeModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-purple-500/50 w-full max-w-2xl rounded-3xl p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
         <button onclick="closeLadiesLoungeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -592,7 +635,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 3. PAY BILL & SPLIT MODAL -->
+<!-- 5. PAY BILL & SPLIT MODAL -->
 <div id="payBillModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-slate-800 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl text-xs">
         <button onclick="closePayBillModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -630,7 +673,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 4. MAPS (ONLINE / OFFLINE) MODAL -->
+<!-- 6. MAPS (ONLINE / OFFLINE) MODAL -->
 <div id="mapModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-slate-800 w-full max-w-lg rounded-3xl p-6 md:p-8 relative shadow-2xl">
         <button onclick="closeMapModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -657,7 +700,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 5. CLUB TABLE RESERVATION MODAL -->
+<!-- 7. CLUB TABLE RESERVATION MODAL -->
 <div id="clubBookingModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-cyan-500/40 w-full max-w-lg rounded-3xl p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
         <button onclick="closeClubBooking()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -687,7 +730,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 6. STANDALONE PHOTO & SONG REQUEST MODAL -->
+<!-- 8. STANDALONE PHOTO & SONG REQUEST MODAL -->
 <div id="vipMediaModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-amber-500/40 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
         <button onclick="closeVipMediaModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -713,7 +756,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 7. LIVE CHAT MODAL (RAJU GUIDE) -->
+<!-- 9. LIVE CHAT MODAL (RAJU GUIDE) -->
 <div id="liveChatModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-slate-800 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[450px]">
         <div class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center">
@@ -733,6 +776,24 @@ html { scroll-behavior: smooth; }
 <script>
 // WEBHOOK VARIABLE
 var N8N = 'https://namastepattayareservation.app.n8n.cloud/webhook';
+
+// Partner Details Modal Controls
+function openPartnerDetailsModal(){
+    document.getElementById('partnerDetailsModal').classList.remove('hidden');
+}
+function closePartnerDetailsModal(){
+    document.getElementById('partnerDetailsModal').classList.add('hidden');
+}
+
+// Commission Modal Controls
+function openCommissionModal(category, details){
+    document.getElementById('commModalTitle').textContent = category + ' Commission Details';
+    document.getElementById('commModalText').textContent = details;
+    document.getElementById('commissionModal').classList.remove('hidden');
+}
+function closeCommissionModal(){
+    document.getElementById('commissionModal').classList.add('hidden');
+}
 
 // Rating & Review Modal Controls
 function openRatingModal(serviceName){
