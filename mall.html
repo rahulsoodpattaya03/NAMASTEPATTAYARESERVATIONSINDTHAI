@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Namaste Mall | Buy & Gift 24/7</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="/logo.png">
+</head>
+<body class="bg-slate-950 text-gray-100" style="font-family:system-ui,Arial,sans-serif;padding-bottom:90px">
+
+<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
+  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
+  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-amber-400 mt-1">🛍️ Namaste Mall</h1>
+  <p class="text-[11px] text-gray-500">Buy for yourself or gift to anyone in Pattaya — 24/7</p>
+</header>
+
+<main class="max-w-4xl mx-auto px-4 py-6">
+  <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+</main>
+
+<!-- Cart bar -->
+<div id="cartbar" onclick="openCart()" style="display:none" class="fixed left-0 right-0 bottom-0 z-20 max-w-4xl mx-auto px-4 py-3 bg-gradient-to-r from-pink-600 to-amber-500 text-black font-black flex justify-between items-center rounded-t-2xl cursor-pointer shadow-2xl">
+  <span id="cartsummary">🛒 0 items</span><span class="bg-black text-white px-4 py-1.5 rounded-lg">Checkout →</span>
+</div>
+
+<!-- Cart / checkout overlay -->
+<div id="cartOverlay" class="fixed inset-0 bg-black/70 z-40 hidden flex items-end sm:items-center justify-center p-0 sm:p-4">
+  <div class="bg-slate-950 border border-slate-800 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 max-h-[92vh] overflow-y-auto">
+    <div class="flex justify-between items-center mb-3"><b class="text-white">🛒 Your Basket</b><button onclick="closeCart()" class="text-gray-400 text-xl">&times;</button></div>
+    <div id="ditems" class="space-y-2 mb-3"></div>
+    <div class="flex justify-between font-black text-lg border-t border-slate-800 pt-3"><span>Total</span><span class="text-emerald-400" id="grand">฿0</span></div>
+
+    <label class="flex items-center gap-2 mt-4 text-sm"><input type="checkbox" id="isGift" onchange="toggleGift()" style="width:18px;height:18px;accent-color:#f59e0b"> 🎁 This is a gift for someone</label>
+    <div id="giftBox" style="display:none" class="space-y-2 mt-2">
+      <input id="gName" placeholder="Recipient Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="gContact" placeholder="Recipient Mobile / WhatsApp" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="gWhere" placeholder="Deliver to (club / hotel / address)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="gMsg" placeholder="Gift message (optional)" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    </div>
+
+    <div class="mt-4 space-y-2">
+      <input id="bName" placeholder="Your Name" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="bContact" placeholder="Your Mobile / WhatsApp" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <div class="text-xs font-bold text-gray-400 mt-2">Payment method</div>
+      <select id="pay" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-sm">
+        <option>🇮🇳 India · UPI</option><option>🇮🇳 India · Scan QR</option><option>🇮🇳 India · Card</option>
+        <option>🇹🇭 Thailand · PromptPay</option><option>🇹🇭 Thailand · Wallet</option><option>🇹🇭 Thailand · Card</option>
+      </select>
+    </div>
+    <button onclick="placeOrder(this)" class="w-full mt-4 bg-gradient-to-r from-pink-600 to-amber-500 text-black font-black py-3.5 rounded-xl uppercase text-sm">Place Order</button>
+    <p class="text-[11px] text-gray-500 text-center mt-2">Pay on confirmation — our team contacts you to complete payment &amp; delivery.</p>
+  </div>
+</div>
+
+<script>
+var ORDERS='https://namastepattayareservation.app.n8n.cloud/webhook/orders';
+try { var _rp=new URLSearchParams(location.search).get('ref'); if(_rp) localStorage.setItem('np_ref',_rp); } catch(e){}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function baht(n){return '฿'+Number(n||0).toLocaleString('en-US');}
+var PRODUCTS=[
+  {id:'p1',n:'Rose Bouquet',p:1500,e:'💐'},
+  {id:'p2',n:'Luxury Chocolates',p:1200,e:'🍫'},
+  {id:'p3',n:'Designer Perfume',p:3500,e:'🧴'},
+  {id:'p4',n:'Large Teddy Bear',p:900,e:'🧸'},
+  {id:'p5',n:'Champagne (to club)',p:4500,e:'🍾'},
+  {id:'p6',n:'Spa Gift Voucher',p:2000,e:'💆'},
+  {id:'p7',n:'Birthday Surprise Combo',p:3000,e:'🎂'},
+  {id:'p8',n:'Gold Keepsake',p:5000,e:'🏅'},
+  {id:'p9',n:'Namaste Gift Card ฿1000',p:1000,e:'💳'},
+  {id:'p10',n:'Namaste Gift Card ฿5000',p:5000,e:'💳'}
+];
+var cart={};
+function render(){
+  document.getElementById('grid').innerHTML = PRODUCTS.map(function(x){
+    var q=cart[x.id]?cart[x.id].qty:0;
+    return '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-col">'
+      +'<div class="text-4xl text-center py-3">'+x.e+'</div>'
+      +'<div class="font-bold text-sm text-white">'+esc(x.n)+'</div>'
+      +'<div class="text-emerald-400 font-black text-sm mt-1">'+baht(x.p)+'</div>'
+      +(q>0
+        ? '<div class="flex items-center justify-between mt-2"><button onclick="dec(\''+x.id+'\')" class="w-8 h-8 rounded-lg bg-slate-800 text-white font-black">−</button><span class="font-black">'+q+'</span><button onclick="inc(\''+x.id+'\')" class="w-8 h-8 rounded-lg bg-amber-500 text-black font-black">+</button></div>'
+        : '<button onclick="inc(\''+x.id+'\')" class="mt-2 bg-amber-500 text-black font-black py-2 rounded-lg text-xs uppercase">Add</button>')
+      +'</div>';
+  }).join('');
+  bar();
+}
+function inc(id){ var pr=PRODUCTS.filter(function(x){return x.id===id;})[0]; if(!cart[id]) cart[id]={n:pr.n,p:pr.p,qty:0}; cart[id].qty++; render(); if(document.getElementById('cartOverlay').classList.contains('hidden')===false) renderCart(); }
+function dec(id){ if(cart[id]){ cart[id].qty--; if(cart[id].qty<=0) delete cart[id]; } render(); if(document.getElementById('cartOverlay').classList.contains('hidden')===false) renderCart(); }
+function totals(){ var i=0,s=0; for(var k in cart){ i+=cart[k].qty; s+=cart[k].qty*cart[k].p; } return {i:i,s:s}; }
+function bar(){ var t=totals(); var b=document.getElementById('cartbar'); if(t.i>0){ b.style.display='flex'; document.getElementById('cartsummary').textContent='🛒 '+t.i+' item'+(t.i>1?'s':'')+' · '+baht(t.s); } else b.style.display='none'; }
+function openCart(){ document.getElementById('cartOverlay').classList.remove('hidden'); renderCart(); }
+function closeCart(){ document.getElementById('cartOverlay').classList.add('hidden'); }
+function toggleGift(){ document.getElementById('giftBox').style.display=document.getElementById('isGift').checked?'block':'none'; }
+function renderCart(){
+  var keys=Object.keys(cart);
+  document.getElementById('ditems').innerHTML = keys.length? keys.map(function(k){var c=cart[k];return '<div class="flex justify-between text-sm"><span>'+esc(c.n)+' × '+c.qty+'</span><span class="font-bold">'+baht(c.qty*c.p)+'</span></div>';}).join('') : '<div class="text-gray-500 text-center py-4">Basket empty</div>';
+  document.getElementById('grand').textContent = baht(totals().s);
+}
+function placeOrder(btn){
+  var t=totals(); if(!t.i){ alert('Your basket is empty.'); return; }
+  var bName=document.getElementById('bName').value.trim(), bContact=document.getElementById('bContact').value.trim();
+  if(!bName||!bContact){ alert('Please enter your name and contact.'); return; }
+  var lines=[], items=[];
+  Object.keys(cart).forEach(function(k){ var c=cart[k]; lines.push('• '+c.n+' x'+c.qty+' = '+baht(c.qty*c.p)); items.push({label:c.n,category:'Namaste Mall Shopping',amount:c.qty*c.p}); });
+  var summary=lines.join('\n');
+  if(document.getElementById('isGift').checked){
+    summary+='\n\n🎁 GIFT TO: '+document.getElementById('gName').value.trim()+' ('+document.getElementById('gContact').value.trim()+')\nDeliver to: '+document.getElementById('gWhere').value.trim()+'\nMessage: '+document.getElementById('gMsg').value.trim();
+  }
+  var ref='NM-'+Math.floor(1000+Math.random()*9000);
+  var refCode=''; try{ refCode=localStorage.getItem('np_ref')||''; }catch(e){}
+  var payload={ name:bName, contact:bContact, payment:document.getElementById('pay').value, total:Number(t.s).toLocaleString('en-US'), total_num:t.s, summary:summary, ref:ref, referral_code:refCode, items:items };
+  btn.textContent='Placing...'; btn.disabled=true;
+  fetch(ORDERS,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(function(r){return r.json();}).then(function(){ alert('Order received! Ref '+ref+'. Our team will contact you to complete payment & delivery.'); cart={}; render(); closeCart(); })
+    .catch(function(){ btn.disabled=false; btn.textContent='Place Order'; alert('Could not place order. Please try again.'); });
+}
+render();
+</script>
+</body>
+</html>
