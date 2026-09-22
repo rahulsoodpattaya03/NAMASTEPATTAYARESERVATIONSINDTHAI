@@ -21,7 +21,6 @@
 .glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(56, 189, 248, 0.2); }
 .executive-glow { box-shadow: 0 0 30px rgba(56, 189, 248, 0.25); }
 html { scroll-behavior: smooth; }
-/* Compact quick-action row */
 .qa-row { display:flex; gap:12px; overflow-x:auto; padding:4px 2px 12px; -webkit-overflow-scrolling:touch; }
 .qa-row::-webkit-scrollbar { height:6px; } .qa-row::-webkit-scrollbar-thumb { background:#26314d; border-radius:10px; }
 .qa { flex:0 0 auto; width:72px; display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; cursor:pointer; background:none; border:none; padding:0; }
@@ -37,7 +36,6 @@ html { scroll-behavior: smooth; }
     🎁 Special Promotion: Enjoy 30% OFF across ALL Super-App Services & Namaste Pattaya Mall Shopping! ⚡
 </div>
 
-<!-- TOP NAVIGATION -->
 <header class="bg-slate-950/90 backdrop-blur-md border-b border-cyan-500/30 sticky top-8 z-40">
     <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
         <div class="flex items-center space-x-3">
@@ -96,9 +94,9 @@ html { scroll-behavior: smooth; }
             <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="qa"><div class="ic">🛵</div><div class="lb">Cars & Bikes</div></a>
             <a href="/services.html?q=supercar" class="qa"><div class="ic">🏎️</div><div class="lb">Supercars & Bikes</div></a>
             <button onclick="openCustomerModal()" class="qa"><div class="ic">⭐</div><div class="lb">Namaste Premium</div></button>
-            <button onclick="openLiveChat()" class="qa"><div class="ic">🏠</div><div class="lb">Buy/Sell/Rent Property</div></button>
-            <button onclick="openLiveChat()" class="qa"><div class="ic">🛂</div><div class="lb">Visa & Tickets</div></button>
-            <button onclick="openLiveChat()" class="qa"><div class="ic">🛩️</div><div class="lb">Private Jet</div></button>
+            <a href="/property.html" class="qa"><div class="ic">🏠</div><div class="lb">Property</div></a>
+            <a href="/visa.html" class="qa"><div class="ic">🛂</div><div class="lb">Visa & Tickets</div></a>
+            <a href="/jet.html" class="qa"><div class="ic">🛩️</div><div class="lb">Private Jet</div></a>
             <a href="/services.html?cat=Hotels%20%26%20Resorts" class="qa"><div class="ic">🏨</div><div class="lb">Hotels & Villa</div></a>
             <a href="#refer-earn" class="qa"><div class="ic">🎁</div><div class="lb">Refer & Earn</div></a>
             <a href="#agents" class="qa"><div class="ic">🧳</div><div class="lb">Agents</div></a>
@@ -320,7 +318,6 @@ html { scroll-behavior: smooth; }
 var N8N = 'https://namastepattayareservation.app.n8n.cloud/webhook';
 try { var _r = new URLSearchParams(location.search).get('ref'); if (_r) localStorage.setItem('np_ref', _r); } catch (e) {}
 
-// Modals
 function openCustomerModal(){ document.getElementById('customerModal').classList.remove('hidden'); }
 function closeCustomerModal(){ document.getElementById('customerModal').classList.add('hidden'); }
 function openAccountModal(){ document.getElementById('accountModal').classList.remove('hidden'); }
@@ -329,7 +326,6 @@ function openLiveChat(){ document.getElementById('liveChatModal').classList.remo
 function closeLiveChat(){ document.getElementById('liveChatModal').classList.add('hidden'); }
 function goAgent(country){ closeAccountModal(); try{ agentTab(country); }catch(e){} var el=document.getElementById('agents'); if(el) el.scrollIntoView({behavior:'smooth'}); }
 
-// Indian clubs list (Nashaa #1 ... Ikka last)
 var INDIAN_CLUBS = ['Nashaa','Jalwa','Jannaat','Leela','Kamaa','Sutraa','Tonys','Boss','Mashaal','Barone','Nashaa Space','Ikka'];
 function openClubs(){
     var box=document.getElementById('clubsList');
@@ -350,7 +346,6 @@ function switchAuthTab(type){
 function handleCustomerSubmit(e){ e.preventDefault(); alert('Sign In successful! 30% billing discounts active.'); closeCustomerModal(); }
 function handleCustomerSignUpSubmit(e){ e.preventDefault(); alert('Account created successfully! Welcome to Pattaya Namaste.'); closeCustomerModal(); }
 
-// Raju chat
 function handleChatSubmit(e){
     e.preventDefault();
     var input=document.getElementById('chatInput'); var q=(input.value||'').trim(); if(!q) return;
@@ -365,7 +360,6 @@ function handleChatSubmit(e){
       .catch(function(){ t.textContent='Sorry, I could not connect. Please try again.'; });
 }
 
-// Refer & Earn
 function getRefCode(){ try{ return localStorage.getItem('np_code')||''; }catch(e){ return ''; } }
 function refLink(code){ return window.location.origin+'/?ref='+code; }
 function ensureRefCode(){ return new Promise(function(resolve){ var code=getRefCode(); if(code){resolve(code);return;} var name=prompt('Enter your name to create your referral link:'); if(!name){resolve('');return;} var contact=prompt('Enter your mobile / WhatsApp WITH country code (e.g. +66… or +91…):'); if(!contact){resolve('');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'join',name:name,contact:contact})}).then(function(r){return r.json();}).then(function(d){ if(d&&d.code){ try{localStorage.setItem('np_code',d.code);}catch(e){} resolve(d.code);} else resolve(''); }).catch(function(){resolve('');}); }); }
@@ -373,7 +367,6 @@ function copyRefLink(){ ensureRefCode().then(function(code){ if(!code){alert('Co
 function loadRefStats(){ var code=getRefCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'stats',code:code})}).then(function(r){return r.json();}).then(function(d){ document.getElementById('refLinkText').textContent=refLink(code); var cur=d.currency||'THB'; if(document.getElementById('refCount'))document.getElementById('refCount').textContent=(d.referrals||0); if(document.getElementById('refBalance'))document.getElementById('refBalance').textContent=cur+' '+(d.available||0); var p=document.getElementById('refPending'); if(p) p.textContent=(d.pending?('Pending: '+cur+' '+d.pending+' (held 48-72h, released after no dispute)'):''); }).catch(function(){}); }
 function withdrawEarnings(){ var code=getRefCode(); if(!code){alert('Get your referral link first, then start earning!');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||(d&&d.ok?'Withdrawal requested!':'Could not withdraw right now.')); loadRefStats(); }).catch(function(){alert('Could not process withdrawal. Please try again.');}); }
 
-// Agents
 var agentCountry='Thailand';
 function agentTab(c){ agentCountry=c; document.getElementById('agCountryLabel').textContent=c; document.getElementById('tabTH').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='Thailand'?'bg-purple-600 text-white':'bg-slate-800 text-gray-300'); document.getElementById('tabIN').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='India'?'bg-purple-600 text-white':'bg-slate-800 text-gray-300'); }
 function getAgentCode(){ try{ return localStorage.getItem('np_agent_code')||''; }catch(e){ return ''; } }
