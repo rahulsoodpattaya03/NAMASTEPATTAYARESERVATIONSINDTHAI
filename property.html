@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property — Buy · Sell · Rent | Namaste Pattaya</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="/logo.png">
+</head>
+<body class="bg-slate-950 text-gray-100 font-sans" style="font-family:system-ui,Arial,sans-serif">
+
+<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
+  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
+  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-amber-400 mt-1">🏠 Property — Buy · Sell · Rent</h1>
+  <p class="text-[11px] text-gray-500">Condos, villas & houses across Pattaya &amp; Jomtien</p>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+  <!-- Action + nationality -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+    <div class="text-xs font-bold text-gray-400 mb-2">I want to:</div>
+    <div class="grid grid-cols-3 gap-2 mb-4">
+      <button onclick="setDeal('Buy')" id="dBuy" class="py-2.5 rounded-xl font-black text-xs uppercase bg-amber-500 text-black">Buy</button>
+      <button onclick="setDeal('Sell')" id="dSell" class="py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">Sell</button>
+      <button onclick="setDeal('Rent')" id="dRent" class="py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">Rent</button>
+    </div>
+    <div class="text-xs font-bold text-gray-400 mb-2">Nationality:</div>
+    <div class="grid grid-cols-2 gap-2">
+      <button onclick="setNat('Thai')" id="nThai" class="py-2.5 rounded-xl font-black text-xs uppercase bg-purple-600 text-white">🇹🇭 Thai National</button>
+      <button onclick="setNat('Indian')" id="nIndian" class="py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🇮🇳 Indian National</button>
+    </div>
+    <p id="natNote" class="text-[11px] text-amber-300/80 mt-3 leading-relaxed"></p>
+  </div>
+
+  <!-- Listings -->
+  <div>
+    <h2 class="text-sm font-black uppercase text-amber-400 mb-3">Featured Listings <span class="text-gray-500 font-normal normal-case">(indicative)</span></h2>
+    <div id="listings" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+  </div>
+
+  <!-- Firms -->
+  <div>
+    <h2 class="text-sm font-black uppercase text-amber-400 mb-3">Real Estate Firms &amp; Brokers</h2>
+    <div id="firms" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+    <p class="text-[11px] text-gray-500 mt-2">Firms shown are well-known Pattaya agencies for reference only and are not yet verified partners. Always use a licensed agent and independent legal advice.</p>
+  </div>
+
+  <!-- Enquiry -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+    <h2 class="text-sm font-black uppercase text-cyan-400 mb-3">Send Property Enquiry</h2>
+    <div class="space-y-3">
+      <input id="pName" placeholder="Your Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="pContact" placeholder="Mobile / WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="pEmail" placeholder="Email (optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="pBudget" placeholder="Budget / Area (e.g. ฿5M condo, Jomtien)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <textarea id="pMsg" placeholder="What are you looking for?" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm"></textarea>
+      <button onclick="submitProperty(this)" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3 rounded-xl uppercase text-sm">Submit Enquiry</button>
+    </div>
+  </div>
+</main>
+
+<footer class="text-center text-[11px] text-gray-600 py-8 px-4">Foreigners can generally own condominium units freehold (within the 49% foreign quota) but not land directly. This is general info, not legal advice — verify with a licensed lawyer.</footer>
+
+<script>
+var EP='https://namastepattayareservation.app.n8n.cloud/webhook/enquiry';
+var deal='Buy', nat='Thai';
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+var ON='py-2.5 rounded-xl font-black text-xs uppercase bg-amber-500 text-black', OFF='py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300';
+var ONp='py-2.5 rounded-xl font-black text-xs uppercase bg-purple-600 text-white';
+function setDeal(d){ deal=d; document.getElementById('dBuy').className=d==='Buy'?ON:OFF; document.getElementById('dSell').className=d==='Sell'?ON:OFF; document.getElementById('dRent').className=d==='Rent'?ON:OFF; }
+function setNat(n){ nat=n; document.getElementById('nThai').className=n==='Thai'?ONp:OFF; document.getElementById('nIndian').className=n==='Indian'?ONp:OFF;
+  document.getElementById('natNote').textContent = n==='Indian'
+    ? 'Indian (foreign) nationals can buy condominium units freehold within the building\u2019s 49% foreign quota, or lease land/villas (typically 30-year lease). We help with legal checks & funds transfer.'
+    : 'Thai nationals can buy condos, houses and land freehold. We help you find the best deals and handle paperwork.'; }
+var LISTINGS=[
+  {t:'2-Bed Sea-View Condo — Wongamat',p:'฿6.9M (buy) · ฿45,000/mo (rent)',d:'Beachfront tower, pool, gym, 78 sqm'},
+  {t:'Private Pool Villa — Jomtien',p:'฿12.5M (buy) · ฿90,000/mo (rent)',d:'3 bed, private pool, 5 min to beach'},
+  {t:'Studio Condo — Central Pattaya',p:'฿1.9M (buy) · ฿15,000/mo (rent)',d:'Near Central Festival, furnished'},
+  {t:'Luxury Penthouse — Pratumnak',p:'฿24M (buy)',d:'Panoramic sea view, 3 bed, 220 sqm'},
+  {t:'Townhouse — East Pattaya',p:'฿3.8M (buy) · ฿22,000/mo (rent)',d:'2 storey, 3 bed, quiet estate'},
+  {t:'Commercial Shophouse — Walking St area',p:'Price on request',d:'Prime nightlife location, high footfall'}
+];
+var FIRMS=[
+  {n:'My Pattaya Real Estate',s:'Condos, villas, land'},
+  {n:'Pattaya Realty',s:'Sales & long-term rentals'},
+  {n:'Gecko Properties',s:'Investment & resale'},
+  {n:'Pattaya Prestige Properties',s:'Luxury villas & penthouses'},
+  {n:'Harrison Real Estate',s:'Full-service agency'},
+  {n:'Town & Country Property',s:'Rentals & management'}
+];
+document.getElementById('listings').innerHTML = LISTINGS.map(function(x){return '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="font-bold text-sm text-white">'+esc(x.t)+'</div><div class="text-emerald-400 font-black text-xs mt-1">'+esc(x.p)+'</div><div class="text-gray-400 text-[11px] mt-1">'+esc(x.d)+'</div></div>';}).join('');
+document.getElementById('firms').innerHTML = FIRMS.map(function(x){return '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="font-bold text-sm text-white">'+esc(x.n)+'</div><div class="text-gray-400 text-[11px] mt-1">'+esc(x.s)+'</div></div>';}).join('');
+setNat('Thai');
+function submitProperty(btn){
+  var name=document.getElementById('pName').value.trim(), contact=document.getElementById('pContact').value.trim();
+  if(!name||!contact){ alert('Please enter your name and contact.'); return; }
+  var details='Deal: '+deal+'\nNationality: '+nat+'\nBudget/Area: '+document.getElementById('pBudget').value.trim()+'\nMessage: '+document.getElementById('pMsg').value.trim();
+  btn.textContent='Submitting...'; btn.disabled=true;
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'Property ('+deal+')',name:name,contact:contact,email:document.getElementById('pEmail').value.trim(),details:details})})
+    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Thank you! Our team will contact you.'); btn.textContent='Submitted ✓'; })
+    .catch(function(){ btn.disabled=false; btn.textContent='Submit Enquiry'; alert('Could not submit. Please try again.'); });
+}
+</script>
+</body>
+</html>
