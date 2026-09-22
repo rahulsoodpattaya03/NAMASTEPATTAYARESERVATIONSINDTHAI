@@ -5,49 +5,34 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pattaya Namaste - Executive Nightlife & Concierge Platform</title>
 
-<!-- Tailwind CSS CDN -->
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                colors: {
-                    darkbg: '#0b0f19',
-                    cardbg: '#131c2e',
-                    accentgold: '#f59e0b',
-                    accentpurple: '#8b5cf6'
-                }
-            }
-        }
-    }
+    tailwind.config = { theme: { extend: { colors: { darkbg: '#0b0f19', cardbg: '#131c2e', accentgold: '#f59e0b', accentpurple: '#8b5cf6' } } } }
 </script>
 
-<!-- FontAwesome for Icons -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
 .hero-pattaya-bg {
     background: linear-gradient(135deg, rgba(15, 23, 42, 0.92), rgba(30, 27, 75, 0.88), rgba(15, 23, 42, 0.95)),
     url('https://images.unsplash.com/photo-1548013146-72479768bada?auto=format&fit=crop&w=1920&q=80');
-    background-size: cover;
-    background-position: center;
+    background-size: cover; background-position: center;
 }
-
-.glass-card {
-    background: rgba(15, 23, 42, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border: 1px solid rgba(56, 189, 248, 0.2);
-}
-
+.glass-card { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(56, 189, 248, 0.2); }
 .executive-glow { box-shadow: 0 0 30px rgba(56, 189, 248, 0.25); }
 html { scroll-behavior: smooth; }
+/* Compact quick-action row */
+.qa-row { display:flex; gap:12px; overflow-x:auto; padding:4px 2px 12px; -webkit-overflow-scrolling:touch; }
+.qa-row::-webkit-scrollbar { height:6px; } .qa-row::-webkit-scrollbar-thumb { background:#26314d; border-radius:10px; }
+.qa { flex:0 0 auto; width:72px; display:flex; flex-direction:column; align-items:center; gap:6px; text-decoration:none; cursor:pointer; background:none; border:none; padding:0; }
+.qa .ic { width:46px; height:46px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; background:#131c2e; border:1px solid #26314d; transition:border-color .2s, transform .15s; }
+.qa:hover .ic { border-color:#f59e0b; transform:translateY(-2px); }
+.qa .lb { font-size:10px; font-weight:700; color:#c7cddb; text-align:center; line-height:1.15; }
 </style>
 </head>
 
 <body class="bg-slate-950 text-gray-100 font-sans antialiased selection:bg-cyan-500 selection:text-slate-950">
 
-<!-- SITE-WIDE DISCOUNT BANNER -->
 <div class="bg-gradient-to-r from-emerald-600 via-cyan-600 to-indigo-600 text-white text-center py-2 px-4 text-xs font-black uppercase tracking-wider sticky top-0 z-50 shadow-md">
     🎁 Special Promotion: Enjoy 30% OFF across ALL Super-App Services & Namaste Pattaya Mall Shopping! ⚡
 </div>
@@ -56,7 +41,6 @@ html { scroll-behavior: smooth; }
 <header class="bg-slate-950/90 backdrop-blur-md border-b border-cyan-500/30 sticky top-8 z-40">
     <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
         <div class="flex items-center space-x-3">
-            <!-- MODERN LOGO BADGE -->
             <div class="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-800 p-0.5 shadow-lg executive-glow">
                 <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
                     <svg class="w-6 h-6 text-cyan-400 animate-pulse" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -68,18 +52,16 @@ html { scroll-behavior: smooth; }
             </div>
         </div>
 
-        <!-- Nav links -->
         <nav class="hidden lg:flex space-x-4 text-xs font-black uppercase text-gray-300 tracking-wider">
             <a href="#overview" class="hover:text-cyan-400 transition">Overview</a>
             <a href="#quick-actions" class="text-cyan-400 transition">⚡ Quick Actions</a>
             <a href="#all-services" class="hover:text-sky-400 transition">🗂️ All Services</a>
-            <a href="#refer-earn" class="text-emerald-400 transition animate-pulse">Refer & Earn 💸</a>
+            <a href="#refer-earn" class="text-emerald-400 transition">Refer & Earn 💸</a>
             <a href="#agents" class="text-purple-400 transition">Agents 🧳</a>
             <a href="#b2b-partners" class="text-accentgold transition">Partners 🤝</a>
         </nav>
 
         <div class="flex items-center space-x-2 sm:space-x-3">
-            <!-- LANGUAGE DROPDOWN -->
             <div class="relative">
                 <select id="languageSelect" class="bg-slate-900 text-cyan-400 font-bold text-xs border border-cyan-500/40 rounded-xl px-2.5 py-2 cursor-pointer outline-none">
                     <option value="en" selected>English</option>
@@ -87,184 +69,86 @@ html { scroll-behavior: smooth; }
                     <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
                 </select>
             </div>
-
-            <button onclick="openCustomerModal()" class="bg-slate-900 hover:bg-slate-800 text-gray-200 border border-slate-700 px-3 py-2 rounded-xl text-xs font-black uppercase transition flex items-center space-x-1.5">
-                <i class="fa-solid fa-user text-cyan-400"></i>
-                <span id="navLoginText" class="hidden sm:inline">Login</span>
+            <button onclick="openAccountModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 text-black px-3.5 py-2 rounded-xl text-xs font-black uppercase transition shadow-lg flex items-center space-x-1.5">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <span>Join / Login</span>
             </button>
             <button onclick="openLiveChat()" class="bg-gradient-to-r from-blue-600 via-indigo-600 to-cyan-500 hover:opacity-90 text-white px-3.5 py-2 rounded-xl text-xs font-black uppercase transition shadow-xl flex items-center space-x-1.5 animate-pulse">
                 <i class="fa-solid fa-comments"></i>
-                <span class="hidden sm:inline">Ask Raju Guide</span>
+                <span class="hidden sm:inline">Ask Raju</span>
             </button>
         </div>
     </div>
 </header>
 
-<!-- HERO SECTION -->
-<section id="overview" class="hero-pattaya-bg text-white py-24 px-4 text-center relative overflow-hidden">
-    <div class="max-w-4xl mx-auto relative z-10">
-        <div class="inline-flex items-center space-x-2 bg-slate-950/85 px-5 py-2 rounded-full text-xs font-black tracking-widest uppercase mb-6 border border-cyan-500/40 executive-glow">
-            <span class="text-cyan-400">🇮🇳 BHARAT KE LEA EK BHARTIYE KA TOHFA 🇮🇳</span>
-        </div>
-        <h1 class="text-4xl md:text-6xl font-black mb-6 leading-none tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white via-cyan-200 to-blue-400">
-            EXECUTIVE PATTAYA NIGHTLIFE & CONCIERGE SUPER-APP
-        </h1>
-        <p class="text-base md:text-lg text-gray-300 mb-8 max-w-2xl mx-auto leading-relaxed font-medium">
-            Your high-performance digital gateway to Pattaya's elite superclubs, VIP beach clubs, private jet charters, supercar rentals, and exclusive social circles.
-        </p>
-        <div class="mb-8">
-            <a href="/services.html?q=club" class="inline-flex items-center space-x-3 bg-gradient-to-r from-cyan-500 via-blue-600 to-indigo-600 hover:opacity-95 text-white font-black px-10 py-5 rounded-2xl shadow-2xl executive-glow transition transform hover:scale-105 text-sm md:text-base uppercase tracking-widest border border-cyan-400/50 animate-pulse">
-                <i class="fa-solid fa-chair text-cyan-200 text-xl"></i>
-                <span>Reserve Your Table in Club with Up to 30% Discount ⚡</span>
-            </a>
-        </div>
-    </div>
-</section>
-
-<!-- SECTION 1: ⚡ QUICK ACTIONS (Top Row) -->
-<section id="quick-actions" class="py-12 bg-slate-900 border-b border-cyan-500/30">
+<!-- ⚡ QUICK ACTIONS — compact single scrollable row -->
+<section id="quick-actions" class="py-8 bg-slate-900 border-b border-cyan-500/30">
     <div class="container mx-auto px-4 max-w-7xl">
-        <div class="text-center mb-8">
-            <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">⚡ Quick Actions</h2>
-            <p class="text-cyan-400 text-xs uppercase tracking-widest mt-2 font-bold">Our Most Popular & Needed Services</p>
+        <div class="flex items-center justify-between mb-3">
+            <h2 class="text-lg md:text-xl font-black text-white uppercase tracking-tight">⚡ Quick Actions</h2>
+            <span class="text-[10px] text-gray-500 font-bold uppercase">swipe →</span>
         </div>
-
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <a href="/services.html?q=club" class="bg-gradient-to-br from-indigo-900 to-slate-900 border border-indigo-500/40 hover:border-indigo-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-indigo-950 text-indigo-400 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-martini-glass"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">🍸 VIP Club Table</span>
-            </a>
-            <a href="/services.html?q=beach" class="bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-500/40 hover:border-sky-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-sky-950 text-sky-400 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-umbrella-beach"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">🏖️ VIP Beach Club</span>
-            </a>
-            <a href="/services.html?cat=Airport%20Transfers" class="bg-gradient-to-br from-teal-900 to-slate-900 border border-teal-500/40 hover:border-teal-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-teal-950 text-teal-400 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-van-shuttle"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">🚐 Airport Transfer</span>
-            </a>
-            <a href="/services.html?cat=Indian%20Restaurants" class="bg-gradient-to-br from-amber-900 to-slate-900 border border-amber-500/40 hover:border-amber-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-amber-950 text-amber-400 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-bowl-food"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">🍛 Indian Food</span>
-            </a>
-            <a href="/services.html?q=supercar" class="bg-gradient-to-br from-rose-900 to-slate-900 border border-rose-500/40 hover:border-rose-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-rose-950 text-rose-400 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-car-side"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">🏎️ Supercars & Yachts</span>
-            </a>
-            <button onclick="openCustomerModal()" class="bg-gradient-to-br from-purple-900 to-slate-900 border border-purple-500/40 hover:border-purple-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-purple-950 text-purple-400 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-crown"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">⭐ Join Premium (30% Off)</span>
-            </button>
-            <a href="#refer-earn" class="bg-gradient-to-br from-emerald-900 to-slate-900 border border-emerald-500/40 hover:border-emerald-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-emerald-950 text-emerald-400 flex items-center justify-center text-2xl group-hover:scale-110 transition"><i class="fa-solid fa-gift"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">🎁 Refer & Earn</span>
-            </a>
-            <button onclick="openLiveChat()" class="bg-gradient-to-br from-cyan-900 to-slate-900 border border-cyan-500/40 hover:border-cyan-400 p-5 rounded-2xl text-center transition flex flex-col items-center justify-center space-y-3 shadow-lg group">
-                <div class="w-12 h-12 rounded-xl bg-cyan-950 text-cyan-400 flex items-center justify-center text-2xl group-hover:scale-110 transition animate-pulse"><i class="fa-solid fa-comments"></i></div>
-                <span class="text-xs font-black text-white uppercase tracking-wider">💬 Ask Raju Guide</span>
-            </button>
+        <div class="qa-row">
+            <button onclick="openClubs()" class="qa"><div class="ic">🍸</div><div class="lb">Indian Clubs</div></button>
+            <a href="/services.html?q=beach" class="qa"><div class="ic">🌆</div><div class="lb">Rooftop & Beach</div></a>
+            <a href="/services.html?cat=Airport%20Transfers" class="qa"><div class="ic">🚕</div><div class="lb">Book Taxi</div></a>
+            <a href="/services.html?q=indian" class="qa"><div class="ic">🍛</div><div class="lb">Food & Grocery</div></a>
+            <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="qa"><div class="ic">🛵</div><div class="lb">Cars & Bikes</div></a>
+            <a href="/services.html?q=supercar" class="qa"><div class="ic">🏎️</div><div class="lb">Supercars & Bikes</div></a>
+            <button onclick="openCustomerModal()" class="qa"><div class="ic">⭐</div><div class="lb">Namaste Premium</div></button>
+            <button onclick="openLiveChat()" class="qa"><div class="ic">🏠</div><div class="lb">Buy/Sell/Rent Property</div></button>
+            <button onclick="openLiveChat()" class="qa"><div class="ic">🛂</div><div class="lb">Visa & Tickets</div></button>
+            <button onclick="openLiveChat()" class="qa"><div class="ic">🛩️</div><div class="lb">Private Jet</div></button>
+            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="qa"><div class="ic">🏨</div><div class="lb">Hotels & Villa</div></a>
+            <a href="#refer-earn" class="qa"><div class="ic">🎁</div><div class="lb">Refer & Earn</div></a>
+            <a href="#agents" class="qa"><div class="ic">🧳</div><div class="lb">Agents</div></a>
+            <button onclick="openLiveChat()" class="qa"><div class="ic">💬</div><div class="lb">Ask Raju</div></button>
         </div>
+        <p class="text-[11px] text-gray-500 mt-1">⭐ Namaste Premium — <span class="text-amber-400 font-bold">No Money No Honey</span></p>
     </div>
 </section>
 
-<!-- SECTION 2: 🗂️ BROWSE ALL SERVICES -->
+<!-- 🗂️ BROWSE ALL SERVICES -->
 <section id="all-services" class="py-16 bg-slate-950 border-b border-cyan-500/20">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-black text-white uppercase tracking-tight">🗂️ Browse All Services</h2>
             <div class="h-1 w-16 bg-cyan-500 mx-auto mt-3 rounded-full"></div>
         </div>
-
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <a href="/services.html?cat=Nightlife%20%26%20Bars" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-cyan-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-champagne-glasses"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Nightlife & Bars</h3>
-            </a>
-            <a href="/services.html?cat=VIP%20Beach%20Clubs" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-sky-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-umbrella-beach"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">VIP Beach Clubs</h3>
-            </a>
-            <a href="/services.html?cat=Restaurants" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-rose-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-utensils"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Restaurants</h3>
-            </a>
-            <a href="/services.html?cat=Indian%20Restaurants" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-amber-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-bowl-food"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Indian Restaurants</h3>
-            </a>
-            <a href="/services.html?cat=Desi%20Chai%20%26%20Spices%20(Indian%20Groceries)" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-emerald-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-basket-shopping"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Desi Chai & Spices</h3>
-            </a>
-            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-indigo-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-hotel"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Hotels & Resorts</h3>
-            </a>
-            <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-red-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-motorcycle"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Cars & Bikes Rental</h3>
-            </a>
-            <a href="/services.html?cat=Spa%20%26%20Massage" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-fuchsia-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-spa"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Spa & Massage</h3>
-            </a>
-            <a href="/services.html?cat=Tours%20%26%20Excursions" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-orange-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-map-location-dot"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Tours & Excursions</h3>
-            </a>
-            <a href="/services.html?cat=Water%20Sports" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-cyan-300 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-water"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Water Sports</h3>
-            </a>
-            <a href="/services.html?cat=Golf%20Courses" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-green-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-golf-ball-tee"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Golf Courses</h3>
-            </a>
-            <a href="/services.html?cat=Yacht%20%26%20Boat%20Charter" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-blue-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-sailboat"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Yacht & Boats</h3>
-            </a>
-            <a href="/services.html?cat=Airport%20Transfers" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-slate-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-plane-arrival"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Airport Transfers</h3>
-            </a>
-            <a href="/services.html?cat=Shopping%20%26%20Markets" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-pink-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-bag-shopping"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Shopping & Markets</h3>
-            </a>
-            <a href="/services.html?cat=Event%20%26%20Party%20Planning" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-yellow-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-calendar-check"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Event & Party Planning</h3>
-            </a>
-            <a href="/services.html?cat=Medical%20%26%20Pharmacy" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-rose-500 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-notes-medical"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Medical & Pharmacy</h3>
-            </a>
-            <a href="/services.html?cat=Concierge%20%26%20VIP%20Services" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md">
-                <div class="text-2xl text-purple-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-user-tie"></i></div>
-                <h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Concierge & VIP Services</h3>
-            </a>
+            <a href="/services.html?cat=Nightlife%20%26%20Bars" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-cyan-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-champagne-glasses"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Nightlife & Bars</h3></a>
+            <a href="/services.html?cat=VIP%20Beach%20Clubs" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-sky-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-umbrella-beach"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">VIP Beach Clubs</h3></a>
+            <a href="/services.html?cat=Restaurants" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-rose-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-utensils"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Restaurants</h3></a>
+            <a href="/services.html?cat=Indian%20Restaurants" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-amber-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-bowl-food"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Indian Restaurants</h3></a>
+            <a href="/services.html?cat=Desi%20Chai%20%26%20Spices%20(Indian%20Groceries)" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-emerald-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-basket-shopping"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Desi Chai & Spices</h3></a>
+            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-indigo-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-hotel"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Hotels & Resorts</h3></a>
+            <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-red-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-motorcycle"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Cars & Bikes Rental</h3></a>
+            <a href="/services.html?cat=Spa%20%26%20Massage" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-fuchsia-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-spa"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Spa & Massage</h3></a>
+            <a href="/services.html?cat=Tours%20%26%20Excursions" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-orange-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-map-location-dot"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Tours & Excursions</h3></a>
+            <a href="/services.html?cat=Water%20Sports" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-cyan-300 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-water"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Water Sports</h3></a>
+            <a href="/services.html?cat=Golf%20Courses" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-green-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-golf-ball-tee"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Golf Courses</h3></a>
+            <a href="/services.html?cat=Yacht%20%26%20Boat%20Charter" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-blue-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-sailboat"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Yacht & Boats</h3></a>
+            <a href="/services.html?cat=Airport%20Transfers" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-slate-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-plane-arrival"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Airport Transfers</h3></a>
+            <a href="/services.html?cat=Shopping%20%26%20Markets" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-pink-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-bag-shopping"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Shopping & Markets</h3></a>
+            <a href="/services.html?cat=Event%20%26%20Party%20Planning" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-yellow-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-calendar-check"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Event & Party Planning</h3></a>
+            <a href="/services.html?cat=Medical%20%26%20Pharmacy" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-rose-500 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-notes-medical"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Medical & Pharmacy</h3></a>
+            <a href="/services.html?cat=Concierge%20%26%20VIP%20Services" class="glass-card p-5 rounded-2xl border border-slate-800 hover:border-cyan-500 transition text-center group shadow-md"><div class="text-2xl text-purple-400 mb-2 group-hover:scale-110 transition"><i class="fa-solid fa-user-tie"></i></div><h3 class="text-gray-200 font-black text-xs uppercase tracking-wide">Concierge & VIP Services</h3></a>
         </div>
     </div>
 </section>
 
-<!-- REFER & EARN CASHBACK SYSTEM -->
+<!-- REFER & EARN -->
 <section id="refer-earn" class="py-16 bg-slate-950 border-b border-emerald-500/30">
     <div class="container mx-auto px-4 max-w-4xl">
         <div class="glass-card rounded-3xl p-8 md:p-10 shadow-2xl relative overflow-hidden">
             <div class="absolute -right-10 -bottom-10 text-emerald-500/10 text-9xl font-black pointer-events-none">5%</div>
             <span class="absolute top-4 right-6 bg-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md">Up to 5% · Lifetime</span>
             <div class="text-center md:text-left flex flex-col md:flex-row items-center gap-6 relative z-10">
-                <div class="bg-emerald-950 border border-emerald-500/40 p-5 rounded-3xl text-emerald-400 text-4xl flex-shrink-0 shadow-lg">
-                    <i class="fa-solid fa-wallet"></i>
-                </div>
+                <div class="bg-emerald-950 border border-emerald-500/40 p-5 rounded-3xl text-emerald-400 text-4xl flex-shrink-0 shadow-lg"><i class="fa-solid fa-wallet"></i></div>
                 <div class="flex-1 space-y-2">
                     <h2 class="text-2xl font-black text-white uppercase tracking-tight">Refer Friends & Earn Up To 5% — For Life!</h2>
-                    <p class="text-gray-300 text-xs leading-relaxed font-medium">
-                        Share your exclusive referral link. Every time your friends book a paid service through the app, <strong class="text-emerald-400">you earn 1% of their spend — for life.</strong> And when a friend spends <strong class="text-emerald-400">฿25,000 or more on a single booking, you earn 5% on that booking!</strong> Withdraw once you reach ฿500 (Thailand) or ₹1,000 (India).
-                    </p>
-                    <p class="text-gray-500 text-[11px] leading-relaxed mt-2">
-                        <b class="text-gray-400">Payout terms:</b> Commission is held and reviewed for 48–72 hours after the service is completed and is released manually only when there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold, delay or cancel any payout in case of any dispute, cancellation, refund, chargeback, fraud, misuse or any exceptional circumstance. All decisions of Namaste Pattaya Reservations are final.
-                    </p>
+                    <p class="text-gray-300 text-xs leading-relaxed font-medium">Share your exclusive referral link. Every time your friends book a paid service through the app, <strong class="text-emerald-400">you earn 1% of their spend — for life.</strong> And when a friend spends <strong class="text-emerald-400">฿25,000 or more on a single booking, you earn 5% on that booking!</strong> Withdraw once you reach ฿500 (Thailand) or ₹1,000 (India).</p>
+                    <p class="text-gray-500 text-[11px] leading-relaxed mt-2"><b class="text-gray-400">Payout terms:</b> Commission is held and reviewed for 48–72 hours after the service is completed and is released manually only when there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold, delay or cancel any payout in case of any dispute, cancellation, refund, chargeback, fraud, misuse or any exceptional circumstance. All decisions of Namaste Pattaya Reservations are final.</p>
                 </div>
             </div>
             <div class="mt-8 pt-6 border-t border-slate-800 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs relative z-10">
@@ -297,17 +181,11 @@ html { scroll-behavior: smooth; }
             <p class="text-purple-400 text-xs uppercase tracking-widest mt-2 font-bold">For Registered Travel & Business Agents</p>
         </div>
         <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl">
-            <p class="text-gray-300 text-sm leading-relaxed mb-4">
-                Registered agents earn <strong class="text-purple-300">5% commission</strong> when your referred customers book &amp; complete a paid service. <span class="text-gray-400">Not applicable on food, flights, property, gifts, lady tables and Namaste Mall shopping.</span> Withdraw once your referred bookings reach <strong class="text-purple-300">฿10,000</strong>. Free registration.
-            </p>
-
-            <!-- Country tabs -->
+            <p class="text-gray-300 text-sm leading-relaxed mb-4">Registered agents earn <strong class="text-purple-300">5% commission</strong> when your referred customers book &amp; complete a paid service. <span class="text-gray-400">Not applicable on food, flights, property, gifts, lady tables and Namaste Mall shopping.</span> Withdraw once your referred bookings reach <strong class="text-purple-300">฿10,000</strong>. Free registration.</p>
             <div class="flex gap-2 mb-5">
                 <button id="tabTH" onclick="agentTab('Thailand')" class="flex-1 py-2.5 rounded-xl font-black text-xs uppercase bg-purple-600 text-white transition">🇹🇭 Thailand</button>
                 <button id="tabIN" onclick="agentTab('India')" class="flex-1 py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300 transition">🇮🇳 India</button>
             </div>
-
-            <!-- Registration -->
             <div id="agentRegister" class="space-y-3">
                 <input id="agCompany" placeholder="Company Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm font-medium">
                 <input id="agReg" placeholder="Company Registration Number" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm font-medium">
@@ -315,18 +193,10 @@ html { scroll-behavior: smooth; }
                 <button onclick="agentRegister()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm">Register as Agent (<span id="agCountryLabel">Thailand</span>)</button>
                 <p class="text-gray-500 text-[11px] text-center">Your registration is reviewed and approved by our team before payouts.</p>
             </div>
-
-            <!-- Dashboard -->
             <div id="agentDash" style="display:none">
                 <div class="grid grid-cols-2 gap-3 text-xs mb-3">
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                        <span class="text-gray-400 block font-bold">Available to Withdraw</span>
-                        <div class="text-xl font-black text-emerald-400 mt-1" id="agAvail">฿0</div>
-                    </div>
-                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800">
-                        <span class="text-gray-400 block font-bold">Customers Referred</span>
-                        <div class="text-xl font-black text-white mt-1" id="agRefs">0</div>
-                    </div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800"><span class="text-gray-400 block font-bold">Available to Withdraw</span><div class="text-xl font-black text-emerald-400 mt-1" id="agAvail">฿0</div></div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800"><span class="text-gray-400 block font-bold">Customers Referred</span><div class="text-xl font-black text-white mt-1" id="agRefs">0</div></div>
                 </div>
                 <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 mb-3">
                     <span class="text-gray-400 text-xs font-bold">Progress to withdrawal (฿10,000 in referred bookings)</span>
@@ -343,15 +213,12 @@ html { scroll-behavior: smooth; }
                 <button onclick="agentWithdraw()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm">Request Withdrawal</button>
                 <button onclick="agentReset()" class="w-full mt-2 text-gray-500 text-[11px] underline">Register a different company</button>
             </div>
-
-            <p class="text-gray-500 text-[11px] leading-relaxed mt-4">
-                <b class="text-gray-400">Payout terms:</b> Commission is held 48–72 hours after service completion and released manually only when there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold, delay or cancel any payout in case of any dispute, cancellation, refund, chargeback, fraud, misuse or exceptional circumstance. All decisions are final.
-            </p>
+            <p class="text-gray-500 text-[11px] leading-relaxed mt-4"><b class="text-gray-400">Payout terms:</b> Commission is held 48–72 hours after service completion and released manually only when there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold, delay or cancel any payout in case of any dispute, cancellation, refund, chargeback, fraud, misuse or exceptional circumstance. All decisions are final.</p>
         </div>
     </div>
 </section>
 
-<!-- B2B PARTNERS & VENUE ACQUISITION -->
+<!-- B2B PARTNERS -->
 <section id="b2b-partners" class="py-24 bg-cardbg/40 border-y border-gray-800">
     <div class="max-w-7xl mx-auto px-6">
         <div class="text-center max-w-3xl mx-auto mb-16">
@@ -359,13 +226,10 @@ html { scroll-behavior: smooth; }
             <h2 class="text-3xl md:text-4xl font-black mt-4 mb-4">Partner With Pattaya Namaste</h2>
             <p class="text-gray-400 text-sm">Fill more tables, increase customer flow from high-spending international tourists, and monetize your venue on a win-win commission basis.</p>
         </div>
-
         <div class="max-w-2xl mx-auto mb-16">
             <div class="bg-cardbg border border-gray-800 rounded-3xl p-8 md:p-10 flex flex-col justify-between relative hover:border-accentgold/50 transition shadow-xl">
                 <div>
-                    <div class="w-12 h-12 rounded-2xl bg-accentgold/10 flex items-center justify-center text-accentgold text-xl font-bold mb-6">
-                        <i class="fa-solid fa-handshake"></i>
-                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-accentgold/10 flex items-center justify-center text-accentgold text-xl font-bold mb-6"><i class="fa-solid fa-handshake"></i></div>
                     <span class="text-xs uppercase tracking-widest text-accentgold font-bold">Partnership Proposal & Growth Model</span>
                     <h3 class="text-2xl md:text-3xl font-black mt-1 mb-4">Grow Your Business Bigger With Us</h3>
                     <p class="text-gray-400 text-sm mb-6">Join our network of clubs, restaurants, rentals and more. Win-win model: we take commission only after you get business.</p>
@@ -375,25 +239,48 @@ html { scroll-behavior: smooth; }
                         <li class="flex items-center"><i class="fa-solid fa-check text-accentgold mr-3"></i> Win-Win Model: Commission only after you get business</li>
                     </ul>
                 </div>
-                <a href="/form/partner-signup" target="_blank" class="w-full bg-accentgold text-black text-center font-extrabold py-3.5 rounded-xl transition hover:bg-amber-400 shadow-lg cursor-pointer block">
-                    Sign Up As Venue Partner
-                </a>
+                <a href="/form/partner-signup" target="_blank" class="w-full bg-accentgold text-black text-center font-extrabold py-3.5 rounded-xl transition hover:bg-amber-400 shadow-lg cursor-pointer block">Sign Up As Venue Partner</a>
             </div>
         </div>
     </div>
 </section>
 
-<!-- FOOTER -->
 <footer class="bg-slate-950 text-gray-400 py-12 border-t border-slate-800 text-xs text-center font-medium">
     <p class="mb-2">🇮🇳 BHARAT KE LEA EK BHARTIYE KA TOHFA JAI HIND 🇮🇳</p>
     <p class="max-w-3xl mx-auto mb-3 text-gray-500 text-[11px] leading-relaxed">Referral & agent commissions are held 48–72 hours after service completion and released manually only when there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold, delay or cancel any payout in case of any dispute, cancellation, refund, chargeback, fraud, misuse or exceptional circumstance. All decisions are final.</p>
-    <p>&copy; 2026 Pattaya Namaste Reservations & Nightvibe. All rights reserved. Executive Nightlife Platform.</p>
+    <p>&copy; 2026 Pattaya Namaste Reservations & Nightvibe. All rights reserved.</p>
 </footer>
+
+<!-- JOIN / LOGIN HUB MODAL -->
+<div id="accountModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-slate-800 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl">
+        <button onclick="closeAccountModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="text-xl font-black text-white uppercase mb-1 text-center">Join / Login</h3>
+        <p class="text-gray-400 text-xs text-center mb-6">Choose how you want to join Namaste Pattaya</p>
+        <div class="space-y-3">
+            <button onclick="closeAccountModal();openCustomerModal()" class="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-user"></i> Customer Login / Sign Up</button>
+            <a href="/form/partner-signup" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-black py-3 rounded-xl uppercase tracking-wider text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-handshake"></i> Partner — Register Business</a>
+            <button onclick="goAgent('Thailand')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm flex items-center justify-center gap-2">🇹🇭 Agent — Thailand</button>
+            <button onclick="goAgent('India')" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm flex items-center justify-center gap-2">🇮🇳 Agent — India</button>
+        </div>
+    </div>
+</div>
+
+<!-- INDIAN CLUBS MODAL -->
+<div id="clubsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-slate-800 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[85vh] overflow-y-auto">
+        <button onclick="closeClubs()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="text-lg font-black text-white mb-1">🍸 Reserve Your Table — Indian Clubs</h3>
+        <p class="text-gray-400 text-xs mb-4">Pick a club — our team confirms your table &amp; availability.</p>
+        <div id="clubsList" class="space-y-2"></div>
+    </div>
+</div>
 
 <!-- MEMBER LOGIN / SIGN UP MODAL -->
 <div id="customerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-slate-800 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl">
         <button onclick="closeCustomerModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <p class="text-center text-amber-400 text-xs font-black uppercase mb-3">⭐ Namaste Premium — No Money No Honey</p>
         <div class="flex bg-slate-900 rounded-xl p-1 mb-6 border border-slate-800">
             <button id="tabSignInBtn" onclick="switchAuthTab('signin')" class="flex-1 py-2 text-xs font-black uppercase rounded-lg bg-cyan-600 text-white transition">Sign In</button>
             <button id="tabSignUpBtn" onclick="switchAuthTab('signup')" class="flex-1 py-2 text-xs font-black uppercase rounded-lg text-gray-400 hover:text-white transition">Sign Up / Join</button>
@@ -420,9 +307,7 @@ html { scroll-behavior: smooth; }
             <button onclick="closeLiveChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
         </div>
         <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs font-medium">
-            <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl text-gray-200">
-                Namaste! 🙏 Ask me anything — I am Raju Guide, your virtual guide in Pattaya.
-            </div>
+            <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl text-gray-200">Namaste! 🙏 Ask me anything — I am Raju Guide, your virtual guide in Pattaya.</div>
         </div>
         <form onsubmit="handleChatSubmit(event)" class="p-3 bg-slate-900 border-t border-slate-800 flex items-center space-x-2">
             <input type="text" id="chatInput" placeholder="Type your message..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white font-medium">
@@ -432,187 +317,75 @@ html { scroll-behavior: smooth; }
 </div>
 
 <script>
-// --- n8n BACKEND ENDPOINTS ---
 var N8N = 'https://namastepattayareservation.app.n8n.cloud/webhook';
-
-// Capture a referral link (?ref=CODE) so the friend's future order credits the referrer
 try { var _r = new URLSearchParams(location.search).get('ref'); if (_r) localStorage.setItem('np_ref', _r); } catch (e) {}
 
-// --- MODAL CONTROLS ---
-function openCustomerModal() { document.getElementById('customerModal').classList.remove('hidden'); }
-function closeCustomerModal() { document.getElementById('customerModal').classList.add('hidden'); }
-function openLiveChat() { document.getElementById('liveChatModal').classList.remove('hidden'); var i=document.getElementById('chatInput'); if(i) i.focus(); }
-function closeLiveChat() { document.getElementById('liveChatModal').classList.add('hidden'); }
+// Modals
+function openCustomerModal(){ document.getElementById('customerModal').classList.remove('hidden'); }
+function closeCustomerModal(){ document.getElementById('customerModal').classList.add('hidden'); }
+function openAccountModal(){ document.getElementById('accountModal').classList.remove('hidden'); }
+function closeAccountModal(){ document.getElementById('accountModal').classList.add('hidden'); }
+function openLiveChat(){ document.getElementById('liveChatModal').classList.remove('hidden'); var i=document.getElementById('chatInput'); if(i) i.focus(); }
+function closeLiveChat(){ document.getElementById('liveChatModal').classList.add('hidden'); }
+function goAgent(country){ closeAccountModal(); try{ agentTab(country); }catch(e){} var el=document.getElementById('agents'); if(el) el.scrollIntoView({behavior:'smooth'}); }
 
-function switchAuthTab(type) {
-    var signInForm = document.getElementById('signInForm');
-    var signUpForm = document.getElementById('signUpForm');
-    var signInBtn = document.getElementById('tabSignInBtn');
-    var signUpBtn = document.getElementById('tabSignUpBtn');
-    if (type === 'signin') {
-        signInForm.classList.remove('hidden'); signUpForm.classList.add('hidden');
-        signInBtn.className = 'flex-1 py-2 text-xs font-black uppercase rounded-lg bg-cyan-600 text-white transition';
-        signUpBtn.className = 'flex-1 py-2 text-xs font-black uppercase rounded-lg text-gray-400 hover:text-white transition';
-    } else {
-        signInForm.classList.add('hidden'); signUpForm.classList.remove('hidden');
-        signUpBtn.className = 'flex-1 py-2 text-xs font-black uppercase rounded-lg bg-emerald-600 text-white transition';
-        signInBtn.className = 'flex-1 py-2 text-xs font-black uppercase rounded-lg text-gray-400 hover:text-white transition';
-    }
+// Indian clubs list (Nashaa #1 ... Ikka last)
+var INDIAN_CLUBS = ['Nashaa','Jalwa','Jannaat','Leela','Kamaa','Sutraa','Tonys','Boss','Mashaal','Barone','Nashaa Space','Ikka'];
+function openClubs(){
+    var box=document.getElementById('clubsList');
+    box.innerHTML = INDIAN_CLUBS.map(function(name,i){
+        return '<a href="/services.html?cat=Nightlife%20%26%20Bars" class="flex items-center justify-between bg-slate-900 border border-slate-800 hover:border-amber-500 rounded-xl px-3 py-2.5 transition">'
+          +'<span class="text-sm font-bold text-white">'+(i+1)+'. '+name+'</span>'
+          +'<span class="text-[10px] bg-amber-500 text-black font-black px-2.5 py-1 rounded-lg uppercase">Reserve</span></a>';
+    }).join('');
+    document.getElementById('clubsModal').classList.remove('hidden');
 }
-function handleCustomerSubmit(event) { event.preventDefault(); alert('Sign In successful! 30% billing discounts active.'); closeCustomerModal(); }
-function handleCustomerSignUpSubmit(event) { event.preventDefault(); alert('Account created successfully! Welcome to Pattaya Namaste.'); closeCustomerModal(); }
+function closeClubs(){ document.getElementById('clubsModal').classList.add('hidden'); }
 
-// --- RAJU GUIDE CHAT (real AI via n8n) ---
-function handleChatSubmit(event) {
-    event.preventDefault();
-    var input = document.getElementById('chatInput');
-    var q = (input.value || '').trim(); if (!q) return;
-    var container = document.getElementById('chatMessages');
-    var esc = function (s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); };
-    container.innerHTML += '<div class="bg-cyan-600 text-white p-2.5 rounded-2xl ml-auto max-w-[85%] font-medium">' + esc(q) + '</div>';
-    input.value = '';
-    var typing = document.createElement('div');
-    typing.className = 'bg-slate-900 border border-slate-800 p-2.5 rounded-2xl text-gray-200 max-w-[85%] font-medium';
-    typing.textContent = 'Raju is typing…';
-    container.appendChild(typing); container.scrollTop = container.scrollHeight;
-    fetch(N8N + '/concierge', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: q }) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-            var t = (d && d.reply) || 'Sorry, no reply right now.';
-            t = esc(t).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(\/[A-Za-z0-9_\-]+\.html[^\s<]*)/g, '<a href="$1" class="text-cyan-400 underline font-bold">$1</a>').replace(/\n/g, '<br>');
-            typing.innerHTML = t; container.scrollTop = container.scrollHeight;
-        })
-        .catch(function () { typing.textContent = 'Sorry, I could not connect. Please try again.'; });
+function switchAuthTab(type){
+    var a=document.getElementById('signInForm'),b=document.getElementById('signUpForm'),x=document.getElementById('tabSignInBtn'),y=document.getElementById('tabSignUpBtn');
+    if(type==='signin'){ a.classList.remove('hidden'); b.classList.add('hidden'); x.className='flex-1 py-2 text-xs font-black uppercase rounded-lg bg-cyan-600 text-white transition'; y.className='flex-1 py-2 text-xs font-black uppercase rounded-lg text-gray-400 hover:text-white transition'; }
+    else { a.classList.add('hidden'); b.classList.remove('hidden'); y.className='flex-1 py-2 text-xs font-black uppercase rounded-lg bg-emerald-600 text-white transition'; x.className='flex-1 py-2 text-xs font-black uppercase rounded-lg text-gray-400 hover:text-white transition'; }
+}
+function handleCustomerSubmit(e){ e.preventDefault(); alert('Sign In successful! 30% billing discounts active.'); closeCustomerModal(); }
+function handleCustomerSignUpSubmit(e){ e.preventDefault(); alert('Account created successfully! Welcome to Pattaya Namaste.'); closeCustomerModal(); }
+
+// Raju chat
+function handleChatSubmit(e){
+    e.preventDefault();
+    var input=document.getElementById('chatInput'); var q=(input.value||'').trim(); if(!q) return;
+    var c=document.getElementById('chatMessages');
+    var esc=function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    c.innerHTML += '<div class="bg-cyan-600 text-white p-2.5 rounded-2xl ml-auto max-w-[85%] font-medium">'+esc(q)+'</div>';
+    input.value='';
+    var t=document.createElement('div'); t.className='bg-slate-900 border border-slate-800 p-2.5 rounded-2xl text-gray-200 max-w-[85%] font-medium'; t.textContent='Raju is typing…'; c.appendChild(t); c.scrollTop=c.scrollHeight;
+    fetch(N8N+'/concierge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})})
+      .then(function(r){return r.json();})
+      .then(function(d){ var x=(d&&d.reply)||'Sorry, no reply right now.'; x=esc(x).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(\/[A-Za-z0-9_\-]+\.html[^\s<]*)/g,'<a href="$1" class="text-cyan-400 underline font-bold">$1</a>').replace(/\n/g,'<br>'); t.innerHTML=x; c.scrollTop=c.scrollHeight; })
+      .catch(function(){ t.textContent='Sorry, I could not connect. Please try again.'; });
 }
 
-// --- REFER & EARN (real referral API) ---
-function getRefCode() { try { return localStorage.getItem('np_code') || ''; } catch (e) { return ''; } }
-function refLink(code) { return window.location.origin + '/?ref=' + code; }
+// Refer & Earn
+function getRefCode(){ try{ return localStorage.getItem('np_code')||''; }catch(e){ return ''; } }
+function refLink(code){ return window.location.origin+'/?ref='+code; }
+function ensureRefCode(){ return new Promise(function(resolve){ var code=getRefCode(); if(code){resolve(code);return;} var name=prompt('Enter your name to create your referral link:'); if(!name){resolve('');return;} var contact=prompt('Enter your mobile / WhatsApp WITH country code (e.g. +66… or +91…):'); if(!contact){resolve('');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'join',name:name,contact:contact})}).then(function(r){return r.json();}).then(function(d){ if(d&&d.code){ try{localStorage.setItem('np_code',d.code);}catch(e){} resolve(d.code);} else resolve(''); }).catch(function(){resolve('');}); }); }
+function copyRefLink(){ ensureRefCode().then(function(code){ if(!code){alert('Could not create your referral link. Please try again.');return;} var link=refLink(code); document.getElementById('refLinkText').textContent=link; var share='Book Pattaya clubs, cars, hotels & more on Namaste Pattaya with my link — I earn up to 5%! '+link; if(navigator.share){navigator.share({title:'Namaste Pattaya',text:share,url:link}).catch(function(){});} else if(navigator.clipboard){navigator.clipboard.writeText(link).then(function(){alert('Referral link copied! Share it and earn up to 5%.');});} else alert(link); loadRefStats(); }); }
+function loadRefStats(){ var code=getRefCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'stats',code:code})}).then(function(r){return r.json();}).then(function(d){ document.getElementById('refLinkText').textContent=refLink(code); var cur=d.currency||'THB'; if(document.getElementById('refCount'))document.getElementById('refCount').textContent=(d.referrals||0); if(document.getElementById('refBalance'))document.getElementById('refBalance').textContent=cur+' '+(d.available||0); var p=document.getElementById('refPending'); if(p) p.textContent=(d.pending?('Pending: '+cur+' '+d.pending+' (held 48-72h, released after no dispute)'):''); }).catch(function(){}); }
+function withdrawEarnings(){ var code=getRefCode(); if(!code){alert('Get your referral link first, then start earning!');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||(d&&d.ok?'Withdrawal requested!':'Could not withdraw right now.')); loadRefStats(); }).catch(function(){alert('Could not process withdrawal. Please try again.');}); }
 
-function ensureRefCode() {
-    return new Promise(function (resolve) {
-        var code = getRefCode();
-        if (code) { resolve(code); return; }
-        var name = prompt('Enter your name to create your referral link:');
-        if (!name) { resolve(''); return; }
-        var contact = prompt('Enter your mobile / WhatsApp WITH country code (e.g. +66… or +91…):');
-        if (!contact) { resolve(''); return; }
-        fetch(N8N + '/referral', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'join', name: name, contact: contact }) })
-            .then(function (r) { return r.json(); })
-            .then(function (d) { if (d && d.code) { try { localStorage.setItem('np_code', d.code); } catch (e) {} resolve(d.code); } else { resolve(''); } })
-            .catch(function () { resolve(''); });
-    });
-}
+// Agents
+var agentCountry='Thailand';
+function agentTab(c){ agentCountry=c; document.getElementById('agCountryLabel').textContent=c; document.getElementById('tabTH').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='Thailand'?'bg-purple-600 text-white':'bg-slate-800 text-gray-300'); document.getElementById('tabIN').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='India'?'bg-purple-600 text-white':'bg-slate-800 text-gray-300'); }
+function getAgentCode(){ try{ return localStorage.getItem('np_agent_code')||''; }catch(e){ return ''; } }
+function agentLink(code){ return window.location.origin+'/?ref='+code; }
+function agentRegister(){ var company=document.getElementById('agCompany').value.trim(); var reg=document.getElementById('agReg').value.trim(); var contact=document.getElementById('agContact').value.trim(); if(!company||!reg||!contact){alert('Please fill company name, registration number and contact.');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'agent_join',company_name:company,contact:contact,country:agentCountry,registration_no:reg})}).then(function(r){return r.json();}).then(function(d){ if(d&&d.code){ try{localStorage.setItem('np_agent_code',d.code);}catch(e){} alert((d.message||'Registration received!')+'\nYour agent code: '+d.code); showAgentDash(); } else alert('Could not register. Please try again.'); }).catch(function(){alert('Could not connect. Please try again.');}); }
+function showAgentDash(){ document.getElementById('agentRegister').style.display='none'; document.getElementById('agentDash').style.display='block'; loadAgentStats(); }
+function agentReset(){ try{localStorage.removeItem('np_agent_code');}catch(e){} document.getElementById('agentDash').style.display='none'; document.getElementById('agentRegister').style.display='block'; }
+function loadAgentStats(){ var code=getAgentCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'stats',code:code})}).then(function(r){return r.json();}).then(function(d){ document.getElementById('agAvail').textContent='฿'+(d.available||0); document.getElementById('agRefs').textContent=(d.referrals||0); var gen=d.generated_spend||0; document.getElementById('agGen').textContent='฿'+Number(gen).toLocaleString(); var pct=Math.min(100,Math.round(gen/10000*100)); document.getElementById('agBar').style.width=pct+'%'; document.getElementById('agLink').textContent=agentLink(code); }).catch(function(){}); }
+function agentCopyLink(){ var code=getAgentCode(); if(!code) return; var link=agentLink(code); var share='Book premium Pattaya services on Namaste Pattaya via my agent link: '+link; if(navigator.share){navigator.share({title:'Namaste Pattaya Agent',text:share,url:link}).catch(function(){});} else if(navigator.clipboard){navigator.clipboard.writeText(link).then(function(){alert('Agent link copied!');});} else alert(link); }
+function agentWithdraw(){ var code=getAgentCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Requested.'); loadAgentStats(); }).catch(function(){alert('Could not process withdrawal. Please try again.');}); }
 
-function copyRefLink() {
-    ensureRefCode().then(function (code) {
-        if (!code) { alert('Could not create your referral link. Please try again.'); return; }
-        var link = refLink(code);
-        document.getElementById('refLinkText').textContent = link;
-        var share = 'Book Pattaya clubs, cars, hotels & more on Namaste Pattaya with my link — I earn up to 5%! ' + link;
-        if (navigator.share) { navigator.share({ title: 'Namaste Pattaya', text: share, url: link }).catch(function(){}); }
-        else if (navigator.clipboard) { navigator.clipboard.writeText(link).then(function(){ alert('Referral link copied! Share it and earn up to 5%.'); }); }
-        else { alert(link); }
-        loadRefStats();
-    });
-}
-
-function loadRefStats() {
-    var code = getRefCode(); if (!code) return;
-    fetch(N8N + '/referral', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'stats', code: code }) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-            document.getElementById('refLinkText').textContent = refLink(code);
-            var cur = d.currency || 'THB';
-            if (document.getElementById('refCount')) document.getElementById('refCount').textContent = (d.referrals || 0);
-            if (document.getElementById('refBalance')) document.getElementById('refBalance').textContent = cur + ' ' + (d.available || 0);
-            var pend = document.getElementById('refPending');
-            if (pend) pend.textContent = (d.pending ? ('Pending: ' + cur + ' ' + d.pending + ' (held 48-72h, released after no dispute)') : '');
-        })
-        .catch(function () {});
-}
-
-function withdrawEarnings() {
-    var code = getRefCode();
-    if (!code) { alert('Get your referral link first, then start earning!'); return; }
-    fetch(N8N + '/referral', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'withdraw', code: code }) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) { alert((d && d.message) || (d && d.ok ? 'Withdrawal requested!' : 'Could not withdraw right now.')); loadRefStats(); })
-        .catch(function () { alert('Could not process withdrawal. Please try again.'); });
-}
-
-// --- AGENT PARTNER PROGRAM ---
-var agentCountry = 'Thailand';
-function agentTab(c) {
-    agentCountry = c;
-    document.getElementById('agCountryLabel').textContent = c;
-    document.getElementById('tabTH').className = 'flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition ' + (c === 'Thailand' ? 'bg-purple-600 text-white' : 'bg-slate-800 text-gray-300');
-    document.getElementById('tabIN').className = 'flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition ' + (c === 'India' ? 'bg-purple-600 text-white' : 'bg-slate-800 text-gray-300');
-}
-function getAgentCode() { try { return localStorage.getItem('np_agent_code') || ''; } catch (e) { return ''; } }
-function agentLink(code) { return window.location.origin + '/?ref=' + code; }
-
-function agentRegister() {
-    var company = document.getElementById('agCompany').value.trim();
-    var reg = document.getElementById('agReg').value.trim();
-    var contact = document.getElementById('agContact').value.trim();
-    if (!company || !reg || !contact) { alert('Please fill company name, registration number and contact.'); return; }
-    fetch(N8N + '/referral', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'agent_join', company_name: company, contact: contact, country: agentCountry, registration_no: reg }) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-            if (d && d.code) {
-                try { localStorage.setItem('np_agent_code', d.code); } catch (e) {}
-                alert((d.message || 'Registration received!') + '\nYour agent code: ' + d.code);
-                showAgentDash();
-            } else { alert('Could not register. Please try again.'); }
-        })
-        .catch(function () { alert('Could not connect. Please try again.'); });
-}
-function showAgentDash() {
-    document.getElementById('agentRegister').style.display = 'none';
-    document.getElementById('agentDash').style.display = 'block';
-    loadAgentStats();
-}
-function agentReset() {
-    try { localStorage.removeItem('np_agent_code'); } catch (e) {}
-    document.getElementById('agentDash').style.display = 'none';
-    document.getElementById('agentRegister').style.display = 'block';
-}
-function loadAgentStats() {
-    var code = getAgentCode(); if (!code) return;
-    fetch(N8N + '/referral', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'stats', code: code }) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) {
-            document.getElementById('agAvail').textContent = '฿' + (d.available || 0);
-            document.getElementById('agRefs').textContent = (d.referrals || 0);
-            var gen = d.generated_spend || 0;
-            document.getElementById('agGen').textContent = '฿' + Number(gen).toLocaleString();
-            var pct = Math.min(100, Math.round(gen / 10000 * 100));
-            document.getElementById('agBar').style.width = pct + '%';
-            document.getElementById('agLink').textContent = agentLink(code);
-        })
-        .catch(function () {});
-}
-function agentCopyLink() {
-    var code = getAgentCode(); if (!code) return;
-    var link = agentLink(code);
-    var share = 'Book premium Pattaya services on Namaste Pattaya via my agent link: ' + link;
-    if (navigator.share) { navigator.share({ title: 'Namaste Pattaya Agent', text: share, url: link }).catch(function(){}); }
-    else if (navigator.clipboard) { navigator.clipboard.writeText(link).then(function(){ alert('Agent link copied!'); }); }
-    else { alert(link); }
-}
-function agentWithdraw() {
-    var code = getAgentCode(); if (!code) return;
-    fetch(N8N + '/referral', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'withdraw', code: code }) })
-        .then(function (r) { return r.json(); })
-        .then(function (d) { alert((d && d.message) || 'Requested.'); loadAgentStats(); })
-        .catch(function () { alert('Could not process withdrawal. Please try again.'); });
-}
-
-document.addEventListener('DOMContentLoaded', function () {
-    loadRefStats();
-    if (getAgentCode()) showAgentDash();
-});
+document.addEventListener('DOMContentLoaded', function(){ loadRefStats(); if(getAgentCode()) showAgentDash(); });
 </script>
 
 </body>
