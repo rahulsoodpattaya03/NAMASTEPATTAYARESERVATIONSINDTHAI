@@ -37,7 +37,7 @@ html { scroll-behavior: smooth; }
 </div>
 
 <!-- TRUST & 24/7 SUPPORT STRIP -->
-<div class="bg-slate-900 border-b border-cyan-500/30 py-2 px-4 text-center text-[11px] font-bold text-cyan-400 uppercase tracking-widest flex items-center justify-center gap-4">
+<div class="bg-slate-900 border-b border-cyan-500/30 py-2 px-4 text-center text-[11px] font-bold text-cyan-400 uppercase tracking-widest flex flex-wrap items-center justify-center gap-4">
     <span>🛡️ 100% Safe & Secure Bookings</span>
     <span>•</span>
     <span>📞 24/7 Support Helpline Active</span>
@@ -99,6 +99,48 @@ html { scroll-behavior: smooth; }
     </div>
 </section>
 
+<!-- 🌟 RAJU GUIDE CONCIERGE & REFERRAL / COMMISSIONS BAR (PLACED WHERE MARKED IN YELLOW) -->
+<section class="py-6 bg-slate-900 border-y border-cyan-500/40">
+    <div class="container mx-auto px-4 max-w-4xl space-y-4">
+        <!-- Raju Guide Banner -->
+        <div onclick="openLiveChat()" class="bg-gradient-to-r from-cyan-900 via-slate-900 to-cyan-950 border border-cyan-500/50 p-4 rounded-2xl cursor-pointer hover:border-cyan-400 transition flex items-center justify-between shadow-xl">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-cyan-600 flex items-center justify-center text-white font-black text-sm animate-pulse">🙏</div>
+                <div>
+                    <span class="text-xs font-black text-cyan-400 uppercase tracking-wide block">Raju Guide Concierge — 24/7 Support & Instant Help</span>
+                    <span class="text-[11px] text-gray-300">Tap anytime to ask questions, check tables, or get instant assistance!</span>
+                </div>
+            </div>
+            <span class="bg-cyan-600 hover:bg-cyan-500 text-white px-4 py-2 rounded-xl text-xs font-black uppercase shadow-md">Chat Now</span>
+        </div>
+
+        <!-- Referral & Commissions Bar -->
+        <div class="bg-slate-950 border border-amber-500/40 p-5 rounded-2xl shadow-xl">
+            <div class="flex items-center space-x-3 mb-3">
+                <div class="w-8 h-8 rounded-xl bg-amber-500 text-black font-black flex items-center justify-center text-sm">🎁</div>
+                <div>
+                    <h3 class="text-white font-black text-sm uppercase">Referral & Commission Program</h3>
+                    <span class="text-amber-400 text-[10px] font-bold uppercase tracking-wider">Earn While You Explore Pattaya</span>
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                    <span class="text-emerald-400 font-black block text-sm mb-1">5% Fixed Commission</span>
+                    <p class="text-gray-300">Invite friends with your referral code and earn fixed 5% on any paid service booking (min. ฿5,000).</p>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                    <span class="text-purple-400 font-black block text-sm mb-1">Free Pro Marketing</span>
+                    <p class="text-gray-300">Refer <strong>50 app downloads</strong> and get free social media marketing services for your profile/business.</p>
+                </div>
+                <div class="bg-slate-900 p-3 rounded-xl border border-slate-800">
+                    <span class="text-cyan-400 font-black block text-sm mb-1">Agent Perks & Bonuses</span>
+                    <p class="text-gray-300">Thailand & India official agents enjoy higher tier commissions, VIP table access, and direct payouts.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- 💎 VIP ALL-INCLUSIVE PASS SECTION -->
 <section id="vip-package-section" class="py-12 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-b border-amber-500/30">
     <div class="container mx-auto px-4 max-w-4xl">
@@ -150,7 +192,7 @@ html { scroll-behavior: smooth; }
     </div>
 </section>
 
-<!-- ⚡ QUICK ACTIONS (RAJU GUIDE PLACED FIRST) -->
+<!-- ⚡ QUICK ACTIONS BAR -->
 <section id="quick-actions" class="py-8 bg-slate-900 border-b border-cyan-500/35">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="flex items-center justify-between mb-3">
@@ -158,135 +200,266 @@ html { scroll-behavior: smooth; }
             <span class="text-[10px] text-gray-400 font-bold uppercase">swipe →</span>
         </div>
         <div class="qa-row">
-            <!-- RAJU GUIDE MOVED TO FRONT -->
             <button onclick="openLiveChat()" class="qa border-cyan-400 shadow-lg shadow-cyan-500/20"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?auto=format&fit=crop&w=300&q=80')"></div><div class="lb text-cyan-300">🙏 Raju Guide</div></button>
-            
             <a href="/packages.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💎 Packages</div></a>
             <button onclick="openClubBooking('Nashaa')" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🍸 Indian Clubs</div></button>
-            
             <button onclick="openLadiesLoungeModal()" class="qa border-purple-500/50"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=300&q=80')"></div><div class="lb text-purple-300">🌸 Ladies Lounge</div></button>
-            
             <button onclick="openVipMediaModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">📸 Photo / Song</div></button>
             <a href="/dating.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💘 Dating</div></a>
             <a href="/mall.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🛍️ Namaste Mall</div></a>
-            
             <button onclick="openPayBillModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💸 Pay / Split Bill</div></button>
-            
             <button onclick="openMapModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🗺️ Offline Maps</div></button>
-            
             <a href="/admin.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">📊 Partner CRM</div></a>
         </div>
-        <p class="text-[11px] text-gray-400 mt-1 flex items-center justify-between">
+        <p class="text-[11px] text-gray-400 mt-1 flex flex-wrap items-center justify-between gap-2">
             <span>⭐ Namaste Premium — <span class="text-amber-400 font-bold">No Money No Honey</span></span>
             <span class="text-emerald-400">🛡️ 100% Safe & Secure • 24/7 Support Available</span>
         </p>
     </div>
 </section>
 
-<!-- 🗂️ BROWSE ALL SERVICES -->
+<!-- 🗂️ BROWSE ALL 18 SUPER-APP SERVICES WITH RATINGS & REVIEWS -->
 <section id="all-services" class="py-16 bg-slate-950 border-b border-cyan-500/20">
     <div class="container mx-auto px-4 max-w-7xl">
         <div class="text-center mb-12">
             <h2 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight">📁 NAMASTE PATTAYA RESERVATIONS SUPER-APP SERVICES</h2>
             <div class="h-1 w-16 bg-cyan-500 mx-auto mt-3 rounded-full"></div>
-            <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 font-bold">BHARTIYO KE LEA EK BHARTIYE KA TOHFA • RATE & REVIEW EVERY SERVICE BELOW</p>
+            <p class="text-gray-400 text-xs uppercase tracking-widest mt-2 font-bold">BHARTIYO KE LEA EK BHARTIYE KA TOHFA • RATE & REVIEW EVERY SERVICE</p>
         </div>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             
-            <!-- Category Card 1 -->
+            <!-- 1. VIP Ladies Lounge -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
-                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg border-purple-500/40" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80');">
+                <div onclick="openLadiesLoungeModal()" class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg border-purple-500/40 cursor-pointer" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80');">
                     <div class="service-card-overlay absolute inset-0 z-0"></div>
                     <div class="relative z-10"><h3 class="text-purple-300 font-black text-sm uppercase tracking-wide leading-tight">🌸 VIP Ladies Lounge</h3></div>
                 </div>
                 <div class="p-4 flex flex-col gap-3">
-                    <div class="flex justify-between items-center text-xs text-gray-400">
-                        <span>⭐ 4.9 / 5.0 (142 Reviews)</span>
-                        <span class="text-emerald-400 font-bold">100% Verified</span>
-                    </div>
-                    <button onclick="openRatingModal('VIP Ladies Lounge')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review This Service</button>
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.9 / 5.0 (142 Reviews)</span><span class="text-emerald-400 font-bold">100% Verified</span></div>
+                    <button onclick="openRatingModal('VIP Ladies Lounge')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
                     <button onclick="openLadiesLoungeModal()" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Explore Lounge</button>
                 </div>
             </div>
 
-            <!-- Category Card 2 -->
+            <!-- 2. Nightlife & Bars -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
                 <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80');">
                     <div class="service-card-overlay absolute inset-0 z-0"></div>
                     <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Nightlife & Bars</h3></div>
                 </div>
                 <div class="p-4 flex flex-col gap-3">
-                    <div class="flex justify-between items-center text-xs text-gray-400">
-                        <span>⭐ 4.8 / 5.0 (310 Reviews)</span>
-                        <span class="text-emerald-400 font-bold">30% OFF</span>
-                    </div>
-                    <button onclick="openRatingModal('Nightlife & Bars')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review This Service</button>
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.8 / 5.0 (310 Reviews)</span><span class="text-emerald-400 font-bold">30% OFF</span></div>
+                    <button onclick="openRatingModal('Nightlife & Bars')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
                     <a href="/services.html?cat=Nightlife%20%26%20Bars" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Nightlife</a>
                 </div>
             </div>
 
-            <!-- Category Card 3 -->
+            <!-- 3. VIP Beach Clubs -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
                 <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80');">
                     <div class="service-card-overlay absolute inset-0 z-0"></div>
                     <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">VIP Beach Clubs</h3></div>
                 </div>
                 <div class="p-4 flex flex-col gap-3">
-                    <div class="flex justify-between items-center text-xs text-gray-400">
-                        <span>⭐ 4.9 / 5.0 (215 Reviews)</span>
-                        <span class="text-emerald-400 font-bold">Verified</span>
-                    </div>
-                    <button onclick="openRatingModal('VIP Beach Clubs')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review This Service</button>
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.9 / 5.0 (215 Reviews)</span><span class="text-emerald-400 font-bold">Verified</span></div>
+                    <button onclick="openRatingModal('VIP Beach Clubs')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
                     <a href="/services.html?cat=VIP%20Beach%20Clubs" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Beach Club</a>
                 </div>
             </div>
 
-            <!-- Category Card 4 -->
+            <!-- 4. Restaurants -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Restaurants</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.7 / 5.0 (180 Reviews)</span><span class="text-emerald-400 font-bold">Top Dining</span></div>
+                    <button onclick="openRatingModal('Restaurants')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Restaurants" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Restaurants</a>
+                </div>
+            </div>
+
+            <!-- 5. Indian Restaurants -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
                 <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80');">
                     <div class="service-card-overlay absolute inset-0 z-0"></div>
                     <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Indian Restaurants</h3></div>
                 </div>
                 <div class="p-4 flex flex-col gap-3">
-                    <div class="flex justify-between items-center text-xs text-gray-400">
-                        <span>⭐ 5.0 / 5.0 (480 Reviews)</span>
-                        <span class="text-emerald-400 font-bold">Desi Taste</span>
-                    </div>
-                    <button onclick="openRatingModal('Indian Restaurants')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review This Service</button>
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 5.0 / 5.0 (480 Reviews)</span><span class="text-emerald-400 font-bold">Desi Taste</span></div>
+                    <button onclick="openRatingModal('Indian Restaurants')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
                     <a href="/services.html?cat=Indian%20Restaurants" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Explore Restaurants</a>
                 </div>
             </div>
 
-            <!-- Category Card 5 -->
+            <!-- 6. Desi Chai & Spices -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Desi Chai & Spices</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.9 / 5.0 (95 Reviews)</span><span class="text-emerald-400 font-bold">Groceries</span></div>
+                    <button onclick="openRatingModal('Desi Chai & Spices')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Desi%20Chai%20%26%20Spices%20(Indian%20Groceries)" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Order Groceries</a>
+                </div>
+            </div>
+
+            <!-- 7. Hotels & Resorts -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
                 <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80');">
                     <div class="service-card-overlay absolute inset-0 z-0"></div>
                     <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Hotels & Resorts</h3></div>
                 </div>
                 <div class="p-4 flex flex-col gap-3">
-                    <div class="flex justify-between items-center text-xs text-gray-400">
-                        <span>⭐ 4.7 / 5.0 (190 Reviews)</span>
-                        <span class="text-emerald-400 font-bold">Safe & Secure</span>
-                    </div>
-                    <button onclick="openRatingModal('Hotels & Resorts')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review This Service</button>
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.7 / 5.0 (190 Reviews)</span><span class="text-emerald-400 font-bold">Safe & Secure</span></div>
+                    <button onclick="openRatingModal('Hotels & Resorts')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
                     <a href="/services.html?cat=Hotels%20%26%20Resorts" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Hotels</a>
                 </div>
             </div>
 
-            <!-- Category Card 6 -->
+            <!-- 8. Cars & Bikes Rental -->
             <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
                 <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80');">
                     <div class="service-card-overlay absolute inset-0 z-0"></div>
                     <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Cars & Bikes Rental</h3></div>
                 </div>
                 <div class="p-4 flex flex-col gap-3">
-                    <div class="flex justify-between items-center text-xs text-gray-400">
-                        <span>⭐ 4.8 / 5.0 (230 Reviews)</span>
-                        <span class="text-emerald-400 font-bold">Easy Pickup</span>
-                    </div>
-                    <button onclick="openRatingModal('Cars & Bikes Rental')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review This Service</button>
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.8 / 5.0 (230 Reviews)</span><span class="text-emerald-400 font-bold">Easy Pickup</span></div>
+                    <button onclick="openRatingModal('Cars & Bikes Rental')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
                     <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Rent Vehicle</a>
+                </div>
+            </div>
+
+            <!-- 9. Spa & Massage -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Spa & Massage</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.9 / 5.0 (160 Reviews)</span><span class="text-emerald-400 font-bold">Relaxation</span></div>
+                    <button onclick="openRatingModal('Spa & Massage')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Spa%20%26%20Massage" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Spa</a>
+                </div>
+            </div>
+
+            <!-- 10. Tours & Excursions -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Tours & Excursions</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.8 / 5.0 (120 Reviews)</span><span class="text-emerald-400 font-bold">Sightseeing</span></div>
+                    <button onclick="openRatingModal('Tours & Excursions')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Tours%20%26%20Excursions" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Tours</a>
+                </div>
+            </div>
+
+            <!-- 11. Water Sports -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Water Sports</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.7 / 5.0 (98 Reviews)</span><span class="text-emerald-400 font-bold">Adventure</span></div>
+                    <button onclick="openRatingModal('Water Sports')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Water%20Sports" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Water Sports</a>
+                </div>
+            </div>
+
+            <!-- 12. Golf Courses -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Golf Courses</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.9 / 5.0 (75 Reviews)</span><span class="text-emerald-400 font-bold">VIP Greens</span></div>
+                    <button onclick="openRatingModal('Golf Courses')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Golf%20Courses" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Golf</a>
+                </div>
+            </div>
+
+            <!-- 13. Yacht & Boats -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1569263979104-865ab9cd8d5c?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Yacht & Boats</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 5.0 / 5.0 (110 Reviews)</span><span class="text-emerald-400 font-bold">Private Charter</span></div>
+                    <button onclick="openRatingModal('Yacht & Boat Charter')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Yacht%20%26%20Boat%20Charter" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Yacht</a>
+                </div>
+            </div>
+
+            <!-- 14. Airport Transfers -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Airport Transfers</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.9 / 5.0 (340 Reviews)</span><span class="text-emerald-400 font-bold">24/7 Reliable</span></div>
+                    <button onclick="openRatingModal('Airport Transfers')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Airport%20Transfers" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Transfer</a>
+                </div>
+            </div>
+
+            <!-- 15. Shopping & Markets -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Shopping & Markets</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.6 / 5.0 (130 Reviews)</span><span class="text-emerald-400 font-bold">Local Guide</span></div>
+                    <button onclick="openRatingModal('Shopping & Markets')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Shopping%20%26%20Markets" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Explore Markets</a>
+                </div>
+            </div>
+
+            <!-- 16. Event & Party Planning -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Event & Party Planning</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 4.9 / 5.0 (90 Reviews)</span><span class="text-emerald-400 font-bold">Custom Parties</span></div>
+                    <button onclick="openRatingModal('Event & Party Planning')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Event%20%26%20Party%20Planning" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Plan Event</a>
+                </div>
+            </div>
+
+            <!-- 17. Medical & Pharmacy -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Medical & Pharmacy</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 5.0 / 5.0 (210 Reviews)</span><span class="text-emerald-400 font-bold">24/7 Emergency</span></div>
+                    <button onclick="openRatingModal('Medical & Pharmacy')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Medical%20%26%20Pharmacy" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Medical Help</a>
+                </div>
+            </div>
+
+            <!-- 18. Concierge & VIP Services -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                <div class="service-card-bg h-40 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80');">
+                    <div class="service-card-overlay absolute inset-0 z-0"></div>
+                    <div class="relative z-10"><h3 class="text-white font-black text-sm uppercase tracking-wide leading-tight">Concierge & VIP Services</h3></div>
+                </div>
+                <div class="p-4 flex flex-col gap-3">
+                    <div class="flex justify-between items-center text-xs text-gray-400"><span>⭐ 5.0 / 5.0 (400 Reviews)</span><span class="text-emerald-400 font-bold">Elite Support</span></div>
+                    <button onclick="openRatingModal('Concierge & VIP Services')" class="w-full bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-cyan-500/30 py-2 rounded-xl text-xs font-black uppercase transition">⭐ Rate & Review</button>
+                    <a href="/services.html?cat=Concierge%20%26%20VIP%20Services" class="block text-center bg-cyan-600 hover:bg-cyan-700 text-white py-2 rounded-xl text-xs font-black uppercase transition">Book Concierge</a>
                 </div>
             </div>
 
@@ -304,17 +477,13 @@ html { scroll-behavior: smooth; }
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 text-xs">
-            
             <div class="bg-slate-950 p-6 rounded-3xl border border-slate-800 shadow-xl flex flex-col justify-between">
                 <div>
                     <div class="flex items-center space-x-1 text-amber-400 mb-3"><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i></div>
                     <p class="text-gray-300 leading-relaxed">"Booking tables at Nashaa club through Raju Guide was seamless! Got 30% discount and my photo on the big screen. Absolutely 100% safe and secure service!"</p>
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
-                    <div>
-                        <strong class="text-white block">Vikram Malhotra</strong>
-                        <span class="text-gray-500 text-[10px]">Mumbai, India</span>
-                    </div>
+                    <div><strong class="text-white block">Vikram Malhotra</strong><span class="text-gray-500 text-[10px]">Mumbai, India</span></div>
                     <span class="text-emerald-400 text-[10px] font-bold">Verified Booking</span>
                 </div>
             </div>
@@ -325,10 +494,7 @@ html { scroll-behavior: smooth; }
                     <p class="text-gray-300 leading-relaxed">"The offline map download saved us when mobile data ran out in Jomtien! Also the Ladies Lounge concierge is top-notch. Highly recommended for families and groups."</p>
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
-                    <div>
-                        <strong class="text-white block">Aarav Sharma</strong>
-                        <span class="text-gray-500 text-[10px]">New Delhi, India</span>
-                    </div>
+                    <div><strong class="text-white block">Aarav Sharma</strong><span class="text-gray-500 text-[10px]">New Delhi, India</span></div>
                     <span class="text-emerald-400 text-[10px] font-bold">Verified Booking</span>
                 </div>
             </div>
@@ -339,14 +505,10 @@ html { scroll-behavior: smooth; }
                     <p class="text-gray-300 leading-relaxed">"Paid our group bill using the split bill feature and booked airport transfer easily. Raju Guide answers instantly on WhatsApp/Chat. Real 'Bhartiye ka tohfa'!"</p>
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-800 flex justify-between items-center">
-                    <div>
-                        <strong class="text-white block">Pooja Deshmukh</strong>
-                        <span class="text-gray-500 text-[10px]">Bengaluru, India</span>
-                    </div>
+                    <div><strong class="text-white block">Pooja Deshmukh</strong><span class="text-gray-500 text-[10px]">Bengaluru, India</span></div>
                     <span class="text-emerald-400 text-[10px] font-bold">Verified Booking</span>
                 </div>
             </div>
-
         </div>
 
         <div class="text-center">
