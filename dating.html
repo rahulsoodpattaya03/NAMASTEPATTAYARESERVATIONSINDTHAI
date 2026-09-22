@@ -3,88 +3,353 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dating & Find a Buddy | Namaste Pattaya</title>
+<title>Dating & Buddy Finder - Namaste Pattaya</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<link rel="icon" href="/logo.png">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+.glass-card { background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(16px); border: 1px solid rgba(56, 189, 248, 0.2); }
+.swipe-card { transition: transform 0.3s ease, opacity 0.3s ease; }
+</style>
 </head>
-<body class="bg-slate-950 text-gray-100" style="font-family:system-ui,Arial,sans-serif">
+<body class="bg-slate-950 text-gray-100 font-sans antialiased selection:bg-pink-500 selection:text-slate-950">
 
-<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
-  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
-  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-fuchsia-400 mt-1">💑 Dating & Find a Buddy</h1>
-  <p class="text-[11px] text-gray-500">Meet verified companions &amp; fellow travellers for a great night out</p>
+<!-- TOP BAR -->
+<div class="bg-gradient-to-r from-pink-600 via-purple-600 to-indigo-600 text-white text-center py-2 px-4 text-xs font-black uppercase tracking-wider sticky top-0 z-50 shadow-md">
+    🌸 Namaste Open Dating & Buddy — BHARTIYO KE LEA EK BHARTIYE KA TOHFA 🇮🇳
+</div>
+
+<header class="bg-slate-950/90 backdrop-blur-md border-b border-pink-500/30 sticky top-8 z-40">
+    <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <a href="/index.html" class="text-xs font-black text-pink-400 uppercase"><i class="fa-solid fa-arrow-left"></i> Back to Home</a>
+        <span class="text-sm font-black text-white uppercase tracking-wider">💘 Pattaya Open Dating</span>
+        <button onclick="openSettingsModal()" class="text-gray-300 hover:text-white text-sm"><i class="fa-solid fa-gear"></i></button>
+    </div>
 </header>
 
-<main class="max-w-3xl mx-auto px-4 py-6 space-y-6">
-
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-    <div class="text-xs font-bold text-gray-400 mb-2">I'm looking for:</div>
-    <div class="grid grid-cols-2 gap-2">
-      <button onclick="setMode('Party Buddy')" id="mBuddy" class="py-2.5 rounded-xl font-black text-xs uppercase bg-pink-600 text-white">🎉 A Party Buddy</button>
-      <button onclick="setMode('Social Meetup')" id="mMeet" class="py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🤝 Social Meetups</button>
+<!-- MAIN CONTAINER -->
+<main class="container mx-auto px-4 py-6 max-w-md">
+    
+    <!-- TIME LOCK WARNING BANNER (If Active) -->
+    <div id="timeLockBanner" class="bg-amber-500/20 border border-amber-500 text-amber-300 p-3 rounded-2xl mb-4 text-xs font-bold text-center hidden">
+        🔒 Self-Restriction Active! Profile locked until <span id="lockExpiryTime"></span>. Cannot be undone.
     </div>
-    <p id="modeNote" class="text-[11px] text-pink-300/80 mt-3 leading-relaxed"></p>
-  </div>
 
-  <!-- Meet intent -->
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
-    <div class="text-xs font-bold text-gray-400 mb-2">Interested to meet for:</div>
-    <div class="grid grid-cols-2 gap-2">
-      <button onclick="setIntent('☕ Coffee')" data-i="☕ Coffee" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">☕ Coffee</button>
-      <button onclick="setIntent('🎉 Party Tonight')" data-i="🎉 Party Tonight" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🎉 Party Tonight</button>
-      <button onclick="setIntent('🌙 Party Tomorrow')" data-i="🌙 Party Tomorrow" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🌙 Party Tomorrow</button>
-      <button onclick="setIntent('📅 Pick a date')" data-i="📅 Pick a date" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">📅 Pick a date</button>
+    <!-- TABS -->
+    <div class="flex bg-slate-900 rounded-2xl p-1 mb-6 border border-slate-800 text-xs font-black uppercase">
+        <button id="tabSwipeBtn" onclick="switchTab('swipe')" class="flex-1 py-2.5 rounded-xl bg-pink-600 text-white transition">Swipe</button>
+        <button id="tabNearbyBtn" onclick="switchTab('nearby')" class="flex-1 py-2.5 rounded-xl text-gray-400 hover:text-white transition">Nearby 📍</button>
+        <button id="tabChatsBtn" onclick="switchTab('chats')" class="flex-1 py-2.5 rounded-xl text-gray-400 hover:text-white transition">Messages 💬</button>
     </div>
-    <div id="dateBox" style="display:none" class="mt-3">
-      <label class="text-[11px] text-gray-400 font-bold">Available date &amp; time</label>
-      <input id="dWhen" type="datetime-local" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm mt-1">
+
+    <!-- 1. SWIPE VIEW -->
+    <div id="viewSwipe" class="space-y-4">
+        <div class="relative h-[480px] w-full rounded-3xl overflow-hidden glass-card border border-pink-500/40 shadow-2xl flex flex-col justify-end p-6 swipe-card" id="activeCard" style="background-image:url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80'); background-size:cover; background-position:center;">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent"></div>
+            
+            <div class="relative z-10 space-y-2">
+                <div class="flex items-center justify-between">
+                    <h3 id="profileName" class="text-2xl font-black text-white">Priya, 24</h3>
+                    <span class="bg-pink-600/80 text-white text-[10px] font-black px-2.5 py-1 rounded-full backdrop-blur-sm" id="profileOnline">🟢 Online Now</span>
+                </div>
+                <p id="profileBio" class="text-gray-300 text-xs font-medium">Looking for a fun buddy to visit Nashaa Club tonight! ✨</p>
+                
+                <!-- Detailed Preferences Tags -->
+                <div class="flex flex-wrap gap-1.5 pt-1 text-[10px] font-bold">
+                    <span class="bg-purple-900/80 text-purple-300 px-2 py-0.5 rounded-md" id="tagDrink">🥃 Tequila</span>
+                    <span class="bg-blue-900/80 text-blue-300 px-2 py-0.5 rounded-md" id="tagMusic">🎵 Punjabi Hip-Hop</span>
+                    <span class="bg-emerald-900/80 text-emerald-300 px-2 py-0.5 rounded-md" id="tagVibe">🔥 Extrovert</span>
+                    <span class="bg-amber-900/80 text-amber-300 px-2 py-0.5 rounded-md" id="tagSmoke">🚬 Non-Smoker</span>
+                    <span class="bg-rose-900/80 text-rose-300 px-2 py-0.5 rounded-md" id="tagDance">💃 Loves to Dance</span>
+                </div>
+
+                <div class="flex items-center gap-2 pt-1">
+                    <span class="bg-slate-900/90 text-cyan-400 text-[10px] font-bold px-2 py-1 rounded-lg border border-cyan-500/30" id="profileClub">🍸 Nashaa Club</span>
+                    <span class="bg-slate-900/90 text-amber-400 text-[10px] font-bold px-2 py-1 rounded-lg border border-amber-500/30" id="profileTable">🪑 VIP-04</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Swipe Action Buttons -->
+        <div class="flex justify-center items-center gap-6 pt-2">
+            <button onclick="swipeAction('dislike')" class="w-16 h-16 rounded-full bg-slate-900 border border-red-500/50 text-red-500 text-2xl flex items-center justify-center hover:bg-red-500 hover:text-white transition shadow-lg"><i class="fa-solid fa-xmark"></i></button>
+            <button onclick="openRestrictModal()" class="w-12 h-12 rounded-full bg-slate-900 border border-slate-700 text-gray-400 text-lg flex items-center justify-center hover:text-red-400 transition" title="Restrict / Block"><i class="fa-solid fa-ban"></i></button>
+            <button onclick="swipeAction('like')" class="w-16 h-16 rounded-full bg-slate-900 border border-pink-500/50 text-pink-500 text-2xl flex items-center justify-center hover:bg-pink-600 hover:text-white transition shadow-lg"><i class="fa-solid fa-heart"></i></button>
+        </div>
     </div>
-    <div class="grid grid-cols-2 gap-2 mt-3">
-      <input id="dVenue" placeholder="Meet where? (club / cafe / area)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
-      <input id="dTime" placeholder="What time? (e.g. 9 PM)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+
+    <!-- 2. NEARBY VIEW -->
+    <div id="viewNearby" class="space-y-4 hidden">
+        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 text-center space-y-3">
+            <h3 class="text-sm font-black text-white uppercase">📍 Open Radar (Everyone Visible)</h3>
+            <p class="text-xs text-gray-400">All members are open and visible. Enable location to sort by distance.</p>
+            <button onclick="requestLocation()" class="bg-cyan-600 hover:bg-cyan-700 text-white font-black py-2.5 px-4 rounded-xl text-xs uppercase">Enable Location Sharing</button>
+        </div>
+        <div id="nearbyList" class="space-y-3">
+            <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+                <div class="flex items-center space-x-3">
+                    <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" class="w-12 h-12 rounded-full object-cover">
+                    <div>
+                        <h4 class="font-black text-white">Simran, 23</h4>
+                        <p class="text-cyan-400">🍸 Jalwa Club · Table VIP-2</p>
+                    </div>
+                </div>
+                <button onclick="openChat('Simran')" class="bg-pink-600 text-white px-3 py-1.5 rounded-xl font-bold">Message</button>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">✅</div><div class="font-bold text-sm text-white">Verified Members</div><div class="text-[11px] text-gray-400 mt-1">Real, ID-checked profiles</div></div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">🔒</div><div class="font-bold text-sm text-white">Safe & Private</div><div class="text-[11px] text-gray-400 mt-1">Your details stay private</div></div>
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">🎊</div><div class="font-bold text-sm text-white">Group Meetups</div><div class="text-[11px] text-gray-400 mt-1">Never party alone</div></div>
-  </div>
+    <!-- 3. MESSAGES VIEW -->
+    <div id="viewChats" class="space-y-3 hidden">
+        <div class="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between cursor-pointer hover:border-pink-500 transition" onclick="openChat('Simran')">
+            <div class="flex items-center space-x-3">
+                <div class="w-12 h-12 rounded-full bg-pink-600 text-white flex items-center justify-center font-black text-base">S</div>
+                <div>
+                    <h4 class="font-black text-white text-xs">Simran</h4>
+                    <p class="text-gray-400 text-[11px] truncate">Hey! See you at Jalwa Club tonight?</p>
+                </div>
+            </div>
+            <span class="text-[10px] text-gray-500">10m ago</span>
+        </div>
+    </div>
 
-  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-    <h2 class="text-sm font-black uppercase text-cyan-400">Send Your Request &amp; Message</h2>
-    <input id="dName" placeholder="Your Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
-    <input id="dContact" placeholder="Mobile / WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
-    <input id="dEmail" placeholder="Email (optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
-    <input id="dAge" type="number" min="18" placeholder="Your age (must be 18+)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
-    <textarea id="dMsg" placeholder="Your message — say hi & what you're up for 😊" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm"></textarea>
-    <button onclick="submitDating(this)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-black py-3 rounded-xl uppercase text-sm">Send Request</button>
-  </div>
-
-  <p class="text-[11px] text-gray-500 leading-relaxed">Requests &amp; messages are shared with our team, who introduce verified, consenting adults (18+) only. This is <b>not</b> an escort or adult service. Any illegal, explicit, or exploitative requests are strictly prohibited and will be refused and reported. Live in-app chat is coming soon.</p>
 </main>
 
+<!-- CHAT MODAL -->
+<div id="chatModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex flex-col justify-between p-4 max-w-md mx-auto">
+    <div class="bg-slate-900 p-4 rounded-2xl flex justify-between items-center border border-slate-800">
+        <h4 id="chatTitle" class="font-black text-white text-sm">Chat</h4>
+        <button onclick="closeChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs">
+        <div class="bg-slate-900 p-3 rounded-2xl text-gray-200 max-w-[80%]">Hey! Let's meet up at the club.</div>
+    </div>
+    <div class="p-3 bg-slate-900 rounded-2xl flex items-center space-x-2 border border-slate-800">
+        <input id="chatInput" placeholder="Type a message..." class="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-xs text-white">
+        <button onclick="sendMessage()" class="bg-pink-600 text-white px-4 py-2 rounded-xl text-xs font-black">Send</button>
+    </div>
+</div>
+
+<!-- RESTRICT / BLOCK MODAL -->
+<div id="restrictModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-slate-800 w-full max-w-sm rounded-3xl p-6 relative shadow-2xl text-xs space-y-4">
+        <button onclick="closeRestrictModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="text-base font-black text-white uppercase">Restrict / Block User</h3>
+        <p class="text-gray-400">Choose restriction duration for this user:</p>
+        <div class="space-y-2">
+            <button onclick="executeRestrict('1hour')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl font-bold">Restrict for 1 Hour</button>
+            <button onclick="executeRestrict('24hours')" class="w-full bg-slate-900 hover:bg-slate-800 text-white py-2.5 rounded-xl font-bold">Restrict for 24 Hours</button>
+            <button onclick="executeRestrict('permanent')" class="w-full bg-red-600/20 text-red-400 border border-red-500/40 py-2.5 rounded-xl font-bold">Block Permanently</button>
+        </div>
+    </div>
+</div>
+
+<!-- SETTINGS MODAL (Interests, Time-Lock, & Club Location) -->
+<div id="settingsModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-slate-800 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[90vh] overflow-y-auto text-xs space-y-4">
+        <button onclick="closeSettingsModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <h3 class="text-base font-black text-white uppercase">My Profile Preferences & Time-Lock</h3>
+        
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Drink Type:</label>
+                <select id="setDrink" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+                    <option>Whisky / Scotch</option><option>Vodka</option><option>Tequila</option><option>Cocktails</option><option>Beer / Non-Alcoholic</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Music Genre:</label>
+                <select id="setMusic" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+                    <option>Punjabi Hip-Hop</option><option>Bollywood Club</option><option>EDM / Techno</option><option>Haryanvi Trap</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Personality:</label>
+                <select id="setVibe" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+                    <option>Extrovert</option><option>Introvert</option><option>Ambivert</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Smoking:</label>
+                <select id="setSmoke" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+                    <option>Non-Smoker</option><option>Social Smoker</option><option>Smoker</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Dancing:</label>
+                <select id="setDance" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+                    <option>Loves to Dance</option><option>Chill / Vibe</option><option>Non-Dancer</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Dating Preference:</label>
+                <select id="setDatingPref" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+                    <option>Date 1 Person</option><option>Open to 1 or More</option>
+                </select>
+            </div>
+        </div>
+
+        <div>
+            <label class="text-gray-400 block mb-1 font-bold">Any Fantasy / Special Note:</label>
+            <input id="setFantasy" placeholder="e.g., Yacht parties, VIP club tables..." class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white">
+        </div>
+
+        <div>
+            <label class="text-gray-400 block mb-1 font-bold">Online Timing / Ready to Meet:</label>
+            <select id="setTiming" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white">
+                <option>Anytime Ready to Meet (9 PM - 4 AM)</option><option>Evening Only (7 PM - 11 PM)</option><option>Late Night Party (12 AM onwards)</option>
+            </select>
+        </div>
+
+        <!-- Self-Restriction Time-Lock Feature -->
+        <div class="bg-slate-900 p-3 rounded-xl border border-amber-500/30 space-y-2">
+            <label class="text-amber-400 block font-bold">🔒 Self-Restriction Time Lock (Break Mode):</label>
+            <p class="text-[10px] text-gray-400">Lock your profile for selected hours. Cannot be undone until time expires!</p>
+            <select id="selfLockHours" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-2 text-white">
+                <option value="0">No Restriction (Active)</option>
+                <option value="2">Lock for 2 Hours</option>
+                <option value="6">Lock for 6 Hours</option>
+                <option value="24">Lock for 24 Hours</option>
+            </select>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-2">
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Current Club:</label>
+                <select id="userClub" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+                    <option value="Nashaa">Nashaa Club</option><option value="Jalwa">Jalwa Club</option><option value="Jannaat">Jannaat Club</option><option value="Leela">Leela Club</option>
+                </select>
+            </div>
+            <div>
+                <label class="text-gray-400 block mb-1 font-bold">Table Number:</label>
+                <input id="userTable" placeholder="VIP-04" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-2.5 text-white">
+            </div>
+        </div>
+
+        <button onclick="saveSettings()" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-black py-3 rounded-xl uppercase">Save & Apply Preferences</button>
+    </div>
+</div>
+
 <script>
-var EP='https://namastepattayareservation.app.n8n.cloud/webhook/enquiry';
-var mode='Party Buddy', intent='';
-var ON='py-2.5 rounded-xl font-black text-xs uppercase bg-pink-600 text-white', OFF='py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300';
-function setMode(m){ mode=m; document.getElementById('mBuddy').className=m==='Party Buddy'?ON:OFF; document.getElementById('mMeet').className=m==='Social Meetup'?ON:OFF;
-  document.getElementById('modeNote').textContent = m==='Party Buddy' ? 'Get matched with a verified companion to join you for clubs, dinner or events — so you never go out alone.' : 'Join group social meetups and mixers with other verified members and travellers in Pattaya.'; }
-setMode('Party Buddy');
-function setIntent(v){ intent=v; var bs=document.querySelectorAll('.ibtn'); for(var i=0;i<bs.length;i++){ bs[i].className='ibtn py-2.5 rounded-xl font-black text-xs uppercase '+(bs[i].getAttribute('data-i')===v?'bg-pink-600 text-white':'bg-slate-800 text-gray-300'); }
-  document.getElementById('dateBox').style.display = (v==='📅 Pick a date')?'block':'none'; }
-function submitDating(btn){
-  var name=document.getElementById('dName').value.trim(), contact=document.getElementById('dContact').value.trim(), age=parseInt(document.getElementById('dAge').value||'0',10);
-  if(!name||!contact){ alert('Please enter your name and contact.'); return; }
-  if(!age||age<18){ alert('You must be 18 or older to use this service.'); return; }
-  if(!intent){ alert('Please choose what you are interested to meet for.'); return; }
-  var when = intent==='📅 Pick a date' ? document.getElementById('dWhen').value : intent;
-  var details='Looking for: '+mode+'\nInterested in: '+intent+'\nWhen: '+when+'\nMeet where: '+document.getElementById('dVenue').value.trim()+'\nTime: '+document.getElementById('dTime').value.trim()+'\nAge: '+age+'\nMessage: '+document.getElementById('dMsg').value.trim();
-  btn.textContent='Sending...'; btn.disabled=true;
-  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'Dating & Buddy ('+intent+')',name:name,contact:contact,email:document.getElementById('dEmail').value.trim(),details:details})})
-    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Thank you! Our team will connect you discreetly.'); btn.textContent='Sent ✓'; })
-    .catch(function(){ btn.disabled=false; btn.textContent='Send Request'; alert('Could not submit. Please try again.'); });
+var profiles = [
+    { name: "Priya, 24", dist: "2.5 km away", bio: "Looking for a fun buddy to visit Nashaa Club tonight! ✨", club: "Nashaa", table: "VIP-04", img: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80", drink: "🥃 Tequila", music: "🎵 Punjabi", vibe: "🔥 Extrovert", smoke: "🚬 Non-Smoker", dance: "💃 Loves to Dance" },
+    { name: "Neha, 22", dist: "1.2 km away", bio: "Bollywood nights are my favorite. Let's party!", club: "Jalwa", table: "Table 12", img: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=600&q=80", drink: "🍸 Vodka", music: "🎵 Bollywood", vibe: "✨ Extrovert", smoke: "🚬 Social Smoker", dance: "💃 Loves to Dance" }
+];
+var currentIdx = 0;
+var blockedUsers = [];
+
+function switchTab(tab){
+    document.getElementById('viewSwipe').classList.add('hidden');
+    document.getElementById('viewNearby').classList.add('hidden');
+    document.getElementById('viewChats').classList.add('hidden');
+    document.getElementById('tabSwipeBtn').className = 'flex-1 py-2.5 rounded-xl text-gray-400 hover:text-white transition';
+    document.getElementById('tabNearbyBtn').className = 'flex-1 py-2.5 rounded-xl text-gray-400 hover:text-white transition';
+    document.getElementById('tabChatsBtn').className = 'flex-1 py-2.5 rounded-xl text-gray-400 hover:text-white transition';
+
+    if(tab === 'swipe'){
+        document.getElementById('viewSwipe').classList.remove('hidden');
+        document.getElementById('tabSwipeBtn').className = 'flex-1 py-2.5 rounded-xl bg-pink-600 text-white transition';
+    } else if(tab === 'nearby'){
+        document.getElementById('viewNearby').classList.remove('hidden');
+        document.getElementById('tabNearbyBtn').className = 'flex-1 py-2.5 rounded-xl bg-pink-600 text-white transition';
+    } else if(tab === 'chats'){
+        document.getElementById('viewChats').classList.remove('hidden');
+        document.getElementById('tabChatsBtn').className = 'flex-1 py-2.5 rounded-xl bg-pink-600 text-white transition';
+    }
 }
+
+function loadProfile(){
+    while(currentIdx < profiles.length && blockedUsers.includes(profiles[currentIdx].name)){
+        currentIdx++;
+    }
+    if(currentIdx >= profiles.length){
+        document.getElementById('activeCard').innerHTML = '<div class="text-center text-white font-bold my-auto">No more open profiles nearby. Everyone is visible!</div>';
+        return;
+    }
+    var p = profiles[currentIdx];
+    var card = document.getElementById('activeCard');
+    card.style.backgroundImage = "url('" + p.img + "')";
+    document.getElementById('profileName').textContent = p.name;
+    document.getElementById('profileBio').textContent = p.bio;
+    document.getElementById('tagDrink').textContent = p.drink;
+    document.getElementById('tagMusic').textContent = p.music;
+    document.getElementById('tagVibe').textContent = p.vibe;
+    document.getElementById('tagSmoke').textContent = p.smoke;
+    document.getElementById('tagDance').textContent = p.dance;
+    document.getElementById('profileClub').textContent = '🍸 ' + p.club;
+    document.getElementById('profileTable').textContent = '🪑 ' + p.table;
+}
+
+function swipeAction(action){
+    if(action === 'like'){
+        alert('💖 It’s a Match! You can now message them.');
+    }
+    currentIdx++;
+    loadProfile();
+}
+
+function openRestrictModal(){ document.getElementById('restrictModal').classList.remove('hidden'); }
+function closeRestrictModal(){ document.getElementById('restrictModal').classList.add('hidden'); }
+function executeRestrict(type){
+    var p = profiles[currentIdx];
+    if(p){
+        blockedUsers.push(p.name);
+        alert('User successfully restricted (' + type + '). Profile is now hidden.');
+        closeRestrictModal();
+        currentIdx++;
+        loadProfile();
+    }
+}
+
+function requestLocation(){
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            alert('Location shared successfully! Open profiles sorted by distance.');
+        }, function(error) {
+            alert('Location access denied.');
+        });
+    } else {
+        alert("Geolocation is not supported by this browser.");
+    }
+}
+
+function openChat(name){
+    document.getElementById('chatTitle').textContent = 'Chat with ' + name;
+    document.getElementById('chatModal').classList.remove('hidden');
+}
+function closeChat(){ document.getElementById('chatModal').classList.add('hidden'); }
+function sendMessage(){
+    var txt = document.getElementById('chatInput').value.trim();
+    if(!txt) return;
+    var c = document.getElementById('chatMessages');
+    c.innerHTML += '<div class="bg-pink-600 text-white p-3 rounded-2xl ml-auto max-w-[80%]" >' + txt + '</div>';
+    document.getElementById('chatInput').value = '';
+    c.scrollTop = c.scrollHeight;
+}
+
+function openSettingsModal(){ document.getElementById('settingsModal').classList.remove('hidden'); }
+function closeSettingsModal(){ document.getElementById('settingsModal').classList.add('hidden'); }
+
+function saveSettings(){
+    var lockHours = parseInt(document.getElementById('selfLockHours').value);
+    if(lockHours > 0){
+        var expiry = new Date(new Date().getTime() + lockHours * 60 * 60 * 1000).toLocaleTimeString();
+        document.getElementById('timeLockBanner').classList.remove('hidden');
+        document.getElementById('lockExpiryTime').textContent = expiry;
+        alert('🔒 Self-Restriction Time-Lock active for ' + lockHours + ' hours. Cannot be unlocked until time expires.');
+    } else {
+        document.getElementById('timeLockBanner').classList.add('hidden');
+        alert('Preferences & open profile settings saved successfully!');
+    }
+    closeSettingsModal();
+}
+
+document.addEventListener('DOMContentLoaded', function(){ loadProfile(); });
 </script>
 </body>
 </html>
