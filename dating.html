@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dating & Find a Buddy | Namaste Pattaya</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="/logo.png">
+</head>
+<body class="bg-slate-950 text-gray-100" style="font-family:system-ui,Arial,sans-serif">
+
+<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
+  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
+  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-pink-400 to-fuchsia-400 mt-1">💑 Dating & Find a Buddy</h1>
+  <p class="text-[11px] text-gray-500">Meet verified companions &amp; fellow travellers for a great night out</p>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+    <div class="text-xs font-bold text-gray-400 mb-2">I'm looking for:</div>
+    <div class="grid grid-cols-2 gap-2">
+      <button onclick="setMode('Party Buddy')" id="mBuddy" class="py-2.5 rounded-xl font-black text-xs uppercase bg-pink-600 text-white">🎉 A Party Buddy</button>
+      <button onclick="setMode('Social Meetup')" id="mMeet" class="py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🤝 Social Meetups</button>
+    </div>
+    <p id="modeNote" class="text-[11px] text-pink-300/80 mt-3 leading-relaxed"></p>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">✅</div><div class="font-bold text-sm text-white">Verified Members</div><div class="text-[11px] text-gray-400 mt-1">Real, ID-checked profiles</div></div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">🔒</div><div class="font-bold text-sm text-white">Safe & Private</div><div class="text-[11px] text-gray-400 mt-1">Your details stay private</div></div>
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">🎊</div><div class="font-bold text-sm text-white">Group Meetups</div><div class="text-[11px] text-gray-400 mt-1">Never party alone</div></div>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+    <h2 class="text-sm font-black uppercase text-cyan-400">Request to Connect</h2>
+    <input id="dName" placeholder="Your Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="dContact" placeholder="Mobile / WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="dEmail" placeholder="Email (optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="dAge" type="number" min="18" placeholder="Your age (must be 18+)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <textarea id="dMsg" placeholder="Tell us what kind of company / meetup you're looking for" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm"></textarea>
+    <button onclick="submitDating(this)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-black py-3 rounded-xl uppercase text-sm">Send Request</button>
+  </div>
+
+  <p class="text-[11px] text-gray-500 leading-relaxed">Namaste Pattaya offers social companionship &amp; meetups between verified, consenting adults (18+) only. This is <b>not</b> an escort or adult service. Any illegal, explicit, or exploitative requests are strictly prohibited and will be refused and reported. Please behave respectfully.</p>
+</main>
+
+<script>
+var EP='https://namastepattayareservation.app.n8n.cloud/webhook/enquiry';
+var mode='Party Buddy';
+var ON='py-2.5 rounded-xl font-black text-xs uppercase bg-pink-600 text-white', OFF='py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300';
+function setMode(m){ mode=m; document.getElementById('mBuddy').className=m==='Party Buddy'?ON:OFF; document.getElementById('mMeet').className=m==='Social Meetup'?ON:OFF;
+  document.getElementById('modeNote').textContent = m==='Party Buddy' ? 'Get matched with a verified companion to join you for clubs, dinner or events — so you never go out alone.' : 'Join group social meetups and mixers with other verified members and travellers in Pattaya.'; }
+setMode('Party Buddy');
+function submitDating(btn){
+  var name=document.getElementById('dName').value.trim(), contact=document.getElementById('dContact').value.trim(), age=parseInt(document.getElementById('dAge').value||'0',10);
+  if(!name||!contact){ alert('Please enter your name and contact.'); return; }
+  if(!age||age<18){ alert('You must be 18 or older to use this service.'); return; }
+  var details='Looking for: '+mode+'\nAge: '+age+'\nMessage: '+document.getElementById('dMsg').value.trim();
+  btn.textContent='Submitting...'; btn.disabled=true;
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'Dating & Buddy ('+mode+')',name:name,contact:contact,email:document.getElementById('dEmail').value.trim(),details:details})})
+    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Thank you! Our team will contact you discreetly.'); btn.textContent='Sent ✓'; })
+    .catch(function(){ btn.disabled=false; btn.textContent='Send Request'; alert('Could not submit. Please try again.'); });
+}
+</script>
+</body>
+</html>
