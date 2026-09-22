@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Namaste Pattaya — Admin Payouts</title>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:#0b0f19;color:#e8e8ef;padding:0 0 60px}
+  header{background:linear-gradient(90deg,#111,#1a1230);padding:18px;text-align:center;border-bottom:2px solid #f59e0b}
+  header h1{margin:0;color:#f59e0b;font-size:20px;letter-spacing:1px}
+  .wrap{max-width:820px;margin:0 auto;padding:18px}
+  .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#131c2e;border:1px solid #26314d;border-radius:14px;padding:14px;margin-bottom:18px}
+  input{flex:1;min-width:180px;padding:11px 12px;border-radius:10px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px}
+  button{border:none;border-radius:10px;padding:11px 16px;font-weight:800;font-size:14px;cursor:pointer}
+  .load{background:#22d3ee;color:#06121f}
+  .confirm{background:#25D366;color:#04351a;padding:8px 12px;font-size:13px}
+  .card{background:#131c2e;border:1px solid #26314d;border-radius:12px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .card .info{flex:1;min-width:200px}
+  .card .amt{color:#34d399;font-weight:800}
+  .tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;text-transform:uppercase;margin-left:6px}
+  .tag.agent{background:#7c3aed;color:#fff}
+  .tag.customer{background:#0ea5e9;color:#04202e}
+  .muted{color:#8b93a7;font-size:12px}
+  .empty{color:#8b93a7;text-align:center;padding:30px}
+  .note{color:#7b8398;font-size:11px;margin-top:16px;line-height:1.5}
+</style>
+</head>
+<body>
+<header><h1>🔐 Namaste Pattaya — Payout Console</h1></header>
+<div class="wrap">
+  <div class="bar">
+    <input id="key" type="password" placeholder="Admin passcode">
+    <button class="load" onclick="loadPending()">Load pending payouts</button>
+  </div>
+  <div id="list"><div class="empty">Enter your passcode and tap "Load pending payouts".</div></div>
+  <p class="note">
+    Confirming a payout marks the booking as completed &amp; undisputed and unlocks that commission for the referrer/agent to withdraw.
+    Only confirm after the service is completed, 48–72 hours have passed, and there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold or cancel any payout.
+  </p>
+</div>
+
+<script>
+var EP = 'https://namastepattayareservation.app.n8n.cloud/webhook/admin-payouts';
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+function getKey(){ var k=document.getElementById('key').value.trim(); if(k){ try{ localStorage.setItem('np_admin_key',k); }catch(e){} } return k; }
+try { var sk=localStorage.getItem('np_admin_key'); if(sk) document.getElementById('key').value=sk; } catch(e){}
+
+function loadPending(){
+  var key=getKey(); if(!key){ alert('Enter your admin passcode.'); return; }
+  var list=document.getElementById('list');
+  list.innerHTML='<div class="empty">Loading…</div>';
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pending',key:key})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(!d || !d.authorized){ list.innerHTML='<div class="empty">Wrong passcode.</div>'; return; }
+      if(!d.items || !d.items.length){ list.innerHTML='<div class="empty">🎉 No pending payouts. All caught up.</div>'; return; }
+      var h='';
+      d.items.forEach(function(it){
+        var tagClass = it.type==='agent'?'agent':'customer';
+        h+='<div class="card"><div class="info">'
+          +'<div><b>'+esc(it.name||'Customer')+'</b> <span class="tag '+tagClass+'">'+esc(it.type)+'</span></div>'
+          +'<div class="muted">Order '+esc(it.order_ref)+' · code '+esc(it.code)+' · spend ฿'+Number(it.order_total||0).toLocaleString()+'</div>'
+          +'</div>'
+          +'<div style="text-align:right"><div class="amt">฿'+Number(it.commission||0).toLocaleString()+'</div>'
+          +'<button class="confirm" onclick="confirmOrder(\''+esc(it.order_ref).replace(/\'/g,"")+'\', this)">Confirm &amp; Unlock</button></div>'
+          +'</div>';
+      });
+      list.innerHTML=h;
+    })
+    .catch(function(){ list.innerHTML='<div class="empty">Could not connect. Try again.</div>'; });
+}
+
+function confirmOrder(orderRef, btn){
+  var key=getKey(); if(!key){ alert('Enter your admin passcode.'); return; }
+  if(!confirm('Confirm payout for '+orderRef+'? This unlocks the commission for withdrawal.')) return;
+  btn.textContent='Confirming…'; btn.disabled=true;
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'confirm',key:key,order_ref:orderRef})})
+    .then(function(r){return r.json();})
+    .then(function(d){ alert((d&&d.message)||'Done.'); loadPending(); })
+    .catch(function(){ btn.disabled=false; btn.textContent='Confirm & Unlock'; alert('Could not confirm. Try again.'); });
+}
+</script>
+</body>
+</html>
