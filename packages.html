@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Packages | Namaste Pattaya Reservations Super-App</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="/logo.png">
+</head>
+<body class="bg-slate-950 text-gray-100" style="font-family:system-ui,Arial,sans-serif">
+
+<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
+  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
+  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-fuchsia-400 mt-1">💎 Namaste Packages</h1>
+  <p class="text-[11px] text-gray-500">Pick a tier, then add or remove services — your price updates instantly</p>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+  <!-- Tier selector -->
+  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+    <button onclick="selectTier('Standard')" id="tStandard" class="py-3 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">Standard</button>
+    <button onclick="selectTier('Silver')" id="tSilver" class="py-3 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">Silver</button>
+    <button onclick="selectTier('Gold')" id="tGold" class="py-3 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">Gold</button>
+    <button onclick="selectTier('Main Elite')" id="tElite" class="py-3 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">Main Elite 👑</button>
+  </div>
+  <p id="tierNote" class="text-[11px] text-amber-300/80"></p>
+
+  <!-- Services (toggle) -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+    <div class="text-xs font-bold text-gray-400 mb-3">Customize your package — tick what you want:</div>
+    <div id="svcList" class="space-y-2"></div>
+  </div>
+
+  <!-- Total + enquiry -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 sticky bottom-2">
+    <div class="flex justify-between items-center">
+      <span class="text-sm font-bold text-gray-300">Your indicative total</span>
+      <span class="text-2xl font-black text-emerald-400" id="total">฿0</span>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <input id="pName" placeholder="Your Name" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="pContact" placeholder="Mobile / WhatsApp" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <input id="pPax" type="number" min="1" value="2" placeholder="People" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="pDate" type="date" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    </div>
+    <button onclick="submitPackage(this)" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 text-black font-black py-3.5 rounded-xl uppercase text-sm">Request This Package</button>
+    <p class="text-[11px] text-gray-500 text-center">Prices are indicative and confirmed by our team on enquiry. No payment now.</p>
+  </div>
+</main>
+
+<script>
+var EP='https://namastepattayareservation.app.n8n.cloud/webhook/enquiry';
+// id, name, indicative price (THB)
+var SERVICES=[
+  {id:'hotel3', n:'Hotel Stay (3★)', p:3000},
+  {id:'villa5', n:'Hotel/Villa Upgrade (5★ / Private Pool)', p:15000},
+  {id:'water', n:'Water Activities (Coral Island)', p:2500},
+  {id:'coral', n:'Coral Club Table (normal)', p:4000},
+  {id:'vipclub', n:'VIP Club Table', p:15000},
+  {id:'beach', n:'VIP Beach Club Party', p:6000},
+  {id:'yacht', n:'Yacht Party (day)', p:55000},
+  {id:'massage', n:'Massage & Spa', p:1500},
+  {id:'show', n:'Cultural / Basic Show', p:1000},
+  {id:'transfer', n:'Airport Transfer (standard)', p:1500},
+  {id:'luxtransfer', n:'Luxury Airport Transfer (S-Class)', p:7500},
+  {id:'butler', n:'Personal Butler (per day)', p:5000},
+  {id:'security', n:'Personal Security / Bodyguard', p:8000},
+  {id:'jet', n:'Private Jet Leg', p:250000},
+  {id:'lounge', n:'Access: Premium Girls Lounge', p:5000},
+  {id:'supercar', n:'Supercar Rental (per day)', p:15000},
+  {id:'membership', n:'Free Namaste Premium Membership', p:0}
+];
+var TIERS={
+  'Standard': ['hotel3','water','coral','massage','show','transfer'],
+  'Silver': ['hotel3','water','coral','beach','massage','show','transfer'],
+  'Gold': ['villa5','water','vipclub','beach','massage','luxtransfer','butler','membership'],
+  'Main Elite': ['villa5','vipclub','beach','yacht','luxtransfer','butler','security','jet','lounge','supercar','membership']
+};
+var NOTES={
+  'Standard':'Great starter — hotel, Coral Island water activities, a normal Coral club table, massage & a basic show. Ideal for up to 4 people.',
+  'Silver':'Everything in Standard plus a VIP beach club party.',
+  'Gold':'5★ stay/villa, VIP club table, beach party, luxury transfer, personal butler & free membership.',
+  'Main Elite':'👑 The full luxury: private villa, VIP tables, yacht party, butler, security, private jet, luxury transfers, premium girls lounge access & free membership.'
+};
+var selected={}, curTier='Standard';
+function esc(s){return String(s==null?'':s);}
+function baht(n){return '฿'+Number(n||0).toLocaleString('en-US');}
+function render(){
+  document.getElementById('svcList').innerHTML = SERVICES.map(function(s){
+    var on = selected[s.id];
+    return '<label class="flex items-center justify-between gap-3 bg-slate-950 border '+(on?'border-amber-500':'border-slate-800')+' rounded-xl px-3 py-2.5 cursor-pointer">'
+      +'<span class="text-sm '+(on?'text-white':'text-gray-300')+'">'+esc(s.n)+'</span>'
+      +'<span class="flex items-center gap-2"><span class="text-xs font-bold '+(s.p?'text-emerald-400':'text-gray-500')+'">'+(s.p?('+'+baht(s.p)):'Free')+'</span>'
+      +'<input type="checkbox" '+(on?'checked':'')+' onchange="toggle(\''+s.id+'\')" style="width:18px;height:18px;accent-color:#f59e0b"></span></label>';
+  }).join('');
+  var t=0; SERVICES.forEach(function(s){ if(selected[s.id]) t+=s.p; });
+  document.getElementById('total').textContent = baht(t);
+}
+window.toggle=function(id){ selected[id]=!selected[id]; render(); };
+window.selectTier=function(tier){
+  curTier=tier; selected={};
+  (TIERS[tier]||[]).forEach(function(id){ selected[id]=true; });
+  ['Standard','Silver','Gold','Main Elite'].forEach(function(t){
+    var el=document.getElementById('t'+t.replace(' ',''));
+    if(el) el.className='py-3 rounded-xl font-black text-xs uppercase transition '+(t===tier?'bg-amber-500 text-black':'bg-slate-800 text-gray-300');
+  });
+  document.getElementById('tierNote').textContent = NOTES[tier]||'';
+  render();
+};
+selectTier('Standard');
+function submitPackage(btn){
+  var name=document.getElementById('pName').value.trim(), contact=document.getElementById('pContact').value.trim();
+  if(!name||!contact){ alert('Please enter your name and contact.'); return; }
+  var chosen=SERVICES.filter(function(s){return selected[s.id];}).map(function(s){return '• '+s.n+' ('+(s.p?baht(s.p):'Free')+')';});
+  var t=0; SERVICES.forEach(function(s){ if(selected[s.id]) t+=s.p; });
+  var details='Tier: '+curTier+'\nPeople: '+document.getElementById('pPax').value+'\nDate: '+document.getElementById('pDate').value+'\nIndicative total: '+baht(t)+'\n\nSelected services:\n'+chosen.join('\n');
+  btn.textContent='Submitting...'; btn.disabled=true;
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'Package ('+curTier+')',name:name,contact:contact,email:'',details:details})})
+    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Thank you! Our team will confirm your package & final price.'); btn.textContent='Requested ✓'; })
+    .catch(function(){ btn.disabled=false; btn.textContent='Request This Package'; alert('Could not submit. Please try again.'); });
+}
+</script>
+</body>
+</html>
