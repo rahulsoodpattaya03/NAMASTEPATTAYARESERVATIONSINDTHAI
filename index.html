@@ -27,12 +27,22 @@ html { scroll-behavior: smooth; }
 .service-card-bg { background-size: cover; background-position: center; position: relative; overflow: hidden; border-radius: 1rem; border: 1px solid rgba(56, 189, 248, 0.25); transition: transform .2s, border-color .2s; cursor: pointer; }
 .service-card-bg:hover { transform: translateY(-3px); border-color: #38bdf8; }
 .service-card-overlay { background: linear-gradient(to top, rgba(11, 15, 25, 0.95), rgba(11, 15, 25, 0.35)); }
+
+/* NEW LUXURY TITLE STYLING */
+.luxury-title {
+    background: linear-gradient(135deg, #f59e0b 0%, #38bdf8 50%, #8b5cf6 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 2px 8px rgba(245, 158, 11, 0.3));
+    letter-spacing: 0.05em;
+}
 </style>
 </head>
 <body class="bg-slate-950 text-gray-100 font-sans antialiased selection:bg-cyan-500 selection:text-slate-950">
 
+<!-- TOP STICKY PROMO BANNER -->
 <div class="bg-gradient-to-r from-emerald-600 via-cyan-600 to-indigo-600 text-white text-center py-2 px-4 text-xs font-black uppercase tracking-wider sticky top-0 z-50 shadow-md">
-    🎁 BHARTIYO KE LEA EK BHARTIYE KA TOHFA — JAI HIND 🇮🇳
+    🎁 UP TO 30% DISCOUNT ON ALL SERVICES — BHARTIYO KE LEA EK BHARTIYE KA TOHFA 🇮🇳
 </div>
 
 <!-- TOP PERMANENT RAJU GUIDE BANNER -->
@@ -47,32 +57,107 @@ html { scroll-behavior: smooth; }
     <span class="bg-cyan-600 text-white px-3 py-1 rounded-xl text-[10px] font-black uppercase">Chat Now</span>
 </div>
 
+<!-- MAIN HEADER (ICON REMOVED & TITLE RE-STYLED) -->
 <header class="bg-slate-950/90 backdrop-blur-md border-b border-cyan-500/30 sticky top-20 z-30">
     <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-3">
-        <div class="flex items-center space-x-3">
-            <div class="relative flex items-center justify-center w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-800 p-0.5 shadow-lg executive-glow">
-                <div class="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center">
-                    <svg class="w-6 h-6 text-cyan-400 animate-pulse" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-                </div>
-            </div>
-            <div>
-                <span class="text-xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-sky-300 to-indigo-400 block leading-tight">NAMASTE PATTAYA RESERVATIONS SUPER-APP</span>
-                <span class="text-[9px] text-cyan-400 font-extrabold tracking-widest uppercase block">BHARTIYO KE LEA EK BHARTIYE KA TOHFA 🇮🇳</span>
-            </div>
+        <div class="flex flex-col">
+            <span class="text-lg md:text-xl font-black uppercase luxury-title leading-tight">NAMASTE PATTAYA RESERVATIONS SUPER-APP SERVICES</span>
+            <span class="text-[9px] text-amber-400 font-extrabold tracking-widest uppercase mt-0.5">BHARTIYO KE LEA EK BHARTIYE KA TOHFA 🇮🇳</span>
         </div>
 
         <nav class="hidden lg:flex space-x-4 text-xs font-black uppercase text-gray-300 tracking-wider">
             <a href="/dating.html" class="text-pink-400 transition">💘 Dating & Buddy</a>
+            <a href="#vip-package-section" class="text-amber-400 transition">💎 VIP Pass (2,999 THB)</a>
             <a href="#quick-actions" class="text-cyan-400 transition">⚡ Quick Actions</a>
             <a href="#all-services" class="hover:text-sky-400 transition">🗂️ All Services</a>
             <a href="/admin.html" class="text-accentgold transition">Partner Dashboard 📊</a>
         </nav>
 
         <div class="flex items-center space-x-2">
-            <button onclick="openAccountModal()" class="bg-gradient-to-r from-amber-500 to-amber-600 text-black px-3.5 py-2 rounded-xl text-xs font-black uppercase transition shadow-lg"><i class="fa-solid fa-right-to-bracket"></i> Join / Login</button>
+            <button class="bg-slate-900 border border-slate-700 text-gray-300 px-3 py-2 rounded-xl text-[10px] font-bold">English <i class="fa-solid fa-chevron-down ml-1"></i></button>
         </div>
     </div>
 </header>
+
+<!-- MAIN HERO: JOIN & CONNECT PORTALS -->
+<section class="py-8 bg-slate-950 hero-pattaya-bg relative">
+    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm z-0"></div>
+    <div class="container mx-auto px-4 max-w-2xl relative z-10">
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl">
+            <div class="text-center mb-6">
+                <span class="bg-slate-950 border border-cyan-500/30 text-cyan-400 text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-md inline-block mb-4">Welcome to Namaste Pattaya</span>
+                <h1 class="text-2xl md:text-3xl font-black text-white uppercase tracking-tight leading-tight">Choose How You Want To<br>Join & Connect</h1>
+                <p class="text-gray-400 text-xs md:text-sm mt-3 px-2">Select your portal below to access VIP table reservations, business partnerships, or official agent privileges.</p>
+            </div>
+            
+            <div class="space-y-4 font-black text-xs md:text-sm">
+                <button class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-90 text-white py-4 rounded-2xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg">
+                    <i class="fa-solid fa-user-check"></i> Customer Login / Sign Up
+                </button>
+                <button class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 text-black py-4 rounded-2xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg">
+                    <i class="fa-solid fa-handshake"></i> Partner – Register Business
+                </button>
+                <button class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:opacity-90 text-white py-4 rounded-2xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg">
+                    🇹🇭 Agent – Thailand
+                </button>
+                <button class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 hover:opacity-90 text-white py-4 rounded-2xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg">
+                    🇮🇳 Agent – India
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- 💎 VIP ALL-INCLUSIVE PASS SECTION -->
+<section id="vip-package-section" class="py-12 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 border-b border-amber-500/30">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 border-2 border-amber-500/60 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 text-amber-500/10 text-9xl font-black pointer-events-none">👑</div>
+            <div class="text-center max-w-xl mx-auto mb-8">
+                <span class="bg-amber-500 text-black text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-md inline-block mb-3">🔥 Ultimate Pattaya Access Pass</span>
+                <h2 class="text-2xl md:text-4xl font-black text-white uppercase tracking-tight">Join Us for Just <span class="text-amber-400">฿2,999</span> Baht!</h2>
+                <p class="text-gray-300 text-xs md:text-sm mt-3">Unlock the ultimate Pattaya nightlife and concierge experience with a single VIP membership pass.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-8">
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-amber-400 text-lg"><i class="fa-solid fa-tags"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Discounted Prices on All Services</h4>
+                        <p class="text-gray-400">Avail up to 30% off across all super-app services, clubs, beach parties, and restaurants.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-purple-400 text-lg"><i class="fa-solid fa-crown"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Full Access to Girls Lounge</h4>
+                        <p class="text-gray-400">Exclusive entry into the Empowered Girls & VIP Ladies Lounge with special concierge perks.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-pink-400 text-lg"><i class="fa-solid fa-heart"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Dating App Full Access</h4>
+                        <p class="text-gray-400">Connect instantly on our Open Dating & Buddy Finder radar to plan your nights out.</p>
+                    </div>
+                </div>
+                <div class="bg-slate-950/80 p-4 rounded-2xl border border-amber-500/30 flex items-start space-x-3">
+                    <div class="text-cyan-400 text-lg"><i class="fa-solid fa-glass-cheers"></i></div>
+                    <div>
+                        <h4 class="text-white font-black text-sm mb-0.5">Elite Party Invitations</h4>
+                        <p class="text-gray-400">Receive VIP invitations to private yacht gatherings, celebrity DJ nights, and secret club bashes.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="alert('🎉 Redirecting to secure checkout for the ฿2,999 VIP Pass! BHARTIYO KE LEA EK BHARTIYE KA TOHFA!')" class="bg-gradient-to-r from-amber-500 to-amber-600 hover:opacity-90 text-black font-black px-8 py-4 rounded-2xl uppercase tracking-wider text-sm shadow-xl transition transform hover:scale-105">
+                    🚀 Get VIP All-Inclusive Pass (฿2,999)
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
 
 <!-- ⚡ QUICK ACTIONS -->
 <section id="quick-actions" class="py-8 bg-slate-900 border-b border-cyan-500/30">
@@ -86,13 +171,16 @@ html { scroll-behavior: smooth; }
             <a href="/packages.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💎 Packages</div></a>
             <button onclick="openClubBooking('Nashaa')" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🍸 Indian Clubs</div></button>
             
-            <!-- Empowered Girls & VIP Ladies Lounge Action Button -->
             <button onclick="openLadiesLoungeModal()" class="qa border-purple-500/50"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=300&q=80')"></div><div class="lb text-purple-300">🌸 Ladies Lounge</div></button>
             
             <button onclick="openVipMediaModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">📸 Photo / Song</div></button>
             <a href="/dating.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💘 Dating</div></a>
             <a href="/mall.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🛍️ Namaste Mall</div></a>
-            <a href="/pay.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💸 Pay Bill</div></a>
+            
+            <button onclick="openPayBillModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💸 Pay / Split Bill</div></button>
+            
+            <button onclick="openMapModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1524413840807-0c3cb6fa808d?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🗺️ Maps</div></button>
+            
             <a href="/admin.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">📊 Partner CRM</div></a>
         </div>
         <p class="text-[11px] text-gray-500 mt-1">⭐ Namaste Premium — <span class="text-amber-400 font-bold">No Money No Honey</span></p>
@@ -110,13 +198,11 @@ html { scroll-behavior: smooth; }
         
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
             
-            <!-- Empowered Girls & Ladies Lounge Service Card -->
             <div onclick="openLadiesLoungeModal()" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg border-purple-500/40 hover:border-purple-400" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-purple-300 font-black text-xs uppercase tracking-wide leading-tight">🌸 VIP Ladies Lounge</h3></div>
             </div>
 
-            <!-- ALL ORIGINAL 17 SERVICES RESTORED -->
             <a href="/services.html?cat=Nightlife%20%26%20Bars" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Nightlife & Bars</h3></div>
@@ -191,33 +277,15 @@ html { scroll-behavior: smooth; }
 
 <!-- ================= MODALS ================= -->
 
-<!-- 1. JOIN / LOGIN MODAL (From Screenshot) -->
-<div id="accountModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-slate-950 border border-slate-800 w-full max-w-sm rounded-3xl p-6 relative shadow-2xl">
-        <button onclick="closeAccountModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
-        <h3 class="text-xl font-black text-white text-center uppercase tracking-wide mb-1">Join / Login</h3>
-        <p class="text-gray-400 text-xs text-center mb-6">Choose how you want to join Namaste Pattaya</p>
-        
-        <div class="space-y-3 font-bold text-xs">
-            <button class="w-full bg-cyan-600 hover:bg-cyan-700 text-white py-4 rounded-xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg"><i class="fa-solid fa-user"></i> Customer Login / Sign Up</button>
-            <button class="w-full bg-amber-500 hover:bg-amber-600 text-black py-4 rounded-xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg"><i class="fa-solid fa-handshake"></i> Partner – Register Business</button>
-            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg">🇹🇭 Agent – Thailand</button>
-            <button class="w-full bg-purple-600 hover:bg-purple-700 text-white py-4 rounded-xl uppercase tracking-wider flex justify-center items-center gap-2 transition shadow-lg">🇮🇳 Agent – India</button>
-        </div>
-    </div>
-</div>
-
-<!-- 2. LADIES LOUNGE MODAL (Moved from Main Screen) -->
+<!-- 1. LADIES LOUNGE MODAL -->
 <div id="ladiesLoungeModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-purple-500/50 w-full max-w-2xl rounded-3xl p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto">
         <button onclick="closeLadiesLoungeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
-        
         <div class="text-center mb-6">
             <span class="bg-purple-600 text-white text-[10px] font-black px-3.5 py-1.5 rounded-full uppercase tracking-widest shadow-md inline-block mb-3">🌸 Shine Bright, Own the Night!</span>
             <h2 class="text-2xl font-black text-white uppercase tracking-tight">Pattaya's Empowered Girls & VIP Ladies Lounge</h2>
-            <p class="text-gray-300 text-xs mt-2">Welcome to Pattaya's ultimate playground where every queen reigns supreme! Let's make every moment unforgettable, exciting, and rewarding:</p>
+            <p class="text-gray-300 text-xs mt-2">Welcome to Pattaya's ultimate playground where every queen reigns supreme!</p>
         </div>
-        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div class="bg-slate-900/90 p-4 rounded-2xl border border-purple-500/30">
                 <h3 class="text-purple-300 font-black text-sm mb-1">🎁 5% Fixed Referral Commission</h3>
@@ -244,14 +312,78 @@ html { scroll-behavior: smooth; }
                 <p class="text-gray-300">Chat anonymously in our secure gossip zone. Plus, get a dedicated girls-only concierge!</p>
             </div>
         </div>
-
         <div class="mt-6 flex justify-center">
             <a href="/ladies.html" class="bg-purple-600 hover:bg-purple-700 text-white font-black px-6 py-3 rounded-xl uppercase tracking-wider text-xs shadow-lg">Open Ladies Portal & Gossip Zone</a>
         </div>
     </div>
 </div>
 
-<!-- 3. CLUB TABLE RESERVATION MODAL -->
+<!-- 2. PAY BILL & SPLIT MODAL -->
+<div id="payBillModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-slate-800 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl text-xs">
+        <button onclick="closePayBillModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-cyan-600 flex items-center justify-center text-white font-black text-xl">💸</div>
+            <div><h3 class="text-xl font-black text-white uppercase">Pay & Split Bill</h3><span class="text-emerald-400 font-bold uppercase tracking-wider">Fast & Secure Checkout</span></div>
+        </div>
+        <form onsubmit="submitPayment(event)" class="space-y-4">
+            <div>
+                <label class="text-gray-400 font-bold mb-1 block">Select Partner Venue:</label>
+                <select class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white font-bold"><option>Nashaa Club</option><option>Jalwa Club</option><option>Jannaat Club</option><option>Namaste Cafe</option></select>
+            </div>
+            <div>
+                <label class="text-gray-400 font-bold mb-1 block">Total Bill Amount (฿):</label>
+                <input type="number" id="billTotalAmount" oninput="calculateSplit()" required min="1" placeholder="e.g. 5000" class="w-full bg-slate-900 border border-slate-800 rounded-xl p-3 text-white text-lg font-black">
+            </div>
+            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                <label class="flex items-center space-x-3 cursor-pointer">
+                    <input type="checkbox" id="splitToggle" onchange="toggleSplit()" class="w-4 h-4 accent-cyan-500">
+                    <span class="text-white font-bold uppercase">✂️ Split this bill with friends</span>
+                </label>
+                <div id="splitSection" class="hidden space-y-3 mt-4 pt-3 border-t border-slate-800">
+                    <div>
+                        <label class="text-gray-400 font-bold block mb-1">Number of People:</label>
+                        <input type="number" id="splitPeople" oninput="calculateSplit()" min="2" value="2" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white">
+                    </div>
+                    <div class="flex justify-between items-center bg-slate-950 p-3 rounded-xl border border-cyan-500/30">
+                        <span class="text-gray-400 font-bold">Amount Per Person:</span>
+                        <span class="text-cyan-400 font-black text-lg">฿<span id="splitResult">0.00</span></span>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-r from-emerald-500 to-cyan-600 hover:opacity-90 text-white font-black py-4 rounded-xl uppercase tracking-wider text-sm shadow-lg mt-2">Proceed to Payment</button>
+        </form>
+    </div>
+</div>
+
+<!-- 3. MAPS (ONLINE / OFFLINE) MODAL -->
+<div id="mapModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-slate-950 border border-slate-800 w-full max-w-lg rounded-3xl p-6 md:p-8 relative shadow-2xl">
+        <button onclick="closeMapModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+        <div class="flex items-center space-x-3 mb-6">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white font-black text-xl">🗺️</div>
+            <div><h3 class="text-xl font-black text-white uppercase">Pattaya City Map</h3><span class="text-cyan-400 font-bold uppercase tracking-wider">Online & Offline Modes</span></div>
+        </div>
+        
+        <div class="flex gap-2 mb-4">
+            <button onclick="switchMap('online')" id="btnOnlineMap" class="flex-1 bg-cyan-600 text-white py-2.5 rounded-xl font-black text-xs uppercase shadow-md transition">Live Online Map</button>
+            <button onclick="switchMap('offline')" id="btnOfflineMap" class="flex-1 bg-slate-900 border border-slate-800 text-gray-400 py-2.5 rounded-xl font-bold text-xs uppercase transition">Offline Download</button>
+        </div>
+
+        <div id="mapOnline" class="w-full h-[350px] bg-slate-900 rounded-xl overflow-hidden border border-slate-800">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d124579.52488319343!2d100.803738!3d12.923485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31029584d436a5b7%3A0xcb1b6d05f3fb4095!2sPattaya%20City%2C%20Bang%20Lamung%20District%2C%20Chon%20Buri%2020150%2C%20Thailand!5e0!3m2!1sen!2sus!4v1710000000000" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        </div>
+
+        <div id="mapOffline" class="w-full h-[350px] bg-slate-900 rounded-xl border border-slate-800 hidden flex flex-col items-center justify-center space-y-5 p-6 text-center">
+            <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center text-4xl text-cyan-400 mb-2"><i class="fa-solid fa-map-location-dot"></i></div>
+            <h4 class="text-white font-black text-sm uppercase">No Data? No Problem.</h4>
+            <p class="text-gray-400 text-xs max-w-xs leading-relaxed">Save the high-resolution Namaste Pattaya tourist map directly to your phone. Access all club locations, hotels, and emergency spots without internet access.</p>
+            <button onclick="alert('Downloading Offline Map PDF...')" class="bg-amber-500 hover:bg-amber-600 text-black px-6 py-3.5 rounded-xl font-black uppercase text-xs shadow-lg flex items-center gap-2"><i class="fa-solid fa-download"></i> Download Offline Map</button>
+        </div>
+    </div>
+</div>
+
+<!-- 4. CLUB TABLE RESERVATION MODAL -->
 <div id="clubBookingModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-cyan-500/40 w-full max-w-lg rounded-3xl p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
         <button onclick="closeClubBooking()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -281,7 +413,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 4. STANDALONE PHOTO & SONG REQUEST MODAL -->
+<!-- 5. STANDALONE PHOTO & SONG REQUEST MODAL -->
 <div id="vipMediaModal" class="fixed inset-0 bg-black/85 backdrop-blur-md z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-amber-500/40 w-full max-w-md rounded-3xl p-6 md:p-8 relative shadow-2xl max-h-[90vh] overflow-y-auto text-xs">
         <button onclick="closeVipMediaModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
@@ -307,7 +439,7 @@ html { scroll-behavior: smooth; }
     </div>
 </div>
 
-<!-- 5. LIVE CHAT MODAL (RAJU GUIDE) -->
+<!-- 6. LIVE CHAT MODAL (RAJU GUIDE) -->
 <div id="liveChatModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-slate-950 border border-slate-800 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[450px]">
         <div class="bg-slate-900 p-4 border-b border-slate-800 flex justify-between items-center">
@@ -325,26 +457,61 @@ html { scroll-behavior: smooth; }
 </div>
 
 <script>
-// RESTORED WEBHOOK VARIABLE
+// WEBHOOK VARIABLE
 var N8N = 'https://namastepattayareservation.app.n8n.cloud/webhook';
 
-// Modal Controls
-function openAccountModal(){ document.getElementById('accountModal').classList.remove('hidden'); }
-function closeAccountModal(){ document.getElementById('accountModal').classList.add('hidden'); }
-
+// Modal Controls - Ladies Lounge
 function openLadiesLoungeModal(){ document.getElementById('ladiesLoungeModal').classList.remove('hidden'); }
 function closeLadiesLoungeModal(){ document.getElementById('ladiesLoungeModal').classList.add('hidden'); }
 
-function openLiveChat(){ document.getElementById('liveChatModal').classList.remove('hidden'); var i=document.getElementById('chatInput'); if(i) i.focus(); }
-function closeLiveChat(){ document.getElementById('liveChatModal').classList.add('hidden'); }
+// Modal Controls - Map
+function openMapModal(){ document.getElementById('mapModal').classList.remove('hidden'); }
+function closeMapModal(){ document.getElementById('mapModal').classList.add('hidden'); }
+function switchMap(mode){
+    if(mode === 'online'){
+        document.getElementById('mapOnline').classList.remove('hidden');
+        document.getElementById('mapOffline').classList.add('hidden');
+        document.getElementById('btnOnlineMap').className = 'flex-1 bg-cyan-600 text-white py-2.5 rounded-xl font-black text-xs uppercase shadow-md transition';
+        document.getElementById('btnOfflineMap').className = 'flex-1 bg-slate-900 border border-slate-800 text-gray-400 py-2.5 rounded-xl font-bold text-xs uppercase transition';
+    } else {
+        document.getElementById('mapOnline').classList.add('hidden');
+        document.getElementById('mapOffline').classList.remove('hidden');
+        document.getElementById('btnOnlineMap').className = 'flex-1 bg-slate-900 border border-slate-800 text-gray-400 py-2.5 rounded-xl font-bold text-xs uppercase transition';
+        document.getElementById('btnOfflineMap').className = 'flex-1 bg-cyan-600 text-white py-2.5 rounded-xl font-black text-xs uppercase shadow-md transition';
+    }
+}
 
+// Modal Controls - Pay & Split Bill
+function openPayBillModal(){ document.getElementById('payBillModal').classList.remove('hidden'); }
+function closePayBillModal(){ document.getElementById('payBillModal').classList.add('hidden'); }
+function toggleSplit(){
+    var isSplit = document.getElementById('splitToggle').checked;
+    if(isSplit){
+        document.getElementById('splitSection').classList.remove('hidden');
+        calculateSplit();
+    } else {
+        document.getElementById('splitSection').classList.add('hidden');
+    }
+}
+function calculateSplit(){
+    var total = parseFloat(document.getElementById('billTotalAmount').value) || 0;
+    var people = parseInt(document.getElementById('splitPeople').value) || 2;
+    var perPerson = total / people;
+    document.getElementById('splitResult').textContent = perPerson.toFixed(2);
+}
+function submitPayment(e){
+    e.preventDefault();
+    alert('✅ Payment portal opening... Secure transaction initiated.');
+    closePayBillModal();
+}
+
+// Modal Controls - Reservations & Media
 function openClubBooking(clubName){ document.getElementById('modalClubName').textContent = 'Reserve Table: ' + clubName; document.getElementById('clubBookingModal').classList.remove('hidden'); }
 function closeClubBooking(){ document.getElementById('clubBookingModal').classList.add('hidden'); }
 
 function openVipMediaModal(){ document.getElementById('vipMediaModal').classList.remove('hidden'); }
 function closeVipMediaModal(){ document.getElementById('vipMediaModal').classList.add('hidden'); }
 
-// Submissions
 function submitClubReservation(e){
     e.preventDefault();
     alert('🎉 Table reservation submitted successfully! BHARTIYO KE LEA EK BHARTIYE KA TOHFA! Up to 30% discount applied.');
@@ -357,7 +524,9 @@ function submitStandaloneMedia(e){
     closeVipMediaModal();
 }
 
-// RESTORED LIVE CHAT BACKEND CONNECTION
+// LIVE CHAT BACKEND CONNECTION
+function openLiveChat(){ document.getElementById('liveChatModal').classList.remove('hidden'); var i=document.getElementById('chatInput'); if(i) i.focus(); }
+function closeLiveChat(){ document.getElementById('liveChatModal').classList.add('hidden'); }
 function handleChatSubmit(e){
     e.preventDefault();
     var input=document.getElementById('chatInput'); var q=(input.value||'').trim(); if(!q) return;
@@ -374,7 +543,7 @@ function handleChatSubmit(e){
     c.appendChild(t); 
     c.scrollTop=c.scrollHeight;
     
-    // Send to actual n8n backend
+    // Send to n8n backend
     fetch(N8N+'/concierge', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
