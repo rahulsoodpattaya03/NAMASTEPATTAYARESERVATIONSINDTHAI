@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Namaste Pattaya Reservations Super-App</title>
+<title>Namaste Pattaya Reservations Super-App Services</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
     tailwind.config = { theme: { extend: { colors: { darkbg: '#0b0f19', cardbg: '#131c2e', accentgold: '#f59e0b', accentpurple: '#8b5cf6' } } } }
@@ -86,7 +86,7 @@ html { scroll-behavior: smooth; }
             <a href="/packages.html" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">💎 Packages</div></a>
             <button onclick="openClubBooking('Nashaa')" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">🍸 Indian Clubs</div></button>
             
-            <!-- NEW: Empowered Girls & VIP Ladies Lounge Action Button -->
+            <!-- Empowered Girls & VIP Ladies Lounge Action Button -->
             <button onclick="openLadiesLoungeModal()" class="qa border-purple-500/50"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=300&q=80')"></div><div class="lb text-purple-300">🌸 Ladies Lounge</div></button>
             
             <button onclick="openVipMediaModal()" class="qa"><div class="qa-bg" style="background-image:url('https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=300&q=80')"></div><div class="lb">📸 Photo / Song</div></button>
@@ -110,12 +110,13 @@ html { scroll-behavior: smooth; }
         
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
             
-            <!-- NEW: Empowered Girls & Ladies Lounge Service Card -->
+            <!-- Empowered Girls & Ladies Lounge Service Card -->
             <div onclick="openLadiesLoungeModal()" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg border-purple-500/40 hover:border-purple-400" style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-purple-300 font-black text-xs uppercase tracking-wide leading-tight">🌸 VIP Ladies Lounge</h3></div>
             </div>
 
+            <!-- ALL ORIGINAL 17 SERVICES RESTORED -->
             <a href="/services.html?cat=Nightlife%20%26%20Bars" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Nightlife & Bars</h3></div>
@@ -124,9 +125,21 @@ html { scroll-behavior: smooth; }
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">VIP Beach Clubs</h3></div>
             </a>
+            <a href="/services.html?cat=Restaurants" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Restaurants</h3></div>
+            </a>
             <a href="/services.html?cat=Indian%20Restaurants" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Indian Restaurants</h3></div>
+            </a>
+            <a href="/services.html?cat=Desi%20Chai%20%26%20Spices%20(Indian%20Groceries)" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Desi Chai & Spices</h3></div>
+            </a>
+            <a href="/services.html?cat=Hotels%20%26%20Resorts" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Hotels & Resorts</h3></div>
             </a>
             <a href="/services.html?cat=Cars%20%26%20Bikes%20Rental" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
@@ -136,13 +149,37 @@ html { scroll-behavior: smooth; }
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Spa & Massage</h3></div>
             </a>
+            <a href="/services.html?cat=Tours%20%26%20Excursions" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Tours & Excursions</h3></div>
+            </a>
+            <a href="/services.html?cat=Water%20Sports" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1544551763-46a013bb70d5?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Water Sports</h3></div>
+            </a>
+            <a href="/services.html?cat=Golf%20Courses" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Golf Courses</h3></div>
+            </a>
             <a href="/services.html?cat=Yacht%20%26%20Boat%20Charter" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1569263979104-865ab9cd8d5c?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Yacht & Boats</h3></div>
             </a>
+            <a href="/services.html?cat=Airport%20Transfers" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Airport Transfers</h3></div>
+            </a>
+            <a href="/services.html?cat=Shopping%20%26%20Markets" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1555529771-835f59fc5efe?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Shopping & Markets</h3></div>
+            </a>
             <a href="/services.html?cat=Event%20%26%20Party%20Planning" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
                 <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Event & Party Planning</h3></div>
+            </a>
+            <a href="/services.html?cat=Medical%20%26%20Pharmacy" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?auto=format&fit=crop&w=600&q=80');">
+                <div class="service-card-overlay absolute inset-0 z-0"></div>
+                <div class="relative z-10"><h3 class="text-white font-black text-xs uppercase tracking-wide leading-tight">Medical & Pharmacy</h3></div>
             </a>
             <a href="/services.html?cat=Concierge%20%26%20VIP%20Services" class="service-card-bg h-44 flex flex-col justify-end p-4 shadow-lg" style="background-image: url('https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=600&q=80');">
                 <div class="service-card-overlay absolute inset-0 z-0"></div>
@@ -288,6 +325,9 @@ html { scroll-behavior: smooth; }
 </div>
 
 <script>
+// RESTORED WEBHOOK VARIABLE
+var N8N = 'https://namastepattayareservation.app.n8n.cloud/webhook';
+
 // Modal Controls
 function openAccountModal(){ document.getElementById('accountModal').classList.remove('hidden'); }
 function closeAccountModal(){ document.getElementById('accountModal').classList.add('hidden'); }
@@ -317,14 +357,37 @@ function submitStandaloneMedia(e){
     closeVipMediaModal();
 }
 
+// RESTORED LIVE CHAT BACKEND CONNECTION
 function handleChatSubmit(e){
     e.preventDefault();
     var input=document.getElementById('chatInput'); var q=(input.value||'').trim(); if(!q) return;
     var c=document.getElementById('chatMessages');
+    
+    // Add user message to UI
     c.innerHTML += '<div class="bg-cyan-600 text-white p-2.5 rounded-2xl ml-auto max-w-[85%] font-medium">'+q+'</div>';
     input.value='';
-    var t=document.createElement('div'); t.className='bg-slate-900 border border-slate-800 p-2.5 rounded-2xl text-gray-200 max-w-[85%] font-medium'; t.textContent='Raju is typing…'; c.appendChild(t); c.scrollTop=c.scrollHeight;
-    setTimeout(function(){ t.innerHTML='Namaste! How can I assist your Pattaya trip today?'; c.scrollTop=c.scrollHeight; }, 1000);
+    
+    // Add typing indicator
+    var t=document.createElement('div'); 
+    t.className='bg-slate-900 border border-slate-800 p-2.5 rounded-2xl text-gray-200 max-w-[85%] font-medium'; 
+    t.textContent='Raju is typing…'; 
+    c.appendChild(t); 
+    c.scrollTop=c.scrollHeight;
+    
+    // Send to actual n8n backend
+    fetch(N8N+'/concierge', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: q })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) { 
+        t.innerHTML = (d && d.reply) || 'Namaste! How can I assist your Pattaya trip today?'; 
+        c.scrollTop = c.scrollHeight; 
+    })
+    .catch(function() { 
+        t.textContent = 'Namaste! Reach us anytime for bookings and queries.'; 
+    });
 }
 </script>
 </body>
