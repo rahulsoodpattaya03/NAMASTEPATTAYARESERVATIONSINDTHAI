@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ladies Night | Namaste Pattaya</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="icon" href="/logo.png">
+</head>
+<body class="bg-slate-950 text-gray-100" style="font-family:system-ui,Arial,sans-serif">
+
+<header class="sticky top-0 z-30 bg-slate-950/95 backdrop-blur border-b border-cyan-500/30 px-4 py-3">
+  <a href="/" class="text-gray-400 text-xs">&larr; Back to home</a>
+  <h1 class="text-lg font-black text-transparent bg-clip-text bg-gradient-to-r from-fuchsia-400 to-amber-400 mt-1">👯 Ladies Night</h1>
+  <p class="text-[11px] text-gray-500">Special parties, free entry &amp; drinks for the girls</p>
+</header>
+
+<main class="max-w-3xl mx-auto px-4 py-6 space-y-6">
+
+  <div class="bg-gradient-to-br from-fuchsia-900/40 to-slate-900 border border-fuchsia-500/30 rounded-2xl p-4">
+    <p class="text-gray-200 text-sm leading-relaxed">💃 Girls get <b class="text-fuchsia-300">free entry, welcome drinks &amp; VIP perks</b> at Pattaya's hottest ladies nights. Reserve a spot for you and your friends — safe, fun &amp; unforgettable.</p>
+  </div>
+
+  <div>
+    <h2 class="text-sm font-black uppercase text-fuchsia-400 mb-3">Upcoming Ladies Nights <span class="text-gray-500 font-normal normal-case">(indicative)</span></h2>
+    <div id="events" class="space-y-3"></div>
+  </div>
+
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
+    <h2 class="text-sm font-black uppercase text-cyan-400">Reserve Your Spot / RSVP</h2>
+    <input id="lName" placeholder="Your Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="lContact" placeholder="Mobile / WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="lEmail" placeholder="Email (optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="lEvent" placeholder="Which night / venue?" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <input id="lGirls" type="number" min="1" value="1" placeholder="How many girls in your group?" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    <button onclick="submitLadies(this)" class="w-full bg-fuchsia-600 hover:bg-fuchsia-700 text-white font-black py-3 rounded-xl uppercase text-sm">Reserve My Spot</button>
+  </div>
+
+  <p class="text-[11px] text-gray-500 leading-relaxed">Ladies nights, perks and dates are indicative and confirmed by our team on RSVP. For verified adults (18+) only. Namaste Pattaya reserves the right to change or cancel events.</p>
+</main>
+
+<script>
+var EP='https://namastepattayareservation.app.n8n.cloud/webhook/enquiry';
+function esc(s){return String(s==null?'':s);}
+var EVENTS=[
+  {d:'Every Wednesday',t:'Bollywood Ladies Night',v:'Ikka Club, Walking Street',p:'Free entry + 2 free cocktails for girls'},
+  {d:'Every Friday',t:'Rooftop Girls Party',v:'Horizon Rooftop, Hilton',p:'Free bubbly hour 9–10pm'},
+  {d:'Every Saturday',t:'Beach Sunset Ladies Session',v:'Cafe del Mar Beach Club',p:'Free daybed for groups of 4+ girls'},
+  {d:'Monthly Special',t:'Diva Night — Single Girls Mixer',v:'Rotating VIP venue',p:'Free entry, host & safety team'}
+];
+document.getElementById('events').innerHTML = EVENTS.map(function(x){return '<div class="bg-slate-900 border border-slate-800 rounded-2xl p-4"><div class="flex justify-between items-start"><div class="font-bold text-sm text-white">'+esc(x.t)+'</div><span class="text-[10px] bg-fuchsia-600 text-white font-black px-2 py-1 rounded-lg whitespace-nowrap">'+esc(x.d)+'</span></div><div class="text-gray-400 text-[11px] mt-1">📍 '+esc(x.v)+'</div><div class="text-emerald-400 text-[11px] font-bold mt-1">🎁 '+esc(x.p)+'</div></div>';}).join('');
+function submitLadies(btn){
+  var name=document.getElementById('lName').value.trim(), contact=document.getElementById('lContact').value.trim();
+  if(!name||!contact){ alert('Please enter your name and contact.'); return; }
+  var details='Event/Venue: '+document.getElementById('lEvent').value.trim()+'\nGroup size (girls): '+document.getElementById('lGirls').value;
+  btn.textContent='Submitting...'; btn.disabled=true;
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'Ladies Night',name:name,contact:contact,email:document.getElementById('lEmail').value.trim(),details:details})})
+    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'You\u2019re on the list! Our team will confirm your spot.'); btn.textContent='Reserved ✓'; })
+    .catch(function(){ btn.disabled=false; btn.textContent='Reserve My Spot'; alert('Could not submit. Please try again.'); });
+}
+</script>
+</body>
+</html>
