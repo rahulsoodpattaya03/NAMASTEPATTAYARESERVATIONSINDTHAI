@@ -26,6 +26,25 @@
     <p id="modeNote" class="text-[11px] text-pink-300/80 mt-3 leading-relaxed"></p>
   </div>
 
+  <!-- Meet intent -->
+  <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4">
+    <div class="text-xs font-bold text-gray-400 mb-2">Interested to meet for:</div>
+    <div class="grid grid-cols-2 gap-2">
+      <button onclick="setIntent('☕ Coffee')" data-i="☕ Coffee" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">☕ Coffee</button>
+      <button onclick="setIntent('🎉 Party Tonight')" data-i="🎉 Party Tonight" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🎉 Party Tonight</button>
+      <button onclick="setIntent('🌙 Party Tomorrow')" data-i="🌙 Party Tomorrow" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">🌙 Party Tomorrow</button>
+      <button onclick="setIntent('📅 Pick a date')" data-i="📅 Pick a date" class="ibtn py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300">📅 Pick a date</button>
+    </div>
+    <div id="dateBox" style="display:none" class="mt-3">
+      <label class="text-[11px] text-gray-400 font-bold">Available date &amp; time</label>
+      <input id="dWhen" type="datetime-local" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm mt-1">
+    </div>
+    <div class="grid grid-cols-2 gap-2 mt-3">
+      <input id="dVenue" placeholder="Meet where? (club / cafe / area)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+      <input id="dTime" placeholder="What time? (e.g. 9 PM)" class="bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
+    </div>
+  </div>
+
   <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">✅</div><div class="font-bold text-sm text-white">Verified Members</div><div class="text-[11px] text-gray-400 mt-1">Real, ID-checked profiles</div></div>
     <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 text-center"><div class="text-2xl mb-1">🔒</div><div class="font-bold text-sm text-white">Safe & Private</div><div class="text-[11px] text-gray-400 mt-1">Your details stay private</div></div>
@@ -33,33 +52,37 @@
   </div>
 
   <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3">
-    <h2 class="text-sm font-black uppercase text-cyan-400">Request to Connect</h2>
+    <h2 class="text-sm font-black uppercase text-cyan-400">Send Your Request &amp; Message</h2>
     <input id="dName" placeholder="Your Name" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
     <input id="dContact" placeholder="Mobile / WhatsApp" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
     <input id="dEmail" placeholder="Email (optional)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
     <input id="dAge" type="number" min="18" placeholder="Your age (must be 18+)" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm">
-    <textarea id="dMsg" placeholder="Tell us what kind of company / meetup you're looking for" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm"></textarea>
+    <textarea id="dMsg" placeholder="Your message — say hi & what you're up for 😊" rows="3" class="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-white text-sm"></textarea>
     <button onclick="submitDating(this)" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-black py-3 rounded-xl uppercase text-sm">Send Request</button>
   </div>
 
-  <p class="text-[11px] text-gray-500 leading-relaxed">Namaste Pattaya offers social companionship &amp; meetups between verified, consenting adults (18+) only. This is <b>not</b> an escort or adult service. Any illegal, explicit, or exploitative requests are strictly prohibited and will be refused and reported. Please behave respectfully.</p>
+  <p class="text-[11px] text-gray-500 leading-relaxed">Requests &amp; messages are shared with our team, who introduce verified, consenting adults (18+) only. This is <b>not</b> an escort or adult service. Any illegal, explicit, or exploitative requests are strictly prohibited and will be refused and reported. Live in-app chat is coming soon.</p>
 </main>
 
 <script>
 var EP='https://namastepattayareservation.app.n8n.cloud/webhook/enquiry';
-var mode='Party Buddy';
+var mode='Party Buddy', intent='';
 var ON='py-2.5 rounded-xl font-black text-xs uppercase bg-pink-600 text-white', OFF='py-2.5 rounded-xl font-black text-xs uppercase bg-slate-800 text-gray-300';
 function setMode(m){ mode=m; document.getElementById('mBuddy').className=m==='Party Buddy'?ON:OFF; document.getElementById('mMeet').className=m==='Social Meetup'?ON:OFF;
   document.getElementById('modeNote').textContent = m==='Party Buddy' ? 'Get matched with a verified companion to join you for clubs, dinner or events — so you never go out alone.' : 'Join group social meetups and mixers with other verified members and travellers in Pattaya.'; }
 setMode('Party Buddy');
+function setIntent(v){ intent=v; var bs=document.querySelectorAll('.ibtn'); for(var i=0;i<bs.length;i++){ bs[i].className='ibtn py-2.5 rounded-xl font-black text-xs uppercase '+(bs[i].getAttribute('data-i')===v?'bg-pink-600 text-white':'bg-slate-800 text-gray-300'); }
+  document.getElementById('dateBox').style.display = (v==='📅 Pick a date')?'block':'none'; }
 function submitDating(btn){
   var name=document.getElementById('dName').value.trim(), contact=document.getElementById('dContact').value.trim(), age=parseInt(document.getElementById('dAge').value||'0',10);
   if(!name||!contact){ alert('Please enter your name and contact.'); return; }
   if(!age||age<18){ alert('You must be 18 or older to use this service.'); return; }
-  var details='Looking for: '+mode+'\nAge: '+age+'\nMessage: '+document.getElementById('dMsg').value.trim();
-  btn.textContent='Submitting...'; btn.disabled=true;
-  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'Dating & Buddy ('+mode+')',name:name,contact:contact,email:document.getElementById('dEmail').value.trim(),details:details})})
-    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Thank you! Our team will contact you discreetly.'); btn.textContent='Sent ✓'; })
+  if(!intent){ alert('Please choose what you are interested to meet for.'); return; }
+  var when = intent==='📅 Pick a date' ? document.getElementById('dWhen').value : intent;
+  var details='Looking for: '+mode+'\nInterested in: '+intent+'\nWhen: '+when+'\nMeet where: '+document.getElementById('dVenue').value.trim()+'\nTime: '+document.getElementById('dTime').value.trim()+'\nAge: '+age+'\nMessage: '+document.getElementById('dMsg').value.trim();
+  btn.textContent='Sending...'; btn.disabled=true;
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'Dating & Buddy ('+intent+')',name:name,contact:contact,email:document.getElementById('dEmail').value.trim(),details:details})})
+    .then(function(r){return r.json();}).then(function(d){ alert((d&&d.message)||'Thank you! Our team will connect you discreetly.'); btn.textContent='Sent ✓'; })
     .catch(function(){ btn.disabled=false; btn.textContent='Send Request'; alert('Could not submit. Please try again.'); });
 }
 </script>
