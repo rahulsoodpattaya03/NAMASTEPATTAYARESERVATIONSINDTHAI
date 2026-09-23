@@ -19,6 +19,31 @@ body { background-color: #000; color: #fff; -webkit-font-smoothing: antialiased;
 .bottom-nav { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.1); }
 /* Hide scrollbar for clean look */
 ::-webkit-scrollbar { width: 0px; background: transparent; }
+
+/* ===== NAMASTE MATCH - VIP MODULE (scoped) ===== */
+#matchModal { --midnight-blue: #1A1A2E; --saffron-orange: #FF9933; --gold: #FFD700; }
+#matchModal * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+#matchModal { position: fixed; inset: 0; z-index: 60; background-color: var(--midnight-blue); display: none; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; color: white; }
+#matchModal.open { display: flex; }
+#matchModal .app-container { width: 100%; max-width: 400px; height: 100%; background-color: #111122; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+#matchModal .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; font-size: 20px; font-weight: bold; color: var(--saffron-orange); border-bottom: 1px solid rgba(255,255,255,0.1); }
+#matchModal .mr-india-toggle { font-size: 13px; background: #333; padding: 8px 12px; border-radius: 20px; cursor: pointer; border: 1px solid #666; transition: all 0.3s; }
+#matchModal .mr-india-toggle.active { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); background: #222; }
+#matchModal .card-container { flex-grow: 1; padding: 20px; position: relative; perspective: 1000px; }
+#matchModal .profile-card { width: calc(100% - 40px); height: calc(100% - 40px); position: absolute; border-radius: 20px; overflow: hidden; background: #2A2A40; transition: transform 0.3s ease, opacity 0.3s ease; }
+#matchModal .card-image { width: 100%; height: 100%; position: absolute; z-index: 1; background: linear-gradient(to bottom, transparent 40%, #1A1A2E), url('https://images.unsplash.com/photo-1617069399222-26330ceac418?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') center/cover; }
+#matchModal .card-info { position: absolute; bottom: 0; width: 100%; padding: 20px; z-index: 2; }
+#matchModal .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+#matchModal .tag { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 12px; font-size: 12px; }
+#matchModal .actions { display: flex; justify-content: space-evenly; align-items: center; padding: 20px 0 30px; }
+#matchModal .btn { border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; background: #2A2A40; transition: transform 0.1s; }
+#matchModal .btn:active { transform: scale(0.9); }
+#matchModal .btn-pass { width: 60px; height: 60px; color: #FF4444; border: 2px solid #FF4444; font-size: 24px; }
+#matchModal .btn-cheers { width: 75px; height: 75px; color: var(--saffron-orange); border: 2px solid var(--saffron-orange); font-size: 30px; }
+#matchModal .swipe-left { transform: translateX(-150%) rotate(-20deg); opacity: 0; }
+#matchModal .swipe-right { transform: translateX(150%) rotate(20deg); opacity: 0; }
+#matchModal #console-log { position: absolute; bottom: 100px; width: 100%; text-align: center; font-size: 12px; color: #00FF00; opacity: 0; transition: opacity 0.3s; z-index: 10; }
+#matchModal .match-close { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; margin-left: 12px; }
 </style>
 </head>
 <body class="bg-black text-gray-100 font-sans">
@@ -88,6 +113,9 @@ Book VIP Table
 </button>
 <button onclick="openLiveChat()" class="w-full mt-3 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold py-3.5 rounded-2xl text-sm hover:bg-white/20 transition flex justify-center items-center gap-2">
 🙋🏽‍♂️ Ask Raju Guide
+</button>
+<button onclick="openMatch()" class="w-full mt-3 bg-[#1A1A2E] border border-[#FF9933]/60 text-[#FF9933] font-black py-3.5 rounded-2xl text-sm hover:bg-[#222244] transition flex justify-center items-center gap-2">
+🥂 Namaste Match · VIP
 </button>
 </div>
 </section>
@@ -357,6 +385,41 @@ Book VIP Table
 </div>
 </div>
 
+<!-- NAMASTE MATCH - VIP MODULE -->
+<div id="matchModal">
+    <div class="app-container">
+        <div class="header">
+            <div>🔥 Match</div>
+            <div style="display:flex;align-items:center">
+                <div class="mr-india-toggle" id="mrIndiaBtn" onclick="toggleGhostMode()">🕶️ Mr. India</div>
+                <button class="match-close" onclick="closeMatch()" aria-label="Close">✕</button>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <div class="profile-card" id="mainCard">
+                <div class="card-image"></div>
+                <div class="card-info">
+                    <h2 style="margin-bottom: 5px;">Nirmal Shah, 32 <span style="font-size:12px; color:gold;">⭐ VIP</span></h2>
+                    <div class="tags">
+                        <div class="tag">📍 Jannaat Club</div>
+                        <div class="tag">🥃 Whiskey</div>
+                        <div class="tag">👥 Group</div>
+                    </div>
+                    <p style="font-size: 13px; color: #ccc; font-style: italic;">"Looking to lock down a VIP table later, need a fun crowd."</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="console-log">Action Registered!</div>
+
+        <div class="actions">
+            <button class="btn btn-pass" onclick="handleSwipe('left')">✖</button>
+            <button class="btn btn-cheers" onclick="handleSwipe('right')">🥂</button>
+        </div>
+    </div>
+</div>
+
 <!-- INDIAN CLUBS MODAL -->
 <div id="clubsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
 <div class="bg-[#111] border border-white/10 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[85vh] overflow-y-auto">
@@ -600,6 +663,66 @@ function loadAgentStats(){ var code=getAgentCode(); if(!code) return; fetch(N8N+
 function agentCopyLink(){ var code=getAgentCode(); if(!code) return; var link=agentLink(code); if(navigator.clipboard){navigator.clipboard.writeText(link).then(function(){alert('Copied!');});} else alert(link); }
 function agentWithdraw(){ var code=getAgentCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert('Requested.'); loadAgentStats(); }).catch(function(){alert('Error.');}); }
 document.addEventListener('DOMContentLoaded', function(){ loadRefStats(); if(getAgentCode()) showAgentDash(); });
+</script>
+
+<script>
+        function openMatch(){ document.getElementById('matchModal').classList.add('open'); }
+        function closeMatch(){ document.getElementById('matchModal').classList.remove('open'); }
+
+        let isMrIndiaActive = false;
+        const myUserId = "user_777"; 
+        const targetUserId = "nirmal_32"; 
+
+        function toggleGhostMode() {
+            const btn = document.getElementById('mrIndiaBtn');
+            isMrIndiaActive = !isMrIndiaActive;
+            
+            if (isMrIndiaActive) {
+                btn.classList.add('active');
+                btn.innerHTML = '👻 Invisible';
+                showLog("Database: is_mr_india = true");
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '🕶️ Mr. India';
+                showLog("Database: is_mr_india = false");
+            }
+        }
+
+        function handleSwipe(direction) {
+            const card = document.getElementById('mainCard');
+            
+            if (direction === 'left') {
+                card.classList.add('swipe-left');
+                showLog("Passed profile.");
+            } else {
+                card.classList.add('swipe-right');
+                
+                if (isMrIndiaActive) {
+                    showLog(`Ghost Reveal: Pushed ${myUserId} to ${targetUserId}'s swiped_by array`);
+                } else {
+                    showLog("Standard Match Request Sent!");
+                }
+            }
+            
+            // Reset card for testing purposes
+            setTimeout(() => {
+                card.style.transition = 'none';
+                card.classList.remove('swipe-left', 'swipe-right');
+                card.style.opacity = '0';
+                
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                    card.style.opacity = '1';
+                }, 50);
+            }, 400);
+        }
+
+        function showLog(msg) {
+            const log = document.getElementById('console-log');
+            log.innerText = msg;
+            log.style.opacity = '1';
+            setTimeout(() => log.style.opacity = '0', 2500);
+        }
 </script>
 </body>
 </html>
