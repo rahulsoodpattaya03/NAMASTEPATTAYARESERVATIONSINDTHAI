@@ -3,402 +3,726 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Namaste Pattaya Reservations — Super-App</title>
-<link rel="icon" href="/logo.png">
+<title>Namaste Pattaya Reservations - Executive Nightlife & Concierge Super-App</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+<!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script>
+tailwind.config = { theme: { extend: { fontFamily: { sans: ['Manrope', 'sans-serif'] }, colors: { darkbg: '#050505', cardbg: '#111', accentgold: '#ff9933' } } } }
+</script>
 <style>
-:root{--darkbg:#0b0f19;--cardbg:#131c2e;--gold:#f59e0b;--purple:#8b5cf6;--cyan:#22d3ee}
-*{box-sizing:border-box}
-body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef;padding-bottom:90px}
-header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#0b0f19,#0b0f19f2);padding:14px 18px;border-bottom:1px solid #1e2740}
-.brandrow{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto}
-.logo{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(135deg,#f59e0b,#8b5cf6,#22d3ee);box-shadow:0 4px 18px rgba(139,92,246,.5);overflow:hidden}
-.brand{font-size:19px;font-weight:900;letter-spacing:.3px;line-height:1.05;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b,#22d3ee);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
-@keyframes shine{to{background-position:300% center}}
-.tag{color:#8b93a7;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-.controls{max-width:1100px;margin:0 auto;padding:12px 18px}
-a.back{color:#8b93a7;text-decoration:none;font-size:13px}
-#q{width:100%;padding:11px 14px;border-radius:12px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px}
-#tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-.tab{padding:7px 13px;border-radius:20px;border:1px solid #26314d;background:#0d1424;color:#c7cddb;font-size:12px;cursor:pointer;white-space:nowrap}
-.tab.on{background:var(--gold);color:#1a1204;border-color:var(--gold);font-weight:700}
-main{max-width:1100px;margin:0 auto;padding:8px 18px 40px}
-h3.cat{color:var(--gold);margin:22px 0 10px;font-size:16px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
-.card{background:var(--cardbg);border:1px solid #1e2740;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:border-color .2s}
-.card:hover{border-color:#3b4a6b}
-.ph{height:140px;background:#0d1424;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.ph img{width:100%;height:100%;object-fit:cover}
-.body{padding:11px 13px;display:flex;flex-direction:column;flex:1}
-.name{font-weight:700;font-size:14px}
-.desc{color:#9aa3b7;font-size:12px;margin:5px 0 10px;flex:1}
-.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.from{color:#34d399;font-weight:800;font-size:13px}
-.viewmenu{color:var(--cyan);font-size:12px;font-weight:700}
-.add{padding:7px 12px;border:none;border-radius:9px;background:var(--gold);color:#1a1204;font-weight:800;font-size:12px;cursor:pointer}
-.step{display:flex;align-items:center;gap:8px}
-.step button{width:28px;height:28px;border:none;border-radius:8px;background:#26314d;color:#fff;font-size:16px;font-weight:800;cursor:pointer}
-.step span{min-width:20px;text-align:center;font-weight:800}
-.empty{color:#8b93a7;text-align:center;padding:40px}
-/* overlays */
-.overlay{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.7);display:none}
-.panel{position:absolute;right:0;top:0;bottom:0;width:100%;max-width:460px;background:#0e1524;display:flex;flex-direction:column}
-.phead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #1e2740;gap:10px}
-.phead b{font-size:16px}
-.phead .x{background:none;border:none;color:#aaa;font-size:26px;cursor:pointer}
-.pbody{flex:1;overflow-y:auto;padding:8px 18px 18px}
-.pimg{height:150px;border-radius:12px;overflow:hidden;background:#0d1424;display:flex;align-items:center;justify-content:center;margin:12px 0}
-.pimg img{width:100%;height:100%;object-fit:cover}
-.mitem{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #182238}
-.mitem .n{flex:1;font-size:14px}
-.mitem .mp{color:#34d399;font-weight:800;min-width:64px;text-align:right}
-.drow{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #182238}
-.drow .n{flex:1;font-size:13px}
-.drow .n small{color:#7b8398;display:block}
-.dfoot{padding:16px 18px;border-top:1px solid #1e2740}
-.tot{display:flex;justify-content:space-between;font-size:18px;font-weight:900;margin-bottom:12px}
-.tot .amt{color:#34d399}
-.pay{display:grid;gap:8px;margin:10px 0 14px}
-.pay input,.pay textarea{padding:11px 12px;border-radius:10px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px;font-family:inherit;width:100%}
-.pay label{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid #26314d;border-radius:10px;font-size:14px;cursor:pointer}
-.pay label.sel{border-color:var(--gold);background:#1a1608}
-.payhead{font-weight:800;color:#c7cddb;margin-top:6px;font-size:13px}
-.cta{width:100%;padding:14px;border:none;border-radius:12px;background:#25D366;color:#04351a;font-weight:900;font-size:15px;cursor:pointer}
-.note{color:#7b8398;font-size:11px;text-align:center;margin-top:8px}
-#cartbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding:14px 18px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);color:#06121f;font-weight:800;border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.5);cursor:pointer}
-#cartbar .go{background:#06121f;color:#fff;padding:9px 16px;border-radius:10px;font-weight:800}
-/* ===== ADDED: steps, when-fields, receipt, my bookings ===== */
-.stepline{color:#f59e0b;font-size:11px;font-weight:800;letter-spacing:.5px}
-.whenrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.whenrow label{display:flex;flex-direction:column;gap:4px;padding:0;border:none;font-size:11px;color:#8b93a7;font-weight:700;cursor:default}
-.mybk{position:absolute;right:18px;top:14px;color:#c7cddb;font-size:12px;font-weight:800;text-decoration:none;border:1px solid #26314d;border-radius:20px;padding:6px 11px;background:#0d1424}
-.rcpt{background:#fff;color:#111;border-radius:12px;padding:16px;font-size:13px;margin-top:12px;text-align:left}
-.rcpt h4{margin:0;font-size:16px}
-.rcpt .m{color:#555;font-size:12px}
-.rcpt table{width:100%;border-collapse:collapse;margin-top:8px}
-.rcpt td{padding:5px 0;border-bottom:1px solid #eee;vertical-align:top}
-.rcpt td:last-child{text-align:right;padding-left:8px}
-.rcpt tr.t td{font-weight:900;border-top:2px solid #111;border-bottom:none}
-.btn2{width:100%;padding:12px;border-radius:12px;border:1px solid #26314d;background:#1b2440;color:#e8e8ef;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px}
-.bkrow{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid #182238;cursor:pointer}
-.bkrow div{flex:1}.bkrow small{display:block;color:#7b8398;font-size:11px}
-@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%;margin:0}}
+body { background-color: #000; color: #fff; -webkit-font-smoothing: antialiased; }
+.glass-card { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255, 0.1); }
+.bottom-nav { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.1); }
+/* Hide scrollbar for clean look */
+::-webkit-scrollbar { width: 0px; background: transparent; }
+
+/* ===== NAMASTE MATCH - VIP MODULE (scoped) ===== */
+#matchModal { --midnight-blue: #1A1A2E; --saffron-orange: #FF9933; --gold: #FFD700; }
+#matchModal * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
+#matchModal { position: fixed; inset: 0; z-index: 60; background-color: var(--midnight-blue); display: none; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; color: white; }
+#matchModal.open { display: flex; }
+#matchModal .app-container { width: 100%; max-width: 400px; height: 100%; background-color: #111122; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+#matchModal .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; font-size: 20px; font-weight: bold; color: var(--saffron-orange); border-bottom: 1px solid rgba(255,255,255,0.1); }
+#matchModal .mr-india-toggle { font-size: 13px; background: #333; padding: 8px 12px; border-radius: 20px; cursor: pointer; border: 1px solid #666; transition: all 0.3s; }
+#matchModal .mr-india-toggle.active { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); background: #222; }
+#matchModal .card-container { flex-grow: 1; padding: 20px; position: relative; perspective: 1000px; }
+#matchModal .profile-card { width: calc(100% - 40px); height: calc(100% - 40px); position: absolute; border-radius: 20px; overflow: hidden; background: #2A2A40; transition: transform 0.3s ease, opacity 0.3s ease; }
+#matchModal .card-image { width: 100%; height: 100%; position: absolute; z-index: 1; background: linear-gradient(to bottom, transparent 40%, #1A1A2E), url('https://images.unsplash.com/photo-1617069399222-26330ceac418?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') center/cover; }
+#matchModal .card-info { position: absolute; bottom: 0; width: 100%; padding: 20px; z-index: 2; }
+#matchModal .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
+#matchModal .tag { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 12px; font-size: 12px; }
+#matchModal .actions { display: flex; justify-content: space-evenly; align-items: center; padding: 20px 0 30px; }
+#matchModal .btn { border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; background: #2A2A40; transition: transform 0.1s; }
+#matchModal .btn:active { transform: scale(0.9); }
+#matchModal .btn-pass { width: 60px; height: 60px; color: #FF4444; border: 2px solid #FF4444; font-size: 24px; }
+#matchModal .btn-cheers { width: 75px; height: 75px; color: var(--saffron-orange); border: 2px solid var(--saffron-orange); font-size: 30px; }
+#matchModal .swipe-left { transform: translateX(-150%) rotate(-20deg); opacity: 0; }
+#matchModal .swipe-right { transform: translateX(150%) rotate(20deg); opacity: 0; }
+#matchModal #console-log { position: absolute; bottom: 100px; width: 100%; text-align: center; font-size: 12px; color: #00FF00; opacity: 0; transition: opacity 0.3s; z-index: 10; }
+#matchModal .match-close { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; margin-left: 12px; }
 </style>
 </head>
-<body>
-<header style="position:sticky">
-<a class="mybk" href="#" onclick="openMyBookings();return false;">🎟️ My bookings</a>
-<div class="controls" style="padding:0 0 6px 0"><a class="back" href="/">&larr; Back to home</a></div>
-<div class="brandrow">
-<div class="logo"><img src="/logo.png" alt="logo" onerror="this.parentNode.textContent='🙏'" style="width:100%;height:100%;object-fit:cover;border-radius:14px"></div>
+<body class="bg-black text-gray-100 font-sans">
+
+<!-- HERO SECTION -->
+<section class="relative w-full min-h-[100dvh] bg-[url('https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center flex flex-col">
+<!-- Dark Gradient Overlay -->
+<div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20 z-0"></div>
+<!-- Header -->
+<header class="relative z-10 px-5 pt-10 flex justify-between items-start gap-3">
 <div>
-<div class="brand">NAMASTE PATTAYA RESERVATIONS</div>
-<div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div>
+<h1 class="text-xl font-extrabold text-white tracking-tight leading-none">Namaste <span class="text-amber-500">Pattaya</span> Reservations</h1>
+<p class="text-[11px] text-amber-200 font-bold italic mt-1 drop-shadow-md">"Bharat ke liye ek Bhartiya ka tohfa" 🇮🇳</p>
 </div>
+<div class="flex items-center gap-2 flex-shrink-0">
+<button onclick="openAccountModal()" aria-label="Sign in or sign up" class="bg-white/10 backdrop-blur-md text-white font-bold text-[10px] border border-white/20 rounded-full px-3 py-1.5 uppercase tracking-wider"><i class="fa-solid fa-user mr-1"></i> Sign in</button>
+<!-- Multi-Language Dropdown -->
+<select id="languageSelect" class="bg-white/10 backdrop-blur-md text-white font-bold text-[10px] border border-white/20 rounded-full px-3 py-1.5 cursor-pointer outline-none uppercase tracking-wider">
+<option value="en">ENG / HI</option>
+<option value="hi">हिंदी</option>
+<option value="pa">ਪੰਜਾਬੀ</option>
+<option value="gu">ગુજરાતી</option>
+<option value="mr">मराठी</option>
+<option value="ta">தமிழ்</option>
+<option value="th">ไทย</option>
+</select>
 </div>
 </header>
-<div class="controls">
-<input id="q" placeholder="Search providers, places…" oninput="render()">
-<div id="tabs"></div>
+
+<!-- Right Action Bar -->
+<div class="absolute right-4 bottom-[40%] flex flex-col gap-5 z-10 items-center">
+<a href="/map.html" class="flex flex-col items-center">
+<div class="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-lg shadow-lg">📍</div>
+<span class="text-[10px] text-white font-bold mt-1 drop-shadow-lg">Map</span>
+</a>
 </div>
-<main id="list"></main>
-<!-- Provider menu overlay -->
-<div class="overlay" id="provOverlay">
-<div class="panel">
-<div class="phead"><div><div class="stepline">STEP 1 OF 4 · CHOOSE</div><b id="provName">Provider</b></div><button class="x" onclick="closeProvider()">&times;</button></div>
-<div class="pbody" id="provBody"></div>
-<div class="dfoot"><button class="cta" onclick="openCart()">View Basket &amp; Checkout</button></div>
+
+<!-- Bottom Info -->
+<div class="mt-auto relative z-10 px-5 pb-28 pt-40 w-full md:max-w-lg mx-auto">
+<div class="flex flex-wrap gap-2 mb-3">
+<span class="bg-amber-900/40 border border-amber-500/40 text-amber-200 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full backdrop-blur-sm">Punjabi Hip-Hop</span>
+<span class="bg-amber-900/40 border border-amber-500/40 text-amber-200 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full backdrop-blur-sm">Hindi Rap</span>
+<span class="bg-amber-900/40 border border-amber-500/40 text-amber-200 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full backdrop-blur-sm">Desi Vibe</span>
+<span class="bg-gradient-to-r from-emerald-500 to-green-400 text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-full shadow-lg animate-pulse">🔥 Up to 30% OFF</span>
+</div>
+<h2 class="text-4xl font-extrabold text-white mb-2 leading-tight drop-shadow-lg tracking-tight">Namaste Pattaya Reservations</h2>
+<p class="text-gray-300 text-xs mb-4 max-w-[85%] font-semibold leading-relaxed drop-shadow-md">VIP tables at Pattaya's Indian clubs, Indian food delivered to your hotel, taxis, car and bike rental. One app, up to 30% off.</p>
+
+<!-- Quick actions -->
+<div class="grid grid-cols-2 gap-2 mb-3">
+<button onclick="openRequest('delivery')" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
+<span class="block text-lg">🍛</span><span class="block text-white text-xs font-black mt-1">Indian Food Delivery</span>
+</button>
+<button onclick="openRequest('taxi')" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
+<span class="block text-lg">🚕</span><span class="block text-white text-xs font-black mt-1">Book a Taxi</span>
+</button>
+<a href="/services.html?cat=Cars" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
+<span class="block text-lg">🛵</span><span class="block text-white text-xs font-black mt-1">Rent Car / Motorbike</span>
+</a>
+<a href="/map.html" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
+<span class="block text-lg">🗺️</span><span class="block text-white text-xs font-black mt-1">Pattaya Map</span>
+</a>
+</div>
+
+<button onclick="openClubs()" class="w-full bg-gradient-to-r from-amber-500 to-rose-500 text-white font-black py-4 rounded-2xl text-lg shadow-[0_10px_25px_rgba(245,158,11,0.4)] hover:scale-[0.98] transition-transform flex justify-center items-center gap-2">
+Book VIP Table
+</button>
+<button onclick="openLiveChat()" class="w-full mt-3 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold py-3.5 rounded-2xl text-sm hover:bg-white/20 transition flex justify-center items-center gap-2">
+🙋🏽‍♂️ Ask Raju Guide
+</button>
+<button onclick="openMatch()" class="w-full mt-3 bg-[#1A1A2E] border border-[#FF9933]/60 text-[#FF9933] font-black py-3.5 rounded-2xl text-sm hover:bg-[#222244] transition flex justify-center items-center gap-2">
+🥂 Namaste Match · VIP
+</button>
+</div>
+</section>
+
+<!-- Scroll Indicator -->
+<div class="w-full text-center py-4 bg-gradient-to-b from-black to-[#050505] text-gray-500 text-[10px] uppercase font-black tracking-widest flex flex-col items-center gap-1">
+<span>Scroll for all services</span>
+<i class="fa-solid fa-chevron-down animate-bounce"></i>
+</div>
+
+<!-- REFERRAL PROMO STRIP -->
+<section class="bg-[#050505] px-4 pt-2">
+<a href="#refer-earn" class="block max-w-4xl mx-auto rounded-2xl border border-emerald-500/40 bg-emerald-950/60 p-4 hover:border-emerald-400 transition">
+<div class="flex items-center gap-3">
+<div class="text-2xl">🎁</div>
+<div class="flex-1">
+<p class="text-white font-black text-sm">Refer friends, earn up to 5% for life</p>
+<p class="text-emerald-300 text-[11px] font-semibold mt-0.5">1% of every booking your friends make, forever. 5% on bookings of ฿25,000+. Travel agents earn 5%.</p>
+</div>
+<span class="text-emerald-400 text-xs font-black whitespace-nowrap">Get link</span>
+</div>
+</a>
+</section>
+
+<!-- 🗂️ BROWSE ALL SERVICES -->
+<section id="all-services" class="py-12 bg-[#050505] border-b border-white/10">
+<div class="container mx-auto px-4 max-w-7xl">
+<div class="text-center mb-10">
+<h2 class="text-2xl font-black text-white uppercase tracking-tight">Browse All Services</h2>
+<p class="text-emerald-400 text-xs font-black mt-2">Up to 30% OFF on every service*</p>
+<div class="h-1 w-12 bg-amber-500 mx-auto mt-2 rounded-full"></div>
+</div>
+<div id="servicesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+<!-- 1. Nightlife -->
+<a href="/services.html?cat=Nightlife%20%26%20Bars" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Nightlife & Bars</h3>
+</a>
+<!-- 2. Beach Clubs -->
+<a href="/services.html?cat=VIP%20Beach%20Clubs" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1540202404-b711ad679d36?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">VIP Beach Clubs</h3>
+</a>
+<!-- 3. Restaurants -->
+<a href="/services.html?cat=Restaurants" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Restaurants</h3>
+</a>
+<!-- 4. Indian Food -->
+<a href="/services.html?cat=Indian%20Restaurants" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Indian Food</h3>
+</a>
+<!-- 4b. Indian Food Delivery -->
+<a href="#" onclick="openRequest('delivery');return false;" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Indian Food Delivery</h3>
+</a>
+<!-- 5. Desi Chai -->
+<a href="/services.html?cat=Desi%20Chai" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Desi Chai & Spices</h3>
+</a>
+<!-- 6. Hotels -->
+<a href="/services.html?cat=Hotels" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Hotels & Resorts</h3>
+</a>
+<!-- 7. Cars -->
+<a href="/services.html?cat=Cars" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1503376710323-9a3b680c2fdb?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Cars & Bikes Rental</h3>
+</a>
+<!-- 7b. Taxi -->
+<a href="#" onclick="openRequest('taxi');return false;" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1542840410-3092f99611a3?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Taxi</h3>
+</a>
+<!-- 8. Spa -->
+<a href="/services.html?cat=Spa" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Spa & Massage</h3>
+</a>
+<!-- 9. Tours -->
+<a href="/services.html?cat=Tours" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1533669955142-6a73332af4db?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Tours & Excursions</h3>
+</a>
+<!-- 10. Water Sports -->
+<a href="/services.html?cat=Water" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1520116468816-95b69f847357?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Water Sports</h3>
+</a>
+<!-- 11. Golf -->
+<a href="/services.html?cat=Golf" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Golf Courses</h3>
+</a>
+<!-- 12. Yachts -->
+<a href="/services.html?cat=Yacht" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1522748906645-95d8ad85240e?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Yacht & Boats</h3>
+</a>
+<!-- 13. Airport Transfers -->
+<a href="/services.html?cat=Transfers" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1542840410-3092f99611a3?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Airport Transfers</h3>
+</a>
+<!-- 14. Shopping -->
+<a href="/services.html?cat=Shopping" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1607082349566-187342175e2f?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Shopping & Markets</h3>
+</a>
+<!-- 15. Events -->
+<a href="/services.html?cat=Events" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Event Planning</h3>
+</a>
+<!-- 16. Medical -->
+<a href="/services.html?cat=Medical" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Medical & Pharmacy</h3>
+</a>
+<!-- 17. VIP Concierge -->
+<a href="/services.html?cat=Concierge" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1556745753-b2904692b3cd?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">VIP Services</h3>
+</a>
+<!-- 18. Visa & Legal -->
+<a href="/visa.html" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
+<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80');"></div>
+<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Visa & Tickets</h3>
+</a>
+</div>
+<p class="text-gray-500 text-[10px] text-center mt-6">*Discounts depend on the partner, day and time. Your exact offer is confirmed with your booking.</p>
+</div>
+</section>
+
+<!-- REFER & EARN (Untouched) -->
+<section id="refer-earn" class="py-16 bg-[#050505] border-b border-emerald-500/30">
+<div class="container mx-auto px-4 max-w-4xl">
+<div class="glass-card rounded-3xl p-8 shadow-2xl relative overflow-hidden bg-[#111]">
+<span class="absolute top-4 right-6 bg-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md">Up to 5% · Lifetime</span>
+<div class="text-center md:text-left flex flex-col md:flex-row items-center gap-6 relative z-10">
+<div class="bg-emerald-950 border border-emerald-500/40 p-5 rounded-3xl text-emerald-400 text-3xl flex-shrink-0 shadow-lg"><i class="fa-solid fa-wallet"></i></div>
+<div class="flex-1 space-y-2">
+<h2 class="text-2xl font-black text-white uppercase tracking-tight">Refer Friends & Earn Up To 5% — For Life!</h2>
+<p class="text-gray-300 text-xs leading-relaxed font-medium">Share your exclusive referral link. Every time your friends book a paid service through the app, <strong class="text-emerald-400">you earn 1% of their spend — for life.</strong> And when a friend spends <strong class="text-emerald-400">฿25,000 or more on a single booking, you earn 5% on that booking!</strong></p>
 </div>
 </div>
-<!-- Cart overlay -->
-<div class="overlay" id="cartOverlay">
-<div class="panel">
-<div class="phead"><div><div class="stepline" id="cartStep">STEP 2 OF 4 · CHECKOUT</div><b>🛒 Your Basket</b></div><button class="x" onclick="closeCart()">&times;</button></div>
-<div class="pbody" id="ditems"></div>
-<div class="dfoot">
-<div class="tot"><span>Total</span><span class="amt" id="grand">฿0</span></div>
-<div id="paywrap" style="display:none">
-<div style="font-weight:800;margin-bottom:6px">Your details &amp; payment method</div>
-<div class="pay" id="pay"></div>
-</div>
-<button class="cta" id="cta" onclick="checkoutStep()">Checkout</button>
-<div class="note" id="payNote">Pay on confirmation — our team will contact you to complete payment via your chosen method.</div>
+<div class="mt-8 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs relative z-10">
+<div class="bg-black/50 p-4 rounded-2xl border border-white/10">
+<span class="text-gray-400 block mb-1 font-bold">Your Referral Link:</span>
+<div class="flex items-center bg-black border border-white/10 rounded-xl px-3 py-2 text-amber-500 font-bold truncate">
+<span id="refLinkText" class="truncate">Tap Get Link to start →</span>
+<button onclick="copyRefLink()" class="ml-2 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-[10px] uppercase flex-shrink-0 font-bold"><i class="fa-solid fa-copy"></i> Get Link</button>
 </div>
 </div>
+<div class="bg-black/50 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
+<span class="text-gray-400 block font-bold">Friends Referred:</span>
+<span class="text-xl font-black text-white mt-1 block"><span id="refCount">0</span> <span class="text-[10px] text-emerald-400 font-normal">Joined</span></span>
 </div>
-<!-- ADDED: My bookings overlay -->
-<div class="overlay" id="bkOverlay">
-<div class="panel">
-<div class="phead"><b>🎟️ My bookings</b><button class="x" onclick="document.getElementById('bkOverlay').style.display='none'">&times;</button></div>
-<div class="pbody" id="bkBody"></div>
+<div class="bg-black/50 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
+<span class="text-gray-400 block font-bold">Available to Withdraw:</span>
+<span class="text-xl font-black text-emerald-400 mt-1 block"><span id="refBalance">฿0</span> <button onclick="withdrawEarnings()" class="text-[10px] bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg ml-2 uppercase font-black">Withdraw</button></span>
 </div>
 </div>
-<!-- Cart bar -->
-<div id="cartbar" onclick="openCart()">
-<span id="cartsummary">🛒 0 items</span>
-<span class="go">View basket →</span>
 </div>
+</div>
+</section>
+
+<!-- AGENT PARTNER PROGRAM (Untouched) -->
+<section id="agents" class="py-16 bg-black border-b border-purple-500/30">
+<div class="container mx-auto px-4 max-w-3xl">
+<div class="text-center mb-8">
+<h2 class="text-2xl font-black text-white uppercase tracking-tight">🧳 Agent Partner Program</h2>
+<p class="text-purple-400 text-xs uppercase tracking-widest mt-2 font-bold">For Registered Travel Agents</p>
+</div>
+<div class="glass-card rounded-3xl p-6 bg-[#111]">
+<p class="text-gray-300 text-sm leading-relaxed mb-4">Registered agents earn <strong class="text-purple-400">5% commission</strong> when referred customers book &amp; complete a paid service. Withdraw once bookings reach <strong class="text-purple-400">฿10,000</strong>.</p>
+<div class="flex gap-2 mb-5">
+<button id="tabTH" onclick="agentTab('Thailand')" class="flex-1 py-2.5 rounded-xl font-black text-xs uppercase bg-purple-600 text-white transition">🇹🇭 Thailand</button>
+<button id="tabIN" onclick="agentTab('India')" class="flex-1 py-2.5 rounded-xl font-black text-xs uppercase bg-black border border-white/10 text-gray-300 transition">🇮🇳 India</button>
+</div>
+<div id="agentRegister" class="space-y-3">
+<input id="agCompany" placeholder="Company Name" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium">
+<input id="agReg" placeholder="Registration Number" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium">
+<input id="agContact" placeholder="WhatsApp (with code)" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium">
+<button onclick="agentRegister()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm">Register as Agent (<span id="agCountryLabel">Thailand</span>)</button>
+</div>
+<div id="agentDash" style="display:none">
+<div class="grid grid-cols-2 gap-3 text-xs mb-3">
+<div class="bg-black p-4 rounded-2xl border border-white/10"><span class="text-gray-400 block font-bold">Available</span><div class="text-xl font-black text-emerald-400 mt-1" id="agAvail">฿0</div></div>
+<div class="bg-black p-4 rounded-2xl border border-white/10"><span class="text-gray-400 block font-bold">Customers</span><div class="text-xl font-black text-white mt-1" id="agRefs">0</div></div>
+</div>
+<div class="bg-black p-4 rounded-2xl border border-white/10 mb-3">
+<span class="text-gray-400 text-xs font-bold block mb-1">Your Agent Link:</span>
+<div class="flex items-center bg-[#111] border border-white/10 rounded-xl px-3 py-2 text-amber-500 font-bold text-xs truncate">
+<span id="agLink" class="truncate">—</span>
+<button onclick="agentCopyLink()" class="ml-2 bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold">Copy</button>
+</div>
+</div>
+<button onclick="agentWithdraw()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-black py-3 rounded-xl uppercase text-sm">Request Withdrawal</button>
+</div>
+</div>
+</div>
+</section>
+
+<!-- BOTTOM NAVIGATION -->
+<nav class="fixed bottom-0 w-full md:max-w-md left-1/2 -translate-x-1/2 h-[75px] bottom-nav rounded-t-3xl flex justify-around items-center z-50 px-4">
+<div onclick="openClubs()" class="flex flex-col items-center cursor-pointer text-amber-500">
+<i class="fa-solid fa-fire text-xl"></i>
+<span class="text-[9px] font-extrabold mt-1 uppercase">Clubs</span>
+</div>
+<div onclick="openRequest('delivery')" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
+<i class="fa-solid fa-utensils text-xl"></i>
+<span class="text-[9px] font-extrabold mt-1 uppercase">Dining</span>
+</div>
+<div onclick="openAccountModal()" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
+<i class="fa-solid fa-user text-xl"></i>
+<span class="text-[9px] font-extrabold mt-1 uppercase">Account</span>
+</div>
+<a href="/services.html?view=bookings" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
+<i class="fa-solid fa-ticket text-xl"></i>
+<span class="text-[9px] font-extrabold mt-1 uppercase">My Bookings</span>
+</a>
+<div onclick="openLiveChat()" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
+<i class="fa-solid fa-comment-dots text-xl"></i>
+<span class="text-[9px] font-extrabold mt-1 uppercase">Chat</span>
+</div>
+</nav>
+<!-- PADDING TO PREVENT CONTENT HIDDEN BEHIND NAV -->
+<div class="h-[90px] bg-black"></div>
+
+<!-- ================= MODALS ================= -->
+
+<!-- SIGN IN / SIGN UP MODAL (4 roles) -->
+<div id="accountModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+<div class="bg-[#111] border border-white/10 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+<button onclick="closeAccountModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+<h3 class="text-xl font-black text-white mb-1 text-center">Sign in or sign up</h3>
+<p class="text-gray-400 text-xs text-center mb-5">Choose who you are</p>
+<div class="grid grid-cols-2 gap-2 mb-4">
+<button id="role-customer" onclick="selectRole('customer')" class="rounded-xl py-2.5 text-xs font-black border transition">🙋 Customer</button>
+<button id="role-partner" onclick="selectRole('partner')" class="rounded-xl py-2.5 text-xs font-black border transition">🤝 Partner (Venue)</button>
+<button id="role-agentIN" onclick="selectRole('agentIN')" class="rounded-xl py-2.5 text-xs font-black border transition">🇮🇳 Indian Agent</button>
+<button id="role-agentTH" onclick="selectRole('agentTH')" class="rounded-xl py-2.5 text-xs font-black border transition">🇹🇭 Thailand Agent</button>
+</div>
+<div class="flex bg-black rounded-xl p-1 mb-4 border border-white/10">
+<button id="mode-signup" onclick="setMode('signup')" class="flex-1 py-2 rounded-lg text-xs font-black transition">Sign up</button>
+<button id="mode-signin" onclick="setMode('signin')" class="flex-1 py-2 rounded-lg text-xs font-black transition">Sign in</button>
+</div>
+<div id="acctForm" class="space-y-3 text-sm"></div>
+<p id="acctMsg" class="text-xs mt-3 text-center font-semibold"></p>
+<a href="/services.html?view=bookings" class="mt-4 w-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black py-3 rounded-xl text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-ticket"></i> My Bookings &amp; Receipts</a>
+</div>
+</div>
+
+<!-- REQUEST MODAL (Food delivery / Taxi) -->
+<div id="requestModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+<div class="bg-[#111] border border-white/10 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[90vh] overflow-y-auto">
+<button onclick="closeRequest()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
+<h3 id="reqTitle" class="text-lg font-black text-white mb-1"></h3>
+<p id="reqSub" class="text-gray-400 text-xs mb-4"></p>
+<div id="reqForm" class="space-y-3 text-sm"></div>
+<p id="reqMsg" class="text-xs mt-3 text-center font-semibold"></p>
+</div>
+</div>
+
+<!-- NAMASTE MATCH - VIP MODULE -->
+<div id="matchModal">
+    <div class="app-container">
+        <div class="header">
+            <div>🔥 Match</div>
+            <div style="display:flex;align-items:center">
+                <div class="mr-india-toggle" id="mrIndiaBtn" onclick="toggleGhostMode()">🕶️ Mr. India</div>
+                <button class="match-close" onclick="closeMatch()" aria-label="Close">✕</button>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <div class="profile-card" id="mainCard">
+                <div class="card-image"></div>
+                <div class="card-info">
+                    <h2 style="margin-bottom: 5px;">Nirmal Shah, 32 <span style="font-size:12px; color:gold;">⭐ VIP</span></h2>
+                    <div class="tags">
+                        <div class="tag">📍 Jannaat Club</div>
+                        <div class="tag">🥃 Whiskey</div>
+                        <div class="tag">👥 Group</div>
+                    </div>
+                    <p style="font-size: 13px; color: #ccc; font-style: italic;">"Looking to lock down a VIP table later, need a fun crowd."</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="console-log">Action Registered!</div>
+
+        <div class="actions">
+            <button class="btn btn-pass" onclick="handleSwipe('left')">✖</button>
+            <button class="btn btn-cheers" onclick="handleSwipe('right')">🥂</button>
+        </div>
+    </div>
+</div>
+
+<!-- INDIAN CLUBS MODAL -->
+<div id="clubsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+<div class="bg-[#111] border border-white/10 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[85vh] overflow-y-auto">
+<button onclick="closeClubs()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+<h3 class="text-lg font-black text-white mb-1">🍸 Reserve Your Table</h3>
+<p class="text-gray-400 text-xs mb-4">Pick a club — our team confirms availability. Up to 30% off.</p>
+<div id="clubsList" class="space-y-2"></div>
+</div>
+</div>
+
+<!-- LIVE CHAT MODAL (RAJU GUIDE) -->
+<div id="liveChatModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+<div class="bg-[#111] border border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[450px]">
+<div class="bg-black p-4 border-b border-white/10 flex justify-between items-center">
+<h4 class="font-black text-white text-xs uppercase">🙏 Raju Guide</h4>
+<button onclick="closeLiveChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+</div>
+<div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs font-medium">
+<div class="bg-black border border-white/10 p-3 rounded-2xl text-gray-200">Namaste! 🙏 Ask me anything — I am Raju Guide.</div>
+</div>
+<form onsubmit="handleChatSubmit(event)" class="p-3 bg-black border-t border-white/10 flex items-center space-x-2">
+<input type="text" id="chatInput" placeholder="Type message..." class="flex-1 bg-[#111] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white">
+<button type="submit" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-black"><i class="fa-solid fa-paper-plane"></i></button>
+</form>
+</div>
+</div>
+
 <script>
-var ORDERS_EP = "https://namastepattayareservation.app.n8n.cloud/webhook/orders";
-var ENQUIRY_EP = "https://namastepattayareservation.app.n8n.cloud/webhook/enquiry";
-var VAT_RATE = 0.07; // ADDED: shown as included in prices
-try { var _rp = new URLSearchParams(location.search).get('ref'); if(_rp) localStorage.setItem('np_ref', _rp); } catch(e){}
-var DATA = [], MENUS = {}, cats = ["All"], active = "All";
-var missingCat = "";
-var cart = {}; // key "provIdx::itemIdx" -> {label, price, qty, category}
-var curProv = null;
-var stage = "cart";
-var payGroups = [
-{ region: "🇮🇳 India", methods: ["UPI", "Scan QR Code", "Credit / Debit Card"] },
-{ region: "🇹🇭 Thailand", methods: ["PromptPay", "Wallet", "Credit / Debit Card"] }
-];
-var payChoice = "🇮🇳 India · UPI";
-var ordName = "", ordContact = "";
-// ADDED: extra checkout fields
-function _iso(d){ var z=new Date(d.getTime()-d.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); }
-var ordEmail = "", ordDate = _iso(new Date()), ordTime = "21:00", ordGuests = "2", ordReq = "";
-try{ var _g=JSON.parse(localStorage.getItem('np_guest')||'null'); if(_g){ ordName=_g.name||''; ordContact=_g.phone||''; ordEmail=_g.email||''; } }catch(e){}
-function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-function baht(n){ return '฿' + Number(n||0).toLocaleString('en-US'); }
-function menuOf(i){ return MENUS[DATA[i].id] || [{n:'Book this service',p:DATA[i].price_thb}]; }
-function minPrice(i){ var m=menuOf(i); var lo=m[0].p; for(var j=1;j<m.length;j++) if(m[j].p<lo) lo=m[j].p; return lo; }
-Promise.all([
-fetch('./pn-catalog.json').then(function(r){return r.json();}),
-fetch('./menus.json').then(function(r){return r.json();}).catch(function(){return {};}),
-fetch('./clubs.json').then(function(r){return r.json();}).catch(function(){return {providers:[],menus:{}};})
-]).then(function(res){
-DATA = res[0]; MENUS = res[1] || {};
-var extra = res[2] || {providers:[],menus:{}};
-if(extra.menus){ for(var mk in extra.menus) MENUS[mk]=extra.menus[mk]; }
-if(extra.providers && extra.providers.length){
-var firstIdx=-1; for(var k=0;k<DATA.length;k++){ if(DATA[k].category==='Nightlife & Bars'){ firstIdx=k; break; } }
-if(firstIdx>=0){ Array.prototype.splice.apply(DATA,[firstIdx,0].concat(extra.providers)); }
-else { DATA=DATA.concat(extra.providers); }
+var N8N = 'https://namastepattayareservation.app.n8n.cloud/webhook';
+try { var _r = new URLSearchParams(location.search).get('ref'); if (_r) localStorage.setItem('np_ref', _r); } catch (e) {}
+
+function escH(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function postJSON(path, body){
+return fetch(N8N+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+.then(function(r){ if(!r.ok) throw new Error('failed'); return r.json().catch(function(){return {};}); });
 }
-DATA.forEach(function(x){ if(cats.indexOf(x.category)<0) cats.push(x.category); });
-var params = new URLSearchParams(location.search);
-var c = params.get('cat');
-if (c){ var cl=c.toLowerCase(); var alias={events:'event & party planning'}; if(alias[cl]) cl=alias[cl];
-var hit = cats.filter(function(x){return x.toLowerCase()===cl;})[0] || cats.filter(function(x){return x.toLowerCase().indexOf(cl)>=0;})[0];
-if(hit) active = hit; else missingCat = c; }
-var qp = params.get('q'); if(qp) document.getElementById('q').value = qp;
-renderTabs(); render(); updateBar();
-if(params.get('view')==='bookings') openMyBookings();
-}).catch(function(){
-document.getElementById('list').innerHTML = '<div class="empty">Could not load listings.</div>';
+function val(id){ var el=document.getElementById(id); return el?(el.value||'').trim():''; }
+var INPUT='w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium';
+var BTN='w-full bg-amber-600 hover:bg-amber-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm';
+
+// ---------- Sign in / Sign up (4 roles) ----------
+var ACCT_ROLE='customer', ACCT_MODE='signup';
+function openCustomerModal(){ openAccountModal('customer'); }
+function closeCustomerModal(){ closeAccountModal(); }
+function openAccountModal(role){ document.getElementById('accountModal').classList.remove('hidden'); selectRole(role||ACCT_ROLE); }
+function closeAccountModal(){ document.getElementById('accountModal').classList.add('hidden'); }
+function selectRole(r){ ACCT_ROLE=r; renderAcct(); }
+function setMode(m){ ACCT_MODE=m; renderAcct(); }
+function acctMsg(t,ok){ var m=document.getElementById('acctMsg'); m.textContent=t||''; m.className='text-xs mt-3 text-center font-semibold '+(ok?'text-emerald-400':'text-rose-400'); }
+function renderAcct(){
+['customer','partner','agentIN','agentTH'].forEach(function(r){
+document.getElementById('role-'+r).className='rounded-xl py-2.5 text-xs font-black border transition '+(r===ACCT_ROLE?'bg-amber-600 border-amber-500 text-white':'bg-black border-white/10 text-gray-300');
 });
-function renderTabs(){
-document.getElementById('tabs').innerHTML = cats.map(function(c,i){
-return '<span class="tab'+(c===active?' on':'')+'" onclick="pick('+i+')">'+esc(c)+'</span>';
+['signup','signin'].forEach(function(m){
+document.getElementById('mode-'+m).className='flex-1 py-2 rounded-lg text-xs font-black transition '+(m===ACCT_MODE?'bg-white/15 text-white':'text-gray-400');
+});
+acctMsg('');
+var h='';
+var isAgent=(ACCT_ROLE==='agentIN'||ACCT_ROLE==='agentTH');
+if(ACCT_ROLE==='customer' && ACCT_MODE==='signup'){
+h+='<input id="acName" placeholder="Your name" class="'+INPUT+'">';
+h+='<input id="acContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
+h+='<input id="acEmail" placeholder="Email (optional)" class="'+INPUT+'">';
+h+='<button onclick="customerSignup()" class="'+BTN+'">Create my account</button>';
+h+='<p class="text-gray-500 text-[11px] text-center">You get a member code and your referral link: earn 1% for life, 5% on ฿25,000+ bookings.</p>';
+} else if(ACCT_ROLE==='customer'){
+h+='<input id="acCode" placeholder="Your member code" class="'+INPUT+'">';
+h+='<button onclick="customerSignin()" class="'+BTN+'">Sign in</button>';
+h+='<p class="text-gray-500 text-[11px] text-center">Lost your code? Ask Raju Guide in chat.</p>';
+} else if(ACCT_ROLE==='partner' && ACCT_MODE==='signup'){
+h+='<input id="pVenue" placeholder="Venue / business name" class="'+INPUT+'">';
+h+='<select id="pCat" class="'+INPUT+'"><option value="">Type of business</option><option>Nightclub / Bar</option><option>Indian Restaurant</option><option>Restaurant</option><option>Hotel / Resort</option><option>Spa / Massage</option><option>Tours / Water Sports</option><option>Car / Bike Rental / Taxi</option><option>Other</option></select>';
+h+='<input id="pPerson" placeholder="Contact person" class="'+INPUT+'">';
+h+='<input id="pContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
+h+='<input id="pArea" placeholder="Area (e.g. Walking Street, Jomtien)" class="'+INPUT+'">';
+h+='<button onclick="partnerSignup()" class="'+BTN+'">Register my venue</button>';
+h+='<p class="text-gray-500 text-[11px] text-center">Our team verifies every venue before it goes live.</p>';
+} else if(ACCT_ROLE==='partner'){
+h+='<input id="pInContact" placeholder="Registered WhatsApp number" class="'+INPUT+'">';
+h+='<button onclick="partnerSignin()" class="'+BTN+'">Sign in</button>';
+h+='<p class="text-gray-500 text-[11px] text-center">The partner dashboard is coming soon. Until then, bookings are sent to you on WhatsApp.</p>';
+} else if(isAgent && ACCT_MODE==='signup'){
+h+='<input id="agmCompany" placeholder="Company name" class="'+INPUT+'">';
+h+='<input id="agmReg" placeholder="Registration number" class="'+INPUT+'">';
+h+='<input id="agmContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
+h+='<button onclick="agentSignup()" class="'+BTN+'">Register as '+(ACCT_ROLE==='agentIN'?'Indian':'Thailand')+' agent</button>';
+h+='<p class="text-gray-500 text-[11px] text-center">Earn 5% on completed bookings. Withdraw from ฿10,000.</p>';
+} else {
+h+='<input id="agmCode" placeholder="Your agent code" class="'+INPUT+'">';
+h+='<button onclick="agentSignin()" class="'+BTN+'">Sign in</button>';
+}
+document.getElementById('acctForm').innerHTML=h;
+}
+function customerSignup(){
+var name=val('acName'), contact=val('acContact'), email=val('acEmail');
+if(!name||!contact){ acctMsg('Enter your name and WhatsApp number.'); return; }
+acctMsg('Creating your account…',true);
+postJSON('/referral',{action:'join',name:name,contact:contact,email:email}).then(function(d){
+if(d&&d.code){ try{localStorage.setItem('np_code',d.code);}catch(e){} acctMsg('Welcome! Your member code is '+d.code+'. Save it to sign in next time.',true); loadRefStats(); }
+else acctMsg('Could not create your account. Try again.');
+}).catch(function(){ acctMsg('Could not create your account. Check your connection and try again.'); });
+}
+function customerSignin(){
+var code=val('acCode'); if(!code){ acctMsg('Enter your member code.'); return; }
+try{localStorage.setItem('np_code',code);}catch(e){}
+loadRefStats(); acctMsg('Signed in. Your referral link and earnings are below.',true);
+setTimeout(function(){ closeAccountModal(); document.getElementById('refer-earn').scrollIntoView({behavior:'smooth'}); },900);
+}
+function partnerSignup(){
+var venue=val('pVenue'), cat=val('pCat'), person=val('pPerson'), contact=val('pContact'), area=val('pArea');
+if(!venue||!contact){ acctMsg('Enter your venue name and WhatsApp number.'); return; }
+acctMsg('Sending…',true);
+postJSON('/enquiry',{type:'Partner Registration',name:person||venue,contact:contact,email:'',details:'Venue: '+venue+'\nType: '+cat+'\nArea: '+area}).then(function(){
+acctMsg('Thank you! Our team will verify '+venue+' and contact you on WhatsApp.',true);
+}).catch(function(){ acctMsg('Could not send. Try again.'); });
+}
+function partnerSignin(){
+var contact=val('pInContact'); if(!contact){ acctMsg('Enter your registered WhatsApp number.'); return; }
+acctMsg('Sending…',true);
+postJSON('/enquiry',{type:'Partner Sign In',name:'Partner',contact:contact,email:'',details:'Partner asked to access their bookings.'}).then(function(){
+acctMsg('Request received. We will send your latest bookings on WhatsApp.',true);
+}).catch(function(){ acctMsg('Could not send. Try again.'); });
+}
+function agentSignup(){
+var company=val('agmCompany'), reg=val('agmReg'), contact=val('agmContact');
+var country=(ACCT_ROLE==='agentIN'?'India':'Thailand');
+if(!company||!reg||!contact){ acctMsg('Fill in all fields.'); return; }
+acctMsg('Registering…',true);
+postJSON('/referral',{action:'agent_join',company_name:company,contact:contact,country:country,registration_no:reg}).then(function(d){
+if(d&&d.code){ try{localStorage.setItem('np_agent_code',d.code);}catch(e){} acctMsg('Registered! Your agent code is '+d.code+'.',true); agentTab(country); showAgentDash();
+setTimeout(function(){ closeAccountModal(); document.getElementById('agents').scrollIntoView({behavior:'smooth'}); },1500); }
+else acctMsg('Could not register. Try again.');
+}).catch(function(){ acctMsg('Could not register. Try again.'); });
+}
+function agentSignin(){
+var code=val('agmCode'); if(!code){ acctMsg('Enter your agent code.'); return; }
+try{localStorage.setItem('np_agent_code',code);}catch(e){}
+agentTab(ACCT_ROLE==='agentIN'?'India':'Thailand'); showAgentDash();
+acctMsg('Signed in.',true);
+setTimeout(function(){ closeAccountModal(); document.getElementById('agents').scrollIntoView({behavior:'smooth'}); },700);
+}
+
+// ---------- Food delivery / Taxi requests ----------
+var REQ_TYPE='';
+function reqMsg(t,ok){ var m=document.getElementById('reqMsg'); m.textContent=t||''; m.className='text-xs mt-3 text-center font-semibold '+(ok?'text-emerald-400':'text-rose-400'); }
+function openRequest(type){
+REQ_TYPE=type; var h='';
+h+='<input id="rqName" placeholder="Your name" class="'+INPUT+'">';
+h+='<input id="rqContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
+if(type==='delivery'){
+document.getElementById('reqTitle').textContent='🍛 Indian Food Delivery';
+document.getElementById('reqSub').textContent='Tell us what you are craving. We order from a partner Indian restaurant and deliver to your hotel.';
+h+='<input id="rqAddress" placeholder="Hotel name and room number" class="'+INPUT+'">';
+h+='<textarea id="rqWhat" rows="3" placeholder="What would you like? e.g. 2 butter chicken, 4 garlic naan, 1 dal makhani" class="'+INPUT+'"></textarea>';
+h+='<select id="rqVeg" class="'+INPUT+'"><option>Veg and non-veg OK</option><option>Pure veg</option><option>Jain</option></select>';
+h+='<button onclick="sendRequest()" class="'+BTN+'">Order food</button>';
+} else {
+document.getElementById('reqTitle').textContent='🚕 Book a Taxi';
+document.getElementById('reqSub').textContent='Local rides, airport trips and night pickups. We confirm the price on WhatsApp before you ride.';
+h+='<input id="rqFrom" placeholder="Pickup location" class="'+INPUT+'">';
+h+='<input id="rqTo" placeholder="Drop-off location" class="'+INPUT+'">';
+h+='<input id="rqWhen" placeholder="When? e.g. Now, or Tonight 11pm" class="'+INPUT+'">';
+h+='<select id="rqCar" class="'+INPUT+'"><option>Car (up to 3 people)</option><option>Van (up to 9 people)</option><option>Motorbike taxi</option></select>';
+h+='<button onclick="sendRequest()" class="'+BTN+'">Book taxi</button>';
+}
+document.getElementById('reqForm').innerHTML=h; reqMsg('');
+document.getElementById('requestModal').classList.remove('hidden');
+}
+function closeRequest(){ document.getElementById('requestModal').classList.add('hidden'); }
+function sendRequest(){
+var name=val('rqName'), contact=val('rqContact');
+if(!name||!contact){ reqMsg('Enter your name and WhatsApp number.'); return; }
+var details, type;
+if(REQ_TYPE==='delivery'){
+if(!val('rqAddress')||!val('rqWhat')){ reqMsg('Enter your hotel and what you would like.'); return; }
+type='Indian Food Delivery'; details='Deliver to: '+val('rqAddress')+'\nOrder: '+val('rqWhat')+'\nDiet: '+val('rqVeg');
+} else {
+if(!val('rqFrom')||!val('rqTo')){ reqMsg('Enter pickup and drop-off.'); return; }
+type='Taxi Booking'; details='From: '+val('rqFrom')+'\nTo: '+val('rqTo')+'\nWhen: '+val('rqWhen')+'\nVehicle: '+val('rqCar');
+}
+var refCode=''; try{ refCode=localStorage.getItem('np_ref')||''; }catch(e){}
+reqMsg('Sending…',true);
+postJSON('/enquiry',{type:type,name:name,contact:contact,email:'',details:details,referral_code:refCode}).then(function(d){
+reqMsg((d&&d.message)||('Request received! We will confirm on WhatsApp at '+contact+'.'),true);
+}).catch(function(){ reqMsg('Could not send. Check your connection and try again.'); });
+}
+
+// ---------- 30% badges on every service card ----------
+(function(){
+var cards=document.querySelectorAll('#servicesGrid > a');
+for(var i=0;i<cards.length;i++){
+cards[i].classList.add('relative');
+var b=document.createElement('span');
+b.className='absolute top-3 left-3 bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow';
+b.textContent='Up to 30% OFF';
+cards[i].appendChild(b);
+}
+})();
+
+function openLiveChat(){ document.getElementById('liveChatModal').classList.remove('hidden'); var i=document.getElementById('chatInput'); if(i) i.focus(); }
+function closeLiveChat(){ document.getElementById('liveChatModal').classList.add('hidden'); }
+function goAgent(country){ closeAccountModal(); try{ agentTab(country); }catch(e){} document.getElementById('agents').scrollIntoView({behavior:'smooth'}); }
+var INDIAN_CLUBS = ['Nashaa','Jalwa','Jannaat','Leela','Kamaa','Sutraa','Tonys','Boss','Mashaal','Barone','Nashaa Space','Ikka'];
+function openClubs(){
+var box=document.getElementById('clubsList');
+box.innerHTML = INDIAN_CLUBS.map(function(name,i){
+return '<a href="/services.html?cat=Nightlife" class="flex items-center justify-between bg-black border border-white/10 hover:border-amber-500 rounded-xl px-3 py-2.5 transition">'
++'<span class="text-sm font-bold text-white">'+(i+1)+'. '+name+'</span>'
++'<span class="text-[10px] bg-amber-500 text-black font-black px-2.5 py-1 rounded-lg uppercase">Reserve</span></a>';
 }).join('');
+document.getElementById('clubsModal').classList.remove('hidden');
 }
-window.pick = function(i){ missingCat = ""; active = cats[i]; renderTabs(); render(); };
-function imgErr(el,emoji){ var w=el.parentNode; el.style.display='none'; w.innerHTML='<span style="font-size:42px">'+emoji+'</span>'; }
-window._imgErr = imgErr;
-// ---- Category with no listings yet: request form ----
-function comingSoon(){
-return '<div class="empty" id="enqBox" style="max-width:420px;margin:0 auto">'
-+'<div style="font-size:42px">🙏</div>'
-+'<h3 style="color:#e8e8ef;margin:10px 0 6px">'+esc(missingCat)+'</h3>'
-+'<p style="font-size:13px">Online booking for this service is coming soon. Send a request and our team will arrange it for you on WhatsApp.</p>'
-+'<div class="pay" style="text-align:left">'
-+'<input id="enqName" placeholder="Your Name">'
-+'<input id="enqContact" placeholder="Mobile / WhatsApp">'
-+'<input id="enqDetails" placeholder="Date, group size, anything we should know">'
-+'</div>'
-+'<button class="cta" id="enqBtn" onclick="sendEnquiry()">Send Request</button>'
-+'<div id="enqMsg" style="color:#f87171;font-size:12px;margin-top:8px"></div>'
-+'</div>';
+function closeClubs(){ document.getElementById('clubsModal').classList.add('hidden'); }
+function handleChatSubmit(e){
+e.preventDefault();
+var input=document.getElementById('chatInput'); var q=(input.value||'').trim(); if(!q) return;
+var c=document.getElementById('chatMessages');
+var esc=function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+c.innerHTML += '<div class="bg-amber-600 text-white p-2.5 rounded-2xl ml-auto max-w-[85%] font-medium">'+esc(q)+'</div>';
+input.value='';
+var t=document.createElement('div'); t.className='bg-black border border-white/10 p-2.5 rounded-2xl text-gray-200 max-w-[85%] font-medium'; t.textContent='Raju is typing…'; c.appendChild(t); c.scrollTop=c.scrollHeight;
+// Connects to your existing n8n webhook setup
+fetch(N8N+'/concierge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})})
+.then(function(r){return r.json();})
+.then(function(d){ var x=(d&&d.reply)||'Sorry, no reply right now.'; t.innerHTML=esc(x); c.scrollTop=c.scrollHeight; })
+.catch(function(){ t.textContent='Sorry, I could not connect.'; });
 }
-window.sendEnquiry = function(){
-var name=(document.getElementById('enqName').value||'').trim();
-var contact=(document.getElementById('enqContact').value||'').trim();
-var details=(document.getElementById('enqDetails').value||'').trim();
-var msg=document.getElementById('enqMsg');
-if(!name||!contact){ msg.textContent='Please enter your name and contact number.'; return; }
-msg.textContent='';
-var btn=document.getElementById('enqBtn'); btn.textContent='Sending...'; btn.disabled=true;
-fetch(ENQUIRY_EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:missingCat,name:name,contact:contact,email:'',details:details})})
-.then(function(r){ if(!r.ok) throw new Error('enquiry failed'); return r.json().catch(function(){return {};}); })
-.then(function(d){
-document.getElementById('enqBox').innerHTML =
-'<i class="fa-solid fa-circle-check" style="color:#34d399;font-size:48px"></i>'
-+'<h3 style="color:#e8e8ef;margin:12px 0 4px">Request Received!</h3>'
-+'<p style="font-size:13px">'+esc((d&&d.message)||'Our team will contact you on '+contact+' shortly.')+'</p>';
-})
-.catch(function(){ btn.disabled=false; btn.textContent='Send Request'; msg.textContent='Could not send. Please try again.'; });
-};
-window.render = function(){
-var q = (document.getElementById('q').value||'').toLowerCase();
-if (missingCat && !q){ document.getElementById('list').innerHTML = comingSoon(); return; }
-var h='', last=null, open=false, shown=0;
-for (var i=0;i<DATA.length;i++){ var r=DATA[i];
-if (active!=='All' && r.category!==active) continue;
-if (q){ var hay=(r.item+' '+r.notes+' '+r.category).toLowerCase(); if(hay.indexOf(q)<0) continue; }
-if (r.category!==last){ if(open) h+='</div>'; h+='<h3 class="cat">'+esc(r.category)+'</h3><div class="grid">'; open=true; last=r.category; }
-h += '<div class="card" onclick="openProvider('+i+')"><div class="ph"><img src="'+esc(r.image_url)+'" loading="lazy" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>'
-+ '<div class="body"><div class="name">'+esc(r.item)+'</div><div class="desc">'+esc(r.notes)+'</div>'
-+ '<div class="row"><span class="from">from '+baht(minPrice(i))+' <span style="color:#7b8398;font-weight:500;font-size:11px">'+esc(r.unit||'')+'</span></span><span class="viewmenu">View menu →</span></div></div></div>';
-shown++;
-}
-if(open) h+='</div>';
-if(!shown) h='<div class="empty">No results.</div>';
-document.getElementById('list').innerHTML = h;
-};
-// ---- Provider detail ----
-window.openProvider = function(i){
-curProv = i; var r = DATA[i];
-document.getElementById('provName').textContent = r.item;
-document.getElementById('provOverlay').style.display = 'block';
-renderProvider();
-};
-window.closeProvider = function(){ document.getElementById('provOverlay').style.display='none'; };
-function renderProvider(){
-var i=curProv, r=DATA[i], m=menuOf(i);
-var h = '<div class="pimg"><img src="'+esc(r.image_url)+'" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>';
-h += '<div class="desc" style="margin:0 0 6px">'+esc(r.notes)+'</div>';
-h += '<div style="color:#8b93a7;font-size:12px;margin-bottom:6px">'+esc(r.category)+(r.unit?(' · '+esc(r.unit)):'')+'</div>';
-for (var j=0;j<m.length;j++){
-var pk=i+'::'+j; var it=m[j]; var ctrl;
-if (cart[pk]){ ctrl='<div class="step"><button onclick="decKey(\''+pk+'\')">−</button><span>'+cart[pk].qty+'</span><button onclick="incKey(\''+pk+'\')">+</button></div>'; }
-else { ctrl='<button class="add" onclick="incKey(\''+pk+'\')">Add +</button>'; }
-h += '<div class="mitem"><div class="n">'+esc(it.n)+'</div><div class="mp">'+baht(it.p)+'</div>'+ctrl+'</div>';
-}
-document.getElementById('provBody').innerHTML = h;
-}
-// ---- Cart ops (keyed) ----
-window.incKey = function(pk){
-if(!cart[pk]){ var p=pk.split('::'); var i=+p[0], j=+p[1]; var it=menuOf(i)[j];
-cart[pk]={label:DATA[i].item+' — '+it.n, price:it.p, qty:0, category:DATA[i].category}; }
-cart[pk].qty++; afterCartChange();
-};
-window.decKey = function(pk){ if(cart[pk]){ cart[pk].qty--; if(cart[pk].qty<=0) delete cart[pk]; } afterCartChange(); };
-function afterCartChange(){
-updateBar();
-if(document.getElementById('provOverlay').style.display==='block') renderProvider();
-if(document.getElementById('cartOverlay').style.display==='block') renderCart();
-}
-function totals(){ var items=0,sum=0; for(var k in cart){ items+=cart[k].qty; sum+=cart[k].qty*cart[k].price; } return {items:items,sum:sum}; }
-function updateBar(){
-var t=totals(); var bar=document.getElementById('cartbar');
-if(t.items>0){ bar.style.display='flex'; document.getElementById('cartsummary').textContent='🛒 '+t.items+' item'+(t.items>1?'s':'')+' · '+baht(t.sum); }
-else bar.style.display='none';
-}
-window.setOrdName = function(v){ ordName=v; };
-window.setOrdContact = function(v){ ordContact=v; };
-// ADDED setters
-window.setOrd = function(k,v){ if(k==='email') ordEmail=v; if(k==='date') ordDate=v; if(k==='time') ordTime=v; if(k==='guests') ordGuests=v; if(k==='req') ordReq=v; };
-window.openCart = function(){ stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; document.getElementById('paywrap').style.display='none'; document.getElementById('payNote').style.display='block'; document.getElementById('cartOverlay').style.display='block'; renderCart(); };
-window.closeCart = function(){ document.getElementById('cartOverlay').style.display='none'; stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; };
-function renderCart(){
-document.getElementById('cartStep').textContent = stage==='pay' ? 'STEP 3 OF 4 · PAYMENT' : 'STEP 2 OF 4 · CHECKOUT';
-var h=''; var keys=Object.keys(cart);
-if(!keys.length) h='<div class="empty">Your basket is empty.</div>';
-keys.forEach(function(k){ var c=cart[k];
-h+='<div class="drow"><div class="n">'+esc(c.label)+'<small>'+baht(c.price)+' each</small></div>'
-+ '<div class="step"><button onclick="decKey(\''+k+'\')">−</button><span>'+c.qty+'</span><button onclick="incKey(\''+k+'\')">+</button></div>'
-+ '<div style="min-width:64px;text-align:right;font-weight:800">'+baht(c.qty*c.price)+'</div></div>';
-});
-document.getElementById('ditems').innerHTML=h;
-document.getElementById('grand').textContent=baht(totals().sum);
-var paywrap=document.getElementById('paywrap'), cta=document.getElementById('cta');
-if(stage==='pay'){
-paywrap.style.display='block';
-var ph='';
-ph+='<input id="ordName" placeholder="Your Name" value="'+esc(ordName)+'" oninput="setOrdName(this.value)">';
-ph+='<input id="ordContact" placeholder="Mobile / WhatsApp" value="'+esc(ordContact)+'" oninput="setOrdContact(this.value)">';
-// ADDED: email, date, time, guests, requests
-ph+='<input id="ordEmail" type="email" placeholder="Email (receipt is sent here)" value="'+esc(ordEmail)+'" oninput="setOrd(\'email\',this.value)">';
-ph+='<div class="whenrow"><label>Date<input type="date" value="'+esc(ordDate)+'" oninput="setOrd(\'date\',this.value)"></label><label>Time<input type="time" value="'+esc(ordTime)+'" oninput="setOrd(\'time\',this.value)"></label><label>Guests<input type="number" min="1" value="'+esc(ordGuests)+'" oninput="setOrd(\'guests\',this.value)"></label></div>';
-ph+='<textarea rows="2" placeholder="Special requests (optional)" oninput="setOrd(\'req\',this.value)">'+esc(ordReq)+'</textarea>';
-payGroups.forEach(function(g){
-ph+='<div class="payhead">'+g.region+'</div>';
-g.methods.forEach(function(m){
-var key=g.region+' · '+m;
-ph+='<label class="'+(key===payChoice?'sel':'')+'" onclick="choosePay(\''+key.replace(/'/g,"")+'\')"><i class="fa-solid fa-circle'+(key===payChoice?'-check':'')+'"></i> '+m+'</label>';
-});
-});
-document.getElementById('pay').innerHTML = ph;
-cta.textContent='Place Order · '+baht(totals().sum);
-} else { paywrap.style.display='none'; cta.textContent='Checkout'; }
-}
-window.choosePay = function(m){ payChoice=m; renderCart(); };
-window.checkoutStep = function(){
-var t=totals(); if(!t.items) return;
-if(stage==='cart'){ stage='pay'; renderCart(); return; }
-if(!ordName.trim() || !ordContact.trim()){ alert('Please enter your name and contact number.'); return; }
-placeOrder(t);
-};
-function placeOrder(t){
-var lines=[]; var items=[];
-Object.keys(cart).forEach(function(k){ var c=cart[k];
-lines.push('• '+c.label+' x'+c.qty+' = '+baht(c.qty*c.price));
-items.push({ label:c.label, category:c.category||'', amount:c.qty*c.price });
-});
-var summary=lines.join('\n');
-var ref='NAM-'+Math.floor(1000+Math.random()*9000);
-var refCode=''; try { refCode = localStorage.getItem('np_ref') || ''; } catch(e){}
-var payload={ name:ordName, contact:ordContact, payment:payChoice, total:Number(t.sum).toLocaleString('en-US'), total_num:t.sum, summary:summary, ref:ref, referral_code:refCode, items:items,
-email:ordEmail, date:ordDate, time:ordTime, guests:ordGuests, requests:ordReq };
-// ADDED: keep a copy for the receipt
-var receiptLines=Object.keys(cart).map(function(k){ var c=cart[k]; return {label:c.label, qty:c.qty, price:c.price, amount:c.qty*c.price}; });
-var cta=document.getElementById('cta'); cta.textContent='Placing order...'; cta.disabled=true;
-fetch(ORDERS_EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-.then(function(r){ if(!r.ok) throw new Error('order failed'); return r.json().catch(function(){return {};}); })
-.then(function(){
-var method=(payChoice.split(' · ')[1]||'payment');
-document.getElementById('ditems').innerHTML =
-'<div style="text-align:center;padding:16px 4px">'
-+'<i class="fa-solid fa-circle-check" style="color:#34d399;font-size:48px"></i>'
-+'<h3 style="margin:12px 0 4px">Order Received!</h3>'
-+'<p style="color:#9aa3b7;font-size:13px">Ref '+ref+' · '+baht(t.sum)+'</p>'
-+'<p style="color:#9aa3b7;font-size:13px">Payment: '+esc(payChoice)+'</p>'
-+'<p style="color:#7b8398;font-size:12px;margin-top:10px">Our team will contact you on '+esc(ordContact)+' to confirm your booking and share the '+esc(method)+' payment details.</p>'
-+'</div>';
-document.getElementById('paywrap').style.display='none';
-document.getElementById('grand').textContent=baht(t.sum);
-cta.style.display='none';
-cart={}; updateBar();
-// ADDED: step 4 receipt + save booking
-var bk={ ref:ref, created:new Date().toISOString(), status:'Payment pending', lines:receiptLines, total:t.sum, vat:Math.round(t.sum*VAT_RATE/(1+VAT_RATE)),
-name:ordName, contact:ordContact, email:ordEmail, date:ordDate, time:ordTime, guests:ordGuests, requests:ordReq, payment:payChoice };
-try{ var all=JSON.parse(localStorage.getItem('np_bookings_v1')||'[]'); all.unshift(bk); localStorage.setItem('np_bookings_v1',JSON.stringify(all.slice(0,50))); localStorage.setItem('np_guest',JSON.stringify({name:ordName,email:ordEmail,phone:ordContact})); }catch(e){}
-document.getElementById('cartStep').textContent='STEP 4 OF 4 · RECEIPT';
-document.getElementById('payNote').style.display='none';
-document.getElementById('ditems').innerHTML += receiptHTML(bk)
-+'<button class="cta" style="margin-top:12px" onclick="window.print()"><i class="fa-solid fa-download"></i> Download receipt (PDF)</button>'
-+'<button class="btn2" onclick="location.href=\'/\'">Finish</button>';
-})
-.catch(function(){
-cta.disabled=false; cta.textContent='Place Order · '+baht(t.sum);
-alert('Sorry, we could not place your order. Please try again.');
-});
-}
-// ===== ADDED: receipt + my bookings =====
-function receiptHTML(b){
-var rows=b.lines.map(function(l){ return '<tr><td>'+esc(l.label)+' ×'+l.qty+'</td><td>'+baht(l.amount)+'</td></tr>'; }).join('');
-return '<div class="rcpt" id="printArea"><h4>Namaste Pattaya Reservations</h4><div class="m">Receipt / booking summary</div>'
-+'<table><tr><td>Reservation no.</td><td><b>'+esc(b.ref)+'</b></td></tr><tr><td>Status</td><td>'+esc(b.status)+'</td></tr>'
-+'<tr><td>Booked on</td><td>'+esc(new Date(b.created).toLocaleString('en-GB'))+'</td></tr>'
-+'<tr><td>Guest</td><td>'+esc(b.name)+'<br>'+esc(b.contact)+(b.email?'<br>'+esc(b.email):'')+'</td></tr>'
-+'<tr><td>When</td><td>'+esc(b.date)+' '+esc(b.time)+' · '+esc(b.guests)+' guest(s)</td></tr>'
-+(b.requests?'<tr><td>Requests</td><td>'+esc(b.requests)+'</td></tr>':'')+'</table>'
-+'<table>'+rows+'<tr class="t"><td>Total</td><td>'+baht(b.total)+'</td></tr><tr><td class="m">Includes VAT 7%</td><td class="m">'+baht(b.vat)+'</td></tr>'
-+'<tr><td>Payment method</td><td>'+esc(b.payment)+'</td></tr></table>'
-+'<p class="m" style="margin-top:10px">This is not a tax invoice. For a tax invoice, ask the venue.</p></div>';
-}
-function myBookings(){ try{ return JSON.parse(localStorage.getItem('np_bookings_v1')||'[]'); }catch(e){ return []; } }
-function openMyBookings(){
-var a=myBookings(), box=document.getElementById('bkBody');
-box.innerHTML = a.length ? a.map(function(b,i){ return '<div class="bkrow" onclick="showBk('+i+')"><div><b>'+esc(b.lines.map(function(l){return l.label;}).join(', '))+'</b><small>'+esc(b.date)+' '+esc(b.time)+' · '+esc(b.ref)+' · '+baht(b.total)+'</small><small>'+esc(b.status)+'</small></div><i class="fa-solid fa-chevron-right"></i></div>'; }).join('') : '<div class="empty">No bookings yet.</div>';
-document.getElementById('bkOverlay').style.display='block';
-}
-function showBk(i){
-var b=myBookings()[i]; if(!b) return;
-document.getElementById('bkBody').innerHTML = receiptHTML(b)
-+'<button class="cta" style="margin-top:12px" onclick="window.print()"><i class="fa-solid fa-download"></i> Download receipt (PDF)</button>'
-+'<button class="btn2" onclick="openMyBookings()">Back to my bookings</button>';
-}
+function getRefCode(){ try{ return localStorage.getItem('np_code')||''; }catch(e){ return ''; } }
+function refLink(code){ return window.location.origin+'/?ref='+code; }
+function ensureRefCode(){ return new Promise(function(resolve){ var code=getRefCode(); if(code){resolve(code);return;} var name=prompt('Enter name to create referral link:'); if(!name){resolve('');return;} var contact=prompt('WhatsApp WITH country code:'); if(!contact){resolve('');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'join',name:name,contact:contact})}).then(function(r){return r.json();}).then(function(d){ if(d&&d.code){ try{localStorage.setItem('np_code',d.code);}catch(e){} resolve(d.code);} else resolve(''); }).catch(function(){resolve('');}); }); }
+function copyRefLink(){ ensureRefCode().then(function(code){ if(!code){alert('Could not create link.');return;} var link=refLink(code); document.getElementById('refLinkText').textContent=link; if(navigator.clipboard){navigator.clipboard.writeText(link).then(function(){alert('Copied!');});} else alert(link); loadRefStats(); }); }
+function loadRefStats(){ var code=getRefCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'stats',code:code})}).then(function(r){return r.json();}).then(function(d){ document.getElementById('refLinkText').textContent=refLink(code); if(document.getElementById('refCount'))document.getElementById('refCount').textContent=(d.referrals||0); if(document.getElementById('refBalance'))document.getElementById('refBalance').textContent=(d.currency||'THB')+' '+(d.available||0); }).catch(function(){}); }
+function withdrawEarnings(){ var code=getRefCode(); if(!code){alert('Get referral link first!');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert(d&&d.message||'Requested!'); loadRefStats(); }).catch(function(){alert('Error.');}); }
+var agentCountry='Thailand';
+function agentTab(c){ agentCountry=c; document.getElementById('agCountryLabel').textContent=c; document.getElementById('tabTH').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='Thailand'?'bg-purple-600 text-white':'bg-black border border-white/10 text-gray-300'); document.getElementById('tabIN').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='India'?'bg-purple-600 text-white':'bg-black border border-white/10 text-gray-300'); }
+function getAgentCode(){ try{ return localStorage.getItem('np_agent_code')||''; }catch(e){ return ''; } }
+function agentLink(code){ return window.location.origin+'/?ref='+code; }
+function agentRegister(){ var company=document.getElementById('agCompany').value.trim(), reg=document.getElementById('agReg').value.trim(), contact=document.getElementById('agContact').value.trim(); if(!company||!reg||!contact){alert('Fill all fields.');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'agent_join',company_name:company,contact:contact,country:agentCountry,registration_no:reg})}).then(function(r){return r.json();}).then(function(d){ if(d&&d.code){ try{localStorage.setItem('np_agent_code',d.code);}catch(e){} alert('Registered!\nCode: '+d.code); showAgentDash(); } else alert('Error.'); }).catch(function(){alert('Error.');}); }
+function showAgentDash(){ document.getElementById('agentRegister').style.display='none'; document.getElementById('agentDash').style.display='block'; loadAgentStats(); }
+function loadAgentStats(){ var code=getAgentCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'stats',code:code})}).then(function(r){return r.json();}).then(function(d){ document.getElementById('agAvail').textContent='฿'+(d.available||0); document.getElementById('agRefs').textContent=(d.referrals||0); document.getElementById('agLink').textContent=agentLink(code); }).catch(function(){}); }
+function agentCopyLink(){ var code=getAgentCode(); if(!code) return; var link=agentLink(code); if(navigator.clipboard){navigator.clipboard.writeText(link).then(function(){alert('Copied!');});} else alert(link); }
+function agentWithdraw(){ var code=getAgentCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert('Requested.'); loadAgentStats(); }).catch(function(){alert('Error.');}); }
+document.addEventListener('DOMContentLoaded', function(){ loadRefStats(); if(getAgentCode()) showAgentDash(); });
+</script>
+
+<script>
+        function openMatch(){ document.getElementById('matchModal').classList.add('open'); }
+        function closeMatch(){ document.getElementById('matchModal').classList.remove('open'); }
+
+        let isMrIndiaActive = false;
+        const myUserId = "user_777"; 
+        const targetUserId = "nirmal_32"; 
+
+        function toggleGhostMode() {
+            const btn = document.getElementById('mrIndiaBtn');
+            isMrIndiaActive = !isMrIndiaActive;
+            
+            if (isMrIndiaActive) {
+                btn.classList.add('active');
+                btn.innerHTML = '👻 Invisible';
+                showLog("Database: is_mr_india = true");
+            } else {
+                btn.classList.remove('active');
+                btn.innerHTML = '🕶️ Mr. India';
+                showLog("Database: is_mr_india = false");
+            }
+        }
+
+        function handleSwipe(direction) {
+            const card = document.getElementById('mainCard');
+            
+            if (direction === 'left') {
+                card.classList.add('swipe-left');
+                showLog("Passed profile.");
+            } else {
+                card.classList.add('swipe-right');
+                
+                if (isMrIndiaActive) {
+                    showLog(`Ghost Reveal: Pushed ${myUserId} to ${targetUserId}'s swiped_by array`);
+                } else {
+                    showLog("Standard Match Request Sent!");
+                }
+            }
+            
+            // Reset card for testing purposes
+            setTimeout(() => {
+                card.style.transition = 'none';
+                card.classList.remove('swipe-left', 'swipe-right');
+                card.style.opacity = '0';
+                
+                setTimeout(() => {
+                    card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+                    card.style.opacity = '1';
+                }, 50);
+            }, 400);
+        }
+
+        function showLog(msg) {
+            const log = document.getElementById('console-log');
+            log.innerText = msg;
+            log.style.opacity = '1';
+            setTimeout(() => log.style.opacity = '0', 2500);
+        }
 </script>
 </body>
 </html>
