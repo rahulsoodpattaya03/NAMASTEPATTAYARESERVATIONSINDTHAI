@@ -6,299 +6,405 @@
 <title>Namaste Pattaya Reservations — Super-App</title>
 <link rel="icon" href="/logo.png">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
-  :root{--darkbg:#0b0f19;--cardbg:#131c2e;--gold:#f59e0b;--purple:#8b5cf6;--cyan:#22d3ee}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:var(--darkbg);color:#e8e8ef;padding-bottom:90px}
-  header{position:sticky;top:0;z-index:5;background:linear-gradient(180deg,#0b0f19,#0b0f19f2);padding:14px 18px;border-bottom:1px solid #1e2740}
-  .brandrow{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto}
-  .logo{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(135deg,#f59e0b,#8b5cf6,#22d3ee);box-shadow:0 4px 18px rgba(139,92,246,.5);overflow:hidden}
-  .brand{font-size:19px;font-weight:900;letter-spacing:.3px;line-height:1.05;background:linear-gradient(90deg,#22d3ee,#a78bfa,#f59e0b,#22d3ee);background-size:300% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shine 6s linear infinite}
-  @keyframes shine{to{background-position:300% center}}
-  .tag{color:#8b93a7;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-top:2px}
-  .controls{max-width:1100px;margin:0 auto;padding:12px 18px}
-  a.back{color:#8b93a7;text-decoration:none;font-size:13px}
-  #q{width:100%;padding:11px 14px;border-radius:12px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px}
-  #tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
-  .tab{padding:7px 13px;border-radius:20px;border:1px solid #26314d;background:#0d1424;color:#c7cddb;font-size:12px;cursor:pointer;white-space:nowrap}
-  .tab.on{background:var(--gold);color:#1a1204;border-color:var(--gold);font-weight:700}
-  main{max-width:1100px;margin:0 auto;padding:8px 18px 40px}
-  h3.cat{color:var(--gold);margin:22px 0 10px;font-size:16px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
-  .card{background:var(--cardbg);border:1px solid #1e2740;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:border-color .2s}
-  .card:hover{border-color:#3b4a6b}
-  .ph{height:140px;background:#0d1424;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .ph img{width:100%;height:100%;object-fit:cover}
-  .body{padding:11px 13px;display:flex;flex-direction:column;flex:1}
-  .name{font-weight:700;font-size:14px}
-  .desc{color:#9aa3b7;font-size:12px;margin:5px 0 10px;flex:1}
-  .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
-  .from{color:#34d399;font-weight:800;font-size:13px}
-  .viewmenu{color:var(--cyan);font-size:12px;font-weight:700}
-  .add{padding:7px 12px;border:none;border-radius:9px;background:var(--gold);color:#1a1204;font-weight:800;font-size:12px;cursor:pointer}
-  .step{display:flex;align-items:center;gap:8px}
-  .step button{width:28px;height:28px;border:none;border-radius:8px;background:#26314d;color:#fff;font-size:16px;font-weight:800;cursor:pointer}
-  .step span{min-width:20px;text-align:center;font-weight:800}
-  .empty{color:#8b93a7;text-align:center;padding:40px}
-  /* overlays */
-  .overlay{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.7);display:none}
-  .panel{position:absolute;right:0;top:0;bottom:0;width:100%;max-width:460px;background:#0e1524;display:flex;flex-direction:column}
-  .phead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #1e2740;gap:10px}
-  .phead b{font-size:16px}
-  .phead .x{background:none;border:none;color:#aaa;font-size:26px;cursor:pointer}
-  .pbody{flex:1;overflow-y:auto;padding:8px 18px 18px}
-  .pimg{height:150px;border-radius:12px;overflow:hidden;background:#0d1424;display:flex;align-items:center;justify-content:center;margin:12px 0}
-  .pimg img{width:100%;height:100%;object-fit:cover}
-  .mitem{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #182238}
-  .mitem .n{flex:1;font-size:14px}
-  .mitem .mp{color:#34d399;font-weight:800;min-width:64px;text-align:right}
-  .drow{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid #182238}
-  .drow .n{flex:1;font-size:13px}
-  .drow .n small{color:#7b8398;display:block}
-  .dfoot{padding:16px 18px;border-top:1px solid #1e2740}
-  .tot{display:flex;justify-content:space-between;font-size:18px;font-weight:900;margin-bottom:12px}
-  .tot .amt{color:#34d399}
-  .pay{display:grid;gap:8px;margin:10px 0 14px}
-  .pay input{padding:11px 12px;border-radius:10px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px}
-  .pay label{display:flex;align-items:center;gap:10px;padding:11px 12px;border:1px solid #26314d;border-radius:10px;font-size:14px;cursor:pointer}
-  .pay label.sel{border-color:var(--gold);background:#1a1608}
-  .payhead{font-weight:800;color:#c7cddb;margin-top:6px;font-size:13px}
-  .cta{width:100%;padding:14px;border:none;border-radius:12px;background:#25D366;color:#04351a;font-weight:900;font-size:15px;cursor:pointer}
-  .note{color:#7b8398;font-size:11px;text-align:center;margin-top:8px}
-  #cartbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;justify-content:space-between;align-items:center;max-width:1100px;margin:0 auto;padding:14px 18px;background:linear-gradient(90deg,#8b5cf6,#22d3ee);color:#06121f;font-weight:800;border-radius:16px 16px 0 0;box-shadow:0 -6px 24px rgba(0,0,0,.5);cursor:pointer}
-  #cartbar .go{background:#06121f;color:#fff;padding:9px 16px;border-radius:10px;font-weight:800}
+/* Matched to the home page: black background, glass cards, amber/saffron accents, Manrope */
+:root{--darkbg:#000;--cardbg:rgba(20,20,20,.85);--gold:#f59e0b;--saffron:#ff9933;--purple:#8b5cf6;--cyan:#fbbf24}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Manrope',system-ui,-apple-system,Arial,sans-serif;background:#000;color:#f3f4f6;padding-bottom:90px;-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:0;background:transparent}
+header{position:sticky;top:0;z-index:5;background:rgba(10,10,10,.9);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);padding:14px 18px;border-bottom:1px solid rgba(255,255,255,.1)}
+.brandrow{display:flex;align-items:center;gap:12px;max-width:1100px;margin:0 auto}
+.logo{width:46px;height:46px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(135deg,#f59e0b,#f43f5e);box-shadow:0 10px 25px rgba(245,158,11,.4);overflow:hidden}
+.brand{font-size:18px;font-weight:800;letter-spacing:-.2px;line-height:1.1;color:#fff}
+.brand::first-line{color:#fff}
+.tag{color:#fde68a;font-size:10px;font-weight:800;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
+.controls{max-width:1100px;margin:0 auto;padding:12px 18px}
+a.back{color:#9ca3af;text-decoration:none;font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:1px}
+#q{width:100%;padding:12px 15px;border-radius:16px;border:1px solid rgba(255,255,255,.1);background:#111;color:#fff;font-size:14px;font-family:inherit}
+#tabs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.tab{padding:7px 13px;border-radius:999px;border:1px solid rgba(245,158,11,.4);background:rgba(120,53,15,.4);color:#fde68a;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;cursor:pointer;white-space:nowrap}
+.tab.on{background:linear-gradient(90deg,#f59e0b,#f43f5e);color:#fff;border-color:transparent;box-shadow:0 6px 16px rgba(245,158,11,.35)}
+main{max-width:1100px;margin:0 auto;padding:8px 18px 40px}
+h3.cat{color:#fff;margin:22px 0 12px;font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:-.2px}
+h3.cat::after{content:"";display:block;width:40px;height:4px;border-radius:4px;background:#f59e0b;margin-top:8px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{background:var(--cardbg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.1);border-radius:20px;overflow:hidden;display:flex;flex-direction:column;cursor:pointer;transition:border-color .2s,transform .2s;padding:8px}
+.card:hover{border-color:rgba(245,158,11,.6)}
+.card:active{transform:scale(.98)}
+.ph{height:140px;background:#111;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:14px}
+.ph img{width:100%;height:100%;object-fit:cover}
+.body{padding:10px 6px 4px;display:flex;flex-direction:column;flex:1}
+.name{font-weight:800;font-size:14px;color:#fff}
+.desc{color:#9ca3af;font-size:12px;margin:5px 0 10px;flex:1;font-weight:600}
+.row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.from{color:#34d399;font-weight:800;font-size:13px}
+.viewmenu{color:#f59e0b;font-size:11px;font-weight:800;text-transform:uppercase}
+.add{padding:8px 13px;border:none;border-radius:12px;background:linear-gradient(90deg,#f59e0b,#f43f5e);color:#fff;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit}
+.step{display:flex;align-items:center;gap:8px}
+.step button{width:30px;height:30px;border:1px solid rgba(255,255,255,.2);border-radius:10px;background:rgba(255,255,255,.1);color:#fff;font-size:16px;font-weight:800;cursor:pointer}
+.step span{min-width:20px;text-align:center;font-weight:800}
+.empty{color:#9ca3af;text-align:center;padding:40px}
+/* overlays */
+.overlay{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:none}
+.panel{position:absolute;right:0;top:0;bottom:0;width:100%;max-width:460px;background:#111;border-left:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column}
+.phead{display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.1);gap:10px;background:#000}
+.phead b{font-size:16px;font-weight:800;color:#fff}
+.phead .x{background:none;border:none;color:#9ca3af;font-size:26px;cursor:pointer}
+.pbody{flex:1;overflow-y:auto;padding:8px 18px 18px}
+.pimg{height:170px;border-radius:20px;overflow:hidden;background:#000;display:flex;align-items:center;justify-content:center;margin:12px 0}
+.pimg img{width:100%;height:100%;object-fit:cover}
+.mitem{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.mitem .n{flex:1;font-size:14px;font-weight:600}
+.mitem .mp{color:#34d399;font-weight:800;min-width:64px;text-align:right}
+.drow{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.drow .n{flex:1;font-size:13px;font-weight:600}
+.drow .n small{color:#9ca3af;display:block}
+.dfoot{padding:16px 18px;border-top:1px solid rgba(255,255,255,.1);background:#000}
+.tot{display:flex;justify-content:space-between;font-size:18px;font-weight:800;margin-bottom:12px}
+.tot .amt{color:#34d399}
+.pay{display:grid;gap:8px;margin:10px 0 14px}
+.pay input,.pay textarea{padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.1);background:#000;color:#fff;font-size:14px;font-family:inherit;width:100%}
+.pay label{display:flex;align-items:center;gap:10px;padding:12px;border:1px solid rgba(255,255,255,.1);border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;background:#000}
+.pay label.sel{border-color:#f59e0b;background:rgba(120,53,15,.4);color:#fde68a}
+.payhead{font-weight:800;color:#fde68a;margin-top:6px;font-size:11px;text-transform:uppercase;letter-spacing:1px}
+.cta{width:100%;padding:15px;border:none;border-radius:16px;background:linear-gradient(90deg,#f59e0b,#f43f5e);color:#fff;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 10px 25px rgba(245,158,11,.4)}
+.cta:active{transform:scale(.98)}
+.note{color:#9ca3af;font-size:11px;text-align:center;margin-top:8px}
+#cartbar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:none;justify-content:space-between;align-items:center;max-width:480px;margin:0 auto;padding:16px 20px;background:rgba(10,10,10,.95);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px);border-top:1px solid rgba(255,255,255,.1);color:#fff;font-weight:800;border-radius:24px 24px 0 0;cursor:pointer}
+#cartbar .go{background:linear-gradient(90deg,#f59e0b,#f43f5e);color:#fff;padding:10px 16px;border-radius:12px;font-weight:800}
+/* ===== ADDED: steps, when-fields, receipt, my bookings ===== */
+.stepline{color:#f59e0b;font-size:10px;font-weight:800;letter-spacing:1px}
+.whenrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.whenrow label{display:flex;flex-direction:column;gap:4px;padding:0;border:none;background:none;font-size:10px;color:#9ca3af;font-weight:800;text-transform:uppercase;cursor:default}
+.mybk{position:absolute;right:18px;top:14px;color:#fff;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.5px;text-decoration:none;border:1px solid rgba(255,255,255,.2);border-radius:999px;padding:7px 12px;background:rgba(255,255,255,.1)}
+.rcpt{background:#fff;color:#111;border-radius:16px;padding:16px;font-size:13px;margin-top:12px;text-align:left}
+.rcpt h4{margin:0;font-size:16px;font-weight:800}
+.rcpt .m{color:#555;font-size:12px}
+.rcpt table{width:100%;border-collapse:collapse;margin-top:8px}
+.rcpt td{padding:5px 0;border-bottom:1px solid #eee;vertical-align:top}
+.rcpt td:last-child{text-align:right;padding-left:8px}
+.rcpt tr.t td{font-weight:800;border-top:2px solid #111;border-bottom:none}
+.btn2{width:100%;padding:13px;border-radius:16px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-weight:800;font-size:14px;cursor:pointer;margin-top:8px;font-family:inherit}
+.bkrow{display:flex;gap:10px;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.08);cursor:pointer}
+.bkrow div{flex:1}.bkrow small{display:block;color:#9ca3af;font-size:11px}
+@media print{body *{visibility:hidden}#printArea,#printArea *{visibility:visible}#printArea{position:absolute;left:0;top:0;width:100%;margin:0}}
 </style>
 </head>
 <body>
-<header>
-  <div class="controls" style="padding:0 0 6px 0"><a class="back" href="/">&larr; Back to home</a></div>
-  <div class="brandrow">
-    <div class="logo"><img src="/logo.png" alt="logo" onerror="this.parentNode.textContent='🙏'" style="width:100%;height:100%;object-fit:cover;border-radius:14px"></div>
-    <div>
-      <div class="brand">NAMASTE PATTAYA RESERVATIONS</div>
-      <div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div>
-    </div>
-  </div>
+<header style="position:sticky">
+<a class="mybk" href="#" onclick="openMyBookings();return false;">🎟️ My bookings</a>
+<div class="controls" style="padding:0 0 6px 0"><a class="back" href="/">&larr; Back to home</a></div>
+<div class="brandrow">
+<div class="logo"><img src="/logo.png" alt="logo" onerror="this.parentNode.textContent='🙏'" style="width:100%;height:100%;object-fit:cover;border-radius:14px"></div>
+<div>
+<div class="brand">Namaste <span style="color:#f59e0b">Pattaya</span> Reservations</div>
+<div class="tag">✨ Super-App · Book · Party · Enjoy 🎉</div>
+</div>
+</div>
 </header>
 <div class="controls">
-  <input id="q" placeholder="Search providers, places…" oninput="render()">
-  <div id="tabs"></div>
+<input id="q" placeholder="Search providers, places…" oninput="render()">
+<div id="tabs"></div>
 </div>
 <main id="list"></main>
-
 <!-- Provider menu overlay -->
 <div class="overlay" id="provOverlay">
-  <div class="panel">
-    <div class="phead"><b id="provName">Provider</b><button class="x" onclick="closeProvider()">&times;</button></div>
-    <div class="pbody" id="provBody"></div>
-    <div class="dfoot"><button class="cta" onclick="openCart()">View Basket &amp; Checkout</button></div>
-  </div>
+<div class="panel">
+<div class="phead"><div><div class="stepline">STEP 1 OF 4 · CHOOSE</div><b id="provName">Provider</b></div><button class="x" onclick="closeProvider()">&times;</button></div>
+<div class="pbody" id="provBody"></div>
+<div class="dfoot"><button class="cta" onclick="openCart()">View Basket &amp; Checkout</button></div>
 </div>
-
+</div>
 <!-- Cart overlay -->
 <div class="overlay" id="cartOverlay">
-  <div class="panel">
-    <div class="phead"><b>🛒 Your Basket</b><button class="x" onclick="closeCart()">&times;</button></div>
-    <div class="pbody" id="ditems"></div>
-    <div class="dfoot">
-      <div class="tot"><span>Total</span><span class="amt" id="grand">฿0</span></div>
-      <div id="paywrap" style="display:none">
-        <div style="font-weight:800;margin-bottom:6px">Your details &amp; payment method</div>
-        <div class="pay" id="pay"></div>
-      </div>
-      <button class="cta" id="cta" onclick="checkoutStep()">Checkout</button>
-      <div class="note">Pay on confirmation — our team will contact you to complete payment via your chosen method.</div>
-    </div>
-  </div>
+<div class="panel">
+<div class="phead"><div><div class="stepline" id="cartStep">STEP 2 OF 4 · CHECKOUT</div><b>🛒 Your Basket</b></div><button class="x" onclick="closeCart()">&times;</button></div>
+<div class="pbody" id="ditems"></div>
+<div class="dfoot">
+<div class="tot"><span>Total</span><span class="amt" id="grand">฿0</span></div>
+<div id="paywrap" style="display:none">
+<div style="font-weight:800;margin-bottom:6px">Your details &amp; payment method</div>
+<div class="pay" id="pay"></div>
 </div>
-
+<button class="cta" id="cta" onclick="checkoutStep()">Checkout</button>
+<div class="note" id="payNote">Pay on confirmation — our team will contact you to complete payment via your chosen method.</div>
+</div>
+</div>
+</div>
+<!-- ADDED: My bookings overlay -->
+<div class="overlay" id="bkOverlay">
+<div class="panel">
+<div class="phead"><b>🎟️ My bookings</b><button class="x" onclick="document.getElementById('bkOverlay').style.display='none'">&times;</button></div>
+<div class="pbody" id="bkBody"></div>
+</div>
+</div>
 <!-- Cart bar -->
 <div id="cartbar" onclick="openCart()">
-  <span id="cartsummary">🛒 0 items</span>
-  <span class="go">View basket →</span>
+<span id="cartsummary">🛒 0 items</span>
+<span class="go">View basket →</span>
 </div>
-
 <script>
-  var ORDERS_EP = "https://namastepattayareservation.app.n8n.cloud/webhook/orders";
-  try { var _rp = new URLSearchParams(location.search).get('ref'); if(_rp) localStorage.setItem('np_ref', _rp); } catch(e){}
-  var DATA = [], MENUS = {}, cats = ["All"], active = "All";
-  var cart = {};      // key "provIdx::itemIdx" -> {label, price, qty, category}
-  var curProv = null;
-  var stage = "cart";
-  var payGroups = [
-    { region: "🇮🇳 India", methods: ["UPI", "Scan QR Code", "Credit / Debit Card"] },
-    { region: "🇹🇭 Thailand", methods: ["PromptPay", "Wallet", "Credit / Debit Card"] }
-  ];
-  var payChoice = "🇮🇳 India · UPI";
-  var ordName = "", ordContact = "";
-
-  function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
-  function baht(n){ return '฿' + Number(n||0).toLocaleString('en-US'); }
-  function menuOf(i){ return MENUS[DATA[i].id] || [{n:'Book this service',p:DATA[i].price_thb}]; }
-  function minPrice(i){ var m=menuOf(i); var lo=m[0].p; for(var j=1;j<m.length;j++) if(m[j].p<lo) lo=m[j].p; return lo; }
-
-  Promise.all([
-    fetch('./pn-catalog.json').then(function(r){return r.json();}),
-    fetch('./menus.json').then(function(r){return r.json();}).catch(function(){return {};}),
-    fetch('./clubs.json').then(function(r){return r.json();}).catch(function(){return {providers:[],menus:{}};})
-  ]).then(function(res){
-    DATA = res[0]; MENUS = res[1] || {};
-    var extra = res[2] || {providers:[],menus:{}};
-    if(extra.menus){ for(var mk in extra.menus) MENUS[mk]=extra.menus[mk]; }
-    if(extra.providers && extra.providers.length){
-      var firstIdx=-1; for(var k=0;k<DATA.length;k++){ if(DATA[k].category==='Nightlife & Bars'){ firstIdx=k; break; } }
-      if(firstIdx>=0){ Array.prototype.splice.apply(DATA,[firstIdx,0].concat(extra.providers)); }
-      else { DATA=DATA.concat(extra.providers); }
-    }
-    DATA.forEach(function(x){ if(cats.indexOf(x.category)<0) cats.push(x.category); });
-    var params = new URLSearchParams(location.search);
-    var c = params.get('cat');
-    if (c){ var hit = cats.filter(function(x){return x.toLowerCase()===c.toLowerCase();})[0]; if(hit) active = hit; }
-    var qp = params.get('q'); if(qp) document.getElementById('q').value = qp;
-    renderTabs(); render(); updateBar();
-  }).catch(function(){
-    document.getElementById('list').innerHTML = '<div class="empty">Could not load listings.</div>';
-  });
-
-  function renderTabs(){
-    document.getElementById('tabs').innerHTML = cats.map(function(c,i){
-      return '<span class="tab'+(c===active?' on':'')+'" onclick="pick('+i+')">'+esc(c)+'</span>';
-    }).join('');
-  }
-  window.pick = function(i){ active = cats[i]; renderTabs(); render(); };
-  function imgErr(el,emoji){ var w=el.parentNode; el.style.display='none'; w.innerHTML='<span style="font-size:42px">'+emoji+'</span>'; }
-  window._imgErr = imgErr;
-
-  window.render = function(){
-    var q = (document.getElementById('q').value||'').toLowerCase();
-    var h='', last=null, open=false, shown=0;
-    for (var i=0;i<DATA.length;i++){ var r=DATA[i];
-      if (active!=='All' && r.category!==active) continue;
-      if (q){ var hay=(r.item+' '+r.notes+' '+r.category).toLowerCase(); if(hay.indexOf(q)<0) continue; }
-      if (r.category!==last){ if(open) h+='</div>'; h+='<h3 class="cat">'+esc(r.category)+'</h3><div class="grid">'; open=true; last=r.category; }
-      h += '<div class="card" onclick="openProvider('+i+')"><div class="ph"><img src="'+esc(r.image_url)+'" loading="lazy" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>'
-        + '<div class="body"><div class="name">'+esc(r.item)+'</div><div class="desc">'+esc(r.notes)+'</div>'
-        + '<div class="row"><span class="from">from '+baht(minPrice(i))+' <span style="color:#7b8398;font-weight:500;font-size:11px">'+esc(r.unit||'')+'</span></span><span class="viewmenu">View menu →</span></div></div></div>';
-      shown++;
-    }
-    if(open) h+='</div>';
-    if(!shown) h='<div class="empty">No results.</div>';
-    document.getElementById('list').innerHTML = h;
-  };
-
-  // ---- Provider detail ----
-  window.openProvider = function(i){
-    curProv = i; var r = DATA[i];
-    document.getElementById('provName').textContent = r.item;
-    document.getElementById('provOverlay').style.display = 'block';
-    renderProvider();
-  };
-  window.closeProvider = function(){ document.getElementById('provOverlay').style.display='none'; };
-  function renderProvider(){
-    var i=curProv, r=DATA[i], m=menuOf(i);
-    var h = '<div class="pimg"><img src="'+esc(r.image_url)+'" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>';
-    h += '<div class="desc" style="margin:0 0 6px">'+esc(r.notes)+'</div>';
-    h += '<div style="color:#8b93a7;font-size:12px;margin-bottom:6px">'+esc(r.category)+(r.unit?(' · '+esc(r.unit)):'')+'</div>';
-    for (var j=0;j<m.length;j++){
-      var pk=i+'::'+j; var it=m[j]; var ctrl;
-      if (cart[pk]){ ctrl='<div class="step"><button onclick="decKey(\''+pk+'\')">−</button><span>'+cart[pk].qty+'</span><button onclick="incKey(\''+pk+'\')">+</button></div>'; }
-      else { ctrl='<button class="add" onclick="incKey(\''+pk+'\')">Add +</button>'; }
-      h += '<div class="mitem"><div class="n">'+esc(it.n)+'</div><div class="mp">'+baht(it.p)+'</div>'+ctrl+'</div>';
-    }
-    document.getElementById('provBody').innerHTML = h;
-  }
-
-  // ---- Cart ops (keyed) ----
-  window.incKey = function(pk){
-    if(!cart[pk]){ var p=pk.split('::'); var i=+p[0], j=+p[1]; var it=menuOf(i)[j];
-      cart[pk]={label:DATA[i].item+' — '+it.n, price:it.p, qty:0, category:DATA[i].category}; }
-    cart[pk].qty++; afterCartChange();
-  };
-  window.decKey = function(pk){ if(cart[pk]){ cart[pk].qty--; if(cart[pk].qty<=0) delete cart[pk]; } afterCartChange(); };
-  function afterCartChange(){
-    updateBar();
-    if(document.getElementById('provOverlay').style.display==='block') renderProvider();
-    if(document.getElementById('cartOverlay').style.display==='block') renderCart();
-  }
-  function totals(){ var items=0,sum=0; for(var k in cart){ items+=cart[k].qty; sum+=cart[k].qty*cart[k].price; } return {items:items,sum:sum}; }
-  function updateBar(){
-    var t=totals(); var bar=document.getElementById('cartbar');
-    if(t.items>0){ bar.style.display='flex'; document.getElementById('cartsummary').textContent='🛒 '+t.items+' item'+(t.items>1?'s':'')+' · '+baht(t.sum); }
-    else bar.style.display='none';
-  }
-
-  window.setOrdName = function(v){ ordName=v; };
-  window.setOrdContact = function(v){ ordContact=v; };
-
-  window.openCart = function(){ stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; document.getElementById('cartOverlay').style.display='block'; renderCart(); };
-  window.closeCart = function(){ document.getElementById('cartOverlay').style.display='none'; stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; };
-  function renderCart(){
-    var h=''; var keys=Object.keys(cart);
-    if(!keys.length) h='<div class="empty">Your basket is empty.</div>';
-    keys.forEach(function(k){ var c=cart[k];
-      h+='<div class="drow"><div class="n">'+esc(c.label)+'<small>'+baht(c.price)+' each</small></div>'
-       + '<div class="step"><button onclick="decKey(\''+k+'\')">−</button><span>'+c.qty+'</span><button onclick="incKey(\''+k+'\')">+</button></div>'
-       + '<div style="min-width:64px;text-align:right;font-weight:800">'+baht(c.qty*c.price)+'</div></div>';
-    });
-    document.getElementById('ditems').innerHTML=h;
-    document.getElementById('grand').textContent=baht(totals().sum);
-    var paywrap=document.getElementById('paywrap'), cta=document.getElementById('cta');
-    if(stage==='pay'){
-      paywrap.style.display='block';
-      var ph='';
-      ph+='<input id="ordName" placeholder="Your Name" value="'+esc(ordName)+'" oninput="setOrdName(this.value)">';
-      ph+='<input id="ordContact" placeholder="Mobile / WhatsApp" value="'+esc(ordContact)+'" oninput="setOrdContact(this.value)">';
-      payGroups.forEach(function(g){
-        ph+='<div class="payhead">'+g.region+'</div>';
-        g.methods.forEach(function(m){
-          var key=g.region+' · '+m;
-          ph+='<label class="'+(key===payChoice?'sel':'')+'" onclick="choosePay(\''+key.replace(/'/g,"")+'\')"><i class="fa-solid fa-circle'+(key===payChoice?'-check':'')+'"></i> '+m+'</label>';
-        });
-      });
-      document.getElementById('pay').innerHTML = ph;
-      cta.textContent='Place Order · '+baht(totals().sum);
-    } else { paywrap.style.display='none'; cta.textContent='Checkout'; }
-  }
-  window.choosePay = function(m){ payChoice=m; renderCart(); };
-  window.checkoutStep = function(){
-    var t=totals(); if(!t.items) return;
-    if(stage==='cart'){ stage='pay'; renderCart(); return; }
-    if(!ordName.trim() || !ordContact.trim()){ alert('Please enter your name and contact number.'); return; }
-    placeOrder(t);
-  };
-  function placeOrder(t){
-    var lines=[]; var items=[];
-    Object.keys(cart).forEach(function(k){ var c=cart[k];
-      lines.push('• '+c.label+' x'+c.qty+' = '+baht(c.qty*c.price));
-      items.push({ label:c.label, category:c.category||'', amount:c.qty*c.price });
-    });
-    var summary=lines.join('\n');
-    var ref='NAM-'+Math.floor(1000+Math.random()*9000);
-    var refCode=''; try { refCode = localStorage.getItem('np_ref') || ''; } catch(e){}
-    var payload={ name:ordName, contact:ordContact, payment:payChoice, total:Number(t.sum).toLocaleString('en-US'), total_num:t.sum, summary:summary, ref:ref, referral_code:refCode, items:items };
-    var cta=document.getElementById('cta'); cta.textContent='Placing order...'; cta.disabled=true;
-    fetch(ORDERS_EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-      .then(function(r){return r.json();}).catch(function(){return {};})
-      .then(function(){
-        var method=(payChoice.split(' · ')[1]||'payment');
-        document.getElementById('ditems').innerHTML =
-          '<div style="text-align:center;padding:16px 4px">'
-          +'<i class="fa-solid fa-circle-check" style="color:#34d399;font-size:48px"></i>'
-          +'<h3 style="margin:12px 0 4px">Order Received!</h3>'
-          +'<p style="color:#9aa3b7;font-size:13px">Ref '+ref+' · '+baht(t.sum)+'</p>'
-          +'<p style="color:#9aa3b7;font-size:13px">Payment: '+esc(payChoice)+'</p>'
-          +'<p style="color:#7b8398;font-size:12px;margin-top:10px">Our team will contact you on '+esc(ordContact)+' to confirm your booking and share the '+esc(method)+' payment details.</p>'
-          +'</div>';
-        document.getElementById('paywrap').style.display='none';
-        document.getElementById('grand').textContent=baht(t.sum);
-        cta.style.display='none';
-        cart={}; updateBar();
-      })
-      .catch(function(){
-        cta.disabled=false; cta.textContent='Place Order · '+baht(t.sum);
-        alert('Sorry, we could not place your order. Please try again.');
-      });
-  }
+var ORDERS_EP = "https://namastepattayareservation.app.n8n.cloud/webhook/orders";
+var ENQUIRY_EP = "https://namastepattayareservation.app.n8n.cloud/webhook/enquiry";
+var VAT_RATE = 0.07; // ADDED: shown as included in prices
+try { var _rp = new URLSearchParams(location.search).get('ref'); if(_rp) localStorage.setItem('np_ref', _rp); } catch(e){}
+var DATA = [], MENUS = {}, cats = ["All"], active = "All";
+var missingCat = "";
+var cart = {}; // key "provIdx::itemIdx" -> {label, price, qty, category}
+var curProv = null;
+var stage = "cart";
+var payGroups = [
+{ region: "🇮🇳 India", methods: ["UPI", "Scan QR Code", "Credit / Debit Card"] },
+{ region: "🇹🇭 Thailand", methods: ["PromptPay", "Wallet", "Credit / Debit Card"] }
+];
+var payChoice = "🇮🇳 India · UPI";
+var ordName = "", ordContact = "";
+// ADDED: extra checkout fields
+function _iso(d){ var z=new Date(d.getTime()-d.getTimezoneOffset()*60000); return z.toISOString().slice(0,10); }
+var ordEmail = "", ordDate = _iso(new Date()), ordTime = "21:00", ordGuests = "2", ordReq = "";
+try{ var _g=JSON.parse(localStorage.getItem('np_guest')||'null'); if(_g){ ordName=_g.name||''; ordContact=_g.phone||''; ordEmail=_g.email||''; } }catch(e){}
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+function baht(n){ return '฿' + Number(n||0).toLocaleString('en-US'); }
+function menuOf(i){ return MENUS[DATA[i].id] || [{n:'Book this service',p:DATA[i].price_thb}]; }
+function minPrice(i){ var m=menuOf(i); var lo=m[0].p; for(var j=1;j<m.length;j++) if(m[j].p<lo) lo=m[j].p; return lo; }
+Promise.all([
+fetch('./pn-catalog.json').then(function(r){return r.json();}),
+fetch('./menus.json').then(function(r){return r.json();}).catch(function(){return {};}),
+fetch('./clubs.json').then(function(r){return r.json();}).catch(function(){return {providers:[],menus:{}};})
+]).then(function(res){
+DATA = res[0]; MENUS = res[1] || {};
+var extra = res[2] || {providers:[],menus:{}};
+if(extra.menus){ for(var mk in extra.menus) MENUS[mk]=extra.menus[mk]; }
+if(extra.providers && extra.providers.length){
+var firstIdx=-1; for(var k=0;k<DATA.length;k++){ if(DATA[k].category==='Nightlife & Bars'){ firstIdx=k; break; } }
+if(firstIdx>=0){ Array.prototype.splice.apply(DATA,[firstIdx,0].concat(extra.providers)); }
+else { DATA=DATA.concat(extra.providers); }
+}
+DATA.forEach(function(x){ if(cats.indexOf(x.category)<0) cats.push(x.category); });
+var params = new URLSearchParams(location.search);
+var c = params.get('cat');
+if (c){ var cl=c.toLowerCase(); var alias={events:'event & party planning'}; if(alias[cl]) cl=alias[cl];
+var hit = cats.filter(function(x){return x.toLowerCase()===cl;})[0] || cats.filter(function(x){return x.toLowerCase().indexOf(cl)>=0;})[0];
+if(hit) active = hit; else missingCat = c; }
+var qp = params.get('q'); if(qp) document.getElementById('q').value = qp;
+renderTabs(); render(); updateBar();
+if(params.get('view')==='bookings') openMyBookings();
+}).catch(function(){
+document.getElementById('list').innerHTML = '<div class="empty">Could not load listings.</div>';
+});
+function renderTabs(){
+document.getElementById('tabs').innerHTML = cats.map(function(c,i){
+return '<span class="tab'+(c===active?' on':'')+'" onclick="pick('+i+')">'+esc(c)+'</span>';
+}).join('');
+}
+window.pick = function(i){ missingCat = ""; active = cats[i]; renderTabs(); render(); };
+function imgErr(el,emoji){ var w=el.parentNode; el.style.display='none'; w.innerHTML='<span style="font-size:42px">'+emoji+'</span>'; }
+window._imgErr = imgErr;
+// ---- Category with no listings yet: request form ----
+function comingSoon(){
+return '<div class="empty" id="enqBox" style="max-width:420px;margin:0 auto">'
++'<div style="font-size:42px">🙏</div>'
++'<h3 style="color:#e8e8ef;margin:10px 0 6px">'+esc(missingCat)+'</h3>'
++'<p style="font-size:13px">Online booking for this service is coming soon. Send a request and our team will arrange it for you on WhatsApp.</p>'
++'<div class="pay" style="text-align:left">'
++'<input id="enqName" placeholder="Your Name">'
++'<input id="enqContact" placeholder="Mobile / WhatsApp">'
++'<input id="enqDetails" placeholder="Date, group size, anything we should know">'
++'</div>'
++'<button class="cta" id="enqBtn" onclick="sendEnquiry()">Send Request</button>'
++'<div id="enqMsg" style="color:#f87171;font-size:12px;margin-top:8px"></div>'
++'</div>';
+}
+window.sendEnquiry = function(){
+var name=(document.getElementById('enqName').value||'').trim();
+var contact=(document.getElementById('enqContact').value||'').trim();
+var details=(document.getElementById('enqDetails').value||'').trim();
+var msg=document.getElementById('enqMsg');
+if(!name||!contact){ msg.textContent='Please enter your name and contact number.'; return; }
+msg.textContent='';
+var btn=document.getElementById('enqBtn'); btn.textContent='Sending...'; btn.disabled=true;
+fetch(ENQUIRY_EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:missingCat,name:name,contact:contact,email:'',details:details})})
+.then(function(r){ if(!r.ok) throw new Error('enquiry failed'); return r.json().catch(function(){return {};}); })
+.then(function(d){
+document.getElementById('enqBox').innerHTML =
+'<i class="fa-solid fa-circle-check" style="color:#34d399;font-size:48px"></i>'
++'<h3 style="color:#e8e8ef;margin:12px 0 4px">Request Received!</h3>'
++'<p style="font-size:13px">'+esc((d&&d.message)||'Our team will contact you on '+contact+' shortly.')+'</p>';
+})
+.catch(function(){ btn.disabled=false; btn.textContent='Send Request'; msg.textContent='Could not send. Please try again.'; });
+};
+window.render = function(){
+var q = (document.getElementById('q').value||'').toLowerCase();
+if (missingCat && !q){ document.getElementById('list').innerHTML = comingSoon(); return; }
+var h='', last=null, open=false, shown=0;
+for (var i=0;i<DATA.length;i++){ var r=DATA[i];
+if (active!=='All' && r.category!==active) continue;
+if (q){ var hay=(r.item+' '+r.notes+' '+r.category).toLowerCase(); if(hay.indexOf(q)<0) continue; }
+if (r.category!==last){ if(open) h+='</div>'; h+='<h3 class="cat">'+esc(r.category)+'</h3><div class="grid">'; open=true; last=r.category; }
+h += '<div class="card" onclick="openProvider('+i+')"><div class="ph"><img src="'+esc(r.image_url)+'" loading="lazy" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>'
++ '<div class="body"><div class="name">'+esc(r.item)+'</div><div class="desc">'+esc(r.notes)+'</div>'
++ '<div class="row"><span class="from">from '+baht(minPrice(i))+' <span style="color:#7b8398;font-weight:500;font-size:11px">'+esc(r.unit||'')+'</span></span><span class="viewmenu">View menu →</span></div></div></div>';
+shown++;
+}
+if(open) h+='</div>';
+if(!shown) h='<div class="empty">No results.</div>';
+document.getElementById('list').innerHTML = h;
+};
+// ---- Provider detail ----
+window.openProvider = function(i){
+curProv = i; var r = DATA[i];
+document.getElementById('provName').textContent = r.item;
+document.getElementById('provOverlay').style.display = 'block';
+renderProvider();
+};
+window.closeProvider = function(){ document.getElementById('provOverlay').style.display='none'; };
+function renderProvider(){
+var i=curProv, r=DATA[i], m=menuOf(i);
+var h = '<div class="pimg"><img src="'+esc(r.image_url)+'" onerror="_imgErr(this,&#39;'+r.emoji+'&#39;)"></div>';
+h += '<div class="desc" style="margin:0 0 6px">'+esc(r.notes)+'</div>';
+h += '<div style="color:#8b93a7;font-size:12px;margin-bottom:6px">'+esc(r.category)+(r.unit?(' · '+esc(r.unit)):'')+'</div>';
+for (var j=0;j<m.length;j++){
+var pk=i+'::'+j; var it=m[j]; var ctrl;
+if (cart[pk]){ ctrl='<div class="step"><button onclick="decKey(\''+pk+'\')">−</button><span>'+cart[pk].qty+'</span><button onclick="incKey(\''+pk+'\')">+</button></div>'; }
+else { ctrl='<button class="add" onclick="incKey(\''+pk+'\')">Add +</button>'; }
+h += '<div class="mitem"><div class="n">'+esc(it.n)+'</div><div class="mp">'+baht(it.p)+'</div>'+ctrl+'</div>';
+}
+document.getElementById('provBody').innerHTML = h;
+}
+// ---- Cart ops (keyed) ----
+window.incKey = function(pk){
+if(!cart[pk]){ var p=pk.split('::'); var i=+p[0], j=+p[1]; var it=menuOf(i)[j];
+cart[pk]={label:DATA[i].item+' — '+it.n, price:it.p, qty:0, category:DATA[i].category}; }
+cart[pk].qty++; afterCartChange();
+};
+window.decKey = function(pk){ if(cart[pk]){ cart[pk].qty--; if(cart[pk].qty<=0) delete cart[pk]; } afterCartChange(); };
+function afterCartChange(){
+updateBar();
+if(document.getElementById('provOverlay').style.display==='block') renderProvider();
+if(document.getElementById('cartOverlay').style.display==='block') renderCart();
+}
+function totals(){ var items=0,sum=0; for(var k in cart){ items+=cart[k].qty; sum+=cart[k].qty*cart[k].price; } return {items:items,sum:sum}; }
+function updateBar(){
+var t=totals(); var bar=document.getElementById('cartbar');
+if(t.items>0){ bar.style.display='flex'; document.getElementById('cartsummary').textContent='🛒 '+t.items+' item'+(t.items>1?'s':'')+' · '+baht(t.sum); }
+else bar.style.display='none';
+}
+window.setOrdName = function(v){ ordName=v; };
+window.setOrdContact = function(v){ ordContact=v; };
+// ADDED setters
+window.setOrd = function(k,v){ if(k==='email') ordEmail=v; if(k==='date') ordDate=v; if(k==='time') ordTime=v; if(k==='guests') ordGuests=v; if(k==='req') ordReq=v; };
+window.openCart = function(){ stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; document.getElementById('paywrap').style.display='none'; document.getElementById('payNote').style.display='block'; document.getElementById('cartOverlay').style.display='block'; renderCart(); };
+window.closeCart = function(){ document.getElementById('cartOverlay').style.display='none'; stage='cart'; var cta=document.getElementById('cta'); cta.style.display='block'; cta.disabled=false; };
+function renderCart(){
+document.getElementById('cartStep').textContent = stage==='pay' ? 'STEP 3 OF 4 · PAYMENT' : 'STEP 2 OF 4 · CHECKOUT';
+var h=''; var keys=Object.keys(cart);
+if(!keys.length) h='<div class="empty">Your basket is empty.</div>';
+keys.forEach(function(k){ var c=cart[k];
+h+='<div class="drow"><div class="n">'+esc(c.label)+'<small>'+baht(c.price)+' each</small></div>'
++ '<div class="step"><button onclick="decKey(\''+k+'\')">−</button><span>'+c.qty+'</span><button onclick="incKey(\''+k+'\')">+</button></div>'
++ '<div style="min-width:64px;text-align:right;font-weight:800">'+baht(c.qty*c.price)+'</div></div>';
+});
+document.getElementById('ditems').innerHTML=h;
+document.getElementById('grand').textContent=baht(totals().sum);
+var paywrap=document.getElementById('paywrap'), cta=document.getElementById('cta');
+if(stage==='pay'){
+paywrap.style.display='block';
+var ph='';
+ph+='<input id="ordName" placeholder="Your Name" value="'+esc(ordName)+'" oninput="setOrdName(this.value)">';
+ph+='<input id="ordContact" placeholder="Mobile / WhatsApp" value="'+esc(ordContact)+'" oninput="setOrdContact(this.value)">';
+// ADDED: email, date, time, guests, requests
+ph+='<input id="ordEmail" type="email" placeholder="Email (receipt is sent here)" value="'+esc(ordEmail)+'" oninput="setOrd(\'email\',this.value)">';
+ph+='<div class="whenrow"><label>Date<input type="date" value="'+esc(ordDate)+'" oninput="setOrd(\'date\',this.value)"></label><label>Time<input type="time" value="'+esc(ordTime)+'" oninput="setOrd(\'time\',this.value)"></label><label>Guests<input type="number" min="1" value="'+esc(ordGuests)+'" oninput="setOrd(\'guests\',this.value)"></label></div>';
+ph+='<textarea rows="2" placeholder="Special requests (optional)" oninput="setOrd(\'req\',this.value)">'+esc(ordReq)+'</textarea>';
+payGroups.forEach(function(g){
+ph+='<div class="payhead">'+g.region+'</div>';
+g.methods.forEach(function(m){
+var key=g.region+' · '+m;
+ph+='<label class="'+(key===payChoice?'sel':'')+'" onclick="choosePay(\''+key.replace(/'/g,"")+'\')"><i class="fa-solid fa-circle'+(key===payChoice?'-check':'')+'"></i> '+m+'</label>';
+});
+});
+document.getElementById('pay').innerHTML = ph;
+cta.textContent='Place Order · '+baht(totals().sum);
+} else { paywrap.style.display='none'; cta.textContent='Checkout'; }
+}
+window.choosePay = function(m){ payChoice=m; renderCart(); };
+window.checkoutStep = function(){
+var t=totals(); if(!t.items) return;
+if(stage==='cart'){ stage='pay'; renderCart(); return; }
+if(!ordName.trim() || !ordContact.trim()){ alert('Please enter your name and contact number.'); return; }
+placeOrder(t);
+};
+function placeOrder(t){
+var lines=[]; var items=[];
+Object.keys(cart).forEach(function(k){ var c=cart[k];
+lines.push('• '+c.label+' x'+c.qty+' = '+baht(c.qty*c.price));
+items.push({ label:c.label, category:c.category||'', amount:c.qty*c.price });
+});
+var summary=lines.join('\n');
+var ref='NAM-'+Math.floor(1000+Math.random()*9000);
+var refCode=''; try { refCode = localStorage.getItem('np_ref') || ''; } catch(e){}
+var payload={ name:ordName, contact:ordContact, payment:payChoice, total:Number(t.sum).toLocaleString('en-US'), total_num:t.sum, summary:summary, ref:ref, referral_code:refCode, items:items,
+email:ordEmail, date:ordDate, time:ordTime, guests:ordGuests, requests:ordReq };
+// ADDED: keep a copy for the receipt
+var receiptLines=Object.keys(cart).map(function(k){ var c=cart[k]; return {label:c.label, qty:c.qty, price:c.price, amount:c.qty*c.price}; });
+var cta=document.getElementById('cta'); cta.textContent='Placing order...'; cta.disabled=true;
+fetch(ORDERS_EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+.then(function(r){ if(!r.ok) throw new Error('order failed'); return r.json().catch(function(){return {};}); })
+.then(function(){
+var method=(payChoice.split(' · ')[1]||'payment');
+document.getElementById('ditems').innerHTML =
+'<div style="text-align:center;padding:16px 4px">'
++'<i class="fa-solid fa-circle-check" style="color:#34d399;font-size:48px"></i>'
++'<h3 style="margin:12px 0 4px">Order Received!</h3>'
++'<p style="color:#9aa3b7;font-size:13px">Ref '+ref+' · '+baht(t.sum)+'</p>'
++'<p style="color:#9aa3b7;font-size:13px">Payment: '+esc(payChoice)+'</p>'
++'<p style="color:#7b8398;font-size:12px;margin-top:10px">Our team will contact you on '+esc(ordContact)+' to confirm your booking and share the '+esc(method)+' payment details.</p>'
++'</div>';
+document.getElementById('paywrap').style.display='none';
+document.getElementById('grand').textContent=baht(t.sum);
+cta.style.display='none';
+cart={}; updateBar();
+// ADDED: step 4 receipt + save booking
+var bk={ ref:ref, created:new Date().toISOString(), status:'Payment pending', lines:receiptLines, total:t.sum, vat:Math.round(t.sum*VAT_RATE/(1+VAT_RATE)),
+name:ordName, contact:ordContact, email:ordEmail, date:ordDate, time:ordTime, guests:ordGuests, requests:ordReq, payment:payChoice };
+try{ var all=JSON.parse(localStorage.getItem('np_bookings_v1')||'[]'); all.unshift(bk); localStorage.setItem('np_bookings_v1',JSON.stringify(all.slice(0,50))); localStorage.setItem('np_guest',JSON.stringify({name:ordName,email:ordEmail,phone:ordContact})); }catch(e){}
+document.getElementById('cartStep').textContent='STEP 4 OF 4 · RECEIPT';
+document.getElementById('payNote').style.display='none';
+document.getElementById('ditems').innerHTML += receiptHTML(bk)
++'<button class="cta" style="margin-top:12px" onclick="window.print()"><i class="fa-solid fa-download"></i> Download receipt (PDF)</button>'
++'<button class="btn2" onclick="location.href=\'/\'">Finish</button>';
+})
+.catch(function(){
+cta.disabled=false; cta.textContent='Place Order · '+baht(t.sum);
+alert('Sorry, we could not place your order. Please try again.');
+});
+}
+// ===== ADDED: receipt + my bookings =====
+function receiptHTML(b){
+var rows=b.lines.map(function(l){ return '<tr><td>'+esc(l.label)+' ×'+l.qty+'</td><td>'+baht(l.amount)+'</td></tr>'; }).join('');
+return '<div class="rcpt" id="printArea"><h4>Namaste Pattaya Reservations</h4><div class="m">Receipt / booking summary</div>'
++'<table><tr><td>Reservation no.</td><td><b>'+esc(b.ref)+'</b></td></tr><tr><td>Status</td><td>'+esc(b.status)+'</td></tr>'
++'<tr><td>Booked on</td><td>'+esc(new Date(b.created).toLocaleString('en-GB'))+'</td></tr>'
++'<tr><td>Guest</td><td>'+esc(b.name)+'<br>'+esc(b.contact)+(b.email?'<br>'+esc(b.email):'')+'</td></tr>'
++'<tr><td>When</td><td>'+esc(b.date)+' '+esc(b.time)+' · '+esc(b.guests)+' guest(s)</td></tr>'
++(b.requests?'<tr><td>Requests</td><td>'+esc(b.requests)+'</td></tr>':'')+'</table>'
++'<table>'+rows+'<tr class="t"><td>Total</td><td>'+baht(b.total)+'</td></tr><tr><td class="m">Includes VAT 7%</td><td class="m">'+baht(b.vat)+'</td></tr>'
++'<tr><td>Payment method</td><td>'+esc(b.payment)+'</td></tr></table>'
++'<p class="m" style="margin-top:10px">This is not a tax invoice. For a tax invoice, ask the venue.</p></div>';
+}
+function myBookings(){ try{ return JSON.parse(localStorage.getItem('np_bookings_v1')||'[]'); }catch(e){ return []; } }
+function openMyBookings(){
+var a=myBookings(), box=document.getElementById('bkBody');
+box.innerHTML = a.length ? a.map(function(b,i){ return '<div class="bkrow" onclick="showBk('+i+')"><div><b>'+esc(b.lines.map(function(l){return l.label;}).join(', '))+'</b><small>'+esc(b.date)+' '+esc(b.time)+' · '+esc(b.ref)+' · '+baht(b.total)+'</small><small>'+esc(b.status)+'</small></div><i class="fa-solid fa-chevron-right"></i></div>'; }).join('') : '<div class="empty">No bookings yet.</div>';
+document.getElementById('bkOverlay').style.display='block';
+}
+function showBk(i){
+var b=myBookings()[i]; if(!b) return;
+document.getElementById('bkBody').innerHTML = receiptHTML(b)
++'<button class="cta" style="margin-top:12px" onclick="window.print()"><i class="fa-solid fa-download"></i> Download receipt (PDF)</button>'
++'<button class="btn2" onclick="openMyBookings()">Back to my bookings</button>';
+}
 </script>
 </body>
 </html>
