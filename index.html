@@ -1,133 +1,203 @@
-{
-  "name": "Namaste Pattaya - Booking & Concierge Handler",
-  "nodes": [
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "namaste-booking",
-        "responseMode": "responseNode",
-        "options": {}
-      },
-      "name": "App Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1,
-      "position": [250, 300],
-      "webhookId": "namaste-booking-hook"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "string": [
-            {
-              "value1": "={{ $json.body.action }}",
-              "operation": "equal",
-              "value2": "book_table"
-            }
-          ]
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Namaste Pattaya - Reservations</title>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Manrope', sans-serif; }
+        body { background-color: #000; color: #fff; display: flex; justify-content: center; }
+        
+        .app-container { 
+            width: 100%; 
+            max-width: 414px; 
+            height: 100vh; 
+            position: relative; 
+            background: url('https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&w=600&q=80') center/cover no-repeat;
+            overflow: hidden;
         }
-      },
-      "name": "Check Action Type",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [480, 300]
-    },
-    {
-      "parameters": {
-        "keepOnlySet": true,
-        "values": {
-          "string": [
-            {
-              "name": "status",
-              "value": "success"
-            },
-            {
-              "name": "message",
-              "value": "VIP Table reservation request received. Our concierge will contact you via WhatsApp shortly."
-            }
-          ]
-        },
-        "options": {}
-      },
-      "name": "Format Booking Response",
-      "type": "n8n-nodes-base.set",
-      "typeVersion": 2,
-      "position": [720, 200]
-    },
-    {
-      "parameters": {
-        "model": "gpt-4o",
-        "prompt": "={{ $json.body.user_query }}",
-        "systemMessage": "You are the elite AI concierge for 'Namaste Pattaya', a luxury nightlife platform tailored for Indian tourists in Pattaya. Recommend clubs based on Punjabi music, Hindi rap, and VIP bottle service.",
-        "options": {}
-      },
-      "name": "OpenAI Concierge AI",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.5,
-      "position": [720, 420]
-    },
-    {
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ $json }}",
-        "options": {}
-      },
-      "name": "HTTP Response",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1,
-      "position": [960, 300]
-    }
-  ],
-  "connections": {
-    "App Webhook": {
-      "main": [
-        [
-          {
-            "node": "Check Action Type",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Check Action Type": {
-      "main": [
-        [
-          {
-            "node": "Format Booking Response",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "OpenAI Concierge AI",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Format Booking Response": {
-      "main": [
-        [
-          {
-            "node": "HTTP Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Concierge AI": {
-      "main": [
-        [
-          {
-            "node": "HTTP Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  }
-}
+
+        .gradient-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 65%;
+            background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.8) 30%, rgba(0,0,0,0) 100%);
+            z-index: 1;
+        }
+
+        header { 
+            position: absolute;
+            top: 40px;
+            left: 20px;
+            right: 20px;
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            z-index: 10;
+        }
+
+        .brand-name { display: flex; align-items: center; gap: 8px; }
+        .logo { font-size: 20px; font-weight: 800; text-shadow: 0 2px 10px rgba(0,0,0,0.5); letter-spacing: -0.5px; }
+        .logo span { color: #ff9933; }
+
+        .language-toggle {
+            background: rgba(255,255,255,0.15);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .action-bar {
+            position: absolute;
+            right: 15px;
+            bottom: 120px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 10;
+            align-items: center;
+        }
+
+        .action-icon {
+            width: 45px;
+            height: 45px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .action-label { font-size: 11px; margin-top: 4px; font-weight: 600; }
+        .action-wrapper { display: flex; flex-direction: column; align-items: center; }
+
+        .venue-info {
+            position: absolute;
+            bottom: 100px;
+            left: 20px;
+            right: 70px; 
+            z-index: 10;
+        }
+
+        .venue-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+        .tag { 
+            background: rgba(255, 153, 51, 0.2); 
+            border: 1px solid rgba(255, 153, 51, 0.4);
+            color: #ffcc99;
+            padding: 5px 12px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 800;
+            text-transform: uppercase;
+            backdrop-filter: blur(5px); 
+        }
+
+        .venue-name { font-size: 30px; font-weight: 800; margin-bottom: 6px; line-height: 1.1; }
+        .venue-desc { font-size: 13px; color: #ccc; margin-bottom: 15px; line-height: 1.4; font-weight: 600;}
+
+        .reserve-btn {
+            background: linear-gradient(90deg, #ff9933, #ff5e62);
+            color: #fff;
+            border: none;
+            padding: 16px 30px;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 800;
+            width: 100%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 10px 25px rgba(255, 153, 51, 0.4);
+        }
+
+        .bottom-nav { 
+            position: absolute; 
+            bottom: 20px; 
+            width: calc(100% - 40px); 
+            left: 20px;
+            height: 60px; 
+            background: rgba(20, 20, 20, 0.8); 
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.1); 
+            border-radius: 16px;
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center; 
+            z-index: 100;
+        }
+
+        .nav-item { font-size: 20px; opacity: 0.4; transition: opacity 0.3s; }
+        .nav-item.active { opacity: 1; color: #ff9933; }
+        .nav-text { font-size: 9px; font-weight: 800; text-transform: uppercase; margin-top: 2px; text-align: center; }
+        .nav-group { display: flex; flex-direction: column; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        
+        <header>
+            <div class="brand-name">
+                <div class="logo">Namaste<span>Pattaya</span></div>
+            </div>
+            <div class="language-toggle">ENG / HI</div>
+        </header>
+
+        <div class="gradient-overlay"></div>
+
+        <div class="action-bar">
+            <div class="action-wrapper">
+                <div class="action-icon">📍</div>
+                <div class="action-label">Walking St</div>
+            </div>
+            <div class="action-wrapper">
+                <div class="action-icon">💨</div>
+                <div class="action-label">Sheesha</div>
+            </div>
+        </div>
+
+        <div class="venue-info">
+            <div class="venue-tags">
+                <span class="tag">Punjabi Hip-Hop</span>
+                <span class="tag">Hindi Rap</span>
+                <span class="tag">Desi Vibe</span>
+            </div>
+            <h1 class="venue-name">The Onyx Lounge</h1>
+            <p class="venue-desc">Pattaya's premium spot for Indian tourists. Heavy bass club anthems tonight. VIP tables include premium bottle service.</p>
+            <button class="reserve-btn" onclick="alert('Opening VIP table selection...')">
+                Book VIP Table
+            </button>
+        </div>
+
+        <nav class="bottom-nav">
+            <div class="nav-group active">
+                <div class="nav-item active">🔥</div>
+                <div class="nav-text" style="color:#ff9933;">Clubs</div>
+            </div>
+            <div class="nav-group">
+                <div class="nav-item">🍽️</div>
+                <div class="nav-text">Dining</div>
+            </div>
+            <div class="nav-group">
+                <div class="nav-item">🎫</div>
+                <div class="nav-text">Bookings</div>
+            </div>
+            <div class="nav-group">
+                <div class="nav-item">💬</div>
+                <div class="nav-text">Concierge</div>
+            </div>
+        </nav>
+
+    </div>
+</body>
+</html>
