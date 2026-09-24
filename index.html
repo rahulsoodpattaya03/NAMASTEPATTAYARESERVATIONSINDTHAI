@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>NightPass — book clubs in one tap</title>
+<title>Namaste Pattaya Reservations — Bharat ke liye ek Bhartiya ka tohfa</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&family=Syne:wght@500;600;700;800&family=Sora:wght@300;400;500;600&family=Figtree:wght@400;500;600;700;800&family=Geist:wght@300;400;500;600;700&family=Unbounded:wght@500;700;800&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
@@ -560,6 +560,45 @@ body.has-scene{background:var(--bg)}
 .art>.close{position:absolute!important;top:12px;right:12px;z-index:3}
 [hidden]{display:none!important}
 .sectiontitle{font-size:26px;margin:14px 0 16px}
+
+/* ===== v12: accounts, VIP buddy, gifts ===== */
+.top{flex-wrap:wrap;gap:10px}
+.logo{font-size:clamp(15px,4.4vw,20px)}
+.acct{display:flex;align-items:center;gap:6px;height:40px;padding:0 14px;margin-right:8px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font-size:13px;font-weight:600;max-width:150px}
+.acct span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.acct .ic{width:16px;height:16px;flex:0 0 auto}
+.acct.on{border-color:var(--ok);color:var(--ok)}
+.badges{display:inline-flex;gap:6px;flex-wrap:wrap;vertical-align:middle}
+.vtag,.vbadge,.nbadge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:700;letter-spacing:.03em;border-radius:999px;padding:2px 8px;white-space:nowrap}
+.vtag{background:linear-gradient(180deg,#F3E6C4,#B99B5C);color:#1A1406}
+.vbadge{color:var(--ok);border:1px solid var(--ok)}
+.nbadge{color:var(--muted);border:1px solid var(--line)}
+.vtag .ic,.vbadge .ic,.nbadge .ic{width:12px;height:12px}
+.myprof,.vipbar{border:1px solid var(--line);background:var(--surface);border-radius:20px;padding:14px 16px;margin-bottom:10px}
+.vipbar.on{border-color:rgba(233,216,166,.6)}
+.myprof .lrow>div,.vipbar .lrow>div{min-width:0}
+.person.vip{border-color:rgba(233,216,166,.6)}
+.person .avail{font-size:13px;color:var(--amber)}
+.person.locked .tags,.person.locked .avail{filter:blur(5px);user-select:none}
+.ptags{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+.pfacts{margin:12px 0 0;padding:0;list-style:none}
+.pfacts li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.pfacts li span:first-child{color:var(--muted)}
+.pfacts li span:last-child{text-align:right}
+.proact{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+.proact button{border-radius:14px;padding:12px;font-weight:700;border:1px solid var(--line);background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px}
+.proact button .ic{width:18px;height:18px}
+.proact .yes{background:var(--glow);border-color:var(--glow);color:var(--glow-ink)}
+.proact button[disabled]{opacity:.5;cursor:not-allowed}
+.roles{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:6px 0 12px}
+.roles button{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:16px;padding:12px;text-align:left;display:flex;flex-direction:column;gap:2px}
+.roles button b{font-size:14px}.roles button small{color:var(--muted);font-size:12px}
+.roles button[aria-pressed="true"]{border-color:var(--glow);box-shadow:0 0 0 3px color-mix(in srgb,var(--glow) 25%,transparent)}
+.glist{display:grid;gap:8px;max-height:260px;overflow-y:auto;margin:6px 0 4px}
+.glist label{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:14px;padding:10px 12px;font-size:14px}
+.glist label span{flex:1}.glist label b{color:var(--amber);font-weight:600}
+.fields label{min-width:0}.fields input,.fields select{width:100%;min-width:0}
+@media (max-width:420px){.roles{grid-template-columns:1fr}}
 </style>
 <style id="skinCss"></style>
 <script type="text/plain" id="skin-holo">/* ===== v5: "Obsidian Holo" — high-end futuristic ===== */
@@ -754,8 +793,8 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
 <div id="scene" aria-hidden="true"><div class="sky"></div><canvas id="fx"></canvas><svg class="city" id="city" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMax meet"></svg><div class="veil"></div></div>
 <div class="wrap">
   <header class="top">
-    <div><div class="logo">Night<b>Pass</b></div><div class="subbrand">Namaste Pattaya Reservations · Super-app</div></div>
-    <div class="topr"><button class="prem" id="premBtn" aria-label="NightPass Premium"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg><span id="premLbl">Premium</span></button><button class="cur" id="curBtn" aria-label="Switch currency">₹ INR</button>
+    <div><div class="logo">Namaste <b>Pattaya</b> Reservations</div><div class="subbrand">Bharat ke liye ek Bhartiya ka tohfa · Jai Hind</div></div>
+    <div class="topr"><button class="acct" id="acctBtn" aria-label="Sign in or sign up"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 1 0-8a4 4 0 1 1 0 8z M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg><span id="acctLbl">Sign in</span></button><button class="prem" id="premBtn" aria-label="Namaste Pattaya Premium"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg><span id="premLbl">Premium</span></button><button class="cur" id="curBtn" aria-label="Switch currency">₹ INR</button>
     </div>
   </header>
   <div class="skins" id="skins" role="radiogroup" aria-label="Design" hidden></div>
@@ -826,7 +865,7 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
     </section>
     <section class="hero">
       <span class="namaste">Namaste. Pattaya made easy for Indian travellers</span>
-      <p class="tagline"><span>Bhartiyon ke liye ek Bhartiya ka tohfa</span><small lang="hi">भारतीयों के लिए एक भारतीय का तोहफ़ा</small></p>
+      <p class="tagline"><span>Bharat ke liye ek Bhartiya ka tohfa · Jai Hind</span><small lang="hi">भारत के लिए एक भारतीय का तोहफ़ा · जय हिन्द</small></p>
       <div class="ticker" aria-label="Tonight in Pattaya"><span class="live"><i></i>Tonight</span><div class="tmask"><div class="track" id="tickTrack"></div></div></div>
       <h1>Every club. One booking.</h1>
       <p>Pick a night, choose your spot, and get a confirmed table, VIP booth or guest-list entry in under a minute.</p>
@@ -902,6 +941,7 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
         <label>WhatsApp<input id="aPhone" inputmode="tel" placeholder="+91 / +66"></label>
       </div>
       <button class="cta" id="aSend">Apply</button>
+      <div class="row2" style="margin-top:10px"><button data-acct="agent_in">Agent sign up · India</button><button data-acct="agent_th">Agent sign up · Thailand</button></div>
       <p class="err" id="aMsg" role="status"></p>
     </div>
   </section>
@@ -924,16 +964,22 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
       <p class="err" id="bErr" role="alert"></p>
     </div>
     <div id="buddyMain" hidden>
-      <p class="small" style="margin:0">What are you up for?</p>
-      <div class="intents" id="intents" role="group" aria-label="Your plan"></div>
+      <div class="myprof" id="myProf"></div>
+      <div class="vipbar" id="vipBar"></div>
+      <p class="small" style="margin:14px 0 0">What are you up for? Pick as many as you like.</p>
+      <div class="intents" id="intents" role="group" aria-label="Your interests"></div>
       <div class="fields">
         <label>When<select id="bWhen"><option>Now</option><option>Tonight</option><option>Tomorrow</option><option>This weekend</option></select></label>
         <label>Show me<select id="bShow"><option>Everyone</option><option>Men</option><option>Women</option></select></label>
+        <label>Available from<select id="bFromT"></select></label>
+        <label>Available until<select id="bToT"></select></label>
         <label class="full">Your plan (optional)<input id="bNote" maxlength="80" placeholder="e.g. Walking Street, want a group to go with"></label>
         <label>Which club<select id="bClub"></select></label>
         <label>Which table<input id="bTable" placeholder="e.g. VIP booth 3"></label>
-        <label>Who can see my profile<select id="bVis"><option value="all">Everyone</option><option value="liked">Only people I like</option><option value="women">Only women</option><option value="men">Only men</option><option value="hidden">Nobody (hidden)</option></select></label>
-        <label>Nearby<button type="button" class="switch" id="nearSw" role="switch" aria-checked="false" aria-label="Show people nearby using my location"></button></label>
+        <label>Who can see my profile<select id="bVis"><option value="all">Every user</option><option value="vip">VIP members only</option><option value="liked">Only people I like</option><option value="women">Only women</option><option value="men">Only men</option><option value="hidden">Nobody (hidden)</option></select></label>
+        <label>Who can message me<select id="bMsg"><option value="all">Every user</option><option value="vip">VIP members only</option><option value="matches">Only my matches</option></select></label>
+        <label>Verified profiles only<button type="button" class="switch" id="verSw" role="switch" aria-checked="false" aria-label="Show verified profiles only (VIP)"></button></label>
+        <label>Distance (VIP)<button type="button" class="switch" id="nearSw" role="switch" aria-checked="false" aria-label="See how far people are using my location (VIP)"></button></label>
       </div>
       <div class="golive" id="golive"><div><strong id="liveTitle">You're hidden</strong><div class="small" id="liveSub">Go live so others with the same plan can see you.</div></div>
         <button class="switch" id="liveSw" role="switch" aria-checked="false" aria-label="Go live"></button></div>
@@ -982,7 +1028,7 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
   <!-- MALL -->
   <section id="mall" hidden>
     <h2 class="sectiontitle">Namaste Mall</h2>
-    <p class="about" style="margin-top:-8px">Shop or send a gift to any NightPass user, delivered 24/7 across Pattaya.</p>
+    <p class="about" style="margin-top:-8px">Shop for yourself or send a gift to any Namaste Pattaya user. We deliver 24/7 across Pattaya, even to their table in the club.</p>
     <div class="chips" id="mallCats"></div>
     <div class="mgrid" id="mallGrid"></div>
     <h3 style="font-size:16px;margin:22px 0 10px">My orders</h3>
@@ -1032,6 +1078,7 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
         <label>WhatsApp / phone<input id="pPhone" inputmode="tel"></label>
       </div>
       <button class="cta" id="pSend">Send request</button>
+      <button class="cta ghost" data-acct="partner">Partner sign in / sign up</button>
       <button class="cta ghost" data-go="dash">Open partner dashboard (preview)</button>
       <p class="err" id="pMsg" role="status"></p>
     </div>
@@ -1262,8 +1309,8 @@ function renderPremiumUI(){
 function openPremium(){
   lastFocus=document.activeElement;const on=isPremium(),cur=root.dataset.skin;
   const lock=`<span class="lock">${'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 11h12v9H6z M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>'}</span>`;
-  panel.innerHTML=`<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:24px">NightPass Premium</h2><button class="theme" id="pClose" aria-label="Close">${ico("close")}</button></div>
-    <p class="about">${on?"You're a Premium member. Pick your app design.":"Unlock every app design and make NightPass yours."}</p>
+  panel.innerHTML=`<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:24px">Namaste Pattaya Premium</h2><button class="theme" id="pClose" aria-label="Close">${ico("close")}</button></div>
+    <p class="about">${on?"You're a Premium member. Pick your app design.":"Unlock every app design and make the app yours."}</p>
     <div class="pgrid" role="radiogroup" aria-label="App design">${SKINS.map(([k,nm,sw])=>`<button class="pskin" role="radio" data-k="${k}" aria-checked="${k===cur}"><div class="sw" style="background:${sw}"></div>${nm}<small>${SKINDESC[k]}</small>${!on&&k!=="holo"?lock:""}</button>`).join("")}</div>
     ${on?`<button class="cta" id="pDone">Done</button><button class="linkbtn" id="pCancel">Cancel membership (demo)</button>`:
     `<ul class="perks"><li>${ico("check")}All 4 app designs</li><li>${ico("check")}Switch design any time</li></ul>
@@ -1490,7 +1537,7 @@ function renderMapCard(){
 const chatEl=document.getElementById("chat"),chatIn=document.getElementById("chatIn");
 const chatHist=[];let busy=false;
 const CATALOG=CLUBS.map(c=>{const paid=c.pkgs.map(p=>p.p).filter(Boolean);return `${c.id} | ${c.name} | ${CATNAME[c.cat]} | ${c.area} | ${c.open} | ${(c.tags||[]).join(", ")} | ${c.pkgs.map(p=>p.n+" "+(p.p?"THB "+p.p+(p.per?"/person":""):"on request")).join("; ")}`}).join("\n");
-const RULES=`You are Raju — "Raju Guide, aapka apna Pattaya guide" — the NightPass concierge in Pattaya, Thailand, helping Indian tourists. Talk like a friendly, trusted desi local friend (light Hinglish is welcome, e.g. "bilkul", "tension mat lo"), never pushy. Be warm, short and practical (max 6 sentences). Reply in the user's language: English, Hindi or Hinglish. Recommend only places from this list, quote prices in both THB and INR (1 THB ≈ ${INR_PER_THB} INR). Mention veg/Jain/Hindi-speaking options when useful. For emergencies tell them to call Thai tourist police 1155 or ambulance 1669. At the very end, on its own line, write IDS: followed by the ids you recommended, comma separated (or IDS: none).\n\nPlaces:\n${CATALOG}`;
+const RULES=`You are Raju — "Raju Guide, aapka apna Pattaya guide" — the Namaste Pattaya Reservations concierge in Pattaya, Thailand, helping Indian tourists. Talk like a friendly, trusted desi local friend (light Hinglish is welcome, e.g. "bilkul", "tension mat lo"), never pushy. Be warm, short and practical (max 6 sentences). Reply in the user's language: English, Hindi or Hinglish. Recommend only places from this list, quote prices in both THB and INR (1 THB ≈ ${INR_PER_THB} INR). Mention veg/Jain/Hindi-speaking options when useful. For emergencies tell them to call Thai tourist police 1155 or ambulance 1669. At the very end, on its own line, write IDS: followed by the ids you recommended, comma separated (or IDS: none).\n\nPlaces:\n${CATALOG}`;
 function addMsg(who,text){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;chatEl.appendChild(d);d.scrollIntoView({block:"end"});return d}
 function addRecs(ids){const valid=ids.map(i=>CLUBS.find(c=>c.id===i)).filter(Boolean);if(!valid.length)return;
   const r=document.createElement("div");r.className="recs";valid.forEach(c=>{const b=document.createElement("button");b.textContent="Book "+c.name;b.onclick=()=>{if(window.closeRaju)closeRaju();openClub(c)};r.appendChild(b)});chatEl.appendChild(r)}
@@ -1528,7 +1575,7 @@ function renderEarn(){
   document.getElementById("myCode").textContent=myCode;document.getElementById("myTier").textContent=ROLE_LABEL[myRole];
   const earned=bookings.filter(b=>b.ref===myCode&&COMMISSION_CATS.includes(b.cat||"nightlife")&&(myRole!=="promoter"||b.total>=5000)).reduce((s,b)=>s+b.total*RATE[myRole],0);
   document.getElementById("earned").textContent=earned?money(earned):(cur==="INR"?"₹0":"฿0");
-  document.getElementById("waShare").href="https://wa.me/?text="+encodeURIComponent(`Planning Pattaya? Book clubs, hotels, tours and Indian food on NightPass. Use my code ${myCode} when you book.`);
+  document.getElementById("waShare").href="https://wa.me/?text="+encodeURIComponent(`Planning Pattaya? Book clubs, hotels, tours and Indian food on Namaste Pattaya Reservations. Use my code ${myCode} when you book.`);
   document.getElementById("eligible").textContent="Commission applies on: "+COMMISSION_CATS.map(k=>CATNAME[k]).join(", ")+".";
 }
 document.getElementById("copyCode").onclick=async e=>{try{await navigator.clipboard.writeText(myCode);e.target.textContent="Copied"}catch(err){e.target.textContent=myCode}setTimeout(()=>e.target.textContent="Copy code",1800)};
@@ -1541,104 +1588,192 @@ const _renderBookings=renderBookings;renderBookings=function(){_renderBookings()
 setCurLabel();renderCats();renderMap();renderEarn();
 
 
-/* ===== v3: find a buddy ===== */
-const INTENTS=[["party","events","Party tonight",["nightlife","beach"]],["lunch","indian","Lunch",["indian","restaurants"]],["coffee","grocery","Coffee",["grocery","restaurants"]],
- ["dinner","restaurants","Dinner",["indian","restaurants"]],["sports","sports","Sports",["golf","water"]],["activity","tours","Activity",["tours","water","spa"]],["dating","heart","Dating",["restaurants","nightlife"]]];
+/* ===== v3: find a buddy (v12: interests, availability, VIP, verified) ===== */
+Object.assign(ICONS,{crown:"M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z",shield:"M12 3l8 3v6c0 5-4 8-8 9-4-1-8-4-8-9V6z M9 12l2 2 4-4",clock:"M12 3a9 9 0 1 1 0 18a9 9 0 1 1 0-18z M12 7v5l3 2"});
+// interests: [key, icon, label, place categories]. "all" is always first.
+const INTENTS=[["all","star","Open to everything",["nightlife","restaurants"]],["party","events","Party",["nightlife","beach"]],["breakfast","grocery","Breakfast",["restaurants","grocery"]],
+ ["lunch","indian","Lunch",["indian","restaurants"]],["coffee","grocery","Coffee",["grocery","restaurants"]],["dinner","restaurants","Dinner",["indian","restaurants"]],
+ ["beach","beach","Beach",["beach"]],["water","water","Water sports",["water"]],["island","tours","Island trip",["tours","water"]],["yacht","yacht","Yacht party",["yacht"]],
+ ["villa","property","Villa party",["events","property"]],["house","hotels","House party",["events"]],["drive","rental","Long drive",["rental"]],["shopping","shopping","Shopping",["shopping"]],
+ ["trips","tours","Long trips",["tours","rental"]],["group","buddy","Group parties",["nightlife","events"]],["family","restaurants","Family party",["restaurants","events"]],
+ ["belly","events","Belly dance",["nightlife","events"]],["danceshow","events","Dance show events",["events","nightlife"]],["movies","star","Movies",["shopping"]],
+ ["talk","chat","Emotional talk",["grocery","restaurants"]],["paragliding","airport","Paragliding",["water","tours"]],["scuba","water","Scuba diving",["water","tours"]],
+ ["sports","sports","Sports",["golf","water"]],["dating","heart","Dating",["restaurants","nightlife"]]];
 const INT=Object.fromEntries(INTENTS.map(i=>[i[0],i]));
+const intName=k=>INT[k]?INT[k][2]:k;
 // sample people — replace with real users from the database
+// [id, name, age, sex, from, languages, interests, when, area, note, color, available, verified, vip, who can see, who can message]
 const PEOPLE=[
- ["p1","Rohan",27,"Man","Delhi","Hindi, English","party","Tonight","Walking Street","Group of 3, need more people for Bolly Bar","","#FF3DA8"],
- ["p2","Priya",25,"Woman","Mumbai","Hindi, Marathi, English","party","Tonight","Walking Street","Travelling with a friend, want a safe group to club with","","#6A2BFF"],
- ["p3","Arjun",31,"Man","Bengaluru","Kannada, English","lunch","Now","Pattaya Central","Looking for South Indian food","","#2DE1C2"],
- ["p4","Neha",29,"Woman","Pune","Hindi, English","coffee","Now","Jomtien","Cafe hopping by the beach","","#FFB547"],
- ["p5","Karan",34,"Man","Chandigarh","Punjabi, Hindi","dinner","Tonight","Pattaya Central","Tandoor House at 8, anyone?","","#F3722C"],
- ["p6","Simran",28,"Woman","Ludhiana","Punjabi, Hindi, English","dinner","Tonight","Naklua","Seafood dinner with a small group","","#B5179E"],
- ["p7","Vikram",30,"Man","Hyderabad","Telugu, Hindi","sports","Tomorrow","East Pattaya","Need 2 more for golf","","#90BE6D"],
- ["p8","Ananya",26,"Woman","Kolkata","Bengali, English","activity","Tomorrow","Koh Larn","Coral Island trip, split the speedboat","","#4CC9F0"],
- ["p9","Aditya",29,"Man","Ahmedabad","Gujarati, Hindi","dating","This weekend","Pratumnak","Sunset drinks and good conversation","","#FF8FAB"],
- ["p10","Meera",27,"Woman","Jaipur","Hindi, English","dating","This weekend","Naklua","Dinner date, let's chat first","","#7B2CBF"],
- ["p11","Sahil",24,"Man","Indore","Hindi","party","Tonight","Jomtien","Beach club then Walking Street","","#F72585"],
- ["p12","Kavya",30,"Woman","Chennai","Tamil, English","activity","Now","Jomtien","Parasailing, need a buddy","","#277DA1"]
-].map(a=>({id:a[0],name:a[1],age:a[2],sex:a[3],from:a[4],lang:a[5],intent:a[6],when:a[7],area:a[8],note:a[9],emoji:a[1][0],color:a[11]}));
+ ["p1","Rohan",27,"Man","Delhi","Hindi, English","party,group,belly,danceshow","Tonight","Walking Street","Group of 3, need more people for Bolly Bar","#FF3DA8","21:00-03:00",1,1,"all","all"],
+ ["p2","Priya",25,"Woman","Mumbai","Hindi, Marathi, English","party,danceshow,shopping,beach","Tonight","Walking Street","Travelling with a friend, want a safe group to club with","#6A2BFF","22:00-02:00",1,0,"all","vip"],
+ ["p3","Arjun",31,"Man","Bengaluru","Kannada, English","lunch,breakfast,coffee,drive","Now","Pattaya Central","Looking for South Indian food","#2DE1C2","11:00-15:00",0,0,"all","all"],
+ ["p4","Neha",29,"Woman","Pune","Hindi, English","coffee,talk,beach,movies","Now","Jomtien","Cafe hopping by the beach","#FFB547","09:00-13:00",1,0,"all","all"],
+ ["p5","Karan",34,"Man","Chandigarh","Punjabi, Hindi","dinner,family,group,villa","Tonight","Pattaya Central","Tandoor House at 8, anyone?","#F3722C","19:00-23:00",1,1,"all","all"],
+ ["p6","Simran",28,"Woman","Ludhiana","Punjabi, Hindi, English","dinner,yacht,villa,house","Tonight","Naklua","Seafood dinner with a small group","#B5179E","20:00-01:00",1,1,"vip","vip"],
+ ["p7","Vikram",30,"Man","Hyderabad","Telugu, Hindi","sports,drive,trips","Tomorrow","East Pattaya","Need 2 more for golf","#90BE6D","06:00-12:00",0,0,"all","all"],
+ ["p8","Ananya",26,"Woman","Kolkata","Bengali, English","island,scuba,water,paragliding","Tomorrow","Koh Larn","Coral Island trip, split the speedboat","#4CC9F0","08:00-17:00",1,0,"all","all"],
+ ["p9","Aditya",29,"Man","Ahmedabad","Gujarati, Hindi","all","This weekend","Pratumnak","Sunset drinks and good conversation","#FF8FAB","18:00-00:00",0,0,"all","all"],
+ ["p10","Meera",27,"Woman","Jaipur","Hindi, English","dating,talk,movies,dinner","This weekend","Naklua","Dinner date, let's chat first","#7B2CBF","19:00-23:30",1,1,"vip","matches"],
+ ["p11","Sahil",24,"Man","Indore","Hindi","party,beach,house,group","Tonight","Jomtien","Beach club then Walking Street","#F72585","21:00-03:00",0,0,"all","all"],
+ ["p12","Kavya",30,"Woman","Chennai","Tamil, English","paragliding,water,scuba,beach","Now","Jomtien","Parasailing, need a buddy","#277DA1","10:00-18:00",1,0,"all","all"]
+].map(a=>({id:a[0],name:a[1],age:a[2],sex:a[3],from:a[4],lang:a[5],ints:a[6].split(","),intent:a[6].split(",")[0],when:a[7],area:a[8],note:a[9],emoji:a[1][0],color:a[10],
+  avail:a[11].split("-"),verified:!!a[12],vip:!!a[13],see:a[14],msg:a[15]}));
+const HOURS=Array.from({length:48},(_,i)=>String(Math.floor(i/2)).padStart(2,"0")+(i%2?":30":":00"));
+function t12(t){let [h,m]=t.split(":").map(Number);const ap=h<12?"AM":"PM";h=h%12||12;return `${h}:${String(m).padStart(2,"0")} ${ap}`}
+const availTxt=a=>`${t12(a[0])} – ${t12(a[1])}`;
 let me=store.get("np_buddy",null);
-let myIntent=store.get("np_intent","party"),live=store.get("np_live",false);
-let liked=store.get("np_liked",[]),matched=store.get("np_matched",[]),blocked=store.get("np_blocked",[]);
-const saveB=()=>{store.set("np_liked",liked);store.set("np_matched",matched);store.set("np_blocked",blocked);store.set("np_intent",myIntent);store.set("np_live",live)};
+let myInts=store.get("np_ints",["all"]),live=store.get("np_live",false),myAvail=store.get("np_avail",["21:00","03:00"]),myMsg=store.get("np_msgset","all");
+let liked=store.get("np_liked",[]),matched=store.get("np_matched",[]),blocked=store.get("np_blocked",[]),passed=store.get("np_passed",[]);
+let near=false,myPos=null;
+const saveB=()=>{store.set("np_liked",liked);store.set("np_matched",matched);store.set("np_blocked",blocked);store.set("np_passed",passed);store.set("np_ints",myInts);store.set("np_live",live);store.set("np_avail",myAvail);store.set("np_msgset",myMsg)};
+function isVip(){return store.get("np_vip",false)===true}
+const FREE_LIKES=10;
+function likesLeft(){const d=new Date().toDateString(),l=store.get("np_likes_day",{d,n:0});return l.d===d?Math.max(0,FREE_LIKES-l.n):FREE_LIKES}
+function useLike(){const d=new Date().toDateString(),l=store.get("np_likes_day",{d,n:0});store.set("np_likes_day",{d,n:(l.d===d?l.n:0)+1})}
+const shares=p=>myInts.includes("all")||p.ints.includes("all")||p.ints.some(i=>myInts.includes(i));
+const canSee=p=>p.see!=="vip"||isVip();
+const canMsg=p=>matched.includes(p.id)||p.msg==="all"||(p.msg==="vip"&&isVip());
+const showKm=()=>near&&isVip();
+function badges(ver,vip){return `<span class="badges">${vip?`<span class="vtag">${ico("crown")}VIP member</span>`:""}${ver?`<span class="vbadge">${ico("shield")}Verified</span>`:`<span class="nbadge">Not verified</span>`}</span>`}
+function openSheet(){if(!sheet.classList.contains("open"))lastFocus=document.activeElement;sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
 document.getElementById("bStart").onclick=()=>{
   const n=document.getElementById("bName").value.trim(),age=+document.getElementById("bAge").value,err=document.getElementById("bErr");
   if(!n){err.textContent="Add your first name.";return}
   if(!age||age<18||!document.getElementById("b18").checked){err.textContent="Find a buddy is for adults 18 and over.";return}
-  me={name:n,age,from:document.getElementById("bFrom").value.trim(),sex:document.getElementById("bSex").value,lang:document.getElementById("bLang").value.trim()};
+  me={name:n,age,from:document.getElementById("bFrom").value.trim(),sex:document.getElementById("bSex").value,lang:document.getElementById("bLang").value.trim(),verified:false};
   store.set("np_buddy",me);renderBuddy();
 };
+function renderMyProf(){const el=document.getElementById("myProf");
+  el.innerHTML=`<div class="lrow"><div style="display:flex;gap:12px;align-items:center"><div class="avatar" style="background:linear-gradient(145deg,#FF9933,#141026)"></div><div><div class="who" style="font-weight:700"></div><div class="small"></div>${badges(!!me.verified,isVip())}</div></div>${me.verified?"":`<button class="pill on" id="verMe">Verify me</button>`}</div>`;
+  el.querySelector(".avatar").textContent=me.name[0].toUpperCase();el.querySelector(".who").textContent=`${me.name}, ${me.age}`;
+  el.querySelector(".small").textContent=`Available ${availTxt(myAvail)}${me.from?" · From "+me.from:""}`;
+  const b=el.querySelector("#verMe");if(b)b.onclick=()=>{if(confirm("Preview: the live app checks a quick selfie against your photos. Mark your profile as verified?")){me.verified=true;store.set("np_buddy",me);renderBuddy()}}}
+function renderVipBar(){const el=document.getElementById("vipBar"),v=isVip();el.classList.toggle("on",v);
+  el.innerHTML=v?`<div class="lrow"><div><strong>You're a VIP member</strong><div class="small">Unlimited likes · top of every list · verified profiles only · see how far people are</div></div><button class="pill" id="vipMore">Manage</button></div>`
+    :`<div class="lrow"><div><strong>${likesLeft()} of ${FREE_LIKES} free likes left today</strong><div class="small">Go VIP for unlimited likes, the top spot in every list, verified profiles only and distance to other users.</div></div><button class="pill on" id="vipMore">Go VIP</button></div>`;
+  el.querySelector("#vipMore").onclick=()=>openVip()}
+function openVip(reason){const v=isVip();
+  panel.innerHTML=`<div class="pbody"><div class="lrow"><h2 id="sheetTitle" style="font-size:24px">VIP membership</h2><button class="theme" id="vClose" aria-label="Close">${ico("close")}</button></div>
+    ${reason?`<p class="err" style="color:var(--amber)"></p>`:""}
+    <ul class="perks"><li>${ico("heart")}Unlimited likes</li><li>${ico("crown")}Your profile shows at the top of every list with a VIP member tag</li><li>${ico("shield")}Verified tag, and you only see verified profiles</li><li>${ico("map")}See how far away other users are (with your location on)</li><li>${ico("chat")}View and message profiles open to VIP members only</li></ul>
+    ${v?`<button class="cta" id="vDone">Done</button><button class="linkbtn" id="vCancel">Cancel VIP (demo)</button>`
+    :`<div class="pprice">${money(499)} <small>/ month</small></div><button class="cta" id="vJoin">Verify and become VIP</button><p class="small">Demo only: no payment is taken in this preview. VIP members verify their profile with a quick selfie check.</p>`}</div>`;
+  if(reason)panel.querySelector(".err").textContent=reason;
+  panel.querySelector("#vClose").onclick=closeSheet;
+  const j=panel.querySelector("#vJoin");if(j)j.onclick=()=>{store.set("np_vip",true);store.set("np_veronly",true);if(me){me.verified=true;store.set("np_buddy",me)}renderBuddy();openVip()};
+  const d=panel.querySelector("#vDone");if(d)d.onclick=closeSheet;
+  const c=panel.querySelector("#vCancel");if(c)c.onclick=()=>{store.set("np_vip",false);near=false;renderBuddy();openVip()};
+  openSheet()}
 function renderIntents(){const el=document.getElementById("intents");el.innerHTML="";
-  INTENTS.forEach(([k,ic,nm])=>{const b=document.createElement("button");b.className="intent";b.setAttribute("aria-pressed",k===myIntent);b.innerHTML=ico(ic)+" ";b.append(nm);
-    b.onclick=()=>{myIntent=k;saveB();renderIntents();renderPeople();renderLive()};el.appendChild(b)})}
-function renderLive(){const i=INT[myIntent];
+  INTENTS.forEach(([k,ic,nm])=>{const b=document.createElement("button");b.className="intent";b.setAttribute("aria-pressed",myInts.includes(k));b.innerHTML=ico(ic)+" ";b.append(nm);
+    b.onclick=()=>{if(k==="all")myInts=["all"];else{myInts=myInts.filter(x=>x!=="all");myInts=myInts.includes(k)?myInts.filter(x=>x!==k):[...myInts,k];if(!myInts.length)myInts=["all"]}saveB();renderBuddy()};
+    el.appendChild(b)})}
+function renderLive(){
   document.getElementById("liveSw").setAttribute("aria-checked",live);document.getElementById("golive").classList.toggle("on",live);
-  document.getElementById("liveTitle").textContent=live?`You're live: ${i[2]}`:"You're hidden";
-  document.getElementById("liveSub").textContent=live?`People with the same plan can see you (${document.getElementById("bWhen").value.toLowerCase()}).`:"Go live so others with the same plan can see you."}
+  document.getElementById("liveTitle").textContent=live?`You're live: ${myInts.includes("all")?"open to everything":myInts.map(intName).join(", ").toLowerCase()}`:"You're hidden";
+  document.getElementById("liveSub").textContent=live?`People who share your interests can see you (${document.getElementById("bWhen").value.toLowerCase()}, ${availTxt(myAvail)}).`:"Go live so people who share your interests can see you."}
 document.getElementById("liveSw").onclick=()=>{live=!live;saveB();renderLive()};
 document.getElementById("bWhen").onchange=renderLive;
-document.getElementById("bShow").onchange=renderPeople;
+document.getElementById("bShow").onchange=()=>renderBuddy();
+["bFromT","bToT"].forEach((id,i)=>{const s=document.getElementById(id);s.innerHTML=HOURS.map(h=>`<option value="${h}">${t12(h)}</option>`).join("");s.value=myAvail[i];
+  s.onchange=()=>{myAvail[i]=s.value;saveB();renderBuddy()}});
+const bMsg=document.getElementById("bMsg");bMsg.value=myMsg;bMsg.onchange=()=>{myMsg=bMsg.value;saveB()};
+document.getElementById("verSw").onclick=()=>{if(!isVip()){openVip("Only VIP members can choose to see verified profiles only.");return}store.set("np_veronly",!store.get("np_veronly",true));renderBuddy()};
 // demo rule: some people like you back
 const likesBack=p=>hash(p.id+"np")%3!==0;
+// VIP members first, then closest (when distance is on)
+function buddyList(fresh){const show=document.getElementById("bShow").value,verOnly=isVip()&&store.get("np_veronly",true);
+  let l=PEOPLE.filter(p=>shares(p)&&!blocked.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman"))&&(!verOnly||p.verified));
+  if(fresh)l=l.filter(p=>!passed.includes(p.id)&&!liked.includes(p.id)&&!matched.includes(p.id));
+  return l.sort((a,b)=>(b.vip-a.vip)||(showKm()?a.km-b.km:0))}
+// returns false when the free like limit stopped the like
+function like(p){
+  if(liked.includes(p.id)||matched.includes(p.id))return true;
+  if(!isVip()){if(likesLeft()<=0){openVip(`You've used your ${FREE_LIKES} free likes for today. VIP members get unlimited likes.`);return false}useLike()}
+  liked.push(p.id);passed=passed.filter(x=>x!==p.id);
+  if(likesBack(p)){matched.push(p.id);saveB();renderBuddy();matchPop(p)}else{saveB();renderBuddy()}
+  return true}
+function dislike(p){if(!passed.includes(p.id))passed.push(p.id);liked=liked.filter(x=>x!==p.id);saveB();renderBuddy()}
 function renderPeople(){
-  const show=document.getElementById("bShow").value,i=INT[myIntent];
-  document.getElementById("peopleTitle").textContent=`${i[2]} — people nearby`;
-  const list=PEOPLE.filter(p=>p.intent===myIntent&&!blocked.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman")));
+  const list=buddyList(false);
+  document.getElementById("peopleTitle").textContent=showKm()?"People near you":"People who share your interests";
   const el=document.getElementById("people");el.innerHTML="";document.getElementById("noPeople").hidden=list.length>0;
   list.forEach(p=>{
-    const c=document.createElement("article");c.className="person";
+    const c=document.createElement("article");c.className="person"+(p.vip?" vip":"")+(canSee(p)?"":" locked");
     const isM=matched.includes(p.id),isL=liked.includes(p.id);
     c.innerHTML=`<div class="phead"><div class="avatar" style="background:linear-gradient(145deg,${p.color},#141026)">${p.emoji}</div>
-      <div><div class="who"></div><div class="where"></div></div></div><div class="plan"></div><div class="tags"></div>
-      <div class="pbtns">${isM?`<button class="join">Chat</button>`:isL?`<button class="sent" disabled>Request sent</button>`:`<button class="join">Join</button>`}<button class="more" aria-label="Report or block">${ico("more")}</button></div>`;
-    c.querySelector(".who").textContent=`${p.name}, ${p.age}`;c.querySelector(".where").textContent=`From ${p.from} · ${p.area} · ${p.when}`;
-    c.querySelector(".plan").textContent=p.note;
-    const t=document.createElement("span");t.className="tag";t.textContent=p.lang;c.querySelector(".tags").appendChild(t);
-    const j=c.querySelector(".join");
-    if(j)j.onclick=()=>{if(isM){openBuddyChat(p);return}liked.push(p.id);if(likesBack(p)){matched.push(p.id);saveB();renderPeople();renderMatches();matchPop(p)}else{saveB();renderPeople()}};
-    c.querySelector(".more").onclick=()=>{if(confirm(`Block and report ${p.name}? You won't see them again.`)){blocked.push(p.id);matched=matched.filter(x=>x!==p.id);saveB();renderPeople();renderMatches()}};
+      <div><div class="who"></div><div class="where"></div>${badges(p.verified,p.vip)}</div></div><div class="avail"></div><div class="plan"></div><div class="tags"></div>
+      <div class="pbtns"><button class="view">${canSee(p)?"Profile":"VIP only"}</button>${isM?`<button class="join">Chat</button>`:isL?`<button class="sent" disabled>Liked</button>`:`<button class="join">Like</button>`}<button class="more" aria-label="Report or block">${ico("more")}</button></div>`;
+    c.querySelector(".who").textContent=`${p.name}, ${p.age}`;c.querySelector(".where").textContent=`From ${p.from} · ${p.area}${showKm()?" · "+p.km+" km away":""}`;
+    c.querySelector(".avail").textContent=`Available ${availTxt(p.avail)} · ${p.when}`;
+    c.querySelector(".plan").textContent=canSee(p)?p.note:"This member shows their profile to VIP members only.";
+    p.ints.slice(0,4).forEach(k=>{const t=document.createElement("span");t.className="tag";t.textContent=intName(k);c.querySelector(".tags").appendChild(t)});
+    c.querySelector(".view").onclick=()=>openProfile(p);
+    const j=c.querySelector(".join");if(j)j.onclick=()=>{if(isM)openBuddyChat(p);else like(p)};
+    c.querySelector(".more").onclick=()=>{if(confirm(`Block and report ${p.name}? You won't see them again.`)){blocked.push(p.id);matched=matched.filter(x=>x!==p.id);saveB();renderBuddy()}};
     el.appendChild(c);
   });
 }
+function openProfile(p){
+  if(!canSee(p)){openVip(`${p.name} shows their profile to VIP members only.`);return}
+  const isM=matched.includes(p.id),isL=liked.includes(p.id);
+  panel.innerHTML=`<div class="pbody"><div class="lrow"><div style="display:flex;gap:12px;align-items:center;min-width:0"><div class="avatar" style="width:72px;height:72px;font-size:30px;background:linear-gradient(145deg,${p.color},#141026)">${p.emoji}</div><div><h2 id="sheetTitle" style="font-size:22px;margin:0 0 4px"></h2>${badges(p.verified,p.vip)}</div></div><button class="theme" id="prClose" aria-label="Close">${ico("close")}</button></div>
+    <p class="about" id="prNote"></p><div class="ptags" id="prTags"></div><ul class="pfacts" id="prFacts"></ul>
+    <div class="proact"><button id="prNo">${ico("close")}Dislike</button><button class="yes" id="prYes" ${isL||isM?"disabled":""}>${ico("heart")}${isM?"Matched":isL?"Liked":"Like"}</button>
+      <button id="prMsg">${ico("chat")}Message</button><button id="prGift">${ico("gift")}Send gift</button></div>
+    <p class="err" id="prHint" role="status"></p></div>`;
+  panel.querySelector("#sheetTitle").textContent=`${p.name}, ${p.age}`;panel.querySelector("#prNote").textContent=p.note;
+  p.ints.forEach(k=>{const t=document.createElement("span");t.className="tag";t.textContent=intName(k);panel.querySelector("#prTags").appendChild(t)});
+  [["From",p.from],["Languages",p.lang],["Available",availTxt(p.avail)+" · "+p.when],["Tonight at",p.club],["Area",p.area],
+   ["Distance",isVip()?(near?p.km+" km away":"Turn on Distance in Buddy settings"):"VIP members only"],["Profile",p.verified?"Verified with a selfie check":"Not verified yet"]]
+   .forEach(([k,v])=>{const li=document.createElement("li");li.innerHTML="<span></span><span></span>";li.children[0].textContent=k;li.children[1].textContent=v;panel.querySelector("#prFacts").appendChild(li)});
+  const hint=panel.querySelector("#prHint");
+  panel.querySelector("#prClose").onclick=closeSheet;
+  panel.querySelector("#prNo").onclick=()=>{dislike(p);closeSheet()};
+  panel.querySelector("#prYes").onclick=()=>{if(like(p)&&!matched.includes(p.id))openProfile(p)};
+  panel.querySelector("#prMsg").onclick=()=>{if(canMsg(p)){openBuddyChat(p);return}
+    if(p.msg==="vip")openVip(`${p.name} only accepts messages from VIP members.`);else{hint.style.color="var(--amber)";hint.textContent=`${p.name} only accepts messages from matches. Like them first.`}};
+  panel.querySelector("#prGift").onclick=()=>openGift(null,p,false);
+  openSheet();
+}
 function renderMatches(){const el=document.getElementById("matches");el.innerHTML="";const list=PEOPLE.filter(p=>matched.includes(p.id));
   document.getElementById("matchWrap").hidden=!list.length;
-  list.forEach(p=>{const b=document.createElement("button");b.className="mchip";b.innerHTML=`<span class="avatar" style="background:linear-gradient(145deg,${p.color},#141026)">${p.emoji}</span>`;b.append(p.name+" · "+INT[p.intent][2]);b.onclick=()=>openBuddyChat(p);el.appendChild(b)})}
-function placeFor(p){const cats=INT[p.intent][3];return CLUBS.find(c=>cats.includes(c.cat)&&c.area===p.area)||CLUBS.find(c=>cats.includes(c.cat))}
+  list.forEach(p=>{const b=document.createElement("button");b.className="mchip";b.innerHTML=`<span class="avatar" style="background:linear-gradient(145deg,${p.color},#141026)">${p.emoji}</span>`;b.append(p.name+" · "+intName(p.intent));b.onclick=()=>openBuddyChat(p);el.appendChild(b)})}
+const common=p=>p.ints.includes("all")?myInts.filter(k=>k!=="all"):myInts.includes("all")?p.ints:p.ints.filter(i=>myInts.includes(i));
+function placeFor(p){const k=common(p)[0]||p.intent,cats=INT[k][3];return CLUBS.find(c=>cats.includes(c.cat)&&c.area===p.area)||CLUBS.find(c=>cats.includes(c.cat))}
 function matchPop(p){
-  lastFocus=document.activeElement;const pl=placeFor(p);
+  const pl=placeFor(p),both=common(p).map(intName).join(", ").toLowerCase();
   panel.innerHTML=`<div class="done"><div class="avatar" style="margin:0 auto;width:80px;height:80px;font-size:32px;background:linear-gradient(145deg,${p.color},#141026)">${p.emoji}</div>
     <h2 id="sheetTitle">It's a match</h2><p class="about"></p>
     ${pl?`<p class="about">Suggested spot: <strong class="pl"></strong></p>`:""}
-    <button class="cta" id="mChat">Say hi</button>${pl?`<button class="cta" id="mBook" style="background:transparent;color:var(--ink);border:1px solid var(--line)">Book the spot</button>`:""}</div>`;
-  panel.querySelector(".about").textContent=`You and ${p.name} both want ${INT[p.intent][2].toLowerCase()} (${p.when.toLowerCase()}).`;
+    <button class="cta" id="mChat">Say hi</button><button class="cta ghost" id="mGift">Send a gift</button>${pl?`<button class="cta ghost" id="mBook">Book the spot</button>`:""}</div>`;
+  panel.querySelector(".about").textContent=`You and ${p.name} both like ${both||"meeting new people"}. ${p.name} is available ${availTxt(p.avail)}.`;
   if(pl){panel.querySelector(".pl").textContent=`${pl.name}, ${pl.area}`;panel.querySelector("#mBook").onclick=()=>openClub(pl)}
-  panel.querySelector("#mChat").onclick=()=>openBuddyChat(p);
-  sheet.classList.add("open");document.body.style.overflow="hidden";panel.querySelector("#mChat").focus();
+  panel.querySelector("#mChat").onclick=()=>openBuddyChat(p);panel.querySelector("#mGift").onclick=()=>openGift(null,p,false);
+  openSheet();panel.querySelector("#mChat").focus();
 }
 function openBuddyChat(p){
-  lastFocus=lastFocus||document.activeElement;
   const key="np_chat_"+p.id;let msgs=store.get(key,[{f:"them",t:`Hi! ${p.note}`}]);
   panel.innerHTML=`<div class="pbody"><div class="phead" style="display:flex;gap:12px;align-items:center;margin-bottom:12px">
       <div class="avatar" style="background:linear-gradient(145deg,${p.color},#141026)">${p.emoji}</div><div style="flex:1"><h2 id="sheetTitle" style="font-size:18px"></h2><div class="small"></div></div>
-      <button class="theme cl" aria-label="Close">${ico("close")}</button></div>
+      <button class="pill" id="bGift" aria-label="Send a gift">${ico("gift")}</button><button class="theme cl" aria-label="Close">${ico("close")}</button></div>
     <div class="chat" id="bchat" style="min-height:30vh"></div>
     <div class="chatbar" style="bottom:0"><input id="bIn" placeholder="Message" aria-label="Message"><button id="bSend">Send</button></div>
     <p class="small">Keep chats in the app until you feel comfortable. Meet in public.</p></div>`;
-  panel.querySelector("#sheetTitle").textContent=`${p.name}, ${p.age}`;panel.querySelector(".small").textContent=`${INT[p.intent][2]} · ${p.area}`;
-  panel.querySelector(".cl").onclick=closeSheet;
+  panel.querySelector("#sheetTitle").textContent=`${p.name}, ${p.age}`;panel.querySelector(".small").textContent=`Available ${availTxt(p.avail)} · ${p.area}`;
+  panel.querySelector(".cl").onclick=closeSheet;panel.querySelector("#bGift").onclick=()=>openGift(null,p,false);
   const box=panel.querySelector("#bchat");
   const draw=()=>{box.innerHTML="";msgs.forEach(m=>{const d=document.createElement("div");d.className="msg "+(m.f==="me"?"me":"bot");d.textContent=m.t;box.appendChild(d)});box.lastChild&&box.lastChild.scrollIntoView({block:"end"})};
   const send=()=>{const i=panel.querySelector("#bIn"),t=i.value.trim();if(!t)return;msgs.push({f:"me",t});i.value="";
     if(msgs.filter(m=>m.f==="me").length===1){const pl=placeFor(p);msgs.push({f:"them",t:pl?`Sounds good! How about ${pl.name} in ${pl.area}?`:"Sounds good! Where should we meet?"})}
     store.set(key,msgs);draw()};
   panel.querySelector("#bSend").onclick=send;panel.querySelector("#bIn").onkeydown=e=>{if(e.key==="Enter")send()};
-  draw();sheet.classList.add("open");document.body.style.overflow="hidden";
+  draw();openSheet();
 }
-function renderBuddy(){document.getElementById("buddyGate").hidden=!!me;document.getElementById("buddyMain").hidden=!me;if(me){renderIntents();renderLive();renderPeople();renderMatches()}}
-renderBuddy();
+function renderBuddy(){document.getElementById("buddyGate").hidden=!!me;document.getElementById("buddyMain").hidden=!me;
+  if(!me)return;
+  document.getElementById("verSw").setAttribute("aria-checked",isVip()&&store.get("np_veronly",true));document.getElementById("nearSw").setAttribute("aria-checked",showKm());
+  renderMyProf();renderVipBar();renderIntents();renderLive();renderSwipe();renderPeople();renderMatches()}
 
 renderDays();renderChips();renderGrid();renderBookings();
 window.__booted=true;
@@ -1975,45 +2110,46 @@ function renderLadies(){
 renderLadies();
 
 /* ---------- DATING upgrades ---------- */
-let passed=store.get("np_passed",[]),vis=store.get("np_vis","all"),near=false,myPos=null;
+let vis=store.get("np_vis","all");
 const bClub=document.getElementById("bClub");bClub.innerHTML=`<option value="">Not decided</option>`+NIGHT.map(c=>`<option value="${c.id}">${c.name}</option>`).join("");
 bClub.value=store.get("np_bclub","");bClub.onchange=()=>store.set("np_bclub",bClub.value);
 const bTable=document.getElementById("bTable");bTable.value=store.get("np_btable","");bTable.onchange=()=>store.set("np_btable",bTable.value);
 const bVis=document.getElementById("bVis");bVis.value=vis;bVis.onchange=()=>{vis=bVis.value;store.set("np_vis",vis);
-  document.getElementById("nearMsg").textContent=vis==="hidden"?"Your profile is hidden. Others cannot see you, even when you're live.":"";};
+  document.getElementById("nearMsg").textContent=vis==="hidden"?"Your profile is hidden. Others cannot see you, even when you're live.":vis==="vip"?"Only VIP members can see your profile.":"";};
 PEOPLE.forEach((p,i)=>{p.km=(0.3+(Math.abs(hash(p.id))%90)/10).toFixed(1);p.club=NIGHT[i%NIGHT.length].name});
 document.getElementById("nearSw").onclick=()=>{
-  const sw=document.getElementById("nearSw"),msg=document.getElementById("nearMsg");
-  if(near){near=false;sw.setAttribute("aria-checked","false");msg.textContent="";renderSwipe();return}
+  const msg=document.getElementById("nearMsg");
+  if(!isVip()){openVip("See how far away other users are with VIP.");return}
+  if(near){near=false;msg.textContent="";renderBuddy();return}
   if(!navigator.geolocation){msg.textContent="Location isn't available on this device.";return}
   msg.textContent="Asking for your location…";
-  navigator.geolocation.getCurrentPosition(pos=>{myPos=pos.coords;near=true;sw.setAttribute("aria-checked","true");msg.textContent="Showing people near you, closest first. Your exact location is never shown.";renderSwipe()},
-    ()=>{msg.textContent="Location sharing is off. Allow location for this app to see people nearby.";},{timeout:8000});
+  navigator.geolocation.getCurrentPosition(pos=>{myPos=pos.coords;near=true;msg.textContent="Showing how far people are, closest first. Your exact location is never shown.";renderBuddy()},
+    ()=>{msg.textContent="Location sharing is off. Allow location for this app to see how far people are.";},{timeout:8000});
 };
-function swipeList(){const show=document.getElementById("bShow").value;let l=PEOPLE.filter(p=>p.intent===myIntent&&!blocked.includes(p.id)&&!passed.includes(p.id)&&!liked.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman")));
-  if(near)l=l.sort((a,b)=>a.km-b.km);return l}
+function swipeList(){return buddyList(true)}
 function renderSwipe(){
   const box=document.getElementById("swipe");if(!box)return;box.innerHTML="";const l=swipeList();
-  if(!l.length){box.innerHTML=`<div class="lcard" style="height:100%;display:grid;place-items:center;text-align:center"><p>No more profiles for this plan right now. Change your plan or come back later.</p></div>`;return}
+  if(!l.length){box.innerHTML=`<div class="lcard" style="height:100%;display:grid;place-items:center;text-align:center"><p>No more profiles for your interests right now. Pick more interests or come back later.</p></div>`;return}
   l.slice(0,2).reverse().forEach((p,idx,arr)=>{const top=idx===arr.length-1;const c=document.createElement("div");c.className="scard";
     c.style.background=`linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(0,0,0,.75)),linear-gradient(145deg,${p.color},#141026)`;if(!top)c.style.transform="scale(.95) translateY(10px)";
-    c.innerHTML=`<span class="big">${p.name[0]}</span><span class="stamp like">LIKE</span><span class="stamp nope">NOPE</span><h4></h4><p class="w"></p><p class="n"></p>`;
-    c.querySelector("h4").textContent=`${p.name}, ${p.age}`;c.querySelector(".w").textContent=`${near?p.km+" km away · ":""}From ${p.from} · ${INT[p.intent][2]}${INT[p.intent][2].toLowerCase().includes(p.when.toLowerCase())?"":" "+p.when.toLowerCase()} · ${p.club}`;c.querySelector(".n").textContent=p.note;
+    c.innerHTML=`<span class="big">${p.name[0]}</span><span class="stamp like">LIKE</span><span class="stamp nope">NOPE</span><h4></h4>${badges(p.verified,p.vip)}<p class="w"></p><p class="n"></p>`;
+    c.querySelector("h4").textContent=`${p.name}, ${p.age}`;
+    c.querySelector(".w").textContent=`${showKm()?p.km+" km away · ":""}Available ${availTxt(p.avail)} · ${p.when} · ${p.club}`;
+    c.querySelector(".n").textContent=canSee(p)?p.note:"Profile open to VIP members only";
     if(top){let sx=0,dx=0,drag=false;
-      c.onpointerdown=e=>{drag=true;sx=e.clientX;c.classList.add("drag");c.setPointerCapture(e.pointerId)};
+      c.onpointerdown=e=>{drag=true;sx=e.clientX;dx=0;c.classList.add("drag");c.setPointerCapture(e.pointerId)};
       c.onpointermove=e=>{if(!drag)return;dx=e.clientX-sx;c.style.transform=`translateX(${dx}px) rotate(${dx/18}deg)`;c.querySelector(".like").style.opacity=Math.max(0,dx/100);c.querySelector(".nope").style.opacity=Math.max(0,-dx/100)};
-      c.onpointerup=()=>{drag=false;c.classList.remove("drag");if(dx>90)decide(p,true,c);else if(dx<-90)decide(p,false,c);else{c.style.transform="";c.querySelectorAll(".stamp").forEach(s=>s.style.opacity=0)}dx=0};
+      c.onpointerup=()=>{drag=false;c.classList.remove("drag");if(dx>90)decide(p,true,c);else if(dx<-90)decide(p,false,c);else{c.style.transform="";c.querySelectorAll(".stamp").forEach(s=>s.style.opacity=0);if(Math.abs(dx)<6)openProfile(p)}dx=0};
       box.dataset.top=p.id}
     box.appendChild(c)});
 }
 function decide(p,yes,card){
+  if(yes&&!isVip()&&likesLeft()<=0){if(card){card.style.transform="";card.querySelectorAll(".stamp").forEach(s=>s.style.opacity=0)}openVip(`You've used your ${FREE_LIKES} free likes for today. VIP members get unlimited likes.`);return}
   if(card){card.style.transform=`translateX(${yes?500:-500}px) rotate(${yes?25:-25}deg)`}
-  setTimeout(()=>{if(yes){liked.push(p.id);if(likesBack(p)){matched.push(p.id);saveB();renderMatches();renderPeople();matchPop(p)}else saveB()}else{passed.push(p.id);store.set("np_passed",passed)}renderSwipe();renderPeople()},card?220:0)}
+  setTimeout(()=>{if(yes)like(p);else dislike(p)},card?220:0)}
 document.getElementById("swYes").onclick=()=>{const l=swipeList();if(l[0])decide(l[0],true,document.querySelector("#swipe .scard:last-child"))};
 document.getElementById("swNo").onclick=()=>{const l=swipeList();if(l[0])decide(l[0],false,document.querySelector("#swipe .scard:last-child"))};
-document.querySelectorAll("#intents").forEach(el=>el.addEventListener("click",()=>setTimeout(renderSwipe,0)));
-document.getElementById("bShow").addEventListener("change",renderSwipe);
-const _rb=renderBuddy;renderBuddy=function(){_rb();if(me)renderSwipe()};renderBuddy();
+renderBuddy();
 
 /* ---------- NAMASTE MALL ---------- */
 const MALL=[["Rose gold makeup kit","Girls stuff",1890],["Party dress (sequin)","Girls stuff",2490],["Designer clutch bag","Girls stuff",3200],["Perfume gift set","Girls stuff",2750],["Silver jewellery set","Girls stuff",1450],["Hair and nail spa voucher","Girls stuff",1200],
@@ -2026,13 +2162,46 @@ function renderMall(){
   MALL.filter(m=>mallCat==="All"||m.c===mallCat).forEach(m=>{const d=document.createElement("div");d.className="mitem";
     d.innerHTML=`<div class="mart" style="background:${artSVG({art:m.col,cat:m.c==="Girls stuff"?"shopping":m.c==="Party"?"events":m.c==="Indian"?"grocery":m.c==="Experiences"?"spa":"shopping"})} center/cover"></div><div class="b"><b></b><small>${m.c}</small><span class="pr">${money(m.p)}</span><div class="act"><button data-g>Gift</button><button data-b>Buy</button></div></div>`;
     d.querySelector("b").textContent=m.n;
-    d.querySelector("[data-b]").onclick=()=>order(m,null);
-    d.querySelector("[data-g]").onclick=()=>{const to=prompt("Send this gift to which NightPass user? (name or username)");if(to&&to.trim())order(m,to.trim())};
+    d.querySelector("[data-b]").onclick=()=>openGift(m,null,true);
+    d.querySelector("[data-g]").onclick=()=>openGift(m,null,false);
     g.appendChild(d)});
   const oe=document.getElementById("mallOrders");oe.innerHTML=orders.length?"":`<p class="small">No orders yet.</p>`;
-  orders.forEach(o=>{const d=document.createElement("div");d.className="lcard";d.innerHTML=`<div class="lrow"><div><h4></h4><p></p></div><span class="status">Delivering</span></div>`;d.querySelector("h4").textContent=o.n;d.querySelector("p").textContent=(o.to?"Gift to "+o.to+" · ":"")+money(o.p);oe.appendChild(d)});
+  orders.forEach(o=>{const d=document.createElement("div");d.className="lcard";d.innerHTML=`<div class="lrow"><div><h4></h4><p></p></div><span class="status">Delivering</span></div>`;d.querySelector("h4").textContent=o.n;d.querySelector("p").textContent=(o.to?"Gift to "+o.to+" · ":"")+(o.where?o.where+" · ":"")+money(o.p);oe.appendChild(d)});
 }
-function order(m,to){orders.unshift({n:m.n,p:m.p,to});store.set("np_orders",orders);renderMall()}
+// buy for yourself, or gift to a user; delivered to a club table or a hotel
+function openGift(item,p,forMe){
+  const people=[...PEOPLE].filter(x=>!blocked.includes(x.id)).sort((a,b)=>matched.includes(b.id)-matched.includes(a.id));let sel=item||MALL[0];
+  panel.innerHTML=`<div class="pbody"><div class="lrow"><h2 id="sheetTitle" style="font-size:22px">${forMe?"Buy from Namaste Mall":"Send a gift"}</h2><button class="theme" id="gClose" aria-label="Close">${ico("close")}</button></div>
+    <p class="about">${forMe?"Delivered to you anywhere in Pattaya, even to your table in the club.":"Delivered from Namaste Mall, even to their table in the club. We never share your number."}</p>
+    <h3>${item?"Item":"Pick a gift"}</h3><div class="glist" id="gItems"></div>
+    <div class="fields" style="margin-top:12px">
+      ${forMe?"":`<label class="full">Send to<select id="gTo"><option value="">Choose a user</option>${people.map(x=>`<option value="${x.id}">${x.name}, ${x.age}${matched.includes(x.id)?" · match":""}</option>`).join("")}<option value="other">Another user (type their name)</option></select></label>
+      <label class="full" id="gOtherW" hidden>Their name or username<input id="gOther"></label>`}
+      <label class="full">Deliver to<select id="gWhere"><option value="club">At the club, to the table</option><option value="hotel">Hotel or address</option></select></label>
+      <label id="gClubW">Club<select id="gClub">${NIGHT.map(c=>`<option value="${c.id}">${c.name}</option>`).join("")}</select></label>
+      <label id="gTableW">Table<input id="gTable" placeholder="e.g. VIP booth 3"></label>
+      <label class="full" id="gAddrW" hidden>Hotel or address<input id="gAddr" placeholder="e.g. hotel name and room number"></label>
+      ${forMe?"":`<label class="full">Message (optional)<input id="gNote" maxlength="80" placeholder="e.g. Cheers from table 5!"></label>`}
+    </div>
+    <button class="cta" id="gSend"></button><p class="err" id="gErr" role="alert"></p><p class="small">Demo only: no payment is taken in this preview.</p></div>`;
+  const q=s=>panel.querySelector(s),gl=q("#gItems");
+  (item?[item]:MALL).forEach(m=>{const l=document.createElement("label");l.innerHTML=`<input type="radio" name="gi" value="${m.id}" ${m.id===sel.id?"checked":""}><span></span><b>${money(m.p)}</b>`;l.querySelector("span").textContent=m.n;
+    l.querySelector("input").onchange=()=>{sel=m;label()};gl.appendChild(l)});
+  const label=()=>q("#gSend").textContent=`${forMe?"Buy":"Send gift"} · ${money(sel.p)}`;label();
+  const where=()=>{const h=q("#gWhere").value==="hotel";q("#gClubW").hidden=h;q("#gTableW").hidden=h;q("#gAddrW").hidden=!h};q("#gWhere").onchange=where;
+  const setClub=to=>{const c=to&&NIGHT.find(n=>n.name===to.club);if(c)q("#gClub").value=c.id};
+  if(forMe){if(store.get("np_bclub",""))q("#gClub").value=store.get("np_bclub","");q("#gTable").value=store.get("np_btable","")}
+  else{const t=q("#gTo");t.onchange=()=>{q("#gOtherW").hidden=t.value!=="other";setClub(PEOPLE.find(x=>x.id===t.value))};if(p){t.value=p.id;setClub(p)}}
+  q("#gClose").onclick=closeSheet;
+  q("#gSend").onclick=()=>{const err=q("#gErr");let to=null;
+    if(!forMe){const v=q("#gTo").value;to=v==="other"?q("#gOther").value.trim():(PEOPLE.find(x=>x.id===v)||{}).name;if(!to){err.textContent="Choose who gets the gift.";return}}
+    let at;if(q("#gWhere").value==="hotel"){at=q("#gAddr").value.trim();if(!at){err.textContent="Add the hotel or address.";return}}
+    else{const c=NIGHT.find(n=>n.id===q("#gClub").value),t=q("#gTable").value.trim();at=c.name+(t?", "+t:"")}
+    orders.unshift({n:sel.n,p:sel.p,to,where:at,note:forMe?"":q("#gNote").value.trim()});store.set("np_orders",orders);renderMall();
+    panel.innerHTML=`<div class="done"><h2 id="sheetTitle">${forMe?"Order placed":"Gift on its way"}</h2><p class="about"></p><button class="cta" id="gDone">Done</button></div>`;
+    q(".about").textContent=`${sel.n} will be delivered ${to?"to "+to+" ":""}at ${at}.`;q("#gDone").onclick=closeSheet;q("#gDone").focus()};
+  openSheet();
+}
 renderMall();
 
 /* ---------- PAY MY BILL ---------- */
@@ -2088,6 +2257,85 @@ function renderDash(){
 renderDash();
 // keep currency switch in sync for new views
 curBtn.addEventListener("click",()=>{renderPackages();renderMall();renderDash();renderLadies()});
+
+/* ===== v12: sign in / sign up ===== */
+// preview only: accounts live on this device. The live app needs a server for real logins.
+const ROLES=[["user","User","Book, match, chat and gift"],["partner","Partner / venue","Clubs, restaurants, bars, spas"],["agent_in","Agent · India","Indian travel agents"],["agent_th","Agent · Thailand","Thai tour and travel agents"]];
+const ROLENAME=Object.fromEntries(ROLES.map(r=>[r[0],r[1]]));
+let accounts=store.get("np_accounts",[]),session=store.get("np_session",null),acctRole="user";
+const account=()=>accounts.find(a=>a.id===session)||null;
+async function pwHash(pw,salt){const data=new TextEncoder().encode(salt+":"+pw);
+  if(window.crypto&&crypto.subtle){const b=await crypto.subtle.digest("SHA-256",data);return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+  return String(hash(salt+":"+pw))}
+const phoneOf=v=>v.replace(/[^\d]/g,"");
+// same number with or without the country code (+91 / +66)
+const samePhone=(a,b)=>{a=phoneOf(a);b=phoneOf(b);return a.length>=8&&b.length>=8&&(a.endsWith(b)||b.endsWith(a))};
+function renderAcct(){const a=account(),b=document.getElementById("acctBtn");b.classList.toggle("on",!!a);
+  document.getElementById("acctLbl").textContent=a?a.name.split(" ")[0]:"Sign in";b.setAttribute("aria-label",a?"My account":"Sign in or sign up")}
+function signedIn(a){session=a.id;store.set("np_session",session);
+  if(a.role.startsWith("agent")){myRole="agent";store.set("np_role","agent");renderEarn()}
+  const bn=document.getElementById("bName");if(bn&&!bn.value)bn.value=a.name.split(" ")[0];
+  renderAcct();openAccount()}
+function openAccount(mode){
+  const a=account();
+  if(a){
+    const go2=a.role==="partner"?["dash","Open partner dashboard"]:a.role.startsWith("agent")?["earn","My agent earnings · 5%"]:["buddy","Find a buddy"];
+    panel.innerHTML=`<div class="pbody"><div class="lrow"><h2 id="sheetTitle" style="font-size:24px"></h2><button class="theme" id="aClose" aria-label="Close">${ico("close")}</button></div>
+      <ul class="pfacts" id="aFacts"></ul><button class="cta" id="aGo">${go2[1]}</button><button class="cta ghost" id="aOut">Sign out</button></div>`;
+    panel.querySelector("#sheetTitle").textContent="Namaste, "+a.name.split(" ")[0];
+    [["Account",ROLENAME[a.role]],["Mobile",a.phone],["Email",a.email||"—"],a.venue&&["Venue",a.venue+" · "+a.vtype],a.agency&&["Agency",a.agency],a.lic&&["Licence no.",a.lic],["Your referral code",myCode]]
+      .filter(Boolean).forEach(([k,v])=>{const li=document.createElement("li");li.innerHTML="<span></span><span></span>";li.children[0].textContent=k;li.children[1].textContent=v;panel.querySelector("#aFacts").appendChild(li)});
+    panel.querySelector("#aClose").onclick=closeSheet;
+    panel.querySelector("#aGo").onclick=()=>{closeSheet();go(go2[0])};
+    panel.querySelector("#aOut").onclick=()=>{session=null;store.set("np_session",null);renderAcct();openAccount("in")};
+    openSheet();return}
+  mode=mode||"in";
+  const up=mode==="up",isP=acctRole==="partner",isA=acctRole.startsWith("agent");
+  panel.innerHTML=`<div class="pbody"><div class="lrow"><h2 id="sheetTitle" style="font-size:24px">${up?"Create your account":"Sign in"}</h2><button class="theme" id="aClose" aria-label="Close">${ico("close")}</button></div>
+    <div class="lnav" role="tablist" style="margin-top:12px"><button role="tab" aria-selected="${!up}" data-m="in">Sign in</button><button role="tab" aria-selected="${up}" data-m="up">Sign up</button></div>
+    ${up?`<p class="small" style="margin:0">I am</p><div class="roles" id="aRoles">${ROLES.map(([k,n,d])=>`<button type="button" data-r="${k}" aria-pressed="${k===acctRole}"><b>${n}</b><small>${d}</small></button>`).join("")}</div>
+    <div class="fields">
+      <label class="full">Full name<input id="uName" autocomplete="name"></label>
+      <label>Mobile / WhatsApp<input id="uPhone" inputmode="tel" autocomplete="tel" placeholder="${acctRole==="agent_th"?"+66":"+91"} …"></label>
+      <label>Email${isP||isA?"":" (optional)"}<input id="uEmail" type="email" autocomplete="email"></label>
+      ${isP?`<label>Venue name<input id="uVenue" placeholder="e.g. Skyline Club"></label><label>Venue type<select id="uVtype"><option>Club</option><option>Bar</option><option>Beach club</option><option>Restaurant</option><option>Spa</option><option>Hotel</option><option>Tours</option><option>Other</option></select></label>`:""}
+      ${isA?`<label>Agency name<input id="uAgency"></label><label>${acctRole==="agent_in"?"IATA / TAAI / GST no.":"TAT licence no."}<input id="uLic" placeholder="Optional"></label>`:""}
+      <label class="full">Password<input id="uPw" type="password" autocomplete="new-password" placeholder="At least 6 characters"></label>
+    </div>
+    <label class="chk"><input type="checkbox" id="uTerms"> I agree to the <a href="terms.html" target="_blank" rel="noopener">terms</a>.</label>
+    ${isA?`<p class="small">Agents earn 5% on every eligible booking from their clients.</p>`:isP?`<p class="small">Partners get a venue page, live bookings and a dashboard.</p>`:""}
+    <button class="cta" id="uGo">Create account</button>`
+    :`<div class="fields"><label class="full">Mobile or email<input id="iId" autocomplete="username"></label><label class="full">Password<input id="iPw" type="password" autocomplete="current-password"></label></div>
+    <button class="cta" id="iGo">Sign in</button><p class="small">Users, partners and agents all sign in here.</p>`}
+    <p class="err" id="aErr" role="alert"></p><p class="small">Preview: your account is saved on this device only.</p></div>`;
+  const q=s=>panel.querySelector(s),err=q("#aErr");
+  q("#aClose").onclick=closeSheet;
+  panel.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>openAccount(b.dataset.m));
+  panel.querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{acctRole=b.dataset.r;openAccount("up")});
+  if(up)q("#uGo").onclick=async()=>{
+    const v=id=>{const e=q(id);return e?e.value.trim():""},name=v("#uName"),phone=v("#uPhone"),email=v("#uEmail").toLowerCase(),pw=q("#uPw").value;
+    if(!name){err.textContent="Add your full name.";return}
+    if(phoneOf(phone).length<8){err.textContent="Add a mobile or WhatsApp number.";return}
+    if((isP||isA)&&!email){err.textContent="Add an email for your business account.";return}
+    if(email&&!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)){err.textContent="Check your email address.";return}
+    if(isP&&!v("#uVenue")){err.textContent="Add your venue name.";return}
+    if(isA&&!v("#uAgency")){err.textContent="Add your agency name.";return}
+    if(pw.length<6){err.textContent="Use a password with at least 6 characters.";return}
+    if(!q("#uTerms").checked){err.textContent="Please agree to the terms.";return}
+    if(accounts.some(x=>samePhone(x.phone,phone)||(email&&x.email===email))){err.textContent="An account with this mobile or email already exists. Sign in instead.";return}
+    const salt=Math.random().toString(36).slice(2,10);
+    const acc={id:"u"+Date.now().toString(36),role:acctRole,name,phone,email,venue:v("#uVenue"),vtype:v("#uVtype"),agency:v("#uAgency"),lic:v("#uLic"),salt,pw:await pwHash(pw,salt)};
+    accounts.push(acc);store.set("np_accounts",accounts);signedIn(acc)};
+  else{const run=async()=>{const id=q("#iId").value.trim().toLowerCase(),pw=q("#iPw").value;
+      const acc=accounts.find(x=>(id.includes("@")?x.email===id:samePhone(x.phone,id)));
+      if(!acc||acc.pw!==await pwHash(pw,acc.salt)){err.textContent="Wrong mobile/email or password.";return}
+      signedIn(acc)};
+    q("#iGo").onclick=run;q("#iPw").onkeydown=e=>{if(e.key==="Enter")run()}}
+  openSheet();(q("#uName")||q("#iId")).focus();
+}
+document.getElementById("acctBtn").onclick=()=>openAccount();
+document.querySelectorAll("[data-acct]").forEach(b=>b.onclick=()=>{acctRole=b.dataset.acct;openAccount(account()?null:"up")});
+renderAcct();
 
 /* ===== v11: Indian clubs rail ===== */
 function renderRail(){const el=document.getElementById("indRail");if(!el)return;el.innerHTML="";
