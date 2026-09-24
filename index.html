@@ -1,728 +1,318 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Namaste Pattaya Reservations - Executive Nightlife & Concierge Super-App</title>
-<!-- Tailwind CSS -->
-<script src="https://cdn.tailwindcss.com"></script>
-<!-- Google Fonts: Manrope -->
-<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&display=swap" rel="stylesheet">
-<!-- FontAwesome -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<script>
-tailwind.config = { theme: { extend: { fontFamily: { sans: ['Manrope', 'sans-serif'] }, colors: { darkbg: '#050505', cardbg: '#111', accentgold: '#ff9933' } } } }
-</script>
-<style>
-body { background-color: #000; color: #fff; -webkit-font-smoothing: antialiased; }
-.glass-card { background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255, 0.1); }
-.bottom-nav { background: rgba(10, 10, 10, 0.9); backdrop-filter: blur(15px); border-top: 1px solid rgba(255,255,255,0.1); }
-/* Hide scrollbar for clean look */
-::-webkit-scrollbar { width: 0px; background: transparent; }
-
-/* ===== NAMASTE MATCH - VIP MODULE (scoped) ===== */
-#matchModal { --midnight-blue: #1A1A2E; --saffron-orange: #FF9933; --gold: #FFD700; }
-#matchModal * { box-sizing: border-box; margin: 0; padding: 0; font-family: sans-serif; }
-#matchModal { position: fixed; inset: 0; z-index: 60; background-color: var(--midnight-blue); display: none; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; color: white; }
-#matchModal.open { display: flex; }
-#matchModal .app-container { width: 100%; max-width: 400px; height: 100%; background-color: #111122; display: flex; flex-direction: column; position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-#matchModal .header { display: flex; justify-content: space-between; align-items: center; padding: 20px; font-size: 20px; font-weight: bold; color: var(--saffron-orange); border-bottom: 1px solid rgba(255,255,255,0.1); }
-#matchModal .mr-india-toggle { font-size: 13px; background: #333; padding: 8px 12px; border-radius: 20px; cursor: pointer; border: 1px solid #666; transition: all 0.3s; }
-#matchModal .mr-india-toggle.active { border-color: var(--gold); color: var(--gold); box-shadow: 0 0 10px rgba(255, 215, 0, 0.4); background: #222; }
-#matchModal .card-container { flex-grow: 1; padding: 20px; position: relative; perspective: 1000px; }
-#matchModal .profile-card { width: calc(100% - 40px); height: calc(100% - 40px); position: absolute; border-radius: 20px; overflow: hidden; background: #2A2A40; transition: transform 0.3s ease, opacity 0.3s ease; }
-#matchModal .card-image { width: 100%; height: 100%; position: absolute; z-index: 1; background: linear-gradient(to bottom, transparent 40%, #1A1A2E), url('https://images.unsplash.com/photo-1617069399222-26330ceac418?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80') center/cover; }
-#matchModal .card-info { position: absolute; bottom: 0; width: 100%; padding: 20px; z-index: 2; }
-#matchModal .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0; }
-#matchModal .tag { background: rgba(255,255,255,0.1); padding: 5px 10px; border-radius: 12px; font-size: 12px; }
-#matchModal .actions { display: flex; justify-content: space-evenly; align-items: center; padding: 20px 0 30px; }
-#matchModal .btn { border-radius: 50%; border: none; cursor: pointer; display: flex; justify-content: center; align-items: center; background: #2A2A40; transition: transform 0.1s; }
-#matchModal .btn:active { transform: scale(0.9); }
-#matchModal .btn-pass { width: 60px; height: 60px; color: #FF4444; border: 2px solid #FF4444; font-size: 24px; }
-#matchModal .btn-cheers { width: 75px; height: 75px; color: var(--saffron-orange); border: 2px solid var(--saffron-orange); font-size: 30px; }
-#matchModal .swipe-left { transform: translateX(-150%) rotate(-20deg); opacity: 0; }
-#matchModal .swipe-right { transform: translateX(150%) rotate(20deg); opacity: 0; }
-#matchModal #console-log { position: absolute; bottom: 100px; width: 100%; text-align: center; font-size: 12px; color: #00FF00; opacity: 0; transition: opacity 0.3s; z-index: 10; }
-#matchModal .match-close { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; margin-left: 12px; }
-</style>
-</head>
-<body class="bg-black text-gray-100 font-sans">
-
-<!-- HERO SECTION -->
-<section class="relative w-full min-h-[100dvh] bg-[url('https://images.unsplash.com/photo-1545128485-c400e7702796?auto=format&fit=crop&w=600&q=80')] bg-cover bg-center flex flex-col">
-<!-- Dark Gradient Overlay -->
-<div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-black/20 z-0"></div>
-<!-- Header -->
-<header class="relative z-10 px-5 pt-10 flex justify-between items-start gap-3">
-<div>
-<h1 class="text-xl font-extrabold text-white tracking-tight leading-none">Namaste <span class="text-amber-500">Pattaya</span> Reservations</h1>
-<p class="text-[11px] text-amber-200 font-bold italic mt-1 drop-shadow-md">"Bharat ke liye ek Bhartiya ka tohfa" 🇮🇳</p>
-</div>
-<div class="flex items-center gap-2 flex-shrink-0">
-<button onclick="openAccountModal()" aria-label="Sign in or sign up" class="bg-white/10 backdrop-blur-md text-white font-bold text-[10px] border border-white/20 rounded-full px-3 py-1.5 uppercase tracking-wider"><i class="fa-solid fa-user mr-1"></i> Sign in</button>
-<!-- Multi-Language Dropdown -->
-<select id="languageSelect" class="bg-white/10 backdrop-blur-md text-white font-bold text-[10px] border border-white/20 rounded-full px-3 py-1.5 cursor-pointer outline-none uppercase tracking-wider">
-<option value="en">ENG / HI</option>
-<option value="hi">हिंदी</option>
-<option value="pa">ਪੰਜਾਬੀ</option>
-<option value="gu">ગુજરાતી</option>
-<option value="mr">मराठी</option>
-<option value="ta">தமிழ்</option>
-<option value="th">ไทย</option>
-</select>
-</div>
-</header>
-
-<!-- Right Action Bar -->
-<div class="absolute right-4 bottom-[40%] flex flex-col gap-5 z-10 items-center">
-<a href="/map.html" class="flex flex-col items-center">
-<div class="w-11 h-11 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-lg shadow-lg">📍</div>
-<span class="text-[10px] text-white font-bold mt-1 drop-shadow-lg">Map</span>
-</a>
-</div>
-
-<!-- Bottom Info -->
-<div class="mt-auto relative z-10 px-5 pb-28 pt-40 w-full md:max-w-lg mx-auto">
-<div class="flex flex-wrap gap-2 mb-3">
-<span class="bg-amber-900/40 border border-amber-500/40 text-amber-200 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full backdrop-blur-sm">Punjabi Hip-Hop</span>
-<span class="bg-amber-900/40 border border-amber-500/40 text-amber-200 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full backdrop-blur-sm">Hindi Rap</span>
-<span class="bg-amber-900/40 border border-amber-500/40 text-amber-200 text-[10px] font-extrabold uppercase px-3 py-1.5 rounded-full backdrop-blur-sm">Desi Vibe</span>
-<span class="bg-gradient-to-r from-emerald-500 to-green-400 text-white text-[10px] font-black uppercase px-3 py-1.5 rounded-full shadow-lg animate-pulse">🔥 Up to 30% OFF</span>
-</div>
-<h2 class="text-4xl font-extrabold text-white mb-2 leading-tight drop-shadow-lg tracking-tight">Namaste Pattaya Reservations</h2>
-<p class="text-gray-300 text-xs mb-4 max-w-[85%] font-semibold leading-relaxed drop-shadow-md">VIP tables at Pattaya's Indian clubs, Indian food delivered to your hotel, taxis, car and bike rental. One app, up to 30% off.</p>
-
-<!-- Quick actions -->
-<div class="grid grid-cols-2 gap-2 mb-3">
-<button onclick="openRequest('delivery')" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
-<span class="block text-lg">🍛</span><span class="block text-white text-xs font-black mt-1">Indian Food Delivery</span>
-</button>
-<button onclick="openRequest('taxi')" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
-<span class="block text-lg">🚕</span><span class="block text-white text-xs font-black mt-1">Book a Taxi</span>
-</button>
-<a href="/services.html?cat=Cars" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
-<span class="block text-lg">🛵</span><span class="block text-white text-xs font-black mt-1">Rent Car / Motorbike</span>
-</a>
-<a href="/map.html" class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl py-3 px-3 text-left hover:bg-white/20 transition">
-<span class="block text-lg">🗺️</span><span class="block text-white text-xs font-black mt-1">Pattaya Map</span>
-</a>
-</div>
-
-<button onclick="openClubs()" class="w-full bg-gradient-to-r from-amber-500 to-rose-500 text-white font-black py-4 rounded-2xl text-lg shadow-[0_10px_25px_rgba(245,158,11,0.4)] hover:scale-[0.98] transition-transform flex justify-center items-center gap-2">
-Book VIP Table
-</button>
-<button onclick="openLiveChat()" class="w-full mt-3 bg-white/10 backdrop-blur-md border border-white/20 text-white font-bold py-3.5 rounded-2xl text-sm hover:bg-white/20 transition flex justify-center items-center gap-2">
-🙋🏽‍♂️ Ask Raju Guide
-</button>
-<button onclick="openMatch()" class="w-full mt-3 bg-[#1A1A2E] border border-[#FF9933]/60 text-[#FF9933] font-black py-3.5 rounded-2xl text-sm hover:bg-[#222244] transition flex justify-center items-center gap-2">
-🥂 Namaste Match · VIP
-</button>
-</div>
-</section>
-
-<!-- Scroll Indicator -->
-<div class="w-full text-center py-4 bg-gradient-to-b from-black to-[#050505] text-gray-500 text-[10px] uppercase font-black tracking-widest flex flex-col items-center gap-1">
-<span>Scroll for all services</span>
-<i class="fa-solid fa-chevron-down animate-bounce"></i>
-</div>
-
-<!-- REFERRAL PROMO STRIP -->
-<section class="bg-[#050505] px-4 pt-2">
-<a href="#refer-earn" class="block max-w-4xl mx-auto rounded-2xl border border-emerald-500/40 bg-emerald-950/60 p-4 hover:border-emerald-400 transition">
-<div class="flex items-center gap-3">
-<div class="text-2xl">🎁</div>
-<div class="flex-1">
-<p class="text-white font-black text-sm">Refer friends, earn up to 5% for life</p>
-<p class="text-emerald-300 text-[11px] font-semibold mt-0.5">1% of every booking your friends make, forever. 5% on bookings of ฿25,000+. Travel agents earn 5%.</p>
-</div>
-<span class="text-emerald-400 text-xs font-black whitespace-nowrap">Get link</span>
-</div>
-</a>
-</section>
-
-<!-- 🗂️ BROWSE ALL SERVICES -->
-<section id="all-services" class="py-12 bg-[#050505] border-b border-white/10">
-<div class="container mx-auto px-4 max-w-7xl">
-<div class="text-center mb-10">
-<h2 class="text-2xl font-black text-white uppercase tracking-tight">Browse All Services</h2>
-<p class="text-emerald-400 text-xs font-black mt-2">Up to 30% OFF on every service*</p>
-<div class="h-1 w-12 bg-amber-500 mx-auto mt-2 rounded-full"></div>
-</div>
-<div id="servicesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
-<!-- 1. Nightlife -->
-<a href="/services.html?cat=Nightlife%20%26%20Bars" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1566737236500-c8ac43014a67?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Nightlife & Bars</h3>
-</a>
-<!-- 2. Beach Clubs -->
-<a href="/services.html?cat=VIP%20Beach%20Clubs" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1540202404-b711ad679d36?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">VIP Beach Clubs</h3>
-</a>
-<!-- 3. Restaurants -->
-<a href="/services.html?cat=Restaurants" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Restaurants</h3>
-</a>
-<!-- 4. Indian Food -->
-<a href="/services.html?cat=Indian%20Restaurants" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Indian Food</h3>
-</a>
-<!-- 4b. Indian Food Delivery -->
-<a href="#" onclick="openRequest('delivery');return false;" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Indian Food Delivery</h3>
-</a>
-<!-- 5. Desi Chai -->
-<a href="/services.html?cat=Desi%20Chai" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Desi Chai & Spices</h3>
-</a>
-<!-- 6. Hotels -->
-<a href="/services.html?cat=Hotels" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Hotels & Resorts</h3>
-</a>
-<!-- 7. Cars -->
-<a href="/services.html?cat=Cars" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1503376710323-9a3b680c2fdb?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Cars & Bikes Rental</h3>
-</a>
-<!-- 7b. Taxi -->
-<a href="#" onclick="openRequest('taxi');return false;" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1542840410-3092f99611a3?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Taxi</h3>
-</a>
-<!-- 8. Spa -->
-<a href="/services.html?cat=Spa" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Spa & Massage</h3>
-</a>
-<!-- 9. Tours -->
-<a href="/services.html?cat=Tours" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1533669955142-6a73332af4db?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Tours & Excursions</h3>
-</a>
-<!-- 10. Water Sports -->
-<a href="/services.html?cat=Water" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1520116468816-95b69f847357?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Water Sports</h3>
-</a>
-<!-- 11. Golf -->
-<a href="/services.html?cat=Golf" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Golf Courses</h3>
-</a>
-<!-- 12. Yachts -->
-<a href="/services.html?cat=Yacht" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1522748906645-95d8ad85240e?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Yacht & Boats</h3>
-</a>
-<!-- 13. Airport Transfers -->
-<a href="/services.html?cat=Transfers" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1542840410-3092f99611a3?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Airport Transfers</h3>
-</a>
-<!-- 14. Shopping -->
-<a href="/services.html?cat=Shopping" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1607082349566-187342175e2f?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Shopping & Markets</h3>
-</a>
-<!-- 15. Events -->
-<a href="/services.html?cat=Events" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Event Planning</h3>
-</a>
-<!-- 16. Medical -->
-<a href="/services.html?cat=Medical" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1587854692152-cbe660dbde88?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Medical & Pharmacy</h3>
-</a>
-<!-- 17. VIP Concierge -->
-<a href="/services.html?cat=Concierge" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1556745753-b2904692b3cd?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">VIP Services</h3>
-</a>
-<!-- 18. Visa & Legal -->
-<a href="/visa.html" class="glass-card p-2 rounded-2xl transition text-center group flex flex-col items-center">
-<div class="w-full h-24 rounded-xl mb-2 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=400&q=80');"></div>
-<h3 class="text-gray-200 font-bold text-[10px] uppercase tracking-wide pb-1">Visa & Tickets</h3>
-</a>
-</div>
-<p class="text-gray-500 text-[10px] text-center mt-6">*Discounts depend on the partner, day and time. Your exact offer is confirmed with your booking.</p>
-</div>
-</section>
-
-<!-- REFER & EARN (Untouched) -->
-<section id="refer-earn" class="py-16 bg-[#050505] border-b border-emerald-500/30">
-<div class="container mx-auto px-4 max-w-4xl">
-<div class="glass-card rounded-3xl p-8 shadow-2xl relative overflow-hidden bg-[#111]">
-<span class="absolute top-4 right-6 bg-emerald-600 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-md">Up to 5% · Lifetime</span>
-<div class="text-center md:text-left flex flex-col md:flex-row items-center gap-6 relative z-10">
-<div class="bg-emerald-950 border border-emerald-500/40 p-5 rounded-3xl text-emerald-400 text-3xl flex-shrink-0 shadow-lg"><i class="fa-solid fa-wallet"></i></div>
-<div class="flex-1 space-y-2">
-<h2 class="text-2xl font-black text-white uppercase tracking-tight">Refer Friends & Earn Up To 5% — For Life!</h2>
-<p class="text-gray-300 text-xs leading-relaxed font-medium">Share your exclusive referral link. Every time your friends book a paid service through the app, <strong class="text-emerald-400">you earn 1% of their spend — for life.</strong> And when a friend spends <strong class="text-emerald-400">฿25,000 or more on a single booking, you earn 5% on that booking!</strong></p>
-</div>
-</div>
-<div class="mt-8 pt-6 border-t border-white/10 grid grid-cols-1 md:grid-cols-3 gap-4 text-xs relative z-10">
-<div class="bg-black/50 p-4 rounded-2xl border border-white/10">
-<span class="text-gray-400 block mb-1 font-bold">Your Referral Link:</span>
-<div class="flex items-center bg-black border border-white/10 rounded-xl px-3 py-2 text-amber-500 font-bold truncate">
-<span id="refLinkText" class="truncate">Tap Get Link to start →</span>
-<button onclick="copyRefLink()" class="ml-2 bg-emerald-600 hover:bg-emerald-700 text-white px-2.5 py-1 rounded-lg text-[10px] uppercase flex-shrink-0 font-bold"><i class="fa-solid fa-copy"></i> Get Link</button>
-</div>
-</div>
-<div class="bg-black/50 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
-<span class="text-gray-400 block font-bold">Friends Referred:</span>
-<span class="text-xl font-black text-white mt-1 block"><span id="refCount">0</span> <span class="text-[10px] text-emerald-400 font-normal">Joined</span></span>
-</div>
-<div class="bg-black/50 p-4 rounded-2xl border border-white/10 flex flex-col justify-between">
-<span class="text-gray-400 block font-bold">Available to Withdraw:</span>
-<span class="text-xl font-black text-emerald-400 mt-1 block"><span id="refBalance">฿0</span> <button onclick="withdrawEarnings()" class="text-[10px] bg-amber-600 hover:bg-amber-700 text-white px-2.5 py-1 rounded-lg ml-2 uppercase font-black">Withdraw</button></span>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<!-- AGENT PARTNER PROGRAM (Untouched) -->
-<section id="agents" class="py-16 bg-black border-b border-purple-500/30">
-<div class="container mx-auto px-4 max-w-3xl">
-<div class="text-center mb-8">
-<h2 class="text-2xl font-black text-white uppercase tracking-tight">🧳 Agent Partner Program</h2>
-<p class="text-purple-400 text-xs uppercase tracking-widest mt-2 font-bold">For Registered Travel Agents</p>
-</div>
-<div class="glass-card rounded-3xl p-6 bg-[#111]">
-<p class="text-gray-300 text-sm leading-relaxed mb-4">Registered agents earn <strong class="text-purple-400">5% commission</strong> when referred customers book &amp; complete a paid service. Withdraw once bookings reach <strong class="text-purple-400">฿10,000</strong>.</p>
-<div class="flex gap-2 mb-5">
-<button id="tabTH" onclick="agentTab('Thailand')" class="flex-1 py-2.5 rounded-xl font-black text-xs uppercase bg-purple-600 text-white transition">🇹🇭 Thailand</button>
-<button id="tabIN" onclick="agentTab('India')" class="flex-1 py-2.5 rounded-xl font-black text-xs uppercase bg-black border border-white/10 text-gray-300 transition">🇮🇳 India</button>
-</div>
-<div id="agentRegister" class="space-y-3">
-<input id="agCompany" placeholder="Company Name" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium">
-<input id="agReg" placeholder="Registration Number" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium">
-<input id="agContact" placeholder="WhatsApp (with code)" class="w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium">
-<button onclick="agentRegister()" class="w-full bg-purple-600 hover:bg-purple-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm">Register as Agent (<span id="agCountryLabel">Thailand</span>)</button>
-</div>
-<div id="agentDash" style="display:none">
-<div class="grid grid-cols-2 gap-3 text-xs mb-3">
-<div class="bg-black p-4 rounded-2xl border border-white/10"><span class="text-gray-400 block font-bold">Available</span><div class="text-xl font-black text-emerald-400 mt-1" id="agAvail">฿0</div></div>
-<div class="bg-black p-4 rounded-2xl border border-white/10"><span class="text-gray-400 block font-bold">Customers</span><div class="text-xl font-black text-white mt-1" id="agRefs">0</div></div>
-</div>
-<div class="bg-black p-4 rounded-2xl border border-white/10 mb-3">
-<span class="text-gray-400 text-xs font-bold block mb-1">Your Agent Link:</span>
-<div class="flex items-center bg-[#111] border border-white/10 rounded-xl px-3 py-2 text-amber-500 font-bold text-xs truncate">
-<span id="agLink" class="truncate">—</span>
-<button onclick="agentCopyLink()" class="ml-2 bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-[10px] uppercase font-bold">Copy</button>
-</div>
-</div>
-<button onclick="agentWithdraw()" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-black py-3 rounded-xl uppercase text-sm">Request Withdrawal</button>
-</div>
-</div>
-</div>
-</section>
-
-<!-- BOTTOM NAVIGATION -->
-<nav class="fixed bottom-0 w-full md:max-w-md left-1/2 -translate-x-1/2 h-[75px] bottom-nav rounded-t-3xl flex justify-around items-center z-50 px-4">
-<div onclick="openClubs()" class="flex flex-col items-center cursor-pointer text-amber-500">
-<i class="fa-solid fa-fire text-xl"></i>
-<span class="text-[9px] font-extrabold mt-1 uppercase">Clubs</span>
-</div>
-<div onclick="openRequest('delivery')" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
-<i class="fa-solid fa-utensils text-xl"></i>
-<span class="text-[9px] font-extrabold mt-1 uppercase">Dining</span>
-</div>
-<div onclick="openAccountModal()" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
-<i class="fa-solid fa-user text-xl"></i>
-<span class="text-[9px] font-extrabold mt-1 uppercase">Account</span>
-</div>
-<a href="/services.html?view=bookings" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
-<i class="fa-solid fa-ticket text-xl"></i>
-<span class="text-[9px] font-extrabold mt-1 uppercase">My Bookings</span>
-</a>
-<div onclick="openLiveChat()" class="flex flex-col items-center cursor-pointer text-gray-500 hover:text-gray-300">
-<i class="fa-solid fa-comment-dots text-xl"></i>
-<span class="text-[9px] font-extrabold mt-1 uppercase">Chat</span>
-</div>
-</nav>
-<!-- PADDING TO PREVENT CONTENT HIDDEN BEHIND NAV -->
-<div class="h-[90px] bg-black"></div>
-
-<!-- ================= MODALS ================= -->
-
-<!-- SIGN IN / SIGN UP MODAL (4 roles) -->
-<div id="accountModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-<div class="bg-[#111] border border-white/10 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-<button onclick="closeAccountModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-<h3 class="text-xl font-black text-white mb-1 text-center">Sign in or sign up</h3>
-<p class="text-gray-400 text-xs text-center mb-5">Choose who you are</p>
-<div class="grid grid-cols-2 gap-2 mb-4">
-<button id="role-customer" onclick="selectRole('customer')" class="rounded-xl py-2.5 text-xs font-black border transition">🙋 Customer</button>
-<button id="role-partner" onclick="selectRole('partner')" class="rounded-xl py-2.5 text-xs font-black border transition">🤝 Partner (Venue)</button>
-<button id="role-agentIN" onclick="selectRole('agentIN')" class="rounded-xl py-2.5 text-xs font-black border transition">🇮🇳 Indian Agent</button>
-<button id="role-agentTH" onclick="selectRole('agentTH')" class="rounded-xl py-2.5 text-xs font-black border transition">🇹🇭 Thailand Agent</button>
-</div>
-<div class="flex bg-black rounded-xl p-1 mb-4 border border-white/10">
-<button id="mode-signup" onclick="setMode('signup')" class="flex-1 py-2 rounded-lg text-xs font-black transition">Sign up</button>
-<button id="mode-signin" onclick="setMode('signin')" class="flex-1 py-2 rounded-lg text-xs font-black transition">Sign in</button>
-</div>
-<div id="acctForm" class="space-y-3 text-sm"></div>
-<p id="acctMsg" class="text-xs mt-3 text-center font-semibold"></p>
-<a href="/services.html?view=bookings" class="mt-4 w-full bg-white/10 hover:bg-white/20 border border-white/10 text-white font-black py-3 rounded-xl text-sm flex items-center justify-center gap-2"><i class="fa-solid fa-ticket"></i> My Bookings &amp; Receipts</a>
-</div>
-</div>
-
-<!-- REQUEST MODAL (Food delivery / Taxi) -->
-<div id="requestModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-<div class="bg-[#111] border border-white/10 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[90vh] overflow-y-auto">
-<button onclick="closeRequest()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg" aria-label="Close"><i class="fa-solid fa-xmark"></i></button>
-<h3 id="reqTitle" class="text-lg font-black text-white mb-1"></h3>
-<p id="reqSub" class="text-gray-400 text-xs mb-4"></p>
-<div id="reqForm" class="space-y-3 text-sm"></div>
-<p id="reqMsg" class="text-xs mt-3 text-center font-semibold"></p>
-</div>
-</div>
-
-<!-- NAMASTE MATCH - VIP MODULE -->
-<div id="matchModal">
-    <div class="app-container">
-        <div class="header">
-            <div>🔥 Match</div>
-            <div style="display:flex;align-items:center">
-                <div class="mr-india-toggle" id="mrIndiaBtn" onclick="toggleGhostMode()">🕶️ Mr. India</div>
-                <button class="match-close" onclick="closeMatch()" aria-label="Close">✕</button>
-            </div>
-        </div>
-
-        <div class="card-container">
-            <div class="profile-card" id="mainCard">
-                <div class="card-image"></div>
-                <div class="card-info">
-                    <h2 style="margin-bottom: 5px;">Nirmal Shah, 32 <span style="font-size:12px; color:gold;">⭐ VIP</span></h2>
-                    <div class="tags">
-                        <div class="tag">📍 Jannaat Club</div>
-                        <div class="tag">🥃 Whiskey</div>
-                        <div class="tag">👥 Group</div>
-                    </div>
-                    <p style="font-size: 13px; color: #ccc; font-style: italic;">"Looking to lock down a VIP table later, need a fun crowd."</p>
-                </div>
-            </div>
-        </div>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nashaa Club - Namaste Pattaya</title>
+    <style>
+        body {
+            background-color: #940a1b; /* Deep rich red base */
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            overflow-x: hidden;
+        }
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
         
-        <div id="console-log">Action Registered!</div>
+        /* Transparent Top Navigation */
+        .top-nav {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            z-index: 10;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+        }
+        .back-btn {
+            color: white;
+            text-decoration: none;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
 
-        <div class="actions">
-            <button class="btn btn-pass" onclick="handleSwipe('left')">✖</button>
-            <button class="btn btn-cheers" onclick="handleSwipe('right')">🥂</button>
+        /* Hero Image with Fade Merge Effect */
+        .hero-section {
+            width: 100%;
+            height: 55vh; 
+            background-image: url('https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        /* The gradient that merges the photo into the red background */
+        .hero-gradient {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 60%;
+            background: linear-gradient(to bottom, rgba(148, 10, 27, 0) 0%, #940a1b 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 0 25px 20px 25px;
+        }
+
+        /* Title floating over the merged image */
+        .club-title {
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        .event-tag {
+            display: inline-block;
+            background-color: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            width: fit-content;
+        }
+
+        /* Main Content Area (Solid Red) */
+        .content-section {
+            background-color: #940a1b;
+            padding: 0 25px 100px 25px; /* Bottom padding for sticky button */
+        }
+
+        /* Event Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 20px;
+        }
+
+        .detail-item h5 {
+            margin: 0 0 5px 0;
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-item p {
+            margin: 0;
+            font-size: 15px;
+            font-weight: bold;
+        }
+        
+        .highlight-text {
+            color: #ffca28; /* Gold accent */
+        }
+
+        /* Section Headers */
+        .section-title {
+            font-size: 18px;
+            margin: 25px 0 15px 0;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Packages & Add-ons Cards */
+        .package-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pkg-info h4 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+        }
+
+        .pkg-info p {
+            margin: 0;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .pkg-price {
+            text-align: right;
+        }
+
+        .pkg-price .amount {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffca28; /* Gold pricing */
+            display: block;
+        }
+
+        .pkg-price .suffix {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* Sticky Action Button at Bottom */
+        .bottom-action-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 25px;
+            background: linear-gradient(to top, rgba(148,10,27,1) 60%, rgba(148,10,27,0) 100%);
+            z-index: 20;
+        }
+
+        .book-btn {
+            background-color: #ffffff;
+            color: #940a1b;
+            border: none;
+            padding: 16px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Transparent Navigation -->
+    <div class="top-nav">
+        <a href="indian-clubs.html" class="back-btn">←</a>
+    </div>
+
+    <!-- Hero Image with Fade Gradient -->
+    <div class="hero-section">
+        <div class="hero-gradient">
+            <div class="event-tag">TONIGHT • 10 PM - LATE</div>
+            <h1 class="club-title">Nashaa Club</h1>
         </div>
     </div>
-</div>
 
-<!-- INDIAN CLUBS MODAL -->
-<div id="clubsModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-<div class="bg-[#111] border border-white/10 w-full max-w-md rounded-3xl p-6 relative shadow-2xl max-h-[85vh] overflow-y-auto">
-<button onclick="closeClubs()" class="absolute top-4 right-4 text-gray-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
-<h3 class="text-lg font-black text-white mb-1">🍸 Reserve Your Table</h3>
-<p class="text-gray-400 text-xs mb-4">Pick a club — our team confirms availability. Up to 30% off.</p>
-<div id="clubsList" class="space-y-2"></div>
-</div>
-</div>
+    <!-- Solid Red Content Section -->
+    <div class="content-section">
+        
+        <div class="details-grid">
+            <div class="detail-item">
+                <h5>Headlining DJ</h5>
+                <p class="highlight-text">DJ Shadow Dubai</p>
+            </div>
+            <div class="detail-item">
+                <h5>Music Vibe</h5>
+                <p>Bollywood & Punjabi</p>
+            </div>
+        </div>
 
-<!-- LIVE CHAT MODAL (RAJU GUIDE) -->
-<div id="liveChatModal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-<div class="bg-[#111] border border-white/10 w-full max-w-lg rounded-3xl overflow-hidden shadow-2xl flex flex-col h-[450px]">
-<div class="bg-black p-4 border-b border-white/10 flex justify-between items-center">
-<h4 class="font-black text-white text-xs uppercase">🙏 Raju Guide</h4>
-<button onclick="closeLiveChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-</div>
-<div id="chatMessages" class="flex-1 p-4 overflow-y-auto space-y-3 text-xs font-medium">
-<div class="bg-black border border-white/10 p-3 rounded-2xl text-gray-200">Namaste! 🙏 Ask me anything — I am Raju Guide.</div>
-</div>
-<form onsubmit="handleChatSubmit(event)" class="p-3 bg-black border-t border-white/10 flex items-center space-x-2">
-<input type="text" id="chatInput" placeholder="Type message..." class="flex-1 bg-[#111] border border-white/10 rounded-xl px-3.5 py-2 text-xs text-white">
-<button type="submit" class="bg-amber-600 text-white px-4 py-2 rounded-xl text-xs font-black"><i class="fa-solid fa-paper-plane"></i></button>
-</form>
-</div>
-</div>
+        <!-- Table Packages -->
+        <div class="section-title">🍾 VIP Table Packages</div>
+        
+        <div class="package-card">
+            <div class="pkg-info">
+                <h4>VVIP Table</h4>
+                <p>👥 Up to 6 Pax Allowed</p>
+            </div>
+            <div class="pkg-price">
+                <span class="amount">฿12,000</span>
+                <span class="suffix">onwards</span>
+            </div>
+        </div>
 
-<script>
-var N8N = 'https://namastepattayareservation.app.n8n.cloud/webhook';
-try { var _r = new URLSearchParams(location.search).get('ref'); if (_r) localStorage.setItem('np_ref', _r); } catch (e) {}
+        <div class="package-card">
+            <div class="pkg-info">
+                <h4>Side VIP</h4>
+                <p>👥 Up to 5 Pax Allowed</p>
+            </div>
+            <div class="pkg-price">
+                <span class="amount">฿8,000</span>
+                <span class="suffix">onwards</span>
+            </div>
+        </div>
 
-function escH(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function postJSON(path, body){
-return fetch(N8N+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-.then(function(r){ if(!r.ok) throw new Error('failed'); return r.json().catch(function(){return {};}); });
-}
-function val(id){ var el=document.getElementById(id); return el?(el.value||'').trim():''; }
-var INPUT='w-full bg-black border border-white/10 rounded-xl p-3 text-white text-sm font-medium';
-var BTN='w-full bg-amber-600 hover:bg-amber-700 text-white font-black py-3 rounded-xl uppercase tracking-wider text-sm';
+        <div class="package-card">
+            <div class="pkg-info">
+                <h4>Cabana</h4>
+                <p>👥 Max 10 Pax Allowed</p>
+            </div>
+            <div class="pkg-price">
+                <span class="amount">฿5,000</span>
+                <span class="suffix">onwards</span>
+            </div>
+        </div>
 
-// ---------- Sign in / Sign up (4 roles) ----------
-var ACCT_ROLE='customer', ACCT_MODE='signup';
-function openCustomerModal(){ openAccountModal('customer'); }
-function closeCustomerModal(){ closeAccountModal(); }
-function openAccountModal(role){ document.getElementById('accountModal').classList.remove('hidden'); selectRole(role||ACCT_ROLE); }
-function closeAccountModal(){ document.getElementById('accountModal').classList.add('hidden'); }
-function selectRole(r){ ACCT_ROLE=r; renderAcct(); }
-function setMode(m){ ACCT_MODE=m; renderAcct(); }
-function acctMsg(t,ok){ var m=document.getElementById('acctMsg'); m.textContent=t||''; m.className='text-xs mt-3 text-center font-semibold '+(ok?'text-emerald-400':'text-rose-400'); }
-function renderAcct(){
-['customer','partner','agentIN','agentTH'].forEach(function(r){
-document.getElementById('role-'+r).className='rounded-xl py-2.5 text-xs font-black border transition '+(r===ACCT_ROLE?'bg-amber-600 border-amber-500 text-white':'bg-black border-white/10 text-gray-300');
-});
-['signup','signin'].forEach(function(m){
-document.getElementById('mode-'+m).className='flex-1 py-2 rounded-lg text-xs font-black transition '+(m===ACCT_MODE?'bg-white/15 text-white':'text-gray-400');
-});
-acctMsg('');
-var h='';
-var isAgent=(ACCT_ROLE==='agentIN'||ACCT_ROLE==='agentTH');
-if(ACCT_ROLE==='customer' && ACCT_MODE==='signup'){
-h+='<input id="acName" placeholder="Your name" class="'+INPUT+'">';
-h+='<input id="acContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
-h+='<input id="acEmail" placeholder="Email (optional)" class="'+INPUT+'">';
-h+='<button onclick="customerSignup()" class="'+BTN+'">Create my account</button>';
-h+='<p class="text-gray-500 text-[11px] text-center">You get a member code and your referral link: earn 1% for life, 5% on ฿25,000+ bookings.</p>';
-} else if(ACCT_ROLE==='customer'){
-h+='<input id="acCode" placeholder="Your member code" class="'+INPUT+'">';
-h+='<button onclick="customerSignin()" class="'+BTN+'">Sign in</button>';
-h+='<p class="text-gray-500 text-[11px] text-center">Lost your code? Ask Raju Guide in chat.</p>';
-} else if(ACCT_ROLE==='partner' && ACCT_MODE==='signup'){
-h+='<input id="pVenue" placeholder="Venue / business name" class="'+INPUT+'">';
-h+='<select id="pCat" class="'+INPUT+'"><option value="">Type of business</option><option>Nightclub / Bar</option><option>Indian Restaurant</option><option>Restaurant</option><option>Hotel / Resort</option><option>Spa / Massage</option><option>Tours / Water Sports</option><option>Car / Bike Rental / Taxi</option><option>Other</option></select>';
-h+='<input id="pPerson" placeholder="Contact person" class="'+INPUT+'">';
-h+='<input id="pContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
-h+='<input id="pArea" placeholder="Area (e.g. Walking Street, Jomtien)" class="'+INPUT+'">';
-h+='<button onclick="partnerSignup()" class="'+BTN+'">Register my venue</button>';
-h+='<p class="text-gray-500 text-[11px] text-center">Our team verifies every venue before it goes live.</p>';
-} else if(ACCT_ROLE==='partner'){
-h+='<input id="pInContact" placeholder="Registered WhatsApp number" class="'+INPUT+'">';
-h+='<button onclick="partnerSignin()" class="'+BTN+'">Sign in</button>';
-h+='<p class="text-gray-500 text-[11px] text-center">The partner dashboard is coming soon. Until then, bookings are sent to you on WhatsApp.</p>';
-} else if(isAgent && ACCT_MODE==='signup'){
-h+='<input id="agmCompany" placeholder="Company name" class="'+INPUT+'">';
-h+='<input id="agmReg" placeholder="Registration number" class="'+INPUT+'">';
-h+='<input id="agmContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
-h+='<button onclick="agentSignup()" class="'+BTN+'">Register as '+(ACCT_ROLE==='agentIN'?'Indian':'Thailand')+' agent</button>';
-h+='<p class="text-gray-500 text-[11px] text-center">Earn 5% on completed bookings. Withdraw from ฿10,000.</p>';
-} else {
-h+='<input id="agmCode" placeholder="Your agent code" class="'+INPUT+'">';
-h+='<button onclick="agentSignin()" class="'+BTN+'">Sign in</button>';
-}
-document.getElementById('acctForm').innerHTML=h;
-}
-function customerSignup(){
-var name=val('acName'), contact=val('acContact'), email=val('acEmail');
-if(!name||!contact){ acctMsg('Enter your name and WhatsApp number.'); return; }
-acctMsg('Creating your account…',true);
-postJSON('/referral',{action:'join',name:name,contact:contact,email:email}).then(function(d){
-if(d&&d.code){ try{localStorage.setItem('np_code',d.code);}catch(e){} acctMsg('Welcome! Your member code is '+d.code+'. Save it to sign in next time.',true); loadRefStats(); }
-else acctMsg('Could not create your account. Try again.');
-}).catch(function(){ acctMsg('Could not create your account. Check your connection and try again.'); });
-}
-function customerSignin(){
-var code=val('acCode'); if(!code){ acctMsg('Enter your member code.'); return; }
-try{localStorage.setItem('np_code',code);}catch(e){}
-loadRefStats(); acctMsg('Signed in. Your referral link and earnings are below.',true);
-setTimeout(function(){ closeAccountModal(); document.getElementById('refer-earn').scrollIntoView({behavior:'smooth'}); },900);
-}
-function partnerSignup(){
-var venue=val('pVenue'), cat=val('pCat'), person=val('pPerson'), contact=val('pContact'), area=val('pArea');
-if(!venue||!contact){ acctMsg('Enter your venue name and WhatsApp number.'); return; }
-acctMsg('Sending…',true);
-postJSON('/enquiry',{type:'Partner Registration',name:person||venue,contact:contact,email:'',details:'Venue: '+venue+'\nType: '+cat+'\nArea: '+area}).then(function(){
-acctMsg('Thank you! Our team will verify '+venue+' and contact you on WhatsApp.',true);
-}).catch(function(){ acctMsg('Could not send. Try again.'); });
-}
-function partnerSignin(){
-var contact=val('pInContact'); if(!contact){ acctMsg('Enter your registered WhatsApp number.'); return; }
-acctMsg('Sending…',true);
-postJSON('/enquiry',{type:'Partner Sign In',name:'Partner',contact:contact,email:'',details:'Partner asked to access their bookings.'}).then(function(){
-acctMsg('Request received. We will send your latest bookings on WhatsApp.',true);
-}).catch(function(){ acctMsg('Could not send. Try again.'); });
-}
-function agentSignup(){
-var company=val('agmCompany'), reg=val('agmReg'), contact=val('agmContact');
-var country=(ACCT_ROLE==='agentIN'?'India':'Thailand');
-if(!company||!reg||!contact){ acctMsg('Fill in all fields.'); return; }
-acctMsg('Registering…',true);
-postJSON('/referral',{action:'agent_join',company_name:company,contact:contact,country:country,registration_no:reg}).then(function(d){
-if(d&&d.code){ try{localStorage.setItem('np_agent_code',d.code);}catch(e){} acctMsg('Registered! Your agent code is '+d.code+'.',true); agentTab(country); showAgentDash();
-setTimeout(function(){ closeAccountModal(); document.getElementById('agents').scrollIntoView({behavior:'smooth'}); },1500); }
-else acctMsg('Could not register. Try again.');
-}).catch(function(){ acctMsg('Could not register. Try again.'); });
-}
-function agentSignin(){
-var code=val('agmCode'); if(!code){ acctMsg('Enter your agent code.'); return; }
-try{localStorage.setItem('np_agent_code',code);}catch(e){}
-agentTab(ACCT_ROLE==='agentIN'?'India':'Thailand'); showAgentDash();
-acctMsg('Signed in.',true);
-setTimeout(function(){ closeAccountModal(); document.getElementById('agents').scrollIntoView({behavior:'smooth'}); },700);
-}
+        <div class="package-card">
+            <div class="pkg-info">
+                <h4>Standard Round Table</h4>
+                <p>👥 Max 4 Pax Allowed</p>
+            </div>
+            <div class="pkg-price">
+                <span class="amount">฿1,500</span>
+                <span class="suffix">fixed price</span>
+            </div>
+        </div>
 
-// ---------- Food delivery / Taxi requests ----------
-var REQ_TYPE='';
-function reqMsg(t,ok){ var m=document.getElementById('reqMsg'); m.textContent=t||''; m.className='text-xs mt-3 text-center font-semibold '+(ok?'text-emerald-400':'text-rose-400'); }
-function openRequest(type){
-REQ_TYPE=type; var h='';
-h+='<input id="rqName" placeholder="Your name" class="'+INPUT+'">';
-h+='<input id="rqContact" placeholder="WhatsApp (with country code)" class="'+INPUT+'">';
-if(type==='delivery'){
-document.getElementById('reqTitle').textContent='🍛 Indian Food Delivery';
-document.getElementById('reqSub').textContent='Tell us what you are craving. We order from a partner Indian restaurant and deliver to your hotel.';
-h+='<input id="rqAddress" placeholder="Hotel name and room number" class="'+INPUT+'">';
-h+='<textarea id="rqWhat" rows="3" placeholder="What would you like? e.g. 2 butter chicken, 4 garlic naan, 1 dal makhani" class="'+INPUT+'"></textarea>';
-h+='<select id="rqVeg" class="'+INPUT+'"><option>Veg and non-veg OK</option><option>Pure veg</option><option>Jain</option></select>';
-h+='<button onclick="sendRequest()" class="'+BTN+'">Order food</button>';
-} else {
-document.getElementById('reqTitle').textContent='🚕 Book a Taxi';
-document.getElementById('reqSub').textContent='Local rides, airport trips and night pickups. We confirm the price on WhatsApp before you ride.';
-h+='<input id="rqFrom" placeholder="Pickup location" class="'+INPUT+'">';
-h+='<input id="rqTo" placeholder="Drop-off location" class="'+INPUT+'">';
-h+='<input id="rqWhen" placeholder="When? e.g. Now, or Tonight 11pm" class="'+INPUT+'">';
-h+='<select id="rqCar" class="'+INPUT+'"><option>Car (up to 3 people)</option><option>Van (up to 9 people)</option><option>Motorbike taxi</option></select>';
-h+='<button onclick="sendRequest()" class="'+BTN+'">Book taxi</button>';
-}
-document.getElementById('reqForm').innerHTML=h; reqMsg('');
-document.getElementById('requestModal').classList.remove('hidden');
-}
-function closeRequest(){ document.getElementById('requestModal').classList.add('hidden'); }
-function sendRequest(){
-var name=val('rqName'), contact=val('rqContact');
-if(!name||!contact){ reqMsg('Enter your name and WhatsApp number.'); return; }
-var details, type;
-if(REQ_TYPE==='delivery'){
-if(!val('rqAddress')||!val('rqWhat')){ reqMsg('Enter your hotel and what you would like.'); return; }
-type='Indian Food Delivery'; details='Deliver to: '+val('rqAddress')+'\nOrder: '+val('rqWhat')+'\nDiet: '+val('rqVeg');
-} else {
-if(!val('rqFrom')||!val('rqTo')){ reqMsg('Enter pickup and drop-off.'); return; }
-type='Taxi Booking'; details='From: '+val('rqFrom')+'\nTo: '+val('rqTo')+'\nWhen: '+val('rqWhen')+'\nVehicle: '+val('rqCar');
-}
-var refCode=''; try{ refCode=localStorage.getItem('np_ref')||''; }catch(e){}
-reqMsg('Sending…',true);
-postJSON('/enquiry',{type:type,name:name,contact:contact,email:'',details:details,referral_code:refCode}).then(function(d){
-reqMsg((d&&d.message)||('Request received! We will confirm on WhatsApp at '+contact+'.'),true);
-}).catch(function(){ reqMsg('Could not send. Check your connection and try again.'); });
-}
+        <!-- Add-ons -->
+        <div class="section-title">✨ Screen & DJ Add-ons</div>
 
-// ---------- 30% badges on every service card ----------
-(function(){
-var cards=document.querySelectorAll('#servicesGrid > a');
-for(var i=0;i<cards.length;i++){
-cards[i].classList.add('relative');
-var b=document.createElement('span');
-b.className='absolute top-3 left-3 bg-emerald-500 text-white text-[9px] font-black px-2 py-0.5 rounded-full shadow';
-b.textContent='Up to 30% OFF';
-cards[i].appendChild(b);
-}
-})();
+        <div class="package-card">
+            <div class="pkg-info">
+                <h4>Photo Display on Screen</h4>
+                <p>Custom photo on club LEDs</p>
+            </div>
+            <div class="pkg-price">
+                <span class="amount">฿1,000</span>
+            </div>
+        </div>
 
-function openLiveChat(){ document.getElementById('liveChatModal').classList.remove('hidden'); var i=document.getElementById('chatInput'); if(i) i.focus(); }
-function closeLiveChat(){ document.getElementById('liveChatModal').classList.add('hidden'); }
-function goAgent(country){ closeAccountModal(); try{ agentTab(country); }catch(e){} document.getElementById('agents').scrollIntoView({behavior:'smooth'}); }
-var INDIAN_CLUBS = ['Nashaa','Jalwa','Jannaat','Leela','Kamaa','Sutraa','Tonys','Boss','Mashaal','Barone','Nashaa Space','Ikka'];
-function openClubs(){
-var box=document.getElementById('clubsList');
-box.innerHTML = INDIAN_CLUBS.map(function(name,i){
-return '<a href="/services.html?cat=Nightlife" class="flex items-center justify-between bg-black border border-white/10 hover:border-amber-500 rounded-xl px-3 py-2.5 transition">'
-+'<span class="text-sm font-bold text-white">'+(i+1)+'. '+name+'</span>'
-+'<span class="text-[10px] bg-amber-500 text-black font-black px-2.5 py-1 rounded-lg uppercase">Reserve</span></a>';
-}).join('');
-document.getElementById('clubsModal').classList.remove('hidden');
-}
-function closeClubs(){ document.getElementById('clubsModal').classList.add('hidden'); }
-function handleChatSubmit(e){
-e.preventDefault();
-var input=document.getElementById('chatInput'); var q=(input.value||'').trim(); if(!q) return;
-var c=document.getElementById('chatMessages');
-var esc=function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
-c.innerHTML += '<div class="bg-amber-600 text-white p-2.5 rounded-2xl ml-auto max-w-[85%] font-medium">'+esc(q)+'</div>';
-input.value='';
-var t=document.createElement('div'); t.className='bg-black border border-white/10 p-2.5 rounded-2xl text-gray-200 max-w-[85%] font-medium'; t.textContent='Raju is typing…'; c.appendChild(t); c.scrollTop=c.scrollHeight;
-// Connects to your existing n8n webhook setup
-fetch(N8N+'/concierge',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:q})})
-.then(function(r){return r.json();})
-.then(function(d){ var x=(d&&d.reply)||'Sorry, no reply right now.'; t.innerHTML=esc(x); c.scrollTop=c.scrollHeight; })
-.catch(function(){ t.textContent='Sorry, I could not connect.'; });
-}
-function getRefCode(){ try{ return localStorage.getItem('np_code')||''; }catch(e){ return ''; } }
-function refLink(code){ return window.location.origin+'/?ref='+code; }
-function ensureRefCode(){ return new Promise(function(resolve){ var code=getRefCode(); if(code){resolve(code);return;} var name=prompt('Enter name to create referral link:'); if(!name){resolve('');return;} var contact=prompt('WhatsApp WITH country code:'); if(!contact){resolve('');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'join',name:name,contact:contact})}).then(function(r){return r.json();}).then(function(d){ if(d&&d.code){ try{localStorage.setItem('np_code',d.code);}catch(e){} resolve(d.code);} else resolve(''); }).catch(function(){resolve('');}); }); }
-function copyRefLink(){ ensureRefCode().then(function(code){ if(!code){alert('Could not create link.');return;} var link=refLink(code); document.getElementById('refLinkText').textContent=link; if(navigator.clipboard){navigator.clipboard.writeText(link).then(function(){alert('Copied!');});} else alert(link); loadRefStats(); }); }
-function loadRefStats(){ var code=getRefCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'stats',code:code})}).then(function(r){return r.json();}).then(function(d){ document.getElementById('refLinkText').textContent=refLink(code); if(document.getElementById('refCount'))document.getElementById('refCount').textContent=(d.referrals||0); if(document.getElementById('refBalance'))document.getElementById('refBalance').textContent=(d.currency||'THB')+' '+(d.available||0); }).catch(function(){}); }
-function withdrawEarnings(){ var code=getRefCode(); if(!code){alert('Get referral link first!');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert(d&&d.message||'Requested!'); loadRefStats(); }).catch(function(){alert('Error.');}); }
-var agentCountry='Thailand';
-function agentTab(c){ agentCountry=c; document.getElementById('agCountryLabel').textContent=c; document.getElementById('tabTH').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='Thailand'?'bg-purple-600 text-white':'bg-black border border-white/10 text-gray-300'); document.getElementById('tabIN').className='flex-1 py-2.5 rounded-xl font-black text-xs uppercase transition '+(c==='India'?'bg-purple-600 text-white':'bg-black border border-white/10 text-gray-300'); }
-function getAgentCode(){ try{ return localStorage.getItem('np_agent_code')||''; }catch(e){ return ''; } }
-function agentLink(code){ return window.location.origin+'/?ref='+code; }
-function agentRegister(){ var company=document.getElementById('agCompany').value.trim(), reg=document.getElementById('agReg').value.trim(), contact=document.getElementById('agContact').value.trim(); if(!company||!reg||!contact){alert('Fill all fields.');return;} fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'agent_join',company_name:company,contact:contact,country:agentCountry,registration_no:reg})}).then(function(r){return r.json();}).then(function(d){ if(d&&d.code){ try{localStorage.setItem('np_agent_code',d.code);}catch(e){} alert('Registered!\nCode: '+d.code); showAgentDash(); } else alert('Error.'); }).catch(function(){alert('Error.');}); }
-function showAgentDash(){ document.getElementById('agentRegister').style.display='none'; document.getElementById('agentDash').style.display='block'; loadAgentStats(); }
-function loadAgentStats(){ var code=getAgentCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'stats',code:code})}).then(function(r){return r.json();}).then(function(d){ document.getElementById('agAvail').textContent='฿'+(d.available||0); document.getElementById('agRefs').textContent=(d.referrals||0); document.getElementById('agLink').textContent=agentLink(code); }).catch(function(){}); }
-function agentCopyLink(){ var code=getAgentCode(); if(!code) return; var link=agentLink(code); if(navigator.clipboard){navigator.clipboard.writeText(link).then(function(){alert('Copied!');});} else alert(link); }
-function agentWithdraw(){ var code=getAgentCode(); if(!code) return; fetch(N8N+'/referral',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'withdraw',code:code})}).then(function(r){return r.json();}).then(function(d){ alert('Requested.'); loadAgentStats(); }).catch(function(){alert('Error.');}); }
-document.addEventListener('DOMContentLoaded', function(){ loadRefStats(); if(getAgentCode()) showAgentDash(); });
-</script>
+        <div class="package-card">
+            <div class="pkg-info">
+                <h4>Order Song / Announcement</h4>
+                <p>Personalized shoutout from DJ</p>
+            </div>
+            <div class="pkg-price">
+                <span class="amount">฿1,000</span>
+            </div>
+        </div>
 
-<script>
-        function openMatch(){ document.getElementById('matchModal').classList.add('open'); }
-        function closeMatch(){ document.getElementById('matchModal').classList.remove('open'); }
+        <div class="package-card" style="border-color: #ffca28; background: rgba(255, 202, 40, 0.1);">
+            <div class="pkg-info">
+                <h4 style="color: #ffca28;">Combo Package</h4>
+                <p>Photo Display + Song Request</p>
+            </div>
+            <div class="pkg-price">
+                <span class="amount">฿1,500</span>
+                <span class="suffix">Save ฿500</span>
+            </div>
+        </div>
 
-        let isMrIndiaActive = false;
-        const myUserId = "user_777"; 
-        const targetUserId = "nirmal_32"; 
+    </div>
 
-        function toggleGhostMode() {
-            const btn = document.getElementById('mrIndiaBtn');
-            isMrIndiaActive = !isMrIndiaActive;
-            
-            if (isMrIndiaActive) {
-                btn.classList.add('active');
-                btn.innerHTML = '👻 Invisible';
-                showLog("Database: is_mr_india = true");
-            } else {
-                btn.classList.remove('active');
-                btn.innerHTML = '🕶️ Mr. India';
-                showLog("Database: is_mr_india = false");
-            }
-        }
+    <!-- Sticky Bottom Booking Button -->
+    <div class="bottom-action-bar">
+        <button class="book-btn" onclick="window.location.href='booking.html'">Continue to Booking</button>
+    </div>
 
-        function handleSwipe(direction) {
-            const card = document.getElementById('mainCard');
-            
-            if (direction === 'left') {
-                card.classList.add('swipe-left');
-                showLog("Passed profile.");
-            } else {
-                card.classList.add('swipe-right');
-                
-                if (isMrIndiaActive) {
-                    showLog(`Ghost Reveal: Pushed ${myUserId} to ${targetUserId}'s swiped_by array`);
-                } else {
-                    showLog("Standard Match Request Sent!");
-                }
-            }
-            
-            // Reset card for testing purposes
-            setTimeout(() => {
-                card.style.transition = 'none';
-                card.classList.remove('swipe-left', 'swipe-right');
-                card.style.opacity = '0';
-                
-                setTimeout(() => {
-                    card.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-                    card.style.opacity = '1';
-                }, 50);
-            }, 400);
-        }
-
-        function showLog(msg) {
-            const log = document.getElementById('console-log');
-            log.innerText = msg;
-            log.style.opacity = '1';
-            setTimeout(() => log.style.opacity = '0', 2500);
-        }
-</script>
 </body>
 </html>
