@@ -4,52 +4,254 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Namaste Pattaya — Admin Payouts</title>
+<title>Namaste Pattaya — Owner Dashboard</title>
+<link rel="icon" href="/logo.png">
 <style>
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,Arial,sans-serif;background:#0b0f19;color:#e8e8ef;padding:0 0 60px}
-  header{background:linear-gradient(90deg,#111,#1a1230);padding:18px;text-align:center;border-bottom:2px solid #f59e0b}
-  header h1{margin:0;color:#f59e0b;font-size:20px;letter-spacing:1px}
-  .wrap{max-width:820px;margin:0 auto;padding:18px}
+  header{background:linear-gradient(90deg,#111,#1a1230);padding:16px 18px;border-bottom:2px solid #f59e0b;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  header h1{margin:0;color:#f59e0b;font-size:19px;letter-spacing:.5px}
+  header small{display:block;color:#8b93a7;font-size:11px;margin-top:2px;letter-spacing:.04em}
+  header a{color:#22d3ee;font-size:13px;font-weight:700;text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:18px}
   .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#131c2e;border:1px solid #26314d;border-radius:14px;padding:14px;margin-bottom:18px}
   input{flex:1;min-width:180px;padding:11px 12px;border-radius:10px;border:1px solid #26314d;background:#0d1424;color:#e8e8ef;font-size:14px}
   button{border:none;border-radius:10px;padding:11px 16px;font-weight:800;font-size:14px;cursor:pointer}
   .load{background:#22d3ee;color:#06121f}
+  .ghost{background:transparent;color:#e8e8ef;border:1px solid #26314d}
   .confirm{background:#25D366;color:#04351a;padding:8px 12px;font-size:13px}
+  .banner{border-radius:12px;padding:10px 14px;font-size:13px;margin-bottom:14px;border:1px solid #26314d;background:#131c2e}
+  .banner.ok{border-color:#1f7a55;color:#34d399}
+  .banner.warn{border-color:#8a5a0b;color:#fbbf24}
+  .tabs{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin-bottom:14px;padding-bottom:2px}
+  .tabs::-webkit-scrollbar{display:none}
+  .tabs button{flex:0 0 auto;background:#131c2e;color:#8b93a7;border:1px solid #26314d;border-radius:999px;padding:8px 14px;font-size:13px;font-weight:700}
+  .tabs button[aria-selected="true"]{background:#f59e0b;color:#1a1003;border-color:#f59e0b}
+  .tools{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+  .kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-bottom:18px}
+  .kpi{background:#131c2e;border:1px solid #26314d;border-radius:14px;padding:14px}
+  .kpi small{color:#8b93a7;font-size:12px;display:block}
+  .kpi b{font-size:22px;display:block;margin-top:4px}
+  .kpi span{color:#8b93a7;font-size:11px}
+  h2{font-size:16px;margin:20px 0 10px;color:#f5f5fa}
+  .tblw{overflow-x:auto;border:1px solid #26314d;border-radius:12px;background:#131c2e}
+  table{border-collapse:collapse;width:100%;font-size:13px}
+  th,td{padding:9px 12px;text-align:left;border-bottom:1px solid #1e2740;white-space:nowrap}
+  th{color:#8b93a7;font-weight:700;font-size:12px;background:#10182a}
+  tr:last-child td{border-bottom:0}
+  .amt{color:#34d399;font-weight:800}
   .card{background:#131c2e;border:1px solid #26314d;border-radius:12px;padding:14px;margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
   .card .info{flex:1;min-width:200px}
-  .card .amt{color:#34d399;font-weight:800}
   .tag{display:inline-block;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;text-transform:uppercase;margin-left:6px}
   .tag.agent{background:#7c3aed;color:#fff}
   .tag.customer{background:#0ea5e9;color:#04202e}
+  .pill{display:inline-block;font-size:11px;font-weight:800;padding:2px 8px;border-radius:999px}
+  .pill.g{background:#064e3b;color:#34d399}.pill.y{background:#422006;color:#fbbf24}.pill.b{background:#0c2a4a;color:#7dd3fc}.pill.p{background:#2e1065;color:#c4b5fd}
   .muted{color:#8b93a7;font-size:12px}
-  .empty{color:#8b93a7;text-align:center;padding:30px}
+  .empty{color:#8b93a7;text-align:center;padding:26px}
   .note{color:#7b8398;font-size:11px;margin-top:16px;line-height:1.5}
+  [hidden]{display:none!important}
 </style>
 </head>
 <body>
-<header><h1>🔐 Namaste Pattaya — Payout Console</h1></header>
+<header>
+  <div style="display:flex;align-items:center;gap:10px"><img src="logo-mark.svg" alt="" width="40" height="40"><div><h1>Namaste Pattaya Reservations</h1><small>OWNER DASHBOARD</small></div></div>
+  <a href="index.html">Open app →</a>
+</header>
 <div class="wrap">
-  <div class="bar">
-    <input id="key" type="password" placeholder="Admin passcode">
-    <button class="load" onclick="loadPending()">Load pending payouts</button>
+  <div class="bar" id="gate">
+    <input id="key" type="password" placeholder="Admin passcode" autocomplete="current-password">
+    <button class="load" id="open">Open dashboard</button>
   </div>
-  <div id="list"><div class="empty">Enter your passcode and tap "Load pending payouts".</div></div>
-  <p class="note">
-    Confirming a payout marks the booking as completed &amp; undisputed and unlocks that commission for the referrer/agent to withdraw.
-    Only confirm after the service is completed, 48–72 hours have passed, and there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold or cancel any payout.
-  </p>
+  <p class="empty" id="gateMsg">Enter your admin passcode to open the dashboard.</p>
+
+  <div id="dash" hidden>
+    <div class="banner" id="banner"></div>
+    <div class="tabs" id="tabs" role="tablist"></div>
+    <div class="tools" id="tools">
+      <input id="q" type="search" placeholder="Search this tab…" aria-label="Search">
+      <button class="ghost" id="csv">Export CSV</button>
+      <button class="ghost" id="refresh">Refresh</button>
+    </div>
+    <div id="view"></div>
+    <p class="note">This preview reads the bookings, accounts, orders and other records saved by the app in this browser. To see every customer's activity from every phone in one place, the app needs to send its records to your server (n8n). Payouts already come from the server.</p>
+  </div>
 </div>
 
 <script>
 var EP = 'https://namastepattayareservation.app.n8n.cloud/webhook/admin-payouts';
-function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+var INR_PER_THB = 2.6;
+var COMMISSION = 0.10; // Namaste Pattaya share of booking value (estimate)
+var ROLE = {user:'User',partner:'Partner / venue',agent_in:'Agent · India',agent_th:'Agent · Thailand',agent:'Agent',promoter:'Woman promoter'};
+var tab = 'over', online = false, lastSections = [];
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+function get(k,f){ try{ var v=localStorage.getItem(k); return v?JSON.parse(v):f; }catch(e){ return f; } }
+function thb(n){ return '฿'+Math.round(Number(n)||0).toLocaleString('en-US'); }
+function inr(n){ return '≈ ₹'+Math.round((Number(n)||0)*INR_PER_THB).toLocaleString('en-IN'); }
+function when(d){ if(!d) return '—'; var t=new Date(d); return isNaN(t)?'—':t.toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'}); }
+function day(d){ if(!d) return '—'; var t=new Date(d); return isNaN(t)?'—':t.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'}); }
+function sum(a,f){ return a.reduce(function(s,x){ return s+(Number(f(x))||0); },0); }
+function pill(t,c){ return {html:'<span class="pill '+c+'">'+esc(t)+'</span>',text:t}; }
+function prefixed(p){ var out=[]; try{ for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf(p)===0) out.push([k.slice(p.length),get(k,[])]); } }catch(e){} return out; }
+
+function data(){
+  return {
+    bookings:get('np_bookings',[]), accounts:get('np_accounts',[]), orders:get('np_orders',[]), bills:get('np_bills',[]),
+    partnerReq:get('np_partner_req',[]), agentApps:get('np_agent_apps',[]), updates:get('np_lady_updates',[]),
+    buddy:get('np_buddy',null), vip:get('np_vip',false), premium:get('np_premium',false), liked:get('np_liked',[]), matched:get('np_matched',[]),
+    blocked:get('np_blocked',[]), ref:get('np_ref',''), role:get('np_role','traveller'), lady:get('np_lady',null),
+    att:prefixed('np_att_'), photos:prefixed('np_photos_')
+  };
+}
+function venueName(b){ return b.clubName || (b.club==='vip'?'VIP package':b.club) || '—'; }
+
+/* ---------- tabs ---------- */
+var TABS = [
+  ['over','Overview'],['book','Bookings'],['acc','Accounts'],['part','Partners & venues'],['agent','Agents'],
+  ['buddy','Buddy & VIP'],['mall','Mall & gifts'],['bills','Pay my bill'],['upd','Club updates'],['pay','Payouts']
+];
+
+function sections(t,d){
+  if(t==='over'){
+    var venues={}; d.bookings.forEach(function(b){ var v=venueName(b); venues[v]=venues[v]||{n:0,g:0,v:0}; venues[v].n++; venues[v].g+=Number(b.guests)||0; venues[v].v+=Number(b.total)||0; });
+    var top=Object.keys(venues).map(function(k){ return [k,venues[k].n,venues[k].g,{html:'<span class="amt">'+thb(venues[k].v)+'</span>',text:venues[k].v}]; }).sort(function(a,b){ return b[3].text-a[3].text; }).slice(0,8);
+    var feed=[];
+    d.bookings.forEach(function(b){ feed.push([b.date,'Booking',b.code+' · '+venueName(b)+' · '+b.name,thb(b.total)]); });
+    d.accounts.forEach(function(a){ feed.push([a.at,'New account',(ROLE[a.role]||a.role)+' · '+a.name,'']); });
+    d.orders.forEach(function(o){ feed.push([o.time,o.to?'Gift':'Mall order',o.n+(o.to?' → '+o.to:''),thb(o.p)]); });
+    d.partnerReq.forEach(function(r){ feed.push([r.at,'Partner request',r.venue+' · '+r.phone,'']); });
+    d.agentApps.forEach(function(r){ feed.push([r.at,'Agent application',r.name+' · '+(ROLE[r.role]||r.role),'']); });
+    feed=feed.filter(function(f){ return f[0]; }).sort(function(a,b){ return new Date(b[0])-new Date(a[0]); }).slice(0,15).map(function(f){ return [when(f[0]),f[1],f[2],f[3]]; });
+    return [
+      {title:'Top venues by booking value',cols:['Venue','Bookings','Guests','Value'],rows:top,empty:'No bookings yet.'},
+      {title:'Recent activity',cols:['Time','What','Details','Amount'],rows:feed,empty:'No activity yet.'}
+    ];
+  }
+  if(t==='book') return [{cols:['Code','Night','Time','Venue','Package','Guests','Guest','Phone','Total','Ref code'],
+    rows:d.bookings.map(function(b){ return [b.code,day(b.date),b.time,venueName(b),b.pkg,b.guests,b.name,b.phone,{html:'<span class="amt">'+thb(b.total)+'</span>',text:b.total},b.ref||'—']; }),empty:'No bookings yet.'}];
+  if(t==='acc') return [{cols:['Joined','Type','Name','Mobile','Email','Venue / agency','Licence no.'],
+    rows:d.accounts.map(function(a){ return [when(a.at),pill(ROLE[a.role]||a.role,a.role==='partner'?'b':a.role==='user'?'g':'p'),a.name,a.phone,a.email||'—',a.venue?a.venue+' · '+a.vtype:(a.agency||'—'),a.lic||'—']; }),empty:'No accounts yet.'}];
+  if(t==='part'){
+    var perf={}; d.bookings.forEach(function(b){ var id=b.club; perf[id]=perf[id]||{name:venueName(b),n:0,g:0,v:0}; perf[id].n++; perf[id].g+=Number(b.guests)||0; perf[id].v+=Number(b.total)||0; });
+    var att={}; d.att.forEach(function(a){ att[a[0]]=a[1].length; }); var ph={}; d.photos.forEach(function(p){ ph[p[0]]=p[1].length; });
+    Object.keys(att).concat(Object.keys(ph)).forEach(function(id){ if(!perf[id]) perf[id]={name:id,n:0,g:0,v:0}; });
+    return [
+      {title:'Partner accounts',cols:['Joined','Venue','Type','Contact','Mobile','Email'],rows:d.accounts.filter(function(a){ return a.role==='partner'; }).map(function(a){ return [when(a.at),a.venue,a.vtype,a.name,a.phone,a.email]; }),empty:'No partner accounts yet.'},
+      {title:'“List your club” requests',cols:['Sent','Venue','Contact','Phone'],rows:d.partnerReq.map(function(r){ return [when(r.at),r.venue,r.contact||'—',r.phone]; }),empty:'No requests yet.'},
+      {title:'Venue performance',cols:['Venue','Bookings','Guests','Value','Namaste commission','Staff on shift','Photos'],
+        rows:Object.keys(perf).map(function(id){ var p=perf[id]; return [p.name,p.n,p.g,thb(p.v),{html:'<span class="amt">'+thb(p.v*COMMISSION)+'</span>',text:p.v*COMMISSION},att[id]||0,ph[id]||0]; }),empty:'No venue activity yet.'}
+    ];
+  }
+  if(t==='agent'){
+    var agents=d.accounts.filter(function(a){ return a.role==='agent_in'||a.role==='agent_th'; });
+    return [
+      {title:'Agent accounts',cols:['Joined','Country','Name','Agency','Licence no.','Mobile','Email'],rows:agents.map(function(a){ return [when(a.at),pill(a.role==='agent_in'?'India':'Thailand',a.role==='agent_in'?'y':'b'),a.name,a.agency,a.lic||'—',a.phone,a.email]; }),empty:'No agent accounts yet.'},
+      {title:'Agent & promoter applications',cols:['Sent','Type','Name','WhatsApp','Code'],rows:d.agentApps.map(function(r){ return [when(r.at),ROLE[r.role]||r.role,r.name,r.phone,r.code]; }),empty:'No applications yet.'},
+      {title:'Bookings with a referral code',cols:['Code','Venue','Guest','Ref code','Total','Referral at 3% / 5%'],rows:d.bookings.filter(function(b){ return b.ref; }).map(function(b){ return [b.code,venueName(b),b.name,b.ref,thb(b.total),thb(b.total*.03)+' / '+thb(b.total*.05)]; }),empty:'No referred bookings yet.'}
+    ];
+  }
+  if(t==='buddy'){
+    var b=d.buddy, rows=b?[[b.name,b.age,b.from||'—',b.sex,b.verified?pill('Verified','g'):pill('Not verified','y'),d.vip?pill('VIP','y'):'Free',d.liked.length,d.matched.length,d.blocked.length]]:[];
+    return [
+      {title:'Buddy profiles',cols:['Name','Age','From','Gender','Status','Plan','Likes','Matches','Blocked / reported'],rows:rows,empty:'No buddy profile yet.'},
+      {title:'Memberships',cols:['Membership','Status'],rows:[['VIP (Buddy)',d.vip?pill('Active','g'):pill('Not active','y')],['Premium (app designs)',d.premium?pill('Active','g'):pill('Not active','y')],['Empowered Girls lounge',d.lady?pill('Member: '+d.lady.name,'p'):pill('Not a member','y')]],empty:''}
+    ];
+  }
+  if(t==='mall') return [{cols:['Time','Item','Type','To','Deliver to','Message','Price'],
+    rows:d.orders.map(function(o){ return [when(o.time),o.n,o.to?pill('Gift','p'):pill('Purchase','b'),o.to||'—',o.where||'—',o.note||'—',{html:'<span class="amt">'+thb(o.p)+'</span>',text:o.p}]; }),empty:'No mall orders yet.'}];
+  if(t==='bills') return [{cols:['Bill code','Venue','Amount','Status'],
+    rows:d.bills.map(function(b){ return [b.code,b.venue,thb(b.amt),b.paid?pill('Paid','g'):pill('Waiting','y')]; }),empty:'No bills yet.'}];
+  if(t==='upd') return [{cols:['Venue','Type','Update'],rows:d.updates.map(function(u){ return [u[0],u[1],u[2]]; }),empty:'No club updates posted yet.'}];
+  return [];
+}
+
+function kpis(d){
+  var val=sum(d.bookings,function(b){ return b.total; }), mall=sum(d.orders,function(o){ return o.p; });
+  var billsWait=d.bills.filter(function(b){ return !b.paid; });
+  var roles={}; d.accounts.forEach(function(a){ roles[a.role]=(roles[a.role]||0)+1; });
+  var k=[
+    ['Bookings',d.bookings.length,sum(d.bookings,function(b){ return b.guests; })+' guests'],
+    ['Booking value',thb(val),inr(val)],
+    ['Namaste commission (est. 10%)',thb(val*COMMISSION),inr(val*COMMISSION)],
+    ['Accounts',d.accounts.length,(roles.user||0)+' users · '+(roles.partner||0)+' partners · '+((roles.agent_in||0)+(roles.agent_th||0))+' agents'],
+    ['Mall orders',d.orders.length,thb(mall)+' · '+d.orders.filter(function(o){ return o.to; }).length+' gifts'],
+    ['Bills waiting',billsWait.length,thb(sum(billsWait,function(b){ return b.amt; }))],
+    ['VIP members',d.vip?1:0,'Buddy VIP'],
+    ['New requests',d.partnerReq.length+d.agentApps.length,d.partnerReq.length+' venues · '+d.agentApps.length+' agents']
+  ];
+  return '<div class="kpis">'+k.map(function(x){ return '<div class="kpi"><small>'+esc(x[0])+'</small><b>'+esc(x[1])+'</b><span>'+esc(x[2])+'</span></div>'; }).join('')+'</div>';
+}
+
+function cellHtml(c){ return (c&&typeof c==='object')?c.html:esc(c==null||c===''?'—':c); }
+function cellText(c){ return (c&&typeof c==='object')?String(c.text):String(c==null?'':c); }
+
+function render(){
+  var d=data(), q=document.getElementById('q').value.trim().toLowerCase(), v=document.getElementById('view');
+  document.getElementById('tools').hidden = tab==='pay';
+  if(tab==='pay'){ v.innerHTML='<div id="list"></div>'; loadPending(); return; }
+  var secs=sections(tab,d);
+  lastSections=secs.map(function(s){ return {title:s.title,cols:s.cols,rows:s.rows.filter(function(r){ return !q||r.map(cellText).join(' ').toLowerCase().indexOf(q)>=0; })}; });
+  var h=tab==='over'?kpis(d):'';
+  lastSections.forEach(function(s,i){
+    if(s.title) h+='<h2>'+esc(s.title)+' <span class="muted">('+s.rows.length+')</span></h2>';
+    if(!s.rows.length){ h+='<div class="tblw"><div class="empty">'+esc(q?'Nothing matches your search.':secs[i].empty)+'</div></div>'; return; }
+    h+='<div class="tblw"><table><tr>'+s.cols.map(function(c){ return '<th>'+esc(c)+'</th>'; }).join('')+'</tr>'
+      +s.rows.map(function(r){ return '<tr>'+r.map(function(c){ return '<td>'+cellHtml(c)+'</td>'; }).join('')+'</tr>'; }).join('')+'</table></div>';
+  });
+  v.innerHTML=h;
+}
+
+function exportCsv(){
+  var lines=[];
+  lastSections.forEach(function(s){
+    if(s.title) lines.push('"'+s.title.replace(/"/g,'""')+'"');
+    lines.push(s.cols.map(function(c){ return '"'+c+'"'; }).join(','));
+    s.rows.forEach(function(r){ lines.push(r.map(function(c){ return '"'+cellText(c).replace(/"/g,'""')+'"'; }).join(',')); });
+    lines.push('');
+  });
+  var name=(TABS.filter(function(t){ return t[0]===tab; })[0]||['',tab])[1].toLowerCase().replace(/[^a-z]+/g,'-');
+  var a=document.createElement('a'); a.href=URL.createObjectURL(new Blob(['﻿'+lines.join('\n')],{type:'text/csv'}));
+  a.download='namaste-pattaya-'+name+'-'+new Date().toISOString().slice(0,10)+'.csv'; document.body.appendChild(a); a.click(); a.remove();
+}
+
+function renderTabs(){
+  var el=document.getElementById('tabs'); el.innerHTML='';
+  TABS.forEach(function(t){ var b=document.createElement('button'); b.setAttribute('role','tab'); b.setAttribute('aria-selected',t[0]===tab); b.textContent=t[1];
+    b.onclick=function(){ tab=t[0]; document.getElementById('q').value=''; renderTabs(); render(); }; el.appendChild(b); });
+}
+
+/* ---------- access: the passcode is checked by the server ---------- */
 function getKey(){ var k=document.getElementById('key').value.trim(); if(k){ try{ localStorage.setItem('np_admin_key',k); }catch(e){} } return k; }
 try { var sk=localStorage.getItem('np_admin_key'); if(sk) document.getElementById('key').value=sk; } catch(e){}
 
+function unlock(isOnline){
+  online=isOnline;
+  document.getElementById('gate').hidden=true; document.getElementById('gateMsg').hidden=true; document.getElementById('dash').hidden=false;
+  var b=document.getElementById('banner');
+  b.className='banner '+(online?'ok':'warn');
+  b.textContent=online?'Connected to the server. Payouts are live.':'Could not reach the server. Showing records saved in this browser. Payouts are unavailable until the connection is back.';
+  renderTabs(); render();
+}
+function openDash(){
+  var key=getKey(), msg=document.getElementById('gateMsg');
+  if(!key){ msg.textContent='Enter your admin passcode.'; return; }
+  msg.textContent='Checking…';
+  fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pending',key:key})})
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if(!d||!d.authorized){ msg.textContent='Wrong passcode.'; return; } unlock(true); })
+    .catch(function(){ unlock(false); });
+}
+document.getElementById('open').onclick=openDash;
+document.getElementById('key').onkeydown=function(e){ if(e.key==='Enter') openDash(); };
+document.getElementById('q').oninput=render;
+document.getElementById('csv').onclick=exportCsv;
+document.getElementById('refresh').onclick=render;
+window.addEventListener('storage',function(){ if(!document.getElementById('dash').hidden&&tab!=='pay') render(); });
+
+/* ---------- payouts (server) ---------- */
 function loadPending(){
-  var key=getKey(); if(!key){ alert('Enter your admin passcode.'); return; }
-  var list=document.getElementById('list');
+  var key=getKey(); var list=document.getElementById('list'); if(!list) return;
   list.innerHTML='<div class="empty">Loading…</div>';
   fetch(EP,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'pending',key:key})})
     .then(function(r){return r.json();})
@@ -64,12 +266,13 @@ function loadPending(){
           +'<div class="muted">Order '+esc(it.order_ref)+' · code '+esc(it.code)+' · spend ฿'+Number(it.order_total||0).toLocaleString()+'</div>'
           +'</div>'
           +'<div style="text-align:right"><div class="amt">฿'+Number(it.commission||0).toLocaleString()+'</div>'
-          +'<button class="confirm" onclick="confirmOrder(\''+esc(it.order_ref).replace(/\'/g,"")+'\', this)">Confirm &amp; Unlock</button></div>'
+          +'<button class="confirm" data-ref="'+esc(it.order_ref)+'">Confirm &amp; Unlock</button></div>'
           +'</div>';
       });
-      list.innerHTML=h;
+      list.innerHTML=h+'<p class="note">Confirming a payout marks the booking as completed &amp; undisputed and unlocks that commission for the referrer/agent to withdraw. Only confirm after the service is completed, 48–72 hours have passed, and there is no dispute. Namaste Pattaya Reservations reserves all rights to withhold or cancel any payout.</p>';
+      list.querySelectorAll('[data-ref]').forEach(function(b){ b.onclick=function(){ confirmOrder(b.getAttribute('data-ref'),b); }; });
     })
-    .catch(function(){ list.innerHTML='<div class="empty">Could not connect. Try again.</div>'; });
+    .catch(function(){ list.innerHTML='<div class="empty">Could not connect to the server. Try again.</div>'; });
 }
 
 function confirmOrder(orderRef, btn){

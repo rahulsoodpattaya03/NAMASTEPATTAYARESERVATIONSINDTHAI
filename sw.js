@@ -2,10 +2,10 @@
    - App pages/data: network-first (fresh when online, cached when offline).
    - Map tiles + libraries: cache-first (fast + offline).
    Free & legal: OpenStreetMap-based CARTO tiles. */
-var CACHE = 'npr-cache-v1';
+var CACHE = 'npr-cache-v2';
 var SHELL = [
   '/', '/services.html', '/map.html', '/games.html', '/radar.html', '/wire.js',
-  '/pn-catalog.json', '/menus.json', '/clubs.json', '/logo.png',
+  '/pn-catalog.json', '/menus.json', '/clubs.json', '/logo.png', '/logo-mark.svg', '/logo-192.png', '/logo-512.png',
   '/games/game1.html', '/games/game2.html', '/games/game3.html', '/games/game4.html', '/games/game5.html'
 ];
 
