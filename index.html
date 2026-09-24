@@ -1440,7 +1440,7 @@ function openClub(c){
     const code="NP"+Math.random().toString(36).slice(2,7).toUpperCase();
     const ref=(panel.querySelector("#fRef").value||"").trim().toUpperCase();
     const hostEl=panel.querySelector("#fHost");
-    const bk={code,host:hostEl?hostEl.value:"",addons:[...panel.querySelectorAll("#adScreen:checked,#adSong:checked")].map(x=>x.id),club:c.id,pkg:c.pkgs[b.pkg].n,guests:b.guests,date:dates[b.day].toISOString(),time:b.time,name,phone,total:total(),ref,cat:c.cat};
+    const bk={code,host:hostEl?hostEl.value:"",addons:[...panel.querySelectorAll("#adScreen:checked,#adSong:checked")].map(x=>x.id),club:c.id,clubName:c.name,pkg:c.pkgs[b.pkg].n,guests:b.guests,date:dates[b.day].toISOString(),time:b.time,name,phone,total:total(),ref,cat:c.cat};
     bookings.unshift(bk);store.set("np_bookings",bookings);renderBookings();
     panel.innerHTML=`<div class="done"><div class="okmark">${ico("check")}</div><h2 id="sheetTitle">You're booked</h2>
       <p class="about">Show this code at the door</p><div class="code">${code}</div>
@@ -1475,6 +1475,7 @@ function renderBookings(){
 document.getElementById("pSend").onclick=()=>{
   const n=document.getElementById("pName").value.trim(),p=document.getElementById("pPhone").value.trim(),m=document.getElementById("pMsg");
   if(!n||!p){m.textContent="Add the club name and a phone number.";return}
+  const reqs=store.get("np_partner_req",[]);reqs.unshift({venue:n,contact:document.getElementById("pContact").value.trim(),phone:p,at:new Date().toISOString()});store.set("np_partner_req",reqs);
   m.style.color="var(--ok)";m.textContent=`Request sent for ${n}. We'll contact you on ${p}.`;
 };
 
@@ -1582,6 +1583,7 @@ document.getElementById("copyCode").onclick=async e=>{try{await navigator.clipbo
 document.getElementById("aSend").onclick=()=>{
   const n=document.getElementById("aName").value.trim(),p=document.getElementById("aPhone").value.trim(),m=document.getElementById("aMsg"),r=document.getElementById("aRole").value;
   if(!n||p.replace(/\D/g,"").length<8){m.style.color="";m.textContent="Add your name and a WhatsApp number.";return}
+  const apps=store.get("np_agent_apps",[]);apps.unshift({role:r,name:n,phone:p,code:myCode,at:new Date().toISOString()});store.set("np_agent_apps",apps);
   myRole=r;store.set("np_role",r);renderEarn();m.style.color="var(--ok)";m.textContent=`Application sent. Your code ${myCode} now earns ${Math.round(RATE[r]*100)}%.`;
 };
 const _renderBookings=renderBookings;renderBookings=function(){_renderBookings();if(document.getElementById("earned"))renderEarn()};
@@ -2197,7 +2199,7 @@ function openGift(item,p,forMe){
     if(!forMe){const v=q("#gTo").value;to=v==="other"?q("#gOther").value.trim():(PEOPLE.find(x=>x.id===v)||{}).name;if(!to){err.textContent="Choose who gets the gift.";return}}
     let at;if(q("#gWhere").value==="hotel"){at=q("#gAddr").value.trim();if(!at){err.textContent="Add the hotel or address.";return}}
     else{const c=NIGHT.find(n=>n.id===q("#gClub").value),t=q("#gTable").value.trim();at=c.name+(t?", "+t:"")}
-    orders.unshift({n:sel.n,p:sel.p,to,where:at,note:forMe?"":q("#gNote").value.trim()});store.set("np_orders",orders);renderMall();
+    orders.unshift({n:sel.n,p:sel.p,to,where:at,note:forMe?"":q("#gNote").value.trim(),time:new Date().toISOString()});store.set("np_orders",orders);renderMall();
     panel.innerHTML=`<div class="done"><h2 id="sheetTitle">${forMe?"Order placed":"Gift on its way"}</h2><p class="about"></p><button class="cta" id="gDone">Done</button></div>`;
     q(".about").textContent=`${sel.n} will be delivered ${to?"to "+to+" ":""}at ${at}.`;q("#gDone").onclick=closeSheet;q("#gDone").focus()};
   openSheet();
@@ -2324,7 +2326,7 @@ function openAccount(mode){
     if(!q("#uTerms").checked){err.textContent="Please agree to the terms.";return}
     if(accounts.some(x=>samePhone(x.phone,phone)||(email&&x.email===email))){err.textContent="An account with this mobile or email already exists. Sign in instead.";return}
     const salt=Math.random().toString(36).slice(2,10);
-    const acc={id:"u"+Date.now().toString(36),role:acctRole,name,phone,email,venue:v("#uVenue"),vtype:v("#uVtype"),agency:v("#uAgency"),lic:v("#uLic"),salt,pw:await pwHash(pw,salt)};
+    const acc={id:"u"+Date.now().toString(36),at:new Date().toISOString(),role:acctRole,name,phone,email,venue:v("#uVenue"),vtype:v("#uVtype"),agency:v("#uAgency"),lic:v("#uLic"),salt,pw:await pwHash(pw,salt)};
     accounts.push(acc);store.set("np_accounts",accounts);signedIn(acc)};
   else{const run=async()=>{const id=q("#iId").value.trim().toLowerCase(),pw=q("#iPw").value;
       const acc=accounts.find(x=>(id.includes("@")?x.email===id:samePhone(x.phone,id)));
