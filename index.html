@@ -3021,5 +3021,60 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
   ["renderGrid","renderRail","renderMall","renderBookings"].forEach(function(f){if(typeof window[f]==="function")window[f]()});
 })();
 </script>
+<!-- ===== v20: night clubs & after party update ===== -->
+<script>
+(function(){
+  var NEWNAME="Night clubs & After party";
+  CATS.forEach(function(c){if(c[0]==="nightlife")c[2]=NEWNAME});
+  if(typeof CATNAME!=="undefined")CATNAME.nightlife=NEWNAME;
+  if(typeof TYPES!=="undefined")TYPES.forEach(function(t,i){if(t==="Nightlife & Bars")TYPES[i]=NEWNAME});
+  if(typeof state!=="undefined"&&state.type==="Nightlife & Bars")state.type=NEWNAME;
+
+  /* remove: Skyline, Basement 9, Velvet Room, Noon Rooftop, Bolly Bar */
+  var REMOVE=["skyline","basement","velvet","noon","bollybar"];
+  var GONE=/skyline|basement 9|velvet room|noon rooftop|bolly bar/i;
+  function strip(arr){if(!arr)return;for(var i=arr.length-1;i>=0;i--)if(REMOVE.indexOf(arr[i].id)>-1||GONE.test(arr[i].name||""))arr.splice(i,1)}
+  strip(CLUBS);
+  if(typeof NIGHT!=="undefined")strip(NIGHT);
+  if(typeof PARTNERS!=="undefined")strip(PARTNERS);
+  if(typeof LUPD!=="undefined")for(var j=LUPD.length-1;j>=0;j--)if(GONE.test(LUPD[j][0]))LUPD.splice(j,1);
+
+  /* add: Fume, Nashaa Space, Sutraa, Myst, Republic (skipped if already in the app) */
+  function has(w){return CLUBS.some(function(c){return (c.name||"").toLowerCase().indexOf(w)>-1})}
+  var ADD=[
+    ["fume","Fume","fume",false,false,["#FF6B6B","#3A0CA3"]],
+    ["nashaaspace","Nashaa Space","nashaa space",true,false,["#FF9933","#4A1070"]],
+    ["sutraa","Club Sutraa","sutraa",true,false,["#F72585","#240046"]],
+    ["myst","Myst","myst",false,true,["#4CC9F0","#1B0B3A"]],
+    ["republic","Republic","republic",false,true,["#00F5D4","#0B1D51"]]
+  ];
+  ADD.forEach(function(a){
+    if(has(a[2]))return;
+    var c={id:a[0],name:a[1],cat:"nightlife",area:"Pattaya",
+      open:a[4]?"After 2 AM till sunrise":"Late night — confirm with club",
+      music:a[3]?"Bollywood · Punjabi":(a[4]?"After-party":"Night club"),
+      type:a[4]?"After-party club":(a[3]?"Indian club":"Night club"),
+      tags:[a[4]?"After party":"Night club"].concat(a[3]?["Indian club"]:[]),
+      about:a[1]+". Book a table and our team will confirm it with the club.",
+      art:a[5],indian:a[3],after:a[4],afterparty:a[4],disc:30,hosts:["Mr. Amit","Ms. Nok","Mr. Sunny"],
+      pkgs:[{n:"Entry",d:"Guest list, confirm at the door",p:0,left:99},{n:"Standard table",d:"Up to 6 guests, 1 bottle",p:6000,left:8},{n:"Ladies table",d:"Up to 4 women",p:3000,left:4},{n:"VIP table",d:"Up to 10 guests, 2 bottles, host",p:15000,left:2}]};
+    CLUBS.push(c);
+    if(typeof NIGHT!=="undefined")NIGHT.push(c);
+    if(typeof PARTNERS!=="undefined")PARTNERS.push(c);
+  });
+
+  /* buddy profiles that pointed to removed clubs */
+  if(typeof PEOPLE!=="undefined"&&typeof NIGHT!=="undefined"&&NIGHT.length)PEOPLE.forEach(function(p,i){if(GONE.test(p.club||""))p.club=NIGHT[i%NIGHT.length].name});
+
+  /* refresh dropdowns, ticker and lists */
+  function opts(id,list,first){var el=document.getElementById(id);if(!el)return;var v=el.value;el.innerHTML=(first||"")+list.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>'}).join("");if(v)el.value=v}
+  if(typeof NIGHT!=="undefined")opts("bClub",NIGHT,'<option value="">Not decided</option>');
+  if(typeof PARTNERS!=="undefined"){opts("dVenue",PARTNERS);opts("billVenue",PARTNERS)}
+  var tt=document.getElementById("tickTrack");
+  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Pulse Arena","guest DJs this Saturday"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
+    var h=it.map(function(x){return "<span><b>"+x[0]+"</b> · "+x[1]+"</span>"}).join("");tt.innerHTML=h+h}
+  ["renderCats","renderChips","renderGrid","renderRail","renderMap","renderLadies","renderDash","renderPeople"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>
 </body>
 </html>
