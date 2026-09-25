@@ -2788,5 +2788,238 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
   }
 })();
 </script>
-      </body>
+     <!-- ===== v18: header logins + language, converter & clocks (add-on) ===== -->
+<style>
+.np-hide,.topr .langbtn{display:none!important}
+.np-hbtn{width:46px;height:46px;padding:0!important;margin:0!important;border-radius:14px!important;display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:9px!important;font-weight:600;line-height:1}
+.np-hbtn .ic{width:18px;height:18px}
+.np-hbtn.partner{border-color:rgba(255,200,87,.6)!important;color:#FFD27A}
+.np-hbtn.agent{border-color:rgba(255,61,168,.6)!important;color:#FF8FCF}
+.np-hbtn.user{border-color:rgba(47,209,255,.6)!important;color:#9DEBFF}
+.np-hbtn.in{box-shadow:0 0 0 2px var(--ok)}
+.topr .np-hbtn.partner{order:1}.topr .np-hbtn.agent{order:2}.topr #curBtn{order:3}.topr .np-hbtn.user{order:4}
+#panel[data-only="agent"] [data-r="traveller"]{display:none}
+#panel[data-only="agent"] .roles{grid-template-columns:1fr 1fr}
+#panel[data-only="user"] .roles,#panel[data-only="user"] p.small:has(+ .roles){display:none}
+.npx-row{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:10px;margin:18px 0 0}
+.npx-lang,.npx-tools{border:1px solid var(--line);background:color-mix(in srgb,var(--solid,#0B0C10) 80%,transparent);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:20px;color:var(--ink)}
+.npx-lang{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:4px;padding:14px;text-align:left}
+.npx-lang .ic{width:22px;height:22px;color:var(--glow)}
+.npx-lang small,.npx-tools small{color:var(--muted);font-size:11px}
+.npx-lang b{font-size:17px;font-weight:600}
+.npx-tools{padding:12px;display:flex;flex-direction:column;gap:10px}
+.npx-clocks{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.npx-clocks div{display:flex;flex-direction:column}
+.npx-clocks b{font-size:18px;font-weight:600;font-variant-numeric:tabular-nums}
+.npx-conv{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.npx-conv input{min-width:0;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:9px 10px;font:inherit}
+.npx-conv button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:12px;padding:9px 10px;font-size:13px;font-weight:600;white-space:nowrap}
+.npx-conv output{grid-column:1/-1;font-size:16px;font-weight:600;color:var(--amber)}
+@media (max-width:360px){.npx-row{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+  var SB_URL="https://mymtgbmcjbwsnetzwgoy.supabase.co",SB_KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
+  var sb=window.supabase?window.supabase.createClient(SB_URL,SB_KEY):null;
+  function I(p){return '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="'+p+'"/></svg>'}
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  var P_STORE="M3 9l1.5-5h15L21 9 M3 9h18v2a3 3 0 0 1-6 0a3 3 0 0 1-6 0a3 3 0 0 1-6 0z M5 13v8h14v-8 M10 21v-5h4v5";
+  var P_BRIEF="M3 8h18v12H3z M8 8V5h8v3 M3 13h18";
+  var P_USER="M12 12a4 4 0 1 1 0-8a4 4 0 1 1 0 8z M4 21c0-4 3.6-7 8-7s8 3 8 7";
+  var P_GLOBE="M12 3a9 9 0 1 1 0 18a9 9 0 1 1 0-18z M3 12h18 M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9 M12 3c-2.5 2.5-3.8 5.5-3.8 9s1.3 6.5 3.8 9";
+
+  var topr=document.querySelector(".topr");
+  function mk(cls,icon,label,aria){var b=document.createElement("button");b.className="cur np-hbtn "+cls;b.setAttribute("aria-label",aria);b.innerHTML=I(icon)+"<span>"+label+"</span>";if(topr)topr.appendChild(b);return b}
+  var bP=mk("partner",P_STORE,"Partner","Partner and venue login");
+  var bA=mk("agent",P_BRIEF,"Agent","Indian and Thai agent login");
+  var bU=mk("user",P_USER,"Login","User and VIP member login");
+  var oldAcct=[];
+  function tidy(){if(!topr)return;[].forEach.call(topr.children,function(el){
+    if(el.id==="curBtn"||el.classList.contains("np-hbtn"))return;
+    if(el.id==="premBtn"||el.classList.contains("acctbtn")||el.classList.contains("langbtn")){el.classList.add("np-hide");return}
+    if(el.tagName==="BUTTON"){el.classList.add("np-hide");if(oldAcct.indexOf(el)<0)oldAcct.push(el)}
+  })}
+  tidy();setTimeout(tidy,600);window.addEventListener("load",tidy);
+
+  function acctBtn(){return document.querySelector(".acctbtn")}
+  function signedIn(){var a=acctBtn();return !!(a&&a.classList.contains("in"))}
+  function extras(){
+    var pb=panel.querySelector(".pbody");if(!pb||pb.querySelector(".npx-extra"))return;
+    var d=document.createElement("div");d.className="npx-extra";
+    var prem=document.getElementById("premBtn");
+    if(prem){var x=document.createElement("button");x.className="cta ghost";x.textContent="Premium app designs";x.onclick=function(){prem.click()};d.appendChild(x)}
+    if(oldAcct[0]){var y=document.createElement("button");y.className="linkbtn";y.textContent="Sign in with an email link instead";y.onclick=function(){closeSheet();oldAcct[0].click()};d.appendChild(y)}
+    pb.appendChild(d);
+  }
+  bU.onclick=function(){panel.dataset.only="user";var a=acctBtn();if(a)a.click();else if(window.openAcct)openAcct("in","traveller");extras()};
+  bA.onclick=function(){panel.dataset.only="agent";var a=acctBtn();if(signedIn()&&a)a.click();else if(window.openAcct)openAcct("in","agent_in")};
+
+  function show(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="ppX" aria-label="Close">'+ico("close")+'</button></div>'}
+  function openPartner(mode){
+    panel.dataset.only="partner";var up=mode==="up";
+    panel.innerHTML='<div class="pbody">'+head(up?"Register your venue":"Partner login")+
+      '<p class="about">For clubs, bars, restaurants, hotels and service partners.</p>'+
+      '<div class="atabs" role="tablist"><button role="tab" data-pm="in" aria-selected="'+(!up)+'">Sign in</button><button role="tab" data-pm="up" aria-selected="'+up+'">Sign up</button></div>'+
+      '<div class="fields">'+(up?'<label class="full">Venue / business name<input id="ppV"></label><label>Type<select id="ppT"><option>Club / bar</option><option>Restaurant</option><option>Hotel</option><option>Spa</option><option>Tours and activities</option><option>Transport</option><option>Other</option></select></label><label>Contact person<input id="ppN" autocomplete="name"></label><label class="full">WhatsApp<input id="ppP" inputmode="tel" placeholder="+66"></label>':'')+
+      '<label class="full">Email<input id="ppE" type="email" autocomplete="email"></label><label class="full">Password<input id="ppW" type="password" autocomplete="'+(up?"new-password":"current-password")+'"'+(up?' placeholder="At least 8 characters"':'')+'></label></div>'+
+      '<button class="cta" id="ppGo">'+(up?"Register venue":"Sign in")+'</button><p class="err" id="ppM" role="status"></p></div>';
+    var $=function(s){return panel.querySelector(s)},val=function(s){var e=$(s);return e?e.value.trim():""},M=$("#ppM");
+    function msg(t,ok){M.style.color=ok?"var(--ok)":"";M.textContent=t}
+    $("#ppX").onclick=closeSheet;
+    panel.querySelectorAll("[data-pm]").forEach(function(b){b.onclick=function(){openPartner(b.dataset.pm)}});
+    $("#ppGo").onclick=async function(){
+      if(!sb)return msg("Please try again in a moment.");
+      var email=val("#ppE"),pw=$("#ppW").value,btn=$("#ppGo");
+      if(!/^\S+@\S+\.\S+$/.test(email))return msg("Enter a valid email address.");
+      if(up){
+        var venue=val("#ppV"),name=val("#ppN"),phone=val("#ppP");
+        if(!venue)return msg("Add your venue or business name.");
+        if(!name)return msg("Add a contact person.");
+        if(phone.replace(/\D/g,"").length<8)return msg("Add a WhatsApp number with at least 8 digits.");
+        if(pw.length<8)return msg("Use a password with at least 8 characters.");
+        btn.disabled=true;
+        var r=await sb.auth.signUp({email:email,password:pw,options:{data:{role:"partner",venue:venue,venue_type:$("#ppT").value,name:name,phone:phone,partner_status:"pending"},emailRedirectTo:location.origin+location.pathname}});
+        btn.disabled=false;
+        if(r.error)return msg(r.error.message);
+        if(r.data.session){closeSheet();go("dash")}else msg("Venue registered. Check your email and tap the link to confirm, then sign in.",true);
+      }else{
+        if(!pw)return msg("Enter your password.");
+        btn.disabled=true;var r2=await sb.auth.signInWithPassword({email:email,password:pw});btn.disabled=false;
+        if(r2.error)return msg(r2.error.message.indexOf("confirm")>-1?"Please confirm your email first. Check your inbox.":"Wrong email or password.");
+        var m=r2.data.user.user_metadata||{};
+        if(m.role!=="partner")return msg("This email is not a partner account. Tap Sign up to register your venue.");
+        closeSheet();go("dash");
+      }
+    };
+    show();
+  }
+  function openPartnerHome(u){
+    var m=u.user_metadata||{};panel.dataset.only="partner";
+    panel.innerHTML='<div class="pbody">'+head("Partner account")+'<div class="lcard" style="margin-top:14px"><h4>'+esc(m.venue||"My venue")+'</h4><p>'+esc(m.venue_type||"")+' · '+esc(u.email)+'</p><p class="small" style="color:var(--amber)">'+(m.partner_status==="approved"?"Venue approved":"Venue under review. Our team will contact you on WhatsApp.")+'</p></div>'+
+      '<button class="cta" id="ppDash">Open partner dashboard</button><button class="cta ghost" id="ppOut">Sign out</button></div>';
+    panel.querySelector("#ppX").onclick=closeSheet;
+    panel.querySelector("#ppDash").onclick=function(){closeSheet();go("dash")};
+    panel.querySelector("#ppOut").onclick=async function(){if(sb)await sb.auth.signOut();closeSheet();location.reload()};
+    show();
+  }
+  bP.onclick=async function(){
+    var s=sb?(await sb.auth.getSession()).data.session:null;
+    if(s&&(s.user.user_metadata||{}).role==="partner")openPartnerHome(s.user);else openPartner("in");
+  };
+  function marks(s){var role=s?((s.user.user_metadata||{}).role||"traveller"):"";
+    bP.classList.toggle("in",role==="partner");bA.classList.toggle("in",role.indexOf("agent")===0);bU.classList.toggle("in",!!s&&role!=="partner"&&role.indexOf("agent")!==0)}
+  if(sb){sb.auth.getSession().then(function(r){marks(r.data.session)});sb.auth.onAuthStateChange(function(e,s){marks(s)})}
+
+  var days=document.getElementById("days");
+  if(days){
+    var rate=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.6;
+    var NAMES={en:"English",hi:"हिन्दी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
+    var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
+    var row=document.createElement("section");row.className="npx-row";row.setAttribute("aria-label","Language, time and currency");
+    row.innerHTML='<button class="npx-lang" id="npxLang">'+I(P_GLOBE)+'<small>Language</small><b translate="no" class="notranslate">'+(NAMES[lang]||"English")+'</b></button>'+
+      '<div class="npx-tools"><div class="npx-clocks"><div><small>India</small><b id="npxIN" translate="no" class="notranslate">--:--</b></div><div><small>Thailand</small><b id="npxTH" translate="no" class="notranslate">--:--</b></div></div>'+
+      '<div class="npx-conv"><input id="npxAmt" inputmode="decimal" value="1000" aria-label="Amount to convert"><button id="npxDir" aria-label="Switch currency direction"></button><output id="npxOut" translate="no" class="notranslate"></output></div>'+
+      '<small>Approx. rate: ฿1 = ₹'+rate+'</small></div>';
+    days.insertAdjacentElement("afterend",row);
+    document.getElementById("npxLang").onclick=function(){if(window.openLang)openLang()};
+    function tick(){function f(tz){return new Intl.DateTimeFormat("en-GB",{hour:"2-digit",minute:"2-digit",timeZone:tz}).format(new Date())}
+      document.getElementById("npxIN").textContent=f("Asia/Kolkata");document.getElementById("npxTH").textContent=f("Asia/Bangkok")}
+    tick();setInterval(tick,20000);
+    var dir="THB",amt=document.getElementById("npxAmt"),db=document.getElementById("npxDir"),out=document.getElementById("npxOut");
+    function fmt(n){return Math.round(n).toLocaleString("en-IN")}
+    function conv(){var a=parseFloat((amt.value||"").replace(/,/g,""))||0;
+      if(dir==="THB"){db.textContent="฿ → ₹";out.textContent="฿"+fmt(a)+" = ₹"+fmt(a*rate)}
+      else{db.textContent="₹ → ฿";out.textContent="₹"+fmt(a)+" = ฿"+fmt(a/rate)}}
+    amt.addEventListener("input",conv);db.onclick=function(){dir=dir==="THB"?"INR":"THB";conv()};conv();
+  }
+})();
+</script>
+
+<!-- ===== v19: service pages, full-page venues, clickable logo (add-on) ===== -->
+<style>
+.brandrow{cursor:pointer}
+.svchead{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:12px;padding:10px 0;background:linear-gradient(var(--bg) 70%,transparent)}
+.svcback{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;flex:0 0 auto}
+.svcback .ic{width:22px;height:22px}
+.svchead h2{font-size:22px;margin:0}
+.svchead small{color:var(--muted)}
+.svchero{height:220px;border-radius:24px;margin:6px 0 16px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:16px;border:1px solid var(--line)}
+.svchero p{margin:0;color:#fff;font-size:15px;text-shadow:0 2px 12px rgba(0,0,0,.7);position:relative;z-index:1}
+.sheet.full .panel{top:0!important;bottom:0!important;left:0!important;right:0!important;width:auto!important;max-height:none!important;height:100%;border-radius:0!important;transform:none!important;animation:none!important}
+.sheet.full .panel .art{border-radius:0!important;height:260px}
+</style>
+<script>
+(function(){
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  /* photos: photos/<service>.jpg and photos/<venue id>.jpg */
+  var baseArt=artSVG;
+  artSVG=function(c){var l="linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6)),";
+    if(c.id)l+="url('photos/"+c.id+".jpg') center/cover no-repeat,";
+    if(c.cat)l+="url('photos/"+c.cat+".jpg') center/cover no-repeat,";
+    return l+baseArt(c)};
+
+  var svc=document.createElement("section");svc.id="svcPage";svc.hidden=true;
+  var ex=document.getElementById("explore");ex.parentNode.insertBefore(svc,ex.nextSibling);
+  var SECTIONS=["explore","map","concierge","buddy","bookings","earn","clubs","packages","ladies","mall","paybill","dash"];
+  var leaving=false;
+  var _go=go;
+  go=function(t){if(!svc.hidden){svc.hidden=true;leaving=true;setTimeout(function(){leaving=false},500)}_go(t)};
+  var _close=closeSheet;
+  function realClose(){sheet.classList.remove("full");_close()}
+  closeSheet=function(){if(history.state&&history.state.np==="v"&&sheet.classList.contains("open"))history.back();else realClose()};
+  var _open=openClub;
+  openClub=function(c){_open(c);sheet.classList.add("full");
+    if(history.state&&history.state.np==="v")history.replaceState({np:"v",id:c.id},"","#v/"+c.id);
+    else history.pushState({np:"v",id:c.id},"","#v/"+c.id)};
+
+  function showService(cat){
+    var nm=(typeof CATNAME!=="undefined"&&CATNAME[cat])||"Services";
+    var list=CLUBS.filter(function(c){return c.cat===cat});
+    SECTIONS.forEach(function(id){var el=document.getElementById(id);if(el)el.hidden=true});
+    document.querySelectorAll(".tabs button").forEach(function(b){if(b.dataset.tab==="explore")b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+    var pal=(list[0]&&list[0].art)||["#FF3DA8","#6A2BFF"];
+    svc.innerHTML='<div class="svchead"><button class="svcback" id="svcBack" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><div><h2>'+esc(nm)+'</h2><small>'+list.length+' place'+(list.length===1?"":"s")+' in Pattaya</small></div></div>'+
+      '<div class="svchero" style="background:'+artSVG({cat:cat,art:pal})+' center/cover no-repeat,#06061A"><p>Tap any place to see details and book.</p></div>'+
+      '<div class="grid" id="svcGrid"></div>'+(list.length?'':'<p class="empty">New places coming soon.</p>');
+    var g=svc.querySelector("#svcGrid");
+    list.forEach(function(c){
+      var paid=c.pkgs.map(function(p){return p.p}).filter(Boolean),from=paid.length?Math.min.apply(null,paid):0;
+      var b=document.createElement("button");b.className="club";
+      b.innerHTML='<div class="art" style="'+artStyle(c)+'"><span class="live">'+esc(c.type||nm)+'</span><span class="name">'+esc(c.name)+'</span></div><div class="meta"><div class="row"><span>'+esc(c.area)+'</span><span>'+esc(c.open)+'</span></div><div class="row"><span>'+esc(c.music||c.sub||"")+'</span><span class="from">'+(c.pkgs[0]&&c.pkgs[0].free?"Free entry":(from?"from "+money(from):"On request"))+'</span></div></div>';
+      b.onclick=function(){openClub(c)};g.appendChild(b)});
+    svc.querySelector("#svcBack").onclick=function(){if(history.state&&history.state.np==="s")history.back();else{svc.hidden=true;_go("explore")}};
+    svc.hidden=false;
+    if(window.sceneApply)sceneApply();
+  }
+  function openService(cat){showService(cat);history.pushState({np:"s",cat:cat},"","#s/"+cat);window.scrollTo({top:0})}
+  window.openService=openService;
+
+  function bindCats(){document.querySelectorAll("#cats .cat").forEach(function(b,i){if(CATS[i])b.onclick=function(){openService(CATS[i][0])}})}
+  var _rc=renderCats;renderCats=function(){_rc();bindCats()};bindCats();
+
+  window.addEventListener("popstate",function(e){
+    var st=e.state;if(sheet.classList.contains("open"))realClose();
+    if(leaving){leaving=false;return}
+    if(st&&st.np==="s")showService(st.cat);
+    else if(!st||st.np!=="v"){if(!svc.hidden){svc.hidden=true;_go("explore")}}
+  });
+
+  function home(){
+    if(sheet.classList.contains("open"))realClose();
+    if(window.closeRaju)closeRaju();
+    svc.hidden=true;_go("explore");
+    if(location.hash)history.replaceState(null,"",location.pathname+location.search);
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  var br=document.querySelector(".top .brandrow");
+  if(br){br.setAttribute("role","link");br.tabIndex=0;br.setAttribute("aria-label","Home");br.onclick=home;
+    br.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();home()}}}
+
+  var h=location.hash;
+  if(h.indexOf("#s/")===0){var cat=h.slice(3);history.replaceState({np:"s",cat:cat},"",h);showService(cat)}
+  ["renderGrid","renderRail","renderMall","renderBookings"].forEach(function(f){if(typeof window[f]==="function")window[f]()});
+})();
+</script>
+</body>
 </html>
