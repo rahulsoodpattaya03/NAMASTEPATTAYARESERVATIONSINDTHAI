@@ -2617,5 +2617,56 @@ body{top:0!important}
 function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,hi,pa,gu,ta,mr",autoDisplay:false},"google_translate_element")}
 </script>
 <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+<!-- ===== v17: sign in / sign up (add-on) ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.acctbtn{width:40px;height:40px;padding:0!important;display:grid;place-items:center}
+.acctbtn .ic{width:20px;height:20px}
+.acctbtn.in{border-color:var(--ok)!important;color:var(--ok)}
+.atabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.atabs button,.roles button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:11px 6px;font-weight:600}
+.roles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.roles button{font-size:13px}
+.roles button small{display:block;color:var(--muted);font-weight:400;font-size:11px}
+.atabs button[aria-selected="true"],.roles button[aria-pressed="true"]{border-color:var(--glow);box-shadow:0 0 0 2px var(--glow)}
+</style>
+<script>
+(function(){
+  var SUPA_URL="https://mymtgbmcjbwsnetzwgoy.supabase.co";
+  var SUPA_KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
+  var sb=(window.supabase&&SUPA_URL.indexOf("http")===0)?window.supabase.createClient(SUPA_URL,SUPA_KEY):null;
+  var user=null;
+  var ROLES={traveller:["Traveller","3% referral"],agent_in:["Indian agent","5% commission"],agent_th:["Thai agent","5% commission"]};
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function code(){return typeof myCode!=="undefined"?myCode:""}
+
+  /* account button in the top bar */
+  var btn=document.createElement("button");btn.className="cur acctbtn";btn.setAttribute("aria-label","Sign in or sign up");
+  btn.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 1 0-8a4 4 0 1 1 0 8z M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+  var topr=document.querySelector(".topr");if(topr)topr.appendChild(btn);
+  btn.onclick=function(){user?openProfile():openAcct("in","traveller")};
+
+  /* link from the Earn page */
+  var earn=document.getElementById("earn");
+  if(earn){var eb=document.createElement("button");eb.className="cta ghost";eb.textContent="Create an agent account";eb.onclick=function(){openAcct("up","agent_in")};earn.appendChild(eb)}
+
+  /* keep the Earn page in sync with the signed-in account */
+  function syncApp(){
+    btn.classList.toggle("in",!!user);
+    btn.setAttribute("aria-label",user?"My account":"Sign in or sign up");
+    if(!user)return;
+    var m=user.user_metadata||{};
+    if(m.ref_code&&typeof myCode!=="undefined"){myCode=m.ref_code;store.set("np_ref",myCode)}
+    if(m.role&&m.role.indexOf("agent")===0&&typeof myRole!=="undefined"){myRole="agent";store.set("np_role","agent")}
+    if(typeof renderEarn==="function")renderEarn();
+  }
+
+  function show(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="acX" aria-label="Close">'+ico("close")+'</button></div>'}
+
+  function openAcct(mode,role){
+    var up=mode==="up";
+    panel.innerHTML='<div class="pbody">'+head(up?"Create account":"Sign in")+
+      '<div class="atabs"
 </body>
 </html>
