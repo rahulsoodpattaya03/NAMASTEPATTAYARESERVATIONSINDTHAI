@@ -579,66 +579,6 @@ body.has-scene{background:var(--bg)}
 .topr .cur,.topr .prem{margin-right:0}
 @media (max-width:400px){.brandrow .wordmark{height:40px}.brandmark{width:40px!important;height:40px!important}.topr .cur{padding:0 10px;font-size:13px}.topr .prem{padding:0 10px}}
 
-/* ===== v15: cloud account ===== */
-.prem.acct{padding:0 11px;border-color:var(--line);color:var(--ink)}
-.prem.acct.on{border-color:#3EE0B0;color:#3EE0B0}
-.cloudnote{font-size:12px;color:var(--muted);margin-top:8px}
-
-.off30.late{background:linear-gradient(180deg,#9DF4FF,#5B7CFF);color:#0B0A1F}
-/* ===== v19: keep form fields inside the card on small phones ===== */
-.fields{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
-.fields label{min-width:0}
-.fields input,.fields select,.stepper{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
-.gate,.partner,.lcard,.pcard{max-width:100%;overflow:hidden}
-.post input,.post textarea,.chatbar input,.rajuask input,.search input{min-width:0;box-sizing:border-box}
-
-/* ===== v20: buddy profiles, interests, VIP ===== */
-.intchips{display:flex;flex-wrap:wrap;gap:6px}
-.intchips button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 11px;font-size:12.5px}
-.intchips button[aria-pressed="true"]{background:linear-gradient(135deg,#FF1F6B,#7A2BF5);color:#fff;border-color:transparent}
-.intchips button.all[aria-pressed="true"]{background:linear-gradient(135deg,#FFB02E,#FF1F6B)}
-.vipbar{margin:14px 0 4px;border-radius:16px;padding:12px 14px;border:1px solid rgba(233,216,166,.4);background:linear-gradient(135deg,rgba(230,178,48,.14),rgba(11,12,16,.85));font-size:13.5px;color:var(--ink)}
-.vipbar .row2{margin-top:8px}.vipbar b{color:#F3D98A}
-.person.v2{padding:0;overflow:hidden}
-.person.v2 .ph{position:relative;height:250px;background:#141026 center 12%/cover no-repeat;cursor:pointer}
-.person.v2 .ph .bd{position:absolute;left:10px;top:10px;display:flex;gap:6px;flex-wrap:wrap}
-.bdg{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;letter-spacing:.03em}
-.bdg.vip{background:linear-gradient(180deg,#F3E6C4,#B99B5C);color:#1A1406}
-.bdg.ver{background:#1D9BF0;color:#fff}
-.bdg.nov{background:rgba(0,0,0,.55);color:#ddd;border:1px solid rgba(255,255,255,.25)}
-.bdg.sam{background:rgba(0,0,0,.55);color:#bbb}
-.person.v2 .inner{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px}
-.avail{font-size:12.5px;color:#3EE0B0}
-.itag{font-size:11px;border:1px solid var(--line);border-radius:999px;padding:2px 8px;color:var(--muted)}
-.itag.hit{border-color:#FF1F6B;color:#FF8DB0}
-.ldbtns{display:flex;gap:8px}.ldbtns button{flex:1;border-radius:12px;padding:10px 6px;font-weight:600;border:1px solid var(--line);background:transparent;color:var(--ink);display:flex;align-items:center;justify-content:center;gap:6px}
-.ldbtns .lk{background:linear-gradient(135deg,#FF1F6B,#7A2BF5);border:0;color:#fff}
-.ldbtns .dis{color:#FF8DB0}
-.pvimg{height:340px;border-radius:24px 24px 0 0;background:#141026 center 12%/cover no-repeat;position:relative}
-.pvimg .bd{position:absolute;left:14px;bottom:14px;display:flex;gap:6px}
-.giftpick{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
-.giftpick button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:10px;text-align:left;font-size:13px}
-.giftpick button[aria-pressed="true"]{border-color:#FF1F6B;box-shadow:0 0 0 2px rgba(255,31,107,.35)}
-.giftpick small{display:block;color:var(--amber)}
-.hiddenvip{font-size:12.5px;color:var(--muted);margin:8px 0}
-
-/* ===== v21: buddy how-to, ask to join, ID proof ===== */
-.howto{border:1px solid var(--line);border-radius:18px;padding:12px 16px;margin:-6px 0 16px;background-color:color-mix(in srgb,var(--solid,#0B0C10) 86%,transparent)}
-.howto summary{font-weight:700;cursor:pointer;color:var(--ink)}
-.howto ol{margin:10px 0 2px;padding-left:20px;color:var(--muted);font-size:14px}
-.howto li{margin:7px 0}.howto b{color:var(--ink)}
-.idbox{margin-top:12px;border:1px solid rgba(255,184,230,.5);border-radius:16px;padding:12px 14px;background:linear-gradient(135deg,rgba(255,105,180,.12),rgba(11,12,16,.8))}
-.idbox b{color:#FFB8E6}
-.doing{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13.5px}
-.doing .act{background:linear-gradient(135deg,#FFB02E,#FF1F6B);color:#fff;border-radius:999px;padding:3px 10px;font-weight:700;font-size:12.5px}
-.askjoin{width:100%;border:0;border-radius:12px;padding:11px;font-weight:700;background:var(--ink);color:var(--bg);margin-top:2px}
-.askjoin[disabled]{opacity:.6}
-.tmpl{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}.tmpl button{border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:6px 10px;font-size:12px;text-align:left}
-.reqta{width:100%;min-height:96px;border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:12px;font:inherit;box-sizing:border-box;resize:vertical}
-
-.intents{gap:6px}
-.intents .intent{padding:7px 11px;font-size:12.5px}
-.intents .intent .ic{width:14px;height:14px}
 [hidden]{display:none!important}
 .sectiontitle{font-size:26px;margin:14px 0 16px}
 </style>
@@ -836,7 +776,7 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
 <div class="wrap">
   <header class="top">
     <div class="brandrow"><img class="brandmark" src="data:image/png;base64,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" alt="Namaste Pattaya Reservations logo"><svg class="wordmark" viewBox="0 0 211 94" role="img" aria-label="Namaste Pattaya Reservations, super-app"><defs><linearGradient id="wmg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FFB02E"/><stop offset=".45" stop-color="#FF1F6B"/><stop offset="1" stop-color="#7A2BF5"/></linearGradient></defs><path d="M2.72 34.0H8.2V12.52L20.56 34.0H26.68V4.439999999999998H21.2V25.96L8.96 4.439999999999998H2.72Z M31.28 34.0H37.32L40.6 26.36H51.120000000000005L54.28 34.0H60.32L47.92 4.439999999999998H43.6ZM42.6 21.119999999999997 45.76 12.16 48.92 21.119999999999997Z M64.72 34.0H70.2V11.84L77.92 34.0H82.4L90.12 11.84V34.0H95.6V4.439999999999998H88.08L80.2 26.84L72.24 4.439999999999998H64.72Z M99.68 34.0H105.72L109.0 26.36H119.52000000000001L122.68 34.0H128.72L116.32000000000001 4.439999999999998H112.0ZM111.0 21.119999999999997 114.16000000000001 12.16 117.32000000000001 21.119999999999997Z M130.96 25.560000000000002C131.44 31.16 135.48000000000002 34.52 140.68 34.52C146.0 34.52 150.12 30.4 150.12 25.04C150.12 21.04 148.48000000000002 18.439999999999998 142.48000000000002 16.2C139.68 15.16 139.6 15.120000000000001 139.20000000000002 14.879999999999999C138.12 14.2 137.56 13.280000000000001 137.56 12.2C137.56 10.440000000000001 138.8 9.2 140.6 9.2C142.44 9.2 143.56 10.32 143.72 12.32H149.4C149.12 7.120000000000001 145.4 3.919999999999998 140.64000000000001 3.919999999999998C135.88 3.919999999999998 132.04 7.640000000000001 132.04 12.32C132.04 16.04 134.24 18.88 138.20000000000002 20.36C142.12 21.84 142.44 21.96 143.32 22.64C144.20000000000002 23.32 144.68 24.439999999999998 144.68 25.64C144.68 27.759999999999998 143.04000000000002 29.240000000000002 140.68 29.240000000000002C138.24 29.240000000000002 136.92000000000002 28.04 136.68 25.560000000000002Z M152.88 9.68H158.35999999999999V34.0H163.84V9.68H169.32V4.439999999999998H152.88Z M173.51999999999998 34.0H189.39999999999998V28.759999999999998H178.99999999999997V21.88H188.95999999999998V16.64H178.99999999999997V9.68H189.39999999999998V4.439999999999998H173.51999999999998Z" fill="#FFFFFF"/><path d="M2.72 72.0H8.2V60.76H9.96C14.16 60.76 16.080000000000002 60.44 17.72 59.44C20.12 57.96 21.6 54.96 21.6 51.56C21.6 48.16 20.16 45.36 17.6 43.8C15.92 42.8 13.96 42.44 10.040000000000001 42.44H2.72ZM8.2 55.519999999999996V47.68H10.040000000000001C14.24 47.68 16.080000000000002 48.519999999999996 16.080000000000002 51.64C16.080000000000002 54.2 14.72 55.519999999999996 9.8 55.519999999999996Z M24.080000000000002 72.0H30.12L33.4 64.36H43.92L47.08 72.0H53.120000000000005L40.72 42.44H36.4ZM35.4 59.12 38.56 50.16 41.72 59.12Z M55.08 47.68H60.559999999999995V72.0H66.03999999999999V47.68H71.52V42.44H55.08Z M73.28 47.68H78.76V72.0H84.24V47.68H89.72V42.44H73.28Z M91.48 72.0H97.52000000000001L100.8 64.36H111.32000000000001L114.48 72.0H120.52000000000001L108.12 42.44H103.8ZM102.8 59.12 105.96000000000001 50.16 109.12 59.12Z M122.32000000000001 42.44 132.04 61.08V72.0H137.52V61.08L147.24 42.44H141.32L134.8 56.04L128.24 42.44Z M148.68 72.0H154.72L158.0 64.36H168.52L171.68 72.0H177.72L165.32 42.44H161.0ZM160.0 59.12 163.16 50.16 166.32 59.12Z" fill="url(#wmg)"/><path d="M1.798 90.0H2.575V82.944H3.6670000000000003C5.473 82.944 6.271 83.4165 6.271 84.708C6.271 86.1045 5.5360000000000005 86.4825 3.3625000000000003 86.4825L5.977 90.0H6.9430000000000005L4.769500000000001 87.102C6.2605 86.9445 7.0585 86.115 7.0585 84.73949999999999C7.0585 83.1225 6.1555 82.2405 3.7195 82.2405H1.798Z M11.371500000000001 90.0H15.613500000000002V89.2965H12.148500000000002V86.43H15.498000000000001V85.7265H12.148500000000002V82.944H15.613500000000002V82.2405H11.371500000000001Z M19.6325 87.8265C19.706 89.223 20.6615 90.1365 22.058 90.1365C23.402 90.1365 24.3995 89.16 24.3995 87.837C24.3995 87.1545 24.116 86.5455 23.6225 86.178C23.307499999999997 85.947 22.982 85.8 22.183999999999997 85.5585C21.4805 85.3485 21.238999999999997 85.254 21.0395 85.0755C20.819 84.8865 20.671999999999997 84.5295 20.671999999999997 84.1725C20.671999999999997 83.3955 21.238999999999997 82.818 22.016 82.818C22.8035 82.818 23.402 83.364 23.402 84.204H24.2105C24.2105 82.944 23.307499999999997 82.104 22.037 82.104C20.787499999999998 82.104 19.8845 82.986 19.8845 84.1935C19.8845 84.729 20.084 85.2435 20.4305 85.569C20.735 85.863 20.976499999999998 85.9785 21.8795 86.2515C23.212999999999997 86.661 23.612 87.0285 23.612 87.879C23.612 88.7715 22.961 89.4225 22.079 89.4225C21.2075 89.4225 20.5775 88.866 20.462 87.8265Z M28.628500000000003 90.0H32.8705V89.2965H29.4055V86.43H32.755V85.7265H29.4055V82.944H32.8705V82.2405H28.628500000000003Z M37.456500000000005 90.0H38.23350000000001V82.944H39.325500000000005C41.1315 82.944 41.929500000000004 83.4165 41.929500000000004 84.708C41.929500000000004 86.1045 41.194500000000005 86.4825 39.021 86.4825L41.63550000000001 90.0H42.6015L40.428000000000004 87.102C41.919000000000004 86.9445 42.717000000000006 86.115 42.717000000000006 84.73949999999999C42.717000000000006 83.1225 41.81400000000001 82.2405 39.378 82.2405H37.456500000000005Z M46.337 82.2405 49.529 90.0H50.285000000000004L53.498000000000005 82.2405H52.65800000000001L49.917500000000004 89.034L47.18750000000001 82.2405Z M56.91850000000001 90.0H57.73750000000001L58.87150000000001 87.3855H62.483500000000014L63.60700000000001 90.0H64.45750000000001L61.11850000000001 82.2405H60.247000000000014ZM59.16550000000001 86.682 60.68800000000001 83.1225 62.17900000000001 86.682Z M67.8465 82.944H69.62100000000001V90.0H70.39800000000001V82.944H72.17250000000001V82.2405H67.8465Z M76.24400000000001 90.0H77.02100000000002V82.2405H76.24400000000001Z M81.48100000000001 86.073C81.48100000000001 88.3305 83.308 90.1365 85.5865 90.1365C87.8335 90.1365 89.6815 88.32 89.6815 86.1255C89.6815 83.91 87.8335 82.104 85.5865 82.104C83.3605 82.104 81.48100000000001 83.9205 81.48100000000001 86.073ZM82.2685 86.094C82.2685 84.3195 83.79100000000001 82.818 85.5865 82.818C87.39250000000001 82.818 88.894 84.3195 88.894 86.136C88.894 87.9315 87.39250000000001 89.4225 85.5865 89.4225C83.7595 89.4225 82.2685 87.9315 82.2685 86.094Z M94.14150000000001 90.0H94.91850000000001V83.175L99.5385 90.0H100.3155V82.2405H99.5385V88.677L95.1915 82.2405H94.14150000000001Z M104.5445 87.8265C104.61800000000001 89.223 105.57350000000001 90.1365 106.97 90.1365C108.31400000000001 90.1365 109.31150000000001 89.16 109.31150000000001 87.837C109.31150000000001 87.1545 109.028 86.5455 108.53450000000001 86.178C108.21950000000001 85.947 107.894 85.8 107.096 85.5585C106.3925 85.3485 106.15100000000001 85.254 105.95150000000001 85.0755C105.73100000000001 84.8865 105.584 84.5295 105.584 84.1725C105.584 83.3955 106.15100000000001 82.818 106.92800000000001 82.818C107.7155 82.818 108.31400000000001 83.364 108.31400000000001 84.204H109.1225C109.1225 82.944 108.21950000000001 82.104 106.949 82.104C105.6995 82.104 104.79650000000001 82.986 104.79650000000001 84.1935C104.79650000000001 84.729 104.99600000000001 85.2435 105.3425 85.569C105.647 85.863 105.88850000000001 85.9785 106.7915 86.2515C108.125 86.661 108.524 87.0285 108.524 87.879C108.524 88.7715 107.873 89.4225 106.991 89.4225C106.1195 89.4225 105.4895 88.866 105.37400000000001 87.8265Z M119.69100000000002 88.0365H120.46800000000002V86.7135H119.69100000000002Z M130.8475 87.8265C130.921 89.223 131.8765 90.1365 133.273 90.1365C134.617 90.1365 135.6145 89.16 135.6145 87.837C135.6145 87.1545 135.331 86.5455 134.8375 86.178C134.5225 85.947 134.197 85.8 133.399 85.5585C132.6955 85.3485 132.454 85.254 132.2545 85.0755C132.034 84.8865 131.887 84.5295 131.887 84.1725C131.887 83.3955 132.454 82.818 133.231 82.818C134.0185 82.818 134.617 83.364 134.617 84.204H135.4255C135.4255 82.944 134.5225 82.104 133.252 82.104C132.0025 82.104 131.0995 82.986 131.0995 84.1935C131.0995 84.729 131.299 85.2435 131.6455 85.569C131.95 85.863 132.1915 85.9785 133.0945 86.2515C134.428 86.661 134.827 87.0285 134.827 87.879C134.827 88.7715 134.17600000000002 89.4225 133.294 89.4225C132.4225 89.4225 131.7925 88.866 131.677 87.8265Z M139.8435 87.081C139.8435 89.1915 140.9145 90.1365 142.479 90.1365C144.054 90.1365 145.125 89.1915 145.125 87.081V82.2405H144.348V87.081C144.348 88.6665 143.6865 89.4225 142.4895 89.4225C141.2715 89.4225 140.6205 88.6665 140.6205 87.081V82.2405H139.8435Z M149.921 90.0H150.69799999999998V86.8605H152.189C154.2995 86.8605 155.0555 86.0625 155.0555 84.5925C155.0555 82.965 154.1945 82.2405 152.063 82.2405H149.921ZM150.69799999999998 86.157V82.944H151.8005C153.28099999999998 82.944 154.268 83.0175 154.268 84.5925C154.268 85.716 153.67999999999998 86.157 152.13649999999998 86.157Z M159.337 90.0H163.57899999999998V89.2965H160.11399999999998V86.43H163.46349999999998V85.7265H160.11399999999998V82.944H163.57899999999998V82.2405H159.337Z M168.165 90.0H168.94199999999998V82.944H170.034C171.84 82.944 172.63799999999998 83.4165 172.63799999999998 84.708C172.63799999999998 86.1045 171.903 86.4825 169.7295 86.4825L172.344 90.0H173.31L171.13649999999998 87.102C172.6275 86.9445 173.4255 86.115 173.4255 84.73949999999999C173.4255 83.1225 172.52249999999998 82.2405 170.0865 82.2405H168.165Z M177.266 87.5535H180.11149999999998V86.892H177.266Z M183.742 90.0H184.561L185.695 87.3855H189.307L190.4305 90.0H191.281L187.942 82.2405H187.07049999999998ZM185.989 86.682 187.51149999999998 83.1225 189.0025 86.682Z M195.3945 90.0H196.17149999999998V86.8605H197.6625C199.773 86.8605 200.529 86.0625 200.529 84.5925C200.529 82.965 199.668 82.2405 197.5365 82.2405H195.3945ZM196.17149999999998 86.157V82.944H197.274C198.75449999999998 82.944 199.7415 83.0175 199.7415 84.5925C199.7415 85.716 199.15349999999998 86.157 197.60999999999999 86.157Z M204.8105 90.0H205.58749999999998V86.8605H207.0785C209.189 86.8605 209.945 86.0625 209.945 84.5925C209.945 82.965 209.084 82.2405 206.9525 82.2405H204.8105ZM205.58749999999998 86.157V82.944H206.69C208.17049999999998 82.944 209.1575 83.0175 209.1575 84.5925C209.1575 85.716 208.56949999999998 86.157 207.02599999999998 86.157Z" fill="#B9B4D8"/></svg></div>
-    <div class="topr"><button class="prem acct" id="acctBtn" aria-label="My account"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 0 0-8a4 4 0 0 0 0 8z M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></svg></button><button class="prem" id="premBtn" aria-label="Namaste Pattaya Reservations Premium"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg><span id="premLbl">Premium</span></button><button class="cur" id="curBtn" aria-label="Switch currency">₹ INR</button>
+    <div class="topr"><button class="prem" id="premBtn" aria-label="Namaste Pattaya Reservations Premium"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z"/></svg><span id="premLbl">Premium</span></button><button class="cur" id="curBtn" aria-label="Switch currency">₹ INR</button>
     </div>
   </header>
   <div class="skins" id="skins" role="radiogroup" aria-label="Design" hidden></div>
@@ -923,8 +863,6 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
     </section>
     <div class="lrow" style="margin:0 0 10px"><h2 class="sectiontitle" style="font-size:20px;margin:0">Indian clubs · Walking Street</h2><span class="off30">Up to 30% off</span></div>
     <div class="rail" id="indRail"></div>
-    <div class="lrow" style="margin:0 0 10px"><h2 class="sectiontitle" style="font-size:20px;margin:0">After-party clubs · till sunrise</h2><span class="off30 late">After 2 AM</span></div>
-    <div class="rail" id="afterRail"></div>
     <h2 class="sectiontitle" style="font-size:20px;margin-top:4px">All services</h2>
     <div class="cats" id="cats" role="group" aria-label="Services"></div>
     <div class="search">
@@ -993,17 +931,6 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
   <!-- BUDDY -->
   <section id="buddy" hidden>
     <h2 class="sectiontitle">Find a buddy</h2>
-    <details class="howto" open>
-      <summary>How Buddy works</summary>
-      <ol>
-        <li><b>Create your profile.</b> Name, age, city and languages. Ladies verify with an ID proof, so every woman on Buddy is real and safe.</li>
-        <li><b>Say what you're doing and when.</b> Pick the activity (party, dinner, beach, yacht party…), the time you're free, for example 9:00 PM – 3:00 AM, and where you'll be.</li>
-        <li><b>Go live.</b> People who want the same thing can see you. You choose who can see and message you.</li>
-        <li><b>See who's doing what.</b> Every profile shows the activity, the time window and the place.</li>
-        <li><b>Ask to join.</b> Tap <b>Ask to join</b> and write a short message about yourself. No message, no request.</li>
-        <li><b>They say yes, you chat and meet.</b> Always meet in public places, tell a friend your plan, and never send money.</li>
-      </ol>
-    </details>
     <div id="buddyGate" class="gate">
       <p class="about" style="margin:0 0 12px">Meet other travellers for a party, lunch, coffee, dinner, sports or a date. Set up your profile once.</p>
       <div class="fields">
@@ -1012,13 +939,6 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
         <label>From (city)<input id="bFrom" placeholder="e.g. Mumbai"></label>
         <label>I am<select id="bSex"><option>Man</option><option>Woman</option><option>Prefer not to say</option></select></label>
         <label class="full">Languages<input id="bLang" placeholder="Hindi, English"></label>
-      </div>
-      <div class="idbox" id="idBox" hidden>
-        <b>ID proof for ladies</b>
-        <p class="small">For your safety, every woman on Buddy is verified. Your ID is only used to check you are who you say you are. It is never shown on your profile and is deleted after checking.</p>
-        <div class="fields"><label class="full">ID type<select id="idType"><option>Passport</option><option>Aadhaar card</option><option>Thai ID card</option><option>Driving licence</option><option>PAN card</option></select></label>
-        <label class="full">Photo of your ID<input type="file" id="idFile" accept="image/*"></label></div>
-        <label class="chk"><input type="checkbox" id="idOk"> I agree my ID is used only for verification.</label>
       </div>
       <label style="display:flex;gap:8px;align-items:flex-start;margin-top:12px;font-size:14px"><input type="checkbox" id="b18"> I am 18 or older and agree to meet respectfully in public places.</label>
       <button class="cta" id="bStart">Create profile</button>
@@ -1033,17 +953,12 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
         <label class="full">Your plan (optional)<input id="bNote" maxlength="80" placeholder="e.g. Walking Street, want a group to go with"></label>
         <label>Which club<select id="bClub"></select></label>
         <label>Which table<input id="bTable" placeholder="e.g. VIP booth 3"></label>
-        <label>Who can see my profile<select id="bVis"><option value="all">Everyone</option><option value="liked">Only people I like</option><option value="women">Only women</option><option value="men">Only men</option><option value="hidden">Nobody (hidden)</option><option value="vip">VIP members only</option></select></label>
-        <label>Who can message me<select id="bMsg"><option value="all">Every user</option><option value="vip">VIP members only</option><option value="matches">Only my matches</option></select></label>
-        <label>Available from<select id="avFrom"></select></label><label>Available until<select id="avTo"></select></label>
+        <label>Who can see my profile<select id="bVis"><option value="all">Everyone</option><option value="liked">Only people I like</option><option value="women">Only women</option><option value="men">Only men</option><option value="hidden">Nobody (hidden)</option></select></label>
         <label>Nearby<button type="button" class="switch" id="nearSw" role="switch" aria-checked="false" aria-label="Show people nearby using my location"></button></label>
       </div>
       <div class="golive" id="golive"><div><strong id="liveTitle">You're hidden</strong><div class="small" id="liveSub">Go live so others with the same plan can see you.</div></div>
         <button class="switch" id="liveSw" role="switch" aria-checked="false" aria-label="Go live"></button></div>
       <p class="small" id="nearMsg"></p>
-      <h3 style="font-size:16px;margin:18px 0 8px">My interests</h3>
-      <div class="intchips" id="myInts" role="group" aria-label="My interests"></div>
-      <div class="vipbar" id="vipBar"></div>
       <h3 style="font-size:16px;margin:18px 0 10px">Swipe</h3>
       <div class="swipe" id="swipe"></div>
       <div class="swbtns"><button id="swNo" aria-label="Pass"><span data-i="close"></span></button><button id="swYes" aria-label="Like"><span data-i="heart"></span></button></div>
@@ -1162,7 +1077,6 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
   <div class="panel" id="panel"></div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
 const GOLDMARK="data:image/png;base64,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";
 
@@ -1327,25 +1241,6 @@ INDIAN.slice().reverse().forEach(m=>CLUBS.unshift({id:m[0],name:m[1],cat:"nightl
   pkgs:[{n:m[0]==="nashaa"?"Free entry":"Entry",d:m[0]==="nashaa"?"Order drinks inside":"Guest list, confirm at the door",p:0,free:m[0]==="nashaa",left:99},
         {n:"Standard table",d:"Up to 6 guests, 1 bottle",p:6000,left:8},{n:"Ladies table",d:"Up to 4 women",p:3000,left:4},{n:"VIP table",d:"Up to 10 guests, 2 bottles, host",p:15000,left:2}]}));
 
-/* ===== v16: after-party clubs ===== */
-// [id, name, hours, music, tags, about, colors, partnerDiscount]
-const AFTER=[
- ["nashaa-space","Nashaa Space","After-party · late till early morning","Bollywood · Punjabi · House","After party|Nashaa Group|Indian crowd",
-  "The after-party spot from the Nashaa team. When the main clubs close, the party moves here: Bollywood and Punjabi hits mixed with house till the early hours.",["#FF9933","#4A0E6B"],30],
- ["barone","BarOne Lounge & Bar by Nashaa Club","Party & after-party · late night","International · Bollywood","After party|Lounge & bar|Nashaa Group",
-  "A lounge and bar by the Nashaa Group for the party and the after-party, with a blend of international music. Great for a relaxed drink after Walking Street.",["#FFD166","#6A1B9A"],30],
- ["sutraa","Club Sutraa by Kaama","After-party · late till early morning","Bollywood · EDM","After party|Kamaa Group|Indian crowd",
-  "The after-party club from the Kamaa team. Keep the night going with Bollywood and EDM when the main floor winds down.",["#FF3DA8","#1B1464"],30],
- ["jannat-lounge","Jannaat Lounge by Jannaat","Lounge & after-party · late night","Bollywood · Punjabi","After party|Lounge|Jannaat Group",
-  "The lounge from the Jannaat team: a place to sit back with your group after the club, with Bollywood and Punjabi music and table service.",["#FFB547","#7A0A30"],30],
- ["myst","MYST Club","After-hours · kicks off very late","Hip-hop · R&B","After party|Hip-hop superclub|Strict dress code",
-  "Thailand's hip-hop superclub, open since 2022 and about 40 m from Walking Street. World-class sound and lighting, and it really gets going in the early morning. Dress smart: closed shoes, long trousers or clean shorts.",["#00E5FF","#2A0845"],null],
- ["republic","Republic Club","Late night till early morning","House · Hip-hop","After party|VIP tables|Strict dress code",
-  "A big-name Walking Street club for house and hip-hop, popular with groups for bottle service and VIP tables. Dress smart: closed shoes, no tank tops.",["#9D4EDD","#10002B"],null]
-];
-AFTER.slice().reverse().forEach(m=>CLUBS.unshift({id:m[0],name:m[1],cat:"nightlife",area:"Walking Street",open:m[2],music:m[3],tags:m[4].split("|"),about:m[5],type:"After party",art:m[6],afterparty:true,indian:false,disc:m[7]||undefined,
-  pkgs:[{n:"Entry",d:"Walk-in, confirm at the door",p:0,left:99},{n:"Standard table",d:"Up to 6 guests, 1 bottle",p:6000,left:6},{n:"Ladies table",d:"Up to 4 women",p:3000,left:4},{n:"VIP table",d:"Up to 10 guests, 2 bottles, host",p:15000,left:2}]}));
-
 /* currency */
 const INR_PER_THB = 2.6; // approx — update to live rate later
 let cur = store0("np_cur","INR");
@@ -1387,7 +1282,7 @@ function renderPremiumUI(){
   document.getElementById("premBtn").classList.toggle("on",on);
   document.getElementById("premLbl").textContent=on?"Premium":"Go Premium";
 }
-function openVipBuddy(){
+function openPremium(){
   lastFocus=document.activeElement;const on=isPremium(),cur=root.dataset.skin;
   const lock=`<span class="lock">${'<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 11h12v9H6z M8.5 11V8a3.5 3.5 0 0 1 7 0v3"/></svg>'}</span>`;
   panel.innerHTML=`<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px;display:flex;align-items:center;gap:10px"><img class="goldmark lg" src="${GOLDMARK}" alt="">Namaste Pattaya Reservations Premium</h2><button class="theme" id="pClose" aria-label="Close">${ico("close")}</button></div>
@@ -1398,13 +1293,13 @@ function openVipBuddy(){
      <div class="pprice">${money(199)} <small>/ month</small></div>
      <button class="cta" id="pJoin">Become Premium</button><p class="small">Demo only: no payment is taken in this preview.</p>`}</div>`;
   panel.querySelector("#pClose").onclick=closeSheet;
-  panel.querySelectorAll(".pskin").forEach(b=>b.onclick=()=>{if(!isPremium()&&b.dataset.k!=="holo"){panel.querySelector("#pJoin").focus();return}setSkin(b.dataset.k);openVipBuddy()});
-  const j=panel.querySelector("#pJoin");if(j)j.onclick=()=>{store.set("np_premium",true);renderPremiumUI();openVipBuddy()};
+  panel.querySelectorAll(".pskin").forEach(b=>b.onclick=()=>{if(!isPremium()&&b.dataset.k!=="holo"){panel.querySelector("#pJoin").focus();return}setSkin(b.dataset.k);openPremium()});
+  const j=panel.querySelector("#pJoin");if(j)j.onclick=()=>{store.set("np_premium",true);renderPremiumUI();openPremium()};
   const d=panel.querySelector("#pDone");if(d)d.onclick=closeSheet;
-  const c=panel.querySelector("#pCancel");if(c)c.onclick=()=>{store.set("np_premium",false);setSkin("holo");renderPremiumUI();openVipBuddy()};
+  const c=panel.querySelector("#pCancel");if(c)c.onclick=()=>{store.set("np_premium",false);setSkin("holo");renderPremiumUI();openPremium()};
   sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
 }
-document.getElementById("premBtn").onclick=()=>openVipBuddy();
+document.getElementById("premBtn").onclick=()=>openPremium();
 setSkin(store.get("np_skin","holo"));
 renderPremiumUI();
 
@@ -1617,45 +1512,36 @@ function renderMapCard(){
 /* ===== v2: concierge chat ===== */
 const chatEl=document.getElementById("chat"),chatIn=document.getElementById("chatIn");
 const chatHist=[];let busy=false;
-// sample venues from the early preview: kept in the app, but Raju never recommends them
-const SAMPLE_IDS=["skyline","lumen","basement","velvet","pulse","noon","bollybar"];
-const RAJU_OK=c=>!SAMPLE_IDS.includes(c.id);
-function richText(el,t){el.textContent="";String(t).split(/(\*\*[^*]+\*\*)/g).forEach(part=>{if(/^\*\*[^*]+\*\*$/.test(part)){const b=document.createElement("b");b.textContent=part.slice(2,-2);el.appendChild(b)}else el.appendChild(document.createTextNode(part.replace(/\*\*/g,"")))})}
-const CATALOG=CLUBS.filter(RAJU_OK).map(c=>{const paid=c.pkgs.map(p=>p.p).filter(Boolean);return `${c.id} | ${c.name} | ${CATNAME[c.cat]} | ${c.area} | ${c.open} | ${(c.tags||[]).join(", ")} | ${c.pkgs.map(p=>p.n+" "+(p.p?"THB "+p.p+(p.per?"/person":""):"on request")).join("; ")}`}).join("\n");
-const RULES=`You are Raju — "Raju Guide, aapka apna Pattaya guide" — the concierge of Namaste Pattaya Reservations in Pattaya, Thailand, for Indian tourists.
-PERSONALITY: Inspired by the charming tourist guide Raju from the classic 1965 Hindi film "Guide": suave, stylish, a born storyteller, confident and full of old-school filmi charm, with a playful twinkle and a gentle sense of humour. Speak in warm Hinglish (or pure English/Hindi if the guest writes that way). Sprinkle light, respectful charm like "Arre sahib/madam, tension kis baat ki, Raju hai na!", "Pattaya ki raatein aur Raju ki guarantee" — but NEVER quote real song lyrics or famous film dialogues, never claim to be a real actor, and keep humour clean and respectful, especially with women and families.
-TRUST: You are honest. Never invent prices, availability or facts; use only what is in the list below, and say "confirm karke batata hoon / our team will confirm" when unsure. No pressure selling, no fake urgency, no promises you can't keep. Safety first: for emergencies give Tourist Police 1155, Police 191, Ambulance 1669.
-FOCUS: Your job is to help guests book OUR services. Recommend ONLY places and services from the list below (clubs, after-party clubs, restaurants, hotels, tours, transfers, packages, spa, yacht, etc.). If a guest asks about a place we don't list, politely say you can't vouch for it and suggest our closest partner option instead. Gently suggest a helpful add-on when it truly fits (e.g. airport transfer with a hotel, after-party club after a club night, a package for groups). If the question is unrelated to Pattaya travel, answer in one friendly line and steer back to how Raju can make their trip special.
-STYLE: Short and practical — max 6 sentences, one charming line at most per reply. Quote prices in THB and INR (1 THB ≈ ${INR_PER_THB} INR). Mention veg/Jain/Hindi-speaking options when useful. Always end by inviting them to book.
-At the very end, on its own line, write IDS: followed by the ids you recommended, comma separated (or IDS: none).\n\nPlaces:\n${CATALOG}`;
+const CATALOG=CLUBS.map(c=>{const paid=c.pkgs.map(p=>p.p).filter(Boolean);return `${c.id} | ${c.name} | ${CATNAME[c.cat]} | ${c.area} | ${c.open} | ${(c.tags||[]).join(", ")} | ${c.pkgs.map(p=>p.n+" "+(p.p?"THB "+p.p+(p.per?"/person":""):"on request")).join("; ")}`}).join("\n");
+const RULES=`You are Raju — "Raju Guide, aapka apna Pattaya guide" — the Namaste Pattaya Reservations concierge in Pattaya, Thailand, helping Indian tourists. Talk like a friendly, trusted desi local friend (light Hinglish is welcome, e.g. "bilkul", "tension mat lo"), never pushy. Be warm, short and practical (max 6 sentences). Reply in the user's language: English, Hindi or Hinglish. Recommend only places from this list, quote prices in both THB and INR (1 THB ≈ ${INR_PER_THB} INR). Mention veg/Jain/Hindi-speaking options when useful. For emergencies tell them to call Thai tourist police 1155 or ambulance 1669. At the very end, on its own line, write IDS: followed by the ids you recommended, comma separated (or IDS: none).\n\nPlaces:\n${CATALOG}`;
 function addMsg(who,text){const d=document.createElement("div");d.className="msg "+who;d.textContent=text;chatEl.appendChild(d);d.scrollIntoView({block:"end"});return d}
-function addRecs(ids){const valid=ids.map(i=>CLUBS.find(c=>c.id===i)).filter(c=>c&&RAJU_OK(c));if(!valid.length)return;
+function addRecs(ids){const valid=ids.map(i=>CLUBS.find(c=>c.id===i)).filter(Boolean);if(!valid.length)return;
   const r=document.createElement("div");r.className="recs";valid.forEach(c=>{const b=document.createElement("button");b.textContent="Book "+c.name;b.onclick=()=>{if(window.closeRaju)closeRaju();openClub(c)};r.appendChild(b)});chatEl.appendChild(r)}
 function splitIds(t){const m=t.match(/\n?\s*IDS:\s*([^\n]*)\s*$/i);return m?{text:t.slice(0,m.index).trim(),ids:m[1].split(/[,\s]+/).filter(x=>x&&x!=="none")}:{text:t.replace(/\n?\s*IDS:?\s*$/i,"").trim(),ids:[]}}
 function localAnswer(q){q=q.toLowerCase();
-  const hits=CLUBS.filter(RAJU_OK).filter(c=>[c.name,CATNAME[c.cat],c.area,c.sub||c.music,(c.tags||[]).join(" ")].join(" ").toLowerCase().split(/\W+/).some(w=>w.length>3&&q.includes(w))).slice(0,3);
-  return hits.length?{text:"Arre wah, badhiya choice! Raju ki personal recommendation — yeh dekhiye, aur ek tap mein booking pakki:",ids:hits.map(h=>h.id)}:{text:"Sahib, Pattaya mein Raju ke hote hue tension kis baat ki? Bas batao — club, Indian khana, hotel, tour ya airport pickup — main sab set kar dunga.",ids:[]}}
+  const hits=CLUBS.filter(c=>[c.name,CATNAME[c.cat],c.area,c.sub||c.music,(c.tags||[]).join(" ")].join(" ").toLowerCase().split(/\W+/).some(w=>w.length>3&&q.includes(w))).slice(0,3);
+  return hits.length?{text:"Here are some good options for you:",ids:hits.map(h=>h.id)}:{text:"Tell me what you're looking for — food, nightlife, hotel, tour, transfer — and I'll find it for you.",ids:[]}}
 let samplePromise=null;
 async function ask(q){
   if(busy||!q.trim())return;busy=true;chatIn.value="";addMsg("me",q);
-  const bubble=addMsg("bot","Raju soch raha hai… ek second, sahib");document.body.classList.add("raju-talk");
+  const bubble=addMsg("bot","Raju soch raha hai…");document.body.classList.add("raju-talk");
   chatHist.push({role:"user",content:q});
   try{
     samplePromise=samplePromise||(window.claude&&window.claude.use?window.claude.use("sample"):Promise.resolve(null));
     const sample=await samplePromise;
     if(!sample)throw {code:"local"};
     const turns=chatHist.map((h,i)=>i===0?{role:"user",content:RULES+"\n\nGuest: "+h.content}:h);
-    const res=await sample(turns,{cache:false,modelTier:"quick",onText:({text})=>{richText(bubble,splitIds(text).text||"…")}});
-    const {text,ids}=splitIds(res.text);richText(bubble,text);chatHist.push({role:"assistant",content:res.text});addRecs(ids);
+    const res=await sample(turns,{cache:false,modelTier:"quick",onText:({text})=>{bubble.textContent=splitIds(text).text||"…"}});
+    const {text,ids}=splitIds(res.text);bubble.textContent=text;chatHist.push({role:"assistant",content:res.text});addRecs(ids);
   }catch(e){
-    const a=localAnswer(q);richText(bubble,a.text);chatHist.push({role:"assistant",content:a.text});addRecs(a.ids);
+    const a=localAnswer(q);bubble.textContent=a.text;chatHist.push({role:"assistant",content:a.text});addRecs(a.ids);
   }
   busy=false;document.body.classList.remove("raju-talk");
 }
 document.getElementById("chatSend").onclick=()=>ask(chatIn.value);
 chatIn.addEventListener("keydown",e=>{if(e.key==="Enter")ask(chatIn.value)});
 ["Best Indian veg food?","Airport pickup from Bangkok","Bollywood club tonight","Coral Island tour price","Yacht for bachelor party"].forEach(t=>{const b=document.createElement("button");b.textContent=t;b.onclick=()=>ask(t);document.getElementById("quick").appendChild(b)});
-addMsg("bot","Namaste ji! Main Raju — aapka apna Pattaya guide. Pattaya ki har gali, har club, har dosa — sab Raju ki jaan-pehchaan mein hai. Batao sahib/madam, aaj ka plan kya hai? Club, Indian khana, hotel, tour ya airport pickup — booking Raju ki guarantee ke saath.");
+addMsg("bot","Namaste ji! Main Raju — aapka apna Pattaya guide. Clubs, Indian khana, hotels, tours, airport pickup — kuch bhi poocho. English ya Hindi, dono chalega.");
 
 /* ===== v2: refer & earn ===== */
 let myCode=store.get("np_ref",null);if(!myCode){myCode="IN"+Math.random().toString(36).slice(2,7).toUpperCase();store.set("np_ref",myCode)}
@@ -1681,17 +1567,7 @@ setCurLabel();renderCats();renderMap();renderEarn();
 /* ===== v3: find a buddy ===== */
 const INTENTS=[["party","events","Party tonight",["nightlife","beach"]],["lunch","indian","Lunch",["indian","restaurants"]],["coffee","grocery","Coffee",["grocery","restaurants"]],
  ["dinner","restaurants","Dinner",["indian","restaurants"]],["sports","sports","Sports",["golf","water"]],["activity","tours","Activity",["tours","water","spa"]],["dating","heart","Dating",["restaurants","nightlife"]]];
-[["open","star","Open to everything",["nightlife","restaurants","tours"]],
- ["breakfast","grocery","Breakfast",["indian","restaurants"]],["beach","beach","Beach",["beach"]],["watersports","water","Water sports",["water"]],
- ["island","tours","Island trip",["tours","water"]],["yachtparty","yacht","Yacht party",["yacht"]],["villaparty","property","Villa party",["events","hotels"]],
- ["houseparty","property","House party",["events"]],["longdrive","rental","Long drive",["rental"]],["shopping","shopping","Shopping",["shopping"]],
- ["longtrips","tours","Long trips",["tours","rental"]],["groupparty","buddy","Group parties",["nightlife","events"]],["familyparty","buddy","Family party",["events","restaurants"]],
- ["bellydance","events","Belly dance",["nightlife"]],["danceshow","events","Dance show events",["events","nightlife"]],["movies","explore","Movies",["shopping"]],
- ["emotional","chat","Emotional talk",["restaurants","grocery"]],["paragliding","water","Paragliding",["water"]],["scuba","water","Scuba diving",["water","tours"]]
-].forEach((x,i)=>{if(x[0]==="open")INTENTS.unshift(x);else INTENTS.push(x)});
 const INT=Object.fromEntries(INTENTS.map(i=>[i[0],i]));
-const INTEREST_OF={party:"Party",lunch:"Lunch",coffee:"Coffee",dinner:"Dinner",sports:"Water sports"};
-function matchIntent(p){if(myIntent==="open"||p.intent===myIntent)return true;const want=INTEREST_OF[myIntent]||(INT[myIntent]||[])[2];const ints=p.interests||[];return ints.includes("Open to everything")||ints.includes(want)}
 // sample people — replace with real users from the database
 const PEOPLE=[
  ["p1","Rohan",27,"Man","Delhi","Hindi, English","party","Tonight","Walking Street","Group of 3, need more people for Bolly Bar","","#FF3DA8"],
@@ -1733,7 +1609,7 @@ const likesBack=p=>hash(p.id+"np")%3!==0;
 function renderPeople(){
   const show=document.getElementById("bShow").value,i=INT[myIntent];
   document.getElementById("peopleTitle").textContent=`${i[2]} — people nearby`;
-  const list=PEOPLE.filter(p=>matchIntent(p)&&!blocked.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman")));
+  const list=PEOPLE.filter(p=>p.intent===myIntent&&!blocked.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman")));
   const el=document.getElementById("people");el.innerHTML="";document.getElementById("noPeople").hidden=list.length>0;
   list.forEach(p=>{
     const c=document.createElement("article");c.className="person";
@@ -2137,7 +2013,7 @@ document.getElementById("nearSw").onclick=()=>{
   navigator.geolocation.getCurrentPosition(pos=>{myPos=pos.coords;near=true;sw.setAttribute("aria-checked","true");msg.textContent="Showing people near you, closest first. Your exact location is never shown.";renderSwipe()},
     ()=>{msg.textContent="Location sharing is off. Allow location for this app to see people nearby.";},{timeout:8000});
 };
-function swipeList(){const show=document.getElementById("bShow").value;let l=PEOPLE.filter(p=>matchIntent(p)&&!blocked.includes(p.id)&&!passed.includes(p.id)&&!liked.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman")));
+function swipeList(){const show=document.getElementById("bShow").value;let l=PEOPLE.filter(p=>p.intent===myIntent&&!blocked.includes(p.id)&&!passed.includes(p.id)&&!liked.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman")));
   if(near)l=l.sort((a,b)=>a.km-b.km);return l}
 function renderSwipe(){
   const box=document.getElementById("swipe");if(!box)return;box.innerHTML="";const l=swipeList();
@@ -2242,312 +2118,6 @@ function renderRail(){const el=document.getElementById("indRail");if(!el)return;
     b.innerHTML=`<div class="art" style="${artStyle(c)}"><span class="live">Up to 30% off</span><span class="name"></span></div><div class="meta"><div class="row"><span class="mu"></span></div><div class="row"><span>${c.open.startsWith("Late")?"Late night":c.open}</span><span class="from">${c.pkgs[0].free?"Free entry":"Tables from "+money(6000)}</span></div></div>`;
     b.querySelector(".name").textContent=c.name;b.querySelector(".mu").textContent=c.music;b.onclick=()=>openClub(c);el.appendChild(b)})}
 renderRail();curBtn.addEventListener("click",renderRail);
-
-/* ===== v15: Supabase cloud (Namaste Pattaya Reservations) ===== */
-(function(){
-const SB_URL="https://mymtgbmcjbwsnetzwgoy.supabase.co", SB_KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
-let sb=null,user=null,profile=null,pulling=false;
-const synced=new Set(store.get("np_synced",[]));const markSynced=k=>{synced.add(k);try{localStorage.setItem("np_synced",JSON.stringify([...synced].slice(-2000)))}catch(e){}};
-const byName=n=>(CLUBS.find(c=>c.name===n)||{}).id||null;
-window.NPCloud={get ready(){return !!sb},get user(){return user},get profile(){return profile}};
-// ---- push on local saves (adds cloud copy; local behaviour unchanged) ----
-const _set=store.set.bind(store);
-store.set=function(k,v){_set(k,v);if(!pulling)try{onLocal(k,v)}catch(e){console.warn("cloud",e)}};
-async function onLocal(k,v){
-  if(!sb||!user)return;
-  if(k==="np_bookings"){for(const b of v){if(synced.has("bk:"+b.code))continue;
-    const {error}=await sb.from("bookings").insert({code:b.code,venue_id:b.club,package:b.pkg,guests:b.guests,booking_date:(b.date||"").slice(0,10)||null,arrival:b.time,name:b.name,phone:b.phone,total:b.total||0,ref_code:b.ref||null,host:b.host||null,addons:b.addons||null});
-    if(!error||String(error.code)==="23505")markSynced("bk:"+b.code)}}
-  if(k==="np_bills"){for(const b of v){
-    if(!synced.has("bill:"+b.code)){const {error}=await sb.from("bills").insert({code:b.code,venue_id:byName(b.venue),venue_name:b.venue,amount:b.amt});if(!error||String(error.code)==="23505")markSynced("bill:"+b.code)}
-    if(b.paid&&!synced.has("paid:"+b.code)){const {error}=await sb.from("bills").update({paid:true,paid_by:user.id,paid_at:new Date().toISOString()}).eq("code",b.code).eq("paid",false);if(!error)markSynced("paid:"+b.code)}}}
-  if(k==="np_orders"&&v[0]){const o=v[0],key="ord:"+o.n+":"+(o.to||"")+":"+v.length;if(!synced.has(key)){const {error}=await sb.from("mall_orders").insert({item:o.n,price:o.p,gift_to:o.to||null});if(!error)markSynced(key)}}
-  if(k==="np_lady_updates"&&v[0]){const u=v[0],key="upd:"+u.join("|");if(!synced.has(key)){const {error}=await sb.from("club_updates").insert({venue_id:byName(u[0]),venue_name:u[0],kind:u[1],body:u[2],audience:"ladies"});if(!error)markSynced(key)}}
-  if(k==="np_lady_friend"||k==="np_lady_gossip"){const kind=k==="np_lady_friend"?"friend":"gossip";
-    for(const it of v){
-      if(!it.id){const {data,error}=await sb.from("lounge_posts").insert({kind,author_name:it.who,body:it.t}).select("id").single();if(!error&&data){it.id=data.id;it._rc=(it.r||[]).length;pulling=true;_set(k,v);pulling=false}}
-      else if(kind==="gossip"&&(it.r||[]).length>(it._rc||0)){for(const rb of it.r.slice(it._rc||0)){await sb.from("lounge_replies").insert({post_id:it.id,author_name:(lady&&lady.name)||"Member",body:rb})}it._rc=it.r.length;pulling=true;_set(k,v);pulling=false}}}
-  if(k==="np_lady_spicy"){for(const it of v){if(it.id||it._sent)continue;const {data,error}=await sb.rpc("post_spicy",{p_body:it.t,p_color:it.c});if(!error){it.id=data}it._sent=1}pulling=true;_set(k,v);pulling=false}
-}
-// ---- pull shared data into the app ----
-async function pull(){
-  if(!sb||!user)return;pulling=true;
-  try{
-    const {data:upd}=await sb.from("club_updates").select("venue_name,kind,body").order("created_at",{ascending:false}).limit(50);
-    if(upd){const local=store.get("np_lady_updates",[]);const seen=new Set(local.map(x=>x.join("|")));const add=upd.map(u=>[u.venue_name||"",u.kind||"Update",u.body]).filter(x=>!seen.has(x.join("|")));add.forEach(x=>markSynced("upd:"+x.join("|")));_set("np_lady_updates",[...add,...local])}
-    const {data:posts}=await sb.from("lounge_posts").select("id,kind,author_name,body,created_at,lounge_replies(body,created_at)").order("created_at",{ascending:false}).limit(100);
-    if(posts){for(const kind of ["friend","gossip"]){const key=kind==="friend"?"np_lady_friend":"np_lady_gossip";const local=store.get(key,[]).filter(x=>!x.id);
-      const cloud=posts.filter(p=>p.kind===kind).map(p=>{const r=(p.lounge_replies||[]).sort((a,b)=>a.created_at<b.created_at?-1:1).map(x=>x.body);return kind==="friend"?{id:p.id,who:p.author_name||"Member",t:p.body,j:[]}:{id:p.id,who:p.author_name||"Member",t:p.body,r,_rc:r.length}});
-      _set(key,[...local,...cloud])}}
-    const {data:sp}=await sb.from("spicy_posts").select("id,body,color").order("created_at",{ascending:false}).limit(100);
-    if(sp){const local=store.get("np_lady_spicy",[]).filter(x=>!x.id&&!x._sent);_set("np_lady_spicy",[...local,...sp.map(x=>({id:x.id,t:x.body,c:x.color||"#FF69B4"}))])}
-    const {data:bk}=await sb.from("bookings").select("*").eq("user_id",user.id).order("created_at",{ascending:false}).limit(100);
-    if(bk){const have=new Set(bookings.map(b=>b.code));bk.filter(b=>!have.has(b.code)).forEach(b=>{bookings.push({code:b.code,club:b.venue_id,pkg:b.package,guests:b.guests,date:b.booking_date||b.created_at,time:b.arrival,name:b.name,phone:b.phone,total:+b.total||0,ref:b.ref_code||"",cat:(CLUBS.find(c=>c.id===b.venue_id)||{}).cat});markSynced("bk:"+b.code)});_set("np_bookings",bookings)}
-  }catch(e){console.warn("pull",e)}
-  pulling=false;
-  try{renderBookings();if(typeof renderLadies==="function")renderLadies()}catch(e){}
-}
-// bill lookup by code across phones
-const bp=document.getElementById("billPay"),origPay=bp.onclick;
-bp.onclick=async()=>{const c=document.getElementById("billCode").value.trim().toUpperCase();
-  if(sb&&user&&c&&!bills.find(x=>x.code===c)){const {data}=await sb.from("bills").select("*").eq("code",c).maybeSingle();if(data){bills.unshift({code:data.code,venue:data.venue_name,amt:+data.amount,paid:data.paid});markSynced("bill:"+data.code);if(data.paid)markSynced("paid:"+data.code)}}
-  origPay()};
-// partner requests & agent applications also go to the cloud
-const ps=document.getElementById("pSend"),origP=ps.onclick;ps.onclick=()=>{origP();const n=document.getElementById("pName").value.trim(),ph=document.getElementById("pPhone").value.trim();if(sb&&n&&ph)sb.from("partner_requests").insert({club_name:n,contact:document.getElementById("pContact").value.trim(),phone:ph}).then(()=>{})};
-const as=document.getElementById("aSend"),origA=as.onclick;as.onclick=()=>{origA();const n=document.getElementById("aName").value.trim(),ph=document.getElementById("aPhone").value.trim();if(sb&&n&&ph.replace(/\D/g,"").length>=8)sb.from("agent_applications").insert({role:document.getElementById("aRole").value,name:n,phone:ph}).then(()=>{})};
-// ---- account sheet ----
-function paintBtn(){document.getElementById("acctBtn").classList.toggle("on",!!user)}
-async function loadProfile(){profile=null;if(!sb||!user)return;const {data}=await sb.from("profiles").select("*").eq("id",user.id).maybeSingle();profile=data;
-  if(data&&data.ref_code&&data.ref_code!==myCode){myCode=data.ref_code;_set("np_ref",myCode);try{renderEarn()}catch(e){}}
-  if(data&&data.woman_verified&&!lady){lady={name:data.name||"Member",insta:"",bio:"",followers:0};_set("np_lady",lady)}}
-function openAcct(){
-  lastFocus=document.activeElement;
-  const head=`<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:22px">My account</h2><button class="theme" id="acClose" aria-label="Close">${ico("close")}</button></div>`;
-  let body;
-  if(!sb) body=`<p class="about">Accounts work on the live website. This preview keeps everything on this phone only.</p>`;
-  else if(!user) body=`<p class="about">Sign in to keep your bookings, bills, lounge and buddy profile on every phone. We'll email you a secure login link, no password needed.</p>
-    <div class="fields"><label class="full">Email<input id="acEmail" type="email" autocomplete="email" placeholder="you@example.com"></label></div>
-    <button class="cta" id="acSend">Email me a login link</button><p class="err" id="acMsg" role="status"></p>`;
-  else body=`<p class="about">Signed in as <b id="acMail"></b></p>
-    <div class="fields"><label class="full">Name<input id="acName"></label><label class="full">WhatsApp / phone<input id="acPhone" inputmode="tel"></label></div>
-    <button class="cta" id="acSave">Save</button>
-    <div class="stat"><span>Referral code</span><strong>${profile&&profile.ref_code||"—"}</strong></div>
-    <div class="stat"><span>Account type</span><strong>${(profile&&profile.role)||"user"}</strong></div>
-    <div class="stat"><span>Ladies lounge</span><strong>${profile&&profile.woman_verified?"Verified":"Not verified"}</strong></div>
-    <button class="linkbtn" id="acOut">Sign out</button><p class="err" id="acMsg" role="status"></p>`;
-  panel.innerHTML=`<div class="pbody">${head}${body}<p class="cloudnote">Your data is stored securely with Supabase.</p></div>`;
-  panel.querySelector("#acClose").onclick=closeSheet;
-  const send=panel.querySelector("#acSend");if(send)send.onclick=async()=>{const e=panel.querySelector("#acEmail").value.trim(),m=panel.querySelector("#acMsg");
-    if(!/^\S+@\S+\.\S+$/.test(e)){m.textContent="Enter a valid email.";return}
-    m.style.color="";m.textContent="Sending…";const {error}=await sb.auth.signInWithOtp({email:e,options:{emailRedirectTo:location.origin+location.pathname}});
-    if(error){m.textContent=error.message}else{m.style.color="var(--ok)";m.textContent="Check your email and tap the login link."}};
-  if(user){panel.querySelector("#acMail").textContent=user.email||"";panel.querySelector("#acName").value=(profile&&profile.name)||"";panel.querySelector("#acPhone").value=(profile&&profile.phone)||"";
-    panel.querySelector("#acSave").onclick=async()=>{const m=panel.querySelector("#acMsg");const {error}=await sb.from("profiles").update({name:panel.querySelector("#acName").value.trim(),phone:panel.querySelector("#acPhone").value.trim()}).eq("id",user.id);
-      if(error){m.textContent=error.message}else{m.style.color="var(--ok)";m.textContent="Saved.";loadProfile()}};
-    panel.querySelector("#acOut").onclick=async()=>{await sb.auth.signOut();closeSheet()}}
-  sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
-}
-document.getElementById("acctBtn").onclick=openAcct;
-// ---- start ----
-(async()=>{
-  if(!(window.supabase&&window.supabase.createClient))return;
-  try{
-    sb=window.supabase.createClient(SB_URL,SB_KEY);
-    const {data}=await sb.auth.getSession();user=data.session?data.session.user:null;paintBtn();
-    if(user){await loadProfile();await onLocal("np_bookings",bookings);await pull()}
-    sb.auth.onAuthStateChange(async(ev,s)=>{const was=user&&user.id;user=s?s.user:null;paintBtn();
-      if(user&&user.id!==was){await loadProfile();await onLocal("np_bookings",bookings);await pull()}});
-  }catch(e){console.warn("Supabase not available",e);sb=null}
-})();
-})();
-
-/* ===== v16: after-party rail ===== */
-function renderAfterRail(){const el=document.getElementById("afterRail");if(!el)return;el.innerHTML="";
-  CLUBS.filter(c=>c.afterparty).forEach(c=>{const b=document.createElement("button");b.className="rcard";
-    b.innerHTML=`<div class="art" style="${artStyle(c)}"><span class="live">${c.disc?"Up to "+c.disc+"% off":"After party"}</span><span class="name"></span></div><div class="meta"><div class="row"><span class="mu"></span></div><div class="row"><span class="hr"></span><span class="from">${money(6000)}+</span></div></div>`;
-    b.querySelector(".name").textContent=c.name;b.querySelector(".mu").textContent=c.music;b.querySelector(".hr").textContent="Open late";
-    b.onclick=()=>openClub(c);el.appendChild(b)})}
-renderAfterRail();curBtn.addEventListener("click",renderAfterRail);
-
-/* ===== v20: buddy — photos, interests, availability, VIP, gifts ===== */
-const INTERESTS=["Open to everything","Party","Breakfast","Lunch","Coffee","Dinner","Beach","Water sports","Island trip","Yacht party","Villa party","House party","Long drive","Shopping","Long trips","Group parties","Family party","Belly dance","Dance show events","Movies","Emotional talk","Paragliding","Scuba diving"];
-const HOURS=Array.from({length:48},(_,i)=>{const h=Math.floor(i/2),m=i%2?"30":"00";const hh=((h+11)%12)+1;return `${hh}:${m} ${h<12?"AM":"PM"}`});
-const isVIP=()=>store.get("np_vip_buddy",false)===true;
-// sample test data for the people list
-const SK=["#F2C9A5","#E0AC84","#C98C60","#A86A42","#8A5234"],HAIR=["#1B1210","#2A1A12","#3B2519","#4A3326"],SHIRT=["#7A2BF5","#FF1F6B","#1FA2FF","#FF9933","#3FE0A0","#E6B230","#2D2A8A"];
-function portrait(p){const h=Math.abs(hash(p.id+"pic"));const sk=SK[h%5],hr=HAIR[(h>>3)%4],sh=SHIRT[(h>>5)%7],bg=p.color,w=p.sex==="Woman";
-  const hairBack=w?`<path d="M118 170 C110 100 150 70 200 70 C250 70 290 100 282 170 L300 360 L100 360 Z" fill="${hr}"/>`:"";
-  const hairTop=w?`<path d="M128 160 C130 105 165 88 200 88 C238 88 272 105 272 162 C255 130 230 118 200 118 C170 118 146 130 128 160Z" fill="${hr}"/>`
-    :`<path d="M132 150 C132 100 165 84 200 84 C240 84 270 102 268 150 C256 128 236 118 200 118 C168 118 146 128 132 150Z" fill="${hr}"/>${h%2?`<path d="M150 210 C150 262 176 286 200 286 C224 286 250 262 250 210 C240 240 222 250 200 250 C178 250 160 240 150 210Z" fill="${hr}" opacity=".9"/>`:""}`;
-  const svg=`<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 460'><defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='${bg}'/><stop offset='1' stop-color='#120A24'/></linearGradient><radialGradient id='s' cx='.4' cy='.35' r='.7'><stop offset='0' stop-color='#fff' stop-opacity='.35'/><stop offset='1' stop-color='#fff' stop-opacity='0'/></radialGradient></defs>
-<rect width='400' height='460' fill='url(#g)'/><circle cx='70' cy='80' r='40' fill='#fff' opacity='.08'/><circle cx='340' cy='120' r='60' fill='#fff' opacity='.06'/><circle cx='320' cy='60' r='12' fill='#fff' opacity='.2'/>
-${hairBack}<path d='M60 460 C66 370 126 330 200 330 C274 330 334 370 340 460Z' fill='${sh}'/><rect x='178' y='270' width='44' height='70' rx='16' fill='${sk}'/>
-<ellipse cx='200' cy='190' rx='76' ry='92' fill='${sk}'/><ellipse cx='200' cy='190' rx='76' ry='92' fill='url(#s)'/>${hairTop}
-<path d='M165 190 q12 -10 24 0 M211 190 q12 -10 24 0' stroke='#2A1A12' stroke-width='5' fill='none' stroke-linecap='round'/>
-<path d='M178 236 q22 18 44 0' stroke='#7A2A2A' stroke-width='5' fill='none' stroke-linecap='round'/>${w?`<circle cx='126' cy='205' r='6' fill='#E6B230'/><circle cx='274' cy='205' r='6' fill='#E6B230'/>`:""}</svg>`;
-  return "data:image/svg+xml,"+encodeURIComponent(svg).replace(/'/g,"%27")}
-PEOPLE.forEach((p,i)=>{const h=Math.abs(hash(p.id+"x"));
-  p.interests=[...new Set([INTERESTS[1+(h%22)],INTERESTS[1+((h>>4)%22)],INTERESTS[1+((h>>8)%22)],INTERESTS[1+((h>>12)%22)]])];
-  if(i%5===0)p.interests=["Open to everything"];
-  p.availFrom=["8:00 PM","9:00 PM","10:00 PM","7:00 AM","11:00 AM"][h%5];p.availTo=["2:00 AM","3:00 AM","4:00 AM","1:00 PM","6:00 PM"][h%5];
-  p.verified=h%3!==0;p.vip=h%4===0;p.seeWho=h%7===0?"vip":"all";p.msgWho=["all","all","vip","matches"][(h>>2)%4];p.photo=portrait(p);p.sample=true});
-// my settings
-me=me||null;
-const mySet=()=>Object.assign({interests:["Open to everything"],availFrom:"9:00 PM",availTo:"3:00 AM",msgWho:"all"},store.get("np_buddy_more",{}));
-const saveSet=o=>store.set("np_buddy_more",Object.assign(mySet(),o));
-function renderInterests(){const el=document.getElementById("myInts");if(!el)return;el.innerHTML="";const cur=mySet().interests;
-  INTERESTS.forEach((t,i)=>{const b=document.createElement("button");b.type="button";b.textContent=t;if(i===0)b.className="all";b.setAttribute("aria-pressed",cur.includes(t));
-    b.onclick=()=>{let c=mySet().interests.slice();if(i===0)c=["Open to everything"];else{c=c.filter(x=>x!=="Open to everything");c=c.includes(t)?c.filter(x=>x!==t):[...c,t];if(!c.length)c=["Open to everything"]}saveSet({interests:c});renderInterests();renderPeople();renderSwipe()};el.appendChild(b)})}
-function initSelects(){const f=document.getElementById("avFrom"),t=document.getElementById("avTo"),m=document.getElementById("bMsg");if(!f)return;
-  f.innerHTML=t.innerHTML=HOURS.map(x=>`<option>${x}</option>`).join("");const s=mySet();f.value=s.availFrom;t.value=s.availTo;m.value=s.msgWho;
-  f.onchange=()=>saveSet({availFrom:f.value});t.onchange=()=>saveSet({availTo:t.value});m.onchange=()=>saveSet({msgWho:m.value})}
-// likes: free 10/day, VIP unlimited
-const today=()=>new Date().toISOString().slice(0,10);
-const likesUsed=()=>store.get("np_likes_"+today(),0);
-const canLike=()=>isVIP()||likesUsed()<10;
-const useLike=()=>{if(!isVIP())store.set("np_likes_"+today(),likesUsed()+1)};
-let verOnly=store.get("np_veronly",false);
-function renderVipBar(){const el=document.getElementById("vipBar");if(!el)return;
-  if(isVIP()){el.innerHTML=`<b>VIP member</b> · unlimited likes · you appear on top · distance shown with location on<div class="row2"><button class="pill ${verOnly?"on":""}" id="verBtn" type="button">${verOnly?"Showing verified only":"Show verified profiles only"}</button></div>`;
-    el.querySelector("#verBtn").onclick=()=>{verOnly=!verOnly;store.set("np_veronly",verOnly);renderVipBar();renderPeople();renderSwipe()}}
-  else{el.innerHTML=`Free: <b>${Math.max(0,10-likesUsed())} of 10 likes</b> left today.<br>Go VIP for unlimited likes, a VIP tag at the top of lists, verified-only filter and distance to people.<div class="row2"><button class="pill on" id="goVip" type="button">Become VIP · ${cur==="INR"?"₹3,000":"฿1,000"}</button></div>`;
-    el.querySelector("#goVip").onclick=()=>openVipBuddy()}}
-function visibleTo(p){if(p.seeWho==="vip"&&!isVIP())return false;if(verOnly&&isVIP()&&!p.verified)return false;return true}
-function shared(p){const mine=mySet().interests;if(mine.includes("Open to everything")||p.interests.includes("Open to everything"))return p.interests;return p.interests.filter(x=>mine.includes(x))}
-const sortPeople=l=>l.sort((a,b)=>(b.vip-a.vip)||(b.verified-a.verified)||(shared(b).length-shared(a).length)||(near?a.km-b.km:0));
-function distTxt(p){return isVIP()?(near?`${p.km} km away`:"Turn on Nearby to see distance"):"Distance: VIP only"}
-function badges(p){return `${p.vip?'<span class="bdg vip">VIP member</span>':""}${p.verified?'<span class="bdg ver">Verified</span>':'<span class="bdg nov">Not verified</span>'}${p.sample?'<span class="bdg sam">Test profile</span>':""}`}
-function likeP(p){if(liked.includes(p.id))return;if(!canLike()){alert("You've used your 10 free likes for today. Become VIP for unlimited likes.");openVipBuddy();return}
-  useLike();liked.push(p.id);if(likesBack(p)){matched.push(p.id);saveB();renderMatches();matchPop(p)}else saveB();renderPeople();renderSwipe();renderVipBar()}
-function dislikeP(p){if(!passed.includes(p.id)){passed.push(p.id);store.set("np_passed",passed)}renderPeople();renderSwipe()}
-function canMessage(p){if(p.msgWho==="vip"&&!isVIP())return"Only VIP members can message "+p.name+".";if(p.msgWho==="matches"&&!matched.includes(p.id))return p.name+" accepts messages from matches only. Like them first.";return""}
-renderPeople=function(){
-  const show=document.getElementById("bShow").value,i=INT[myIntent];
-  document.getElementById("peopleTitle").textContent=`${i[2]} — people nearby`;
-  const base=PEOPLE.filter(p=>matchIntent(p)&&!blocked.includes(p.id)&&!passed.includes(p.id)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman")));
-  const list=sortPeople(base.filter(visibleTo)),hidden=base.filter(p=>p.seeWho==="vip"&&!isVIP()).length;
-  const el=document.getElementById("people");el.innerHTML="";document.getElementById("noPeople").hidden=list.length>0;
-  if(hidden)el.insertAdjacentHTML("beforeend",`<p class="hiddenvip">${hidden} profile${hidden>1?"s are":" is"} visible to VIP members only.</p>`);
-  list.forEach(p=>{const c=document.createElement("article");c.className="person v2";const sh=shared(p),isM=matched.includes(p.id),isL=liked.includes(p.id);
-    c.innerHTML=`<div class="ph" style="background-image:url('${p.photo}')"><div class="bd">${badges(p)}</div></div><div class="inner">
-      <div class="lrow"><div class="who"></div><button class="more" aria-label="Report or block" style="border:0;background:none;color:var(--muted)">${ico("more")}</button></div>
-      <div class="where"></div><div class="avail">Available ${p.availFrom} – ${p.availTo}</div><div class="plan"></div>
-      <div class="tags">${p.interests.map(t=>`<span class="itag ${sh.includes(t)?"hit":""}">${t}</span>`).join("")}</div>
-      <div class="small">${distTxt(p)}</div>
-      <div class="ldbtns"><button class="dis">${ico("close")} Dislike</button>${isM?`<button class="lk ch">${ico("chat")} Chat</button>`:isL?`<button disabled>Liked</button>`:`<button class="lk">${ico("heart")} Like</button>`}<button class="pv">Profile</button></div></div>`;
-    c.querySelector(".who").textContent=`${p.name}, ${p.age}`;c.querySelector(".where").textContent=`From ${p.from} · ${p.lang}`;c.querySelector(".plan").textContent=p.note;
-    c.querySelector(".ph").onclick=()=>openProfile(p);c.querySelector(".pv").onclick=()=>openProfile(p);c.querySelector(".dis").onclick=()=>dislikeP(p);
-    const lk=c.querySelector(".lk");if(lk)lk.onclick=()=>isM?openBuddyChat(p):likeP(p);
-    c.querySelector(".more").onclick=()=>{if(confirm(`Block and report ${p.name}? You won't see them again.`)){blocked.push(p.id);matched=matched.filter(x=>x!==p.id);saveB();renderPeople();renderMatches();renderSwipe()}};
-    el.appendChild(c)})};
-swipeList=function(){const show=document.getElementById("bShow").value;return sortPeople(PEOPLE.filter(p=>matchIntent(p)&&!blocked.includes(p.id)&&!passed.includes(p.id)&&!liked.includes(p.id)&&visibleTo(p)&&(show==="Everyone"||(show==="Men"?p.sex==="Man":p.sex==="Woman"))))};
-const _rs=renderSwipe;renderSwipe=function(){_rs();const box=document.getElementById("swipe");if(!box)return;const l=swipeList();
-  [...box.querySelectorAll(".scard")].reverse().forEach((c,i)=>{const p=l[i];if(!p)return;c.style.background=`linear-gradient(180deg,rgba(0,0,0,0) 45%,rgba(0,0,0,.85)),url('${p.photo}') center 12%/cover no-repeat`;const big=c.querySelector(".big");if(big)big.remove();
-    c.insertAdjacentHTML("afterbegin",`<div class="bd" style="position:absolute;left:14px;top:14px;display:flex;gap:6px">${badges(p)}</div>`);
-    const w=c.querySelector(".w");if(w)w.textContent=`Available ${p.availFrom} – ${p.availTo} · ${distTxt(p)}`})};
-// likes on swipe respect free limit
-const _dec=decide;decide=function(p,yes,card){if(yes&&!canLike()){alert("You've used your 10 free likes for today. Become VIP for unlimited likes.");openVipBuddy();if(card){card.style.transform=""}return}if(yes)useLike();_dec(p,yes,card);setTimeout(renderVipBar,300)};
-function openProfile(p){
-  lastFocus=document.activeElement;const sh=shared(p),isM=matched.includes(p.id),isL=liked.includes(p.id),why=canMessage(p);
-  panel.innerHTML=`<div class="pvimg" style="background-image:url('${p.photo}')"><button class="close" aria-label="Close">${ico("close")}</button><div class="bd">${badges(p)}</div></div>
-   <div class="pbody"><h2 id="sheetTitle" style="font-size:26px"></h2><p class="about pvwhere"></p>
-   <div class="avail" style="font-size:15px">Available ${p.availFrom} – ${p.availTo}</div>
-   <h3>Plan</h3><p class="about pvplan"></p>
-   <h3>Interests</h3><div class="tags">${p.interests.map(t=>`<span class="itag ${sh.includes(t)?"hit":""}">${t}</span>`).join("")}</div>
-   <div class="stat"><span>Distance</span><strong>${distTxt(p)}</strong></div>
-   <div class="stat"><span>Messages from</span><strong>${{all:"Every user",vip:"VIP members",matches:"Matches only"}[p.msgWho]}</strong></div>
-   <div class="ldbtns" style="margin-top:14px"><button class="dis">${ico("close")} Dislike</button>${isL?`<button disabled>${isM?"Matched":"Liked"}</button>`:`<button class="lk">${ico("heart")} Like</button>`}</div>
-   <div class="ldbtns" style="margin-top:8px"><button class="msg">${ico("chat")} Message</button><button class="gift">${ico("gift")} Send gift</button></div>
-   <p class="err" id="pvMsg" role="status"></p></div>`;
-  panel.querySelector("#sheetTitle").textContent=`${p.name}, ${p.age}`;panel.querySelector(".pvwhere").textContent=`From ${p.from} · ${p.lang} · ${p.area}`;
-  panel.querySelector(".pvplan").textContent=`${INT[p.intent][2]} · ${p.when} · ${p.club}. ${p.note}`;
-  panel.querySelector(".close").onclick=closeSheet;
-  panel.querySelector(".dis").onclick=()=>{dislikeP(p);closeSheet()};
-  const lk=panel.querySelector(".lk");if(lk)lk.onclick=()=>{closeSheet();likeP(p)};
-  panel.querySelector(".msg").onclick=()=>{if(why){panel.querySelector("#pvMsg").textContent=why;return}openBuddyChat(p)};
-  panel.querySelector(".gift").onclick=()=>giftSheet(p.name,p.club);
-  sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
-}
-// Namaste Mall gifts: pick item, recipient and delivery place (their club table or hotel)
-function giftSheet(toName,toClub,item){
-  lastFocus=lastFocus||document.activeElement;
-  const clubs=CLUBS.filter(c=>c.cat==="nightlife"&&!SAMPLE_IDS.includes(c.id));
-  const gifts=MALL.filter(m=>["Girls stuff","Gifts","Party","Indian"].includes(m.c));let pick=item||gifts[0];
-  panel.innerHTML=`<div class="pbody"><div class="lrow"><h2 id="sheetTitle" style="font-size:22px">Send a gift</h2><button class="theme" id="gClose" aria-label="Close">${ico("close")}</button></div>
-    <p class="about">From Namaste Mall, delivered 24/7 to their club table or hotel.</p>
-    <div class="giftpick" id="gPick"></div>
-    <div class="fields"><label class="full">To (user name)<input id="gTo"></label>
-    <label class="full">Deliver to<select id="gWhere"><option value="table">Their table at a club</option><option value="hotel">Their hotel (they share the address)</option><option value="hand">Hand over at the club entrance</option></select></label>
-    <label class="full" id="gClubL">Club<select id="gClub">${clubs.map(c=>`<option>${c.name}</option>`).join("")}</select></label>
-    <label class="full">Message (optional)<input id="gNote" maxlength="80" placeholder="e.g. Enjoy your night!"></label></div>
-    <div class="total"><span>Gift total</span><strong id="gTot"></strong></div><button class="cta" id="gSend">Send gift</button><p class="err" id="gMsg" role="status"></p></div>`;
-  const draw=()=>{const g=panel.querySelector("#gPick");g.innerHTML="";gifts.forEach(m=>{const b=document.createElement("button");b.type="button";b.setAttribute("aria-pressed",m===pick);b.innerHTML=`<span></span><small>${money(m.p)}</small>`;b.querySelector("span").textContent=m.n;b.onclick=()=>{pick=m;draw()};g.appendChild(b)});panel.querySelector("#gTot").textContent=money(pick.p)};draw();
-  panel.querySelector("#gTo").value=toName||"";const cs=panel.querySelector("#gClub");if(toClub&&[...cs.options].some(o=>o.value===toClub))cs.value=toClub;
-  const wh=panel.querySelector("#gWhere");wh.onchange=()=>{panel.querySelector("#gClubL").hidden=wh.value==="hotel"};
-  panel.querySelector("#gClose").onclick=closeSheet;
-  panel.querySelector("#gSend").onclick=()=>{const to=panel.querySelector("#gTo").value.trim(),m=panel.querySelector("#gMsg");if(!to){m.textContent="Add who the gift is for.";return}
-    const where=wh.value==="hotel"?"their hotel":wh.value==="hand"?`${cs.value} entrance`:`their table at ${cs.value}`;
-    order(pick,`${to} · ${where}`);m.style.color="var(--ok)";m.textContent=`Gift sent! ${pick.n} will be delivered to ${to} at ${where}.`};
-  sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
-}
-// Mall "Gift" buttons use the new gift sheet (recipient + delivery place)
-const _rm=renderMall;renderMall=function(){_rm();[...document.querySelectorAll("#mallGrid .mitem")].forEach(d=>{const name=d.querySelector("b").textContent;const m=MALL.find(x=>x.n===name);const g=d.querySelector("[data-g]");if(g&&m)g.onclick=()=>giftSheet("","",m)})};
-renderMall();
-const _rb2=renderBuddy;renderBuddy=function(){_rb2();if(me){renderInterests();initSelects();renderVipBar();renderPeople();renderSwipe()}};renderBuddy();
-document.getElementById("nearSw").addEventListener("click",()=>setTimeout(()=>{renderPeople();renderSwipe()},1200));
-
-/* ===== v21: ID proof for ladies, "doing what & when", ask to join with a message ===== */
-(function(){
-  const sexSel=document.getElementById("bSex"),box=document.getElementById("idBox");
-  const syncId=()=>{box.hidden=sexSel.value!=="Woman"};sexSel.addEventListener("change",syncId);syncId();
-  const start=document.getElementById("bStart"),origStart=start.onclick;
-  start.onclick=()=>{const err=document.getElementById("bErr");
-    if(sexSel.value==="Woman"){const f=document.getElementById("idFile").files[0];
-      if(!f){err.textContent="Ladies: please add a photo of your ID proof.";return}
-      if(!document.getElementById("idOk").checked){err.textContent="Please agree that your ID is used only for verification.";return}}
-    origStart();
-    if(me&&sexSel.value==="Woman"){me.idType=document.getElementById("idType").value;me.idStatus="pending";store.set("np_buddy",me)}
-    // the ID image itself is NOT stored on the phone; the live app uploads it to a private, admin-only folder
-  };
-})();
-// all sample ladies are ID-verified, as required
-PEOPLE.forEach(p=>{if(p.sex==="Woman")p.verified=true});
-const PLACE=p=>p.club||p.area;
-const joinReqs=()=>store.get("np_join_reqs",{});
-function doingHTML(p){return `<div class="doing"><span class="act">${INT[p.intent][2]}</span><span>${p.availFrom} – ${p.availTo}</span><span>at ${PLACE(p).replace(/</g,"")}</span></div>`}
-function askJoin(p){
-  lastFocus=document.activeElement;const act=INT[p.intent][2];
-  if(p.msgWho==="vip"&&!isVIP()){alert(`${p.name} only accepts requests from VIP members.`);openVipBuddy();return}
-  const ideas=[`Hi ${p.name}! I'm also up for ${act.toLowerCase()}${/tonight/i.test(act)?"":" tonight"}. Can I join you?`,`Namaste! I'm from ${me&&me.from||"India"}, visiting Pattaya. Would love to join your plan at ${PLACE(p)}.`,`Hi! We're a group of friends free ${p.availFrom}–${p.availTo}. Can we join?`];
-  panel.innerHTML=`<div class="pbody"><div class="lrow"><h2 id="sheetTitle" style="font-size:22px">Ask to join</h2><button class="theme" id="ajClose" aria-label="Close">${ico("close")}</button></div>
-    <p class="about"></p>${doingHTML(p)}
-    <h3>Write a message</h3><p class="small">Tell ${p.name} a little about you and why you'd like to join. A message is required.</p>
-    <div class="tmpl" id="ajT"></div><textarea class="reqta" id="ajMsg" maxlength="300" placeholder="Write your message…"></textarea>
-    <button class="cta" id="ajSend">Send request</button><p class="err" id="ajErr" role="status"></p></div>`;
-  panel.querySelector(".about").textContent=`${p.name}, ${p.age} · from ${p.from}`;
-  const t=panel.querySelector("#ajT");ideas.forEach(x=>{const b=document.createElement("button");b.type="button";b.textContent=x;b.onclick=()=>{panel.querySelector("#ajMsg").value=x};t.appendChild(b)});
-  panel.querySelector("#ajClose").onclick=closeSheet;
-  panel.querySelector("#ajSend").onclick=()=>{const msg=panel.querySelector("#ajMsg").value.trim(),e=panel.querySelector("#ajErr");
-    if(msg.length<10){e.textContent="Please write at least a short message (10+ characters).";return}
-    const r=joinReqs();r[p.id]={msg,at:Date.now(),status:"sent"};
-    const key="np_chat_"+p.id,chat=store.get(key,[{f:"them",t:`Hi! ${p.note}`}]);chat.push({f:"me",t:msg});
-    if(likesBack(p)){r[p.id].status="accepted";chat.push({f:"them",t:`Sure, join us! See you at ${PLACE(p)} around ${p.availFrom}.`});if(!matched.includes(p.id))matched.push(p.id);if(!liked.includes(p.id))liked.push(p.id);saveB();renderMatches()}
-    store.set(key,chat);store.set("np_join_reqs",r);
-    e.style.color="var(--ok)";e.textContent=r[p.id].status==="accepted"?`${p.name} accepted! You can chat now.`:`Request sent. You'll be able to chat when ${p.name} accepts.`;
-    renderPeople();
-    if(r[p.id].status==="accepted")setTimeout(()=>openBuddyChat(p),900)};
-  sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
-}
-// add "doing what, when" + Ask to join to each card and profile
-const _rp21=renderPeople;renderPeople=function(){_rp21();const list=[...document.querySelectorAll("#people .person.v2")];const shown=PEOPLE.filter(p=>list.some(c=>c.querySelector(".who")&&c.querySelector(".who").textContent===`${p.name}, ${p.age}`));
-  list.forEach(c=>{const p=shown.find(x=>c.querySelector(".who").textContent===`${x.name}, ${x.age}`);if(!p)return;
-    const av=c.querySelector(".avail");if(av)av.outerHTML=doingHTML(p);
-    const st=joinReqs()[p.id];const b=document.createElement("button");b.className="askjoin";b.type="button";
-    b.textContent=st?(st.status==="accepted"?"Joined · open chat":"Request sent"):"Ask to join";if(st&&st.status!=="accepted")b.disabled=true;
-    b.onclick=()=>st&&st.status==="accepted"?openBuddyChat(p):askJoin(p);c.querySelector(".inner").appendChild(b)})};
-const _op21=openProfile;openProfile=function(p){_op21(p);const av=panel.querySelector(".avail");if(av)av.outerHTML=doingHTML(p);
-  const st=joinReqs()[p.id];const b=document.createElement("button");b.className="askjoin";b.type="button";b.style.marginTop="10px";
-  b.textContent=st?(st.status==="accepted"?"Joined · open chat":"Request sent"):"Ask to join";if(st&&st.status!=="accepted")b.disabled=true;
-  b.onclick=()=>st&&st.status==="accepted"?openBuddyChat(p):askJoin(p);const row=panel.querySelector(".ldbtns");row.parentNode.insertBefore(b,row)};
-// show my own ID status in the VIP bar area
-const _vb21=renderVipBar;renderVipBar=function(){_vb21();const el=document.getElementById("vipBar");if(el&&me&&me.idStatus==="pending")el.insertAdjacentHTML("afterbegin",`<p class="small" style="margin:0 0 8px;color:#FFB8E6">Your ID is being checked. You'll get the Verified badge soon.</p>`)};
-renderBuddy();
-
-/* ===== v23: VIP Buddy membership (฿1,000 / ₹3,000) ===== */
-function vipPrice(){return cur==="INR"?"₹3,000":"฿1,000"}
-function openVipBuddy(){
-  lastFocus=document.activeElement;const on=isVIP();
-  panel.innerHTML=`<div class="pbody"><div class="lrow"><h2 id="sheetTitle" style="font-size:22px;display:flex;align-items:center;gap:10px"><img class="goldmark lg" src="${GOLDMARK}" alt="">VIP Buddy</h2><button class="theme" id="vbClose" aria-label="Close">${ico("close")}</button></div>
-   <p class="about">${on?"You're a VIP Buddy member. Enjoy!":"Membership for Buddy only."}</p>
-   <ul class="perks"><li>${ico("check")}Unlimited likes (free users get 10 a day)</li><li>${ico("check")}Shown first in every list with a gold VIP tag</li><li>${ico("check")}Filter to verified profiles only</li><li>${ico("check")}See how far away people are (with location on)</li><li>${ico("check")}Message and ask to join people who accept VIP only</li><li>${ico("check")}See VIP-only profiles</li></ul>
-   <div class="pprice">${vipPrice()} <small>${cur==="INR"?"(฿1,000)":"(₹3,000)"}</small></div>
-   ${on?`<button class="linkbtn" id="vbCancel">Cancel VIP (demo)</button>`:`<button class="cta" id="vbJoin">Become VIP · ${vipPrice()}</button><p class="small">Demo only: no payment is taken in this preview.</p>`}</div>`;
-  panel.querySelector("#vbClose").onclick=closeSheet;
-  const j=panel.querySelector("#vbJoin");if(j)j.onclick=()=>{store.set("np_vip_buddy",true);renderVipBar();renderPeople();renderSwipe();openVipBuddy()};
-  const c=panel.querySelector("#vbCancel");if(c)c.onclick=()=>{store.set("np_vip_buddy",false);renderVipBar();renderPeople();renderSwipe();openVipBuddy()};
-  sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
-}
-curBtn.addEventListener("click",()=>{try{renderVipBar()}catch(e){}});
 
 /* ===== v7: tonight ticker ===== */
 (function(){
