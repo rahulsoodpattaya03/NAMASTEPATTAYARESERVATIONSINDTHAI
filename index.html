@@ -2668,5 +2668,125 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
     var up=mode==="up";
     panel.innerHTML='<div class="pbody">'+head(up?"Create account":"Sign in")+
       '<div class="atabs"
-</body>
+<!-- ===== v17: sign in / sign up (add-on) ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+.acctbtn{width:40px;height:40px;padding:0!important;display:grid;place-items:center}
+.acctbtn .ic{width:20px;height:20px}
+.acctbtn.in{border-color:var(--ok)!important;color:var(--ok)}
+.atabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:14px 0}
+.atabs button,.roles button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:14px;padding:11px 6px;font-weight:600}
+.roles{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.roles button{font-size:13px}
+.roles button small{display:block;color:var(--muted);font-weight:400;font-size:11px}
+.atabs button[aria-selected="true"],.roles button[aria-pressed="true"]{border-color:var(--glow);box-shadow:0 0 0 2px var(--glow)}
+</style>
+<script>
+(function(){
+  var SUPA_URL="https://mymtgbmcjbwsnetzwgoy.supabase.co";
+  var SUPA_KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
+  var sb=(window.supabase&&SUPA_URL.indexOf("http")===0)?window.supabase.createClient(SUPA_URL,SUPA_KEY):null;
+  var user=null;
+  var ROLES={traveller:["Traveller","3% referral"],agent_in:["Indian agent","5% commission"],agent_th:["Thai agent","5% commission"]};
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function code(){return typeof myCode!=="undefined"?myCode:""}
+
+  var btn=document.createElement("button");btn.className="cur acctbtn";btn.setAttribute("aria-label","Sign in or sign up");
+  btn.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 12a4 4 0 1 1 0-8a4 4 0 1 1 0 8z M4 21c0-4 3.6-7 8-7s8 3 8 7"/></svg>';
+  var topr=document.querySelector(".topr");if(topr)topr.appendChild(btn);
+  btn.onclick=function(){user?openProfile():openAcct("in","traveller")};
+
+  var earn=document.getElementById("earn");
+  if(earn){var eb=document.createElement("button");eb.className="cta ghost";eb.textContent="Create an agent account";eb.onclick=function(){openAcct("up","agent_in")};earn.appendChild(eb)}
+
+  function syncApp(){
+    btn.classList.toggle("in",!!user);
+    btn.setAttribute("aria-label",user?"My account":"Sign in or sign up");
+    if(!user)return;
+    var m=user.user_metadata||{};
+    if(m.ref_code&&typeof myCode!=="undefined"){myCode=m.ref_code;store.set("np_ref",myCode)}
+    if(m.role&&m.role.indexOf("agent")===0&&typeof myRole!=="undefined"){myRole="agent";store.set("np_role","agent")}
+    if(typeof renderEarn==="function")renderEarn();
+  }
+
+  function show(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="acX" aria-label="Close">'+ico("close")+'</button></div>'}
+
+  function openAcct(mode,role){
+    var up=mode==="up";
+    panel.innerHTML='<div class="pbody">'+head(up?"Create account":"Sign in")+
+      '<div class="atabs" role="tablist"><button role="tab" data-m="in" aria-selected="'+(!up)+'">Sign in</button><button role="tab" data-m="up" aria-selected="'+up+'">Sign up</button></div>'+
+      (up?'<p class="small" style="margin:0 0 8px">I am a</p><div class="roles">'+Object.keys(ROLES).map(function(k){return '<button data-r="'+k+'" aria-pressed="'+(k===role)+'">'+ROLES[k][0]+'<small>'+ROLES[k][1]+'</small></button>'}).join("")+'</div>':'')+
+      '<div class="fields">'+
+      (up?'<label class="full">Full name<input id="acN" autocomplete="name"></label><label class="full">WhatsApp<input id="acP" inputmode="tel" placeholder="+91 / +66"></label>':'')+
+      (up&&role!=="traveller"?'<label>Agency name<input id="acA"></label><label>City<input id="acC" placeholder="'+(role==="agent_th"?"e.g. Pattaya":"e.g. Mumbai")+'"></label>':'')+
+      '<label class="full">Email<input id="acE" type="email" autocomplete="email"></label>'+
+      '<label class="full">Password<input id="acW" type="password" autocomplete="'+(up?"new-password":"current-password")+'" placeholder="'+(up?"At least 8 characters":"")+'"></label></div>'+
+      '<button class="cta" id="acGo">'+(up?"Create account":"Sign in")+'</button>'+
+      (up?'':'<button class="linkbtn" id="acF">Forgot password?</button>')+
+      '<p class="err" id="acM" role="status"></p></div>';
+    var $=function(s){return panel.querySelector(s)},val=function(s){var e=$(s);return e?e.value.trim():""},M=$("#acM");
+    $("#acX").onclick=closeSheet;
+    panel.querySelectorAll("[data-m]").forEach(function(b){b.onclick=function(){openAcct(b.dataset.m,role)}});
+    panel.querySelectorAll("[data-r]").forEach(function(b){b.onclick=function(){openAcct("up",b.dataset.r)}});
+    function msg(t,ok){M.style.color=ok?"var(--ok)":"";M.textContent=t}
+    if($("#acF"))$("#acF").onclick=async function(){
+      if(!sb)return msg("Accounts are not connected yet.");
+      var e=val("#acE");if(!/^\S+@\S+\.\S+$/.test(e))return msg("Type your email above first.");
+      var r=await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+location.pathname});
+      msg(r.error?r.error.message:"We sent a password reset link to your email.",!r.error)};
+    $("#acGo").onclick=async function(){
+      if(!sb)return msg("Accounts are not connected yet. Please try again in a moment.");
+      var email=val("#acE"),pw=$("#acW").value,go=$("#acGo");
+      if(!/^\S+@\S+\.\S+$/.test(email))return msg("Enter a valid email address.");
+      if(up){
+        var name=val("#acN"),phone=val("#acP");
+        if(!name)return msg("Add your full name.");
+        if(phone.replace(/\D/g,"").length<8)return msg("Add a WhatsApp number with at least 8 digits.");
+        if(pw.length<8)return msg("Use a password with at least 8 characters.");
+        var meta={name:name,phone:phone,role:role,ref_code:code()};
+        if(role!=="traveller"){meta.agency=val("#acA");meta.city=val("#acC");meta.agent_status="pending";if(!meta.agency)return msg("Add your agency name.")}
+        go.disabled=true;
+        var r=await sb.auth.signUp({email:email,password:pw,options:{data:meta,emailRedirectTo:location.origin+location.pathname}});
+        go.disabled=false;
+        if(r.error)return msg(r.error.message);
+        if(r.data.session){user=r.data.user;syncApp();openProfile()}
+        else msg("Account created. Check your email and tap the link to confirm, then sign in.",true);
+      }else{
+        if(!pw)return msg("Enter your password.");
+        go.disabled=true;
+        var r2=await sb.auth.signInWithPassword({email:email,password:pw});
+        go.disabled=false;
+        if(r2.error)return msg(r2.error.message.indexOf("confirm")>-1?"Please confirm your email first. Check your inbox.":"Wrong email or password.");
+        user=r2.data.user;syncApp();openProfile();
+      }
+    };
+    show();
+  }
+
+  function openProfile(){
+    var m=user.user_metadata||{},r=ROLES[m.role]||ROLES.traveller,agent=(m.role||"").indexOf("agent")===0;
+    panel.innerHTML='<div class="pbody">'+head("My account")+
+      '<div class="lcard" style="margin-top:14px"><h4>'+esc(m.name||user.email)+'</h4><p>'+r[0]+' · '+r[1]+'</p><p class="small">'+esc(user.email)+(m.phone?' · '+esc(m.phone):'')+'</p>'+
+      (agent?'<p class="small">'+esc(m.agency||"")+(m.city?', '+esc(m.city):'')+'</p><p class="small" style="color:var(--amber)">'+(m.agent_status==="approved"?"Agent account approved":"Agent account under review. Our team will contact you on WhatsApp.")+'</p>':'')+
+      '</div><div class="refcode"><strong class="notranslate" translate="no">'+esc(m.ref_code||code())+'</strong><span class="small">Your referral code</span></div>'+
+      '<button class="cta" id="acEarn">Go to Earn</button><button class="cta ghost" id="acOut">Sign out</button></div>';
+    panel.querySelector("#acX").onclick=closeSheet;
+    panel.querySelector("#acEarn").onclick=function(){closeSheet();go("earn")};
+    panel.querySelector("#acOut").onclick=async function(){if(sb)await sb.auth.signOut();user=null;syncApp();closeSheet()};
+    show();
+  }
+  window.openAcct=openAcct;
+
+  if(sb){
+    sb.auth.getSession().then(function(r){user=r.data.session?r.data.session.user:null;syncApp()});
+    sb.auth.onAuthStateChange(function(ev,s){
+      user=s?s.user:null;syncApp();
+      if(ev==="PASSWORD_RECOVERY"){var np=prompt("Enter a new password (at least 8 characters)");
+        if(np&&np.length>=8)sb.auth.updateUser({password:np}).then(function(x){alert(x.error?x.error.message:"Password updated.")})}
+    });
+  }
+})();
+</script>
+      </body>
 </html>
