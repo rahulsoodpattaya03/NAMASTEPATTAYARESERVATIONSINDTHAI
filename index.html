@@ -2575,6 +2575,7 @@ body{top:0!important}
   var LANGS=[["en","English","English"],["hi","हिन्दी","Hindi"],["pa","ਪੰਜਾਬੀ","Punjabi"],["gu","ગુજરાતી","Gujarati"],["ta","தமிழ்","Tamil"],["mr","मराठी","Marathi"]];
   var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi"};
   var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म"};
+ LANGS.push(["th","ไทย","Thai"]);NAMES.th="Thai";SHORT.th="ไท";window.googleTranslateElementInit=function(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,hi,pa,gu,ta,mr,th",autoDisplay:false},"google_translate_element")};
   function getLang(){try{return localStorage.getItem("np_lang")||""}catch(e){return ""}}
   function setCookie(l){
     var exp=(l==="en")?"; expires=Thu, 01 Jan 1970 00:00:00 GMT":"";
