@@ -2557,6 +2557,64 @@ curBtn.addEventListener("click",()=>{try{renderVipBar()}catch(e){}});
   document.getElementById("tickTrack").innerHTML=html+html;
 })();
 
+</script><!-- ===== v15: 6 languages (add-on) ===== -->
+<style>
+.langbtn{display:flex;align-items:center;gap:6px}
+.langbtn .ic{width:16px;height:16px}
+.langlist{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 4px}
+.langlist button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:16px;padding:14px 10px;text-align:left;font-size:17px;font-weight:600}
+.langlist button small{display:block;color:var(--muted);font-size:12px;font-weight:400}
+.langlist button[aria-pressed="true"]{border-color:var(--glow);box-shadow:0 0 0 2px var(--glow)}
+#google_translate_element,.goog-te-banner-frame,iframe.skiptranslate,.VIpgJd-ZVi9od-ORHb-OEVmcd,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf{display:none!important}
+body{top:0!important}
+.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q,font{background:none!important;box-shadow:none!important}
+</style>
+<div id="google_translate_element"></div>
+<script>
+(function(){
+  var LANGS=[["en","English","English"],["hi","हिन्दी","Hindi"],["pa","ਪੰਜਾਬੀ","Punjabi"],["gu","ગુજરાતી","Gujarati"],["ta","தமிழ்","Tamil"],["mr","मराठी","Marathi"]];
+  var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi"};
+  var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म"};
+  function getLang(){try{return localStorage.getItem("np_lang")||""}catch(e){return ""}}
+  function setCookie(l){
+    var exp=(l==="en")?"; expires=Thu, 01 Jan 1970 00:00:00 GMT":"";
+    var v=(l==="en")?"":"/en/"+l;
+    document.cookie="googtrans="+v+"; path=/"+exp;
+    document.cookie="googtrans="+v+"; path=/; domain="+location.hostname+exp;
+  }
+  var lang=getLang();
+  if(lang&&lang!=="en")setCookie(lang);
+  document.documentElement.lang=lang||"en";
+  /* keep logo, brand name and booking codes untranslated */
+  document.querySelectorAll(".wordmark,.brandmark,.logo,.code,#myCode,.refcode strong").forEach(function(el){el.setAttribute("translate","no");el.classList.add("notranslate")});
+  function choose(l){try{localStorage.setItem("np_lang",l)}catch(e){}setCookie(l);location.reload()}
+  function openLang(){
+    var cur=getLang()||"en";
+    panel.innerHTML='<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Choose language</h2><button class="theme" id="lgClose" aria-label="Close">'+ico("close")+'</button></div>'+
+      '<p class="about notranslate" translate="no">भाषा चुनें · ਭਾਸ਼ਾ ਚੁਣੋ · ભાષા પસંદ કરો · மொழியைத் தேர்ந்தெடுக்கவும் · भाषा निवडा</p>'+
+      '<div class="langlist notranslate" translate="no">'+LANGS.map(function(x){return '<button data-l="'+x[0]+'" aria-pressed="'+(x[0]===cur)+'">'+x[1]+'<small>'+x[2]+'</small></button>'}).join("")+'</div></div>';
+    panel.querySelector("#lgClose").onclick=function(){if(!getLang()){try{localStorage.setItem("np_lang","en")}catch(e){}}closeSheet()};
+    panel.querySelectorAll("[data-l]").forEach(function(b){b.onclick=function(){choose(b.dataset.l)}});
+    sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
+  }
+  window.openLang=openLang;
+  /* language button in the top bar */
+  var b=document.createElement("button");
+  b.className="cur langbtn notranslate";b.setAttribute("translate","no");b.setAttribute("aria-label","Change language");
+  b.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 1 0 18a9 9 0 1 1 0-18z M3 12h18 M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9 M12 3c-2.5 2.5-3.8 5.5-3.8 9s1.3 6.5 3.8 9"/></svg>'+(SHORT[lang]||"EN");
+  b.onclick=openLang;
+  var topr=document.querySelector(".topr");if(topr)topr.insertBefore(b,topr.firstChild);
+  /* first visit: ask the customer to pick a language */
+  if(!lang)setTimeout(openLang,900);
+  /* Raju AI (when connected): answer in the chosen language */
+  if(lang&&lang!=="en"&&window.claude&&window.claude.use){
+    samplePromise=window.claude.use("sample").then(function(s){if(!s)return null;return function(turns,opts){
+      turns=turns.map(function(t,i){return i===0?{role:t.role,content:"IMPORTANT: Reply only in "+NAMES[lang]+" using "+NAMES[lang]+" script. Keep the final IDS: line in English.\n\n"+t.content}:t});
+      return s(turns,opts)}});
+  }
+})();
+function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,hi,pa,gu,ta,mr",autoDisplay:false},"google_translate_element")}
 </script>
+<script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 </body>
 </html>
