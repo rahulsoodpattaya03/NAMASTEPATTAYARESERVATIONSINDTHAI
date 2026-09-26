@@ -3670,5 +3670,599 @@ html,body{overflow-x:hidden}
   }
 })();
 </script>
+<!-- ===== ALL-IN-ONE: v19 to v24 (add-on) ===== -->
+<style>
+.brandrow{cursor:pointer}
+.svchead{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;align-items:center;gap:12px;padding:10px 0;background:linear-gradient(var(--bg) 70%,transparent)}
+.svcback{width:44px;height:44px;border-radius:14px;border:1px solid var(--line);background:var(--surface);color:var(--ink);display:grid;place-items:center;flex:0 0 auto}
+.svcback .ic{width:22px;height:22px}
+.svchead h2{font-size:22px;margin:0}
+.svchead small{color:var(--muted)}
+.svchero{height:220px;border-radius:24px;margin:6px 0 16px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:16px;border:1px solid var(--line)}
+.svchero p{margin:0;color:#fff;font-size:15px;text-shadow:0 2px 12px rgba(0,0,0,.7);position:relative;z-index:1}
+.sheet.full .panel{top:0!important;bottom:0!important;left:0!important;right:0!important;width:auto!important;max-height:none!important;height:100%;border-radius:0!important;transform:none!important;animation:none!important}
+.sheet.full .panel .art{border-radius:0!important;height:260px}
+.np-hbtn .npav{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,#2FD1FF,#8B5CFF);color:#fff;font-size:11px;font-weight:700;font-style:normal}
+.np-hbtn.partner .npav{background:linear-gradient(135deg,#FFC857,#F3722C)}
+.np-hbtn.agent .npav{background:linear-gradient(135deg,#FF3DA8,#7B2CBF)}
+.np-hbtn span{max-width:42px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.adm .pill{display:inline-block;text-decoration:none;margin:8px 6px 0 0}
+html,body{overflow-x:hidden}
+.lbud{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin-top:10px}
+.lbud .lcard{margin-bottom:0}
+.lob{margin:0 0 16px}
+.lob .lcard{margin-bottom:8px}
+.lobtag{font-size:11px;letter-spacing:.06em;color:#FFB8E6;font-weight:600}
+.ldhelp{margin:0 0 14px}
+.ldhelp .lcard{margin-bottom:8px}
+.ldhelp .pill{margin-top:10px}
+.ldhelp .pill[disabled]{opacity:.7}
+</style>
+
+<script>
+/* ===== v19: service pages, full-page venues, clickable logo, photos ===== */
+(function(){
+  if(document.getElementById("svcPage"))return;
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  var baseArt=artSVG;
+  artSVG=function(c){var l="linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6)),";
+    if(c.id)l+="url('photos/"+c.id+".jpg') center/cover no-repeat,";
+    if(c.cat)l+="url('photos/"+c.cat+".jpg') center/cover no-repeat,";
+    return l+baseArt(c)};
+  var svc=document.createElement("section");svc.id="svcPage";svc.hidden=true;
+  var ex=document.getElementById("explore");ex.parentNode.insertBefore(svc,ex.nextSibling);
+  var SECTIONS=["explore","map","concierge","buddy","bookings","earn","clubs","packages","ladies","mall","paybill","dash"];
+  var leaving=false;
+  var _go=go;
+  go=function(t){if(!svc.hidden){svc.hidden=true;leaving=true;setTimeout(function(){leaving=false},500)}_go(t)};
+  var _close=closeSheet;
+  function realClose(){sheet.classList.remove("full");_close()}
+  closeSheet=function(){if(history.state&&history.state.np==="v"&&sheet.classList.contains("open"))history.back();else realClose()};
+  var _open=openClub;
+  openClub=function(c){_open(c);sheet.classList.add("full");
+    if(history.state&&history.state.np==="v")history.replaceState({np:"v",id:c.id},"","#v/"+c.id);
+    else history.pushState({np:"v",id:c.id},"","#v/"+c.id)};
+  function showService(cat){
+    var nm=(typeof CATNAME!=="undefined"&&CATNAME[cat])||"Services";
+    var list=CLUBS.filter(function(c){return c.cat===cat});
+    SECTIONS.forEach(function(id){var el=document.getElementById(id);if(el)el.hidden=true});
+    document.querySelectorAll(".tabs button").forEach(function(b){if(b.dataset.tab==="explore")b.setAttribute("aria-current","page");else b.removeAttribute("aria-current")});
+    var pal=(list[0]&&list[0].art)||["#FF3DA8","#6A2BFF"];
+    svc.innerHTML='<div class="svchead"><button class="svcback" id="svcBack" aria-label="Back"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button><div><h2>'+esc(nm)+'</h2><small>'+list.length+' place'+(list.length===1?"":"s")+' in Pattaya</small></div></div>'+
+      '<div class="svchero" style="background:'+artSVG({cat:cat,art:pal})+' center/cover no-repeat,#06061A"><p>Tap any place to see details and book.</p></div>'+
+      '<div class="grid" id="svcGrid"></div>'+(list.length?'':'<p class="empty">New places coming soon.</p>');
+    var g=svc.querySelector("#svcGrid");
+    list.forEach(function(c){
+      var paid=c.pkgs.map(function(p){return p.p}).filter(Boolean),from=paid.length?Math.min.apply(null,paid):0;
+      var b=document.createElement("button");b.className="club";
+      b.innerHTML='<div class="art" style="'+artStyle(c)+'"><span class="live">'+esc(c.type||nm)+'</span><span class="name">'+esc(c.name)+'</span></div><div class="meta"><div class="row"><span>'+esc(c.area)+'</span><span>'+esc(c.open)+'</span></div><div class="row"><span>'+esc(c.music||c.sub||"")+'</span><span class="from">'+(c.pkgs[0]&&c.pkgs[0].free?"Free entry":(from?"from "+money(from):"On request"))+'</span></div></div>';
+      b.onclick=function(){openClub(c)};g.appendChild(b)});
+    svc.querySelector("#svcBack").onclick=function(){if(history.state&&history.state.np==="s")history.back();else{svc.hidden=true;_go("explore")}};
+    svc.hidden=false;
+    if(window.sceneApply)sceneApply();
+  }
+  function openService(cat){showService(cat);history.pushState({np:"s",cat:cat},"","#s/"+cat);window.scrollTo({top:0})}
+  window.openService=openService;
+  function bindCats(){document.querySelectorAll("#cats .cat").forEach(function(b,i){if(CATS[i])b.onclick=function(){openService(CATS[i][0])}})}
+  var _rc=renderCats;renderCats=function(){_rc();bindCats()};bindCats();
+  window.addEventListener("popstate",function(e){
+    var st=e.state;if(sheet.classList.contains("open"))realClose();
+    if(leaving){leaving=false;return}
+    if(st&&st.np==="s")showService(st.cat);
+    else if(!st||st.np!=="v"){if(!svc.hidden){svc.hidden=true;_go("explore")}}
+  });
+  function home(){
+    if(sheet.classList.contains("open"))realClose();
+    if(window.closeRaju)closeRaju();
+    svc.hidden=true;_go("explore");
+    if(location.hash)history.replaceState(null,"",location.pathname+location.search);
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+  var br=document.querySelector(".top .brandrow");
+  if(br){br.setAttribute("role","link");br.tabIndex=0;br.setAttribute("aria-label","Home");br.onclick=home;
+    br.onkeydown=function(e){if(e.key==="Enter"||e.key===" "){e.preventDefault();home()}}}
+  var h=location.hash;
+  if(h.indexOf("#s/")===0){var cat=h.slice(3);history.replaceState({np:"s",cat:cat},"",h);showService(cat)}
+  ["renderGrid","renderRail","renderMall","renderBookings"].forEach(function(f){if(typeof window[f]==="function")window[f]()});
+})();
+</script>
+
+<script>
+/* ===== v20: night clubs & after party update ===== */
+(function(){
+  var NEWNAME="Night clubs & After party";
+  CATS.forEach(function(c){if(c[0]==="nightlife")c[2]=NEWNAME});
+  if(typeof CATNAME!=="undefined")CATNAME.nightlife=NEWNAME;
+  if(typeof TYPES!=="undefined")TYPES.forEach(function(t,i){if(t==="Nightlife & Bars")TYPES[i]=NEWNAME});
+  if(typeof state!=="undefined"&&state.type==="Nightlife & Bars")state.type=NEWNAME;
+  var REMOVE=["skyline","basement","velvet","noon","bollybar"];
+  var GONE=/skyline|basement 9|velvet room|noon rooftop|bolly bar/i;
+  function strip(arr){if(!arr)return;for(var i=arr.length-1;i>=0;i--)if(REMOVE.indexOf(arr[i].id)>-1||GONE.test(arr[i].name||""))arr.splice(i,1)}
+  strip(CLUBS);
+  if(typeof NIGHT!=="undefined")strip(NIGHT);
+  if(typeof PARTNERS!=="undefined")strip(PARTNERS);
+  if(typeof LUPD!=="undefined")for(var j=LUPD.length-1;j>=0;j--)if(GONE.test(LUPD[j][0]))LUPD.splice(j,1);
+  function has(w){return CLUBS.some(function(c){return (c.name||"").toLowerCase().indexOf(w)>-1})}
+  var ADD=[
+    ["fume","Fume","fume",false,false,["#FF6B6B","#3A0CA3"]],
+    ["nashaaspace","Nashaa Space","nashaa space",true,false,["#FF9933","#4A1070"]],
+    ["sutraa","Club Sutraa","sutraa",true,false,["#F72585","#240046"]],
+    ["myst","Myst","myst",false,true,["#4CC9F0","#1B0B3A"]],
+    ["republic","Republic","republic",false,true,["#00F5D4","#0B1D51"]]
+  ];
+  ADD.forEach(function(a){
+    if(has(a[2]))return;
+    var c={id:a[0],name:a[1],cat:"nightlife",area:"Pattaya",
+      open:a[4]?"After 2 AM till sunrise":"Late night — confirm with club",
+      music:a[3]?"Bollywood · Punjabi":(a[4]?"After-party":"Night club"),
+      type:a[4]?"After-party club":(a[3]?"Indian club":"Night club"),
+      tags:[a[4]?"After party":"Night club"].concat(a[3]?["Indian club"]:[]),
+      about:a[1]+". Book a table and our team will confirm it with the club.",
+      art:a[5],indian:a[3],after:a[4],afterparty:a[4],disc:30,hosts:["Mr. Amit","Ms. Nok","Mr. Sunny"],
+      pkgs:[{n:"Entry",d:"Guest list, confirm at the door",p:0,left:99},{n:"Standard table",d:"Up to 6 guests, 1 bottle",p:6000,left:8},{n:"Ladies table",d:"Up to 4 women",p:3000,left:4},{n:"VIP table",d:"Up to 10 guests, 2 bottles, host",p:15000,left:2}]};
+    CLUBS.push(c);
+    if(typeof NIGHT!=="undefined")NIGHT.push(c);
+    if(typeof PARTNERS!=="undefined")PARTNERS.push(c);
+  });
+  if(typeof PEOPLE!=="undefined"&&typeof NIGHT!=="undefined"&&NIGHT.length)PEOPLE.forEach(function(p,i){if(GONE.test(p.club||""))p.club=NIGHT[i%NIGHT.length].name});
+  function opts(id,list,first){var el=document.getElementById(id);if(!el)return;var v=el.value;el.innerHTML=(first||"")+list.map(function(c){return '<option value="'+c.id+'">'+c.name+'</option>'}).join("");if(v)el.value=v}
+  if(typeof NIGHT!=="undefined")opts("bClub",NIGHT,'<option value="">Not decided</option>');
+  if(typeof PARTNERS!=="undefined"){opts("dVenue",PARTNERS);opts("billVenue",PARTNERS)}
+  var tt=document.getElementById("tickTrack");
+  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Pulse Arena","guest DJs this Saturday"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
+    var hh=it.map(function(x){return "<span><b>"+x[0]+"</b> · "+x[1]+"</span>"}).join("");tt.innerHTML=hh+hh}
+  ["renderCats","renderChips","renderGrid","renderRail","renderMap","renderLadies","renderDash","renderPeople"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>
+
+<script>
+/* ===== v21: name when logged in, log out, app colours, registered agents, partner upgrade, admin mode ===== */
+(function(){
+  var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
+  if(!sb)return;
+  var user=null;
+  var ADMINS=["rahulsood30071990@gmail.com"];
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function openSheet(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+ico("close")+'</button></div>'}
+  function norm(e){e=String(e||"").toLowerCase();var p=e.split("@");return p[0].split("+")[0]+"@"+(p[1]||"")}
+  function isAdmin(u){return !!u&&ADMINS.indexOf(norm(u.email))>-1}
+  function viewAs(){try{return localStorage.getItem("np_view_as")||""}catch(e){return ""}}
+  function roleOf(u){var r=(u.user_metadata||{}).role||"traveller";if(isAdmin(u)&&viewAs())r=viewAs();return r}
+  function which(u){var r=roleOf(u);return r==="partner"?"partner":(r.indexOf("agent")===0?"agent":"user")}
+  function first(u){var m=u.user_metadata||{};var n=String(m.name||m.full_name||(u.email||"Me").split("@")[0]).trim().split(/\s+/)[0]||"Me";return n.charAt(0).toUpperCase()+n.slice(1)}
+  function code(){return typeof myCode!=="undefined"?myCode:""}
+
+  function applySkin(k){
+    var el=document.getElementById("skin-"+k),css=document.getElementById("skinCss");
+    if(css)css.textContent=el?el.textContent:"";
+    document.documentElement.dataset.skin=k;
+    try{localStorage.setItem("np_skin_user",k)}catch(e){}
+    if(typeof renderMap==="function")try{renderMap()}catch(e){}
+  }
+  function openColours(){
+    if(!user){
+      panel.innerHTML='<div class="pbody">'+head("App colours","ucX")+'<p class="about">Log in to choose your app colours.</p><button class="cta" id="ucLogin">Log in</button></div>';
+      panel.querySelector("#ucX").onclick=closeSheet;
+      panel.querySelector("#ucLogin").onclick=function(){var b=document.querySelector(".np-hbtn.user");closeSheet();if(b)b.click()};
+      return openSheet();
+    }
+    var list=(typeof SKINS!=="undefined")?SKINS:[],desc=(typeof SKINDESC!=="undefined")?SKINDESC:{},cur=document.documentElement.dataset.skin;
+    panel.innerHTML='<div class="pbody">'+head("App colours","ucX")+'<p class="about">Pick your favourite look. It is saved on this phone.</p>'+
+      '<div class="pgrid" role="radiogroup" aria-label="App colours">'+list.map(function(s){return '<button class="pskin" role="radio" data-k="'+s[0]+'" aria-checked="'+(s[0]===cur)+'"><div class="sw" style="background:'+s[2]+'"></div>'+esc(s[1])+'<small>'+esc(desc[s[0]]||"")+'</small></button>'}).join("")+'</div>'+
+      '<button class="cta" id="ucDone">Done</button></div>';
+    panel.querySelector("#ucX").onclick=closeSheet;
+    panel.querySelector("#ucDone").onclick=closeSheet;
+    panel.querySelectorAll(".pskin").forEach(function(b){b.onclick=function(){applySkin(b.dataset.k);openColours()}});
+    openSheet();
+  }
+  window.openColours=openColours;
+  new MutationObserver(function(){
+    var b=panel.querySelector(".npx-extra .cta.ghost");
+    if(b&&!b.dataset.np){b.dataset.np="1";b.textContent="App colours";b.onclick=function(e){e.preventDefault();openColours()}}
+  }).observe(panel,{childList:true,subtree:true});
+
+  var CO={in:{lbl:"Indian agent",reg:"GST or Ministry of Tourism registration no.",city:"e.g. Mumbai",ph:"+91"},
+          th:{lbl:"Thai agent",reg:"TAT licence no. (Tourism Authority of Thailand)",city:"e.g. Pattaya",ph:"+66"}};
+  var keep={};
+  function saveVals(){["agCo","agReg","agCity","agN","agP","agE"].forEach(function(id){var e=panel.querySelector("#"+id);if(e)keep[id]=e.value})}
+  function fillVals(){Object.keys(keep).forEach(function(id){var e=panel.querySelector("#"+id);if(e)e.value=keep[id]})}
+  function agentForm(c,withLogin){
+    return '<p class="small" style="margin:0 0 8px">Only for registered tour and travel companies.</p>'+
+      '<div class="roles" style="grid-template-columns:1fr 1fr">'+["in","th"].map(function(k){return '<button data-c="'+k+'" aria-pressed="'+(k===c)+'">'+CO[k].lbl+'<small>5% commission</small></button>'}).join("")+'</div>'+
+      '<div class="fields"><label class="full">Registered company name<input id="agCo"></label>'+
+      '<label class="full">'+CO[c].reg+'<input id="agReg" autocapitalize="characters"></label>'+
+      '<label>City<input id="agCity" placeholder="'+CO[c].city+'"></label><label>Contact person<input id="agN" autocomplete="name"></label>'+
+      '<label class="full">WhatsApp<input id="agP" inputmode="tel" placeholder="'+CO[c].ph+'"></label>'+
+      (withLogin?'<label class="full">Email<input id="agE" type="email" autocomplete="email"></label><label class="full">Password<input id="agW" type="password" autocomplete="new-password" placeholder="At least 8 characters"></label>':'')+
+      '</div><label class="chk"><input type="checkbox" id="agOk"> I confirm this is a registered tour and travel company. We may ask for proof before paying commission.</label>';
+  }
+  function readAgent(c){
+    var v=function(id){var e=panel.querySelector("#"+id);return e?e.value.trim():""};
+    var d={agency:v("agCo"),reg_no:v("agReg"),city:v("agCity"),name:v("agN"),phone:v("agP")};
+    if(!d.agency)return "Add your registered company name.";
+    if(d.reg_no.length<4)return "Add your "+(c==="th"?"TAT licence number.":"GST or tourism registration number.");
+    if(!d.city)return "Add your city.";
+    if(!d.name)return "Add a contact person.";
+    if(d.phone.replace(/\D/g,"").length<8)return "Add a WhatsApp number with at least 8 digits.";
+    if(!panel.querySelector("#agOk").checked)return "Please confirm your company is registered.";
+    d.role="agent_"+c;d.agent_status="pending";d.ref_code=code();
+    return d;
+  }
+  function openAgent(mode,c){
+    c=c||"in";var up=mode==="up";
+    panel.dataset.only="agent";
+    panel.innerHTML='<div class="pbody">'+head(up?"Register as agent":"Agent login","agX")+
+      '<div class="atabs" role="tablist"><button role="tab" data-am="in" aria-selected="'+(!up)+'">Sign in</button><button role="tab" data-am="up" aria-selected="'+up+'">Sign up</button></div>'+
+      (up?agentForm(c,true):'<div class="fields"><label class="full">Email<input id="agE" type="email" autocomplete="email"></label><label class="full">Password<input id="agW" type="password" autocomplete="current-password"></label></div>')+
+      '<button class="cta" id="agGo">'+(up?"Register company":"Sign in")+'</button><p class="err" id="agM" role="status"></p></div>';
+    fillVals();
+    var M=panel.querySelector("#agM");function msg(t,ok){M.style.color=ok?"var(--ok)":"";M.textContent=t}
+    panel.querySelector("#agX").onclick=closeSheet;
+    panel.querySelectorAll("[data-am]").forEach(function(b){b.onclick=function(){saveVals();openAgent(b.dataset.am,c)}});
+    panel.querySelectorAll("[data-c]").forEach(function(b){b.onclick=function(){saveVals();openAgent("up",b.dataset.c)}});
+    panel.querySelector("#agGo").onclick=async function(){
+      var email=(panel.querySelector("#agE").value||"").trim(),pw=panel.querySelector("#agW").value,btn=this;
+      if(!/^\S+@\S+\.\S+$/.test(email))return msg("Enter a valid email address.");
+      if(up){
+        var d=readAgent(c);if(typeof d==="string")return msg(d);
+        if(pw.length<8)return msg("Use a password with at least 8 characters.");
+        btn.disabled=true;
+        var r=await sb.auth.signUp({email:email,password:pw,options:{data:d,emailRedirectTo:location.origin+location.pathname}});
+        btn.disabled=false;
+        if(r.error)return msg(r.error.message);
+        if(r.data.user&&r.data.user.identities&&r.data.user.identities.length===0)return msg("This email already has an account. Tap Sign in, then you can register your company on it.");
+        keep={};
+        if(r.data.session){paint(r.data.user);menu()}else msg("Company registered. Check your email and tap the link to confirm, then sign in.",true);
+      }else{
+        if(!pw)return msg("Enter your password.");
+        btn.disabled=true;var r2=await sb.auth.signInWithPassword({email:email,password:pw});btn.disabled=false;
+        if(r2.error)return msg(r2.error.message.indexOf("confirm")>-1?"Please confirm your email first. Check your inbox.":"Wrong email or password.");
+        paint(r2.data.user);
+        if(which(r2.data.user)!=="agent")return openUpgrade("in");
+        menu();
+      }
+    };
+    openSheet();
+  }
+  function openUpgrade(c){
+    c=c||"in";panel.dataset.only="agent";
+    panel.innerHTML='<div class="pbody">'+head("Become an agent","agX")+
+      '<p class="about">You are logged in as '+esc(user.email)+'. Register your company to earn 5% commission.</p>'+
+      agentForm(c,false)+'<button class="cta" id="agGo">Register company</button>'+
+      '<button class="linkbtn" id="agOther">Log out and use another email</button><p class="err" id="agM" role="status"></p></div>';
+    fillVals();
+    var M=panel.querySelector("#agM");
+    panel.querySelector("#agX").onclick=closeSheet;
+    panel.querySelectorAll("[data-c]").forEach(function(b){b.onclick=function(){saveVals();openUpgrade(b.dataset.c)}});
+    panel.querySelector("#agOther").onclick=async function(){await sb.auth.signOut();closeSheet();location.reload()};
+    panel.querySelector("#agGo").onclick=async function(){
+      var d=readAgent(c);if(typeof d==="string"){M.textContent=d;return}
+      this.disabled=true;var r=await sb.auth.updateUser({data:d});this.disabled=false;
+      if(r.error){M.textContent=r.error.message;return}
+      keep={};paint(r.data.user);menu();
+    };
+    openSheet();
+  }
+  function agentEntry(up){
+    if(user){if(which(user)==="agent")menu();else openUpgrade("in")}
+    else openAgent(up?"up":"in","in");
+  }
+  window.openAgent=agentEntry;
+  [].forEach.call(document.querySelectorAll("#earn .cta.ghost"),function(b){if(/agent account/i.test(b.textContent))b.onclick=function(){agentEntry(true)}});
+
+  function openPartnerUpgrade(){
+    panel.dataset.only="partner";
+    panel.innerHTML='<div class="pbody">'+head("Register my venue","pvX")+
+      '<p class="about">You are logged in as '+esc(user.email)+'. Your account will become a partner account.</p>'+
+      '<div class="fields"><label class="full">Venue / business name<input id="pvV"></label><label>Type<select id="pvT"><option>Club / bar</option><option>Restaurant</option><option>Hotel</option><option>Spa</option><option>Tours and activities</option><option>Transport</option><option>Other</option></select></label>'+
+      '<label>Contact person<input id="pvN" autocomplete="name"></label><label class="full">WhatsApp<input id="pvP" inputmode="tel" placeholder="+66"></label></div>'+
+      '<button class="cta" id="pvGo">Register venue</button><button class="linkbtn" id="pvOther">Log out and use another email</button><p class="err" id="pvM" role="status"></p></div>';
+    var $=function(s){return panel.querySelector(s)},M=$("#pvM");
+    $("#pvX").onclick=closeSheet;
+    $("#pvOther").onclick=async function(){await sb.auth.signOut();closeSheet();location.reload()};
+    $("#pvGo").onclick=async function(){
+      var venue=$("#pvV").value.trim(),name=$("#pvN").value.trim(),phone=$("#pvP").value.trim();
+      if(!venue){M.textContent="Add your venue or business name.";return}
+      if(!name){M.textContent="Add a contact person.";return}
+      if(phone.replace(/\D/g,"").length<8){M.textContent="Add a WhatsApp number with at least 8 digits.";return}
+      this.disabled=true;
+      var r=await sb.auth.updateUser({data:{role:"partner",venue:venue,venue_type:$("#pvT").value,name:name,phone:phone,partner_status:"pending"}});
+      this.disabled=false;
+      if(r.error){M.textContent=r.error.message;return}
+      paint(r.data.user);menu();
+    };
+    openSheet();
+  }
+
+  var BTNS={user:document.querySelector(".np-hbtn.user"),agent:document.querySelector(".np-hbtn.agent"),partner:document.querySelector(".np-hbtn.partner")};
+  var ORIG={};
+  Object.keys(BTNS).forEach(function(k){var b=BTNS[k];if(!b)return;ORIG[k]={html:b.innerHTML,click:b.onclick,label:b.getAttribute("aria-label")};
+    b.onclick=function(){
+      if(k==="agent")return agentEntry(false);
+      if(k==="partner"&&user){if(which(user)==="partner")menu();else openPartnerUpgrade();return}
+      if(user&&which(user)===k)menu();else if(ORIG[k].click)ORIG[k].click.call(b)}});
+  function paint(u){
+    user=u;
+    Object.keys(BTNS).forEach(function(k){var b=BTNS[k];if(!b)return;b.innerHTML=ORIG[k].html;b.setAttribute("aria-label",ORIG[k].label||"")});
+    if(!u)return;
+    var saved=null;try{saved=localStorage.getItem("np_skin_user")}catch(e){}
+    if(saved&&document.documentElement.dataset.skin!==saved)applySkin(saved);
+    var k=which(u),b=BTNS[k];if(!b)return;var n=first(u);
+    b.innerHTML='<i class="npav notranslate" translate="no">'+esc(n.charAt(0))+'</i><span class="notranslate" translate="no">'+esc(n)+'</span>';
+    b.setAttribute("aria-label","My account, "+n);
+  }
+  var VIEWS=[["traveller","Traveller"],["agent_in","Indian agent"],["agent_th","Thai agent"],["partner","Partner"]];
+  function menu(){
+    var m=user.user_metadata||{},k=which(user),r=roleOf(user),adm=isAdmin(user);
+    var ROLE={traveller:"Traveller · 3% referral",agent_in:"Indian agent · 5% commission",agent_th:"Thai agent · 5% commission",partner:"Partner"};
+    var premOn=(typeof isPremium==="function")&&isPremium();
+    panel.dataset.only=k;
+    panel.innerHTML='<div class="pbody">'+head("Hi, "+esc(first(user)),"umX")+
+      '<div class="lcard" style="margin-top:14px"><h4>'+esc(m.name||m.venue||first(user))+'</h4><p>'+(ROLE[r]||ROLE.traveller)+'</p><p class="small">'+esc(user.email)+'</p>'+
+      (k==="agent"?'<p class="small">'+(m.agency?esc(m.agency)+(m.reg_no?' · Reg. no. '+esc(m.reg_no):'')+(m.city?' · '+esc(m.city):''):(adm?'Admin test view':''))+'</p><p class="small" style="color:var(--amber)">'+(adm?'Admin':(m.agent_status==="approved"?"Agent account approved":"Agent account under review. Our team will check your company and contact you on WhatsApp."))+'</p>':'')+
+      (k==="partner"?'<p class="small">'+(m.venue?esc(m.venue):(adm?'Admin test view':''))+'</p>':'')+'</div>'+
+      (adm?'<div class="lcard hl adm"><span class="k">ADMIN</span><h4>View the app as</h4><div class="roles" style="grid-template-columns:1fr 1fr;margin-top:8px">'+
+        VIEWS.map(function(v){return '<button data-v="'+v[0]+'" aria-pressed="'+(r===v[0])+'">'+v[1]+'</button>'}).join("")+'</div>'+
+        '<div class="lrow" style="margin-top:6px"><span>Premium designs</span><button class="pill '+(premOn?'on':'')+'" id="adPrem">'+(premOn?'On':'Off')+'</button></div>'+
+        '<button class="pill" id="adVip">VIP Buddy</button><a class="pill" href="admin.html">Admin page</a>'+
+        '<a class="pill" target="_blank" rel="noopener" href="https://supabase.com/dashboard/project/mymtgbmcjbwsnetzwgoy/auth/users">Approve users</a></div>':'')+
+      (k==="partner"?'<button class="cta" id="umDash">Partner dashboard</button>':'<button class="cta" id="umAcc">My account and referral code</button>')+
+      '<button class="cta ghost" id="umCol">App colours</button>'+
+      '<button class="cta ghost" id="umOut">Log out</button></div>';
+    var $=function(s){return panel.querySelector(s)};
+    $("#umX").onclick=closeSheet;
+    if($("#umDash"))$("#umDash").onclick=function(){closeSheet();go("dash")};
+    if($("#umAcc"))$("#umAcc").onclick=function(){var a=document.querySelector(".acctbtn");if(a)a.click()};
+    $("#umCol").onclick=openColours;
+    $("#umOut").onclick=async function(){this.disabled=true;try{localStorage.removeItem("np_view_as")}catch(e){}await sb.auth.signOut();closeSheet();location.reload()};
+    if(adm){
+      panel.querySelectorAll("[data-v]").forEach(function(b){b.onclick=function(){
+        try{localStorage.setItem("np_view_as",b.dataset.v)}catch(e){}
+        if(typeof myRole!=="undefined"){myRole=b.dataset.v.indexOf("agent")===0?"agent":"traveller";store.set("np_role",myRole)}
+        if(typeof renderEarn==="function")renderEarn();
+        paint(user);menu()}});
+      $("#adPrem").onclick=function(){store.set("np_premium",!premOn);if(typeof renderPremiumUI==="function")renderPremiumUI();menu()};
+      $("#adVip").onclick=function(){var p=document.getElementById("premBtn");closeSheet();if(p)p.click()};
+    }
+    openSheet();
+  }
+  sb.auth.getSession().then(function(r){paint(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){paint(s?s.user:null)});
+})();
+</script>
+
+<script>
+/* ===== v22: women buddies inside Find a friend ===== */
+(function(){
+  if(typeof renderLadies!=="function")return;
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function openBuddyWomen(){go("buddy");var s=document.getElementById("bShow");if(s){s.value="Women";s.dispatchEvent(new Event("change"))}}
+  function addBuddy(){
+    var v=document.getElementById("lview");if(!v||v.querySelector(".lbudwrap"))return;
+    var blk=(typeof blocked!=="undefined")?blocked:[];
+    var list=(typeof PEOPLE!=="undefined"?PEOPLE:[]).filter(function(p){return p.sex==="Woman"&&blk.indexOf(p.id)<0});
+    var w=document.createElement("div");w.className="lbudwrap";
+    w.innerHTML='<div class="lcard hl" style="margin-top:14px"><span class="k">BUDDY</span><h4>Find a girl buddy</h4>'+
+      '<p>Meet other women for a club night, dinner, the beach or shopping. Only women in the lounge see this list.</p>'+
+      '<button class="pill on" id="lbOpen" style="margin-top:10px">Open Buddy · women only</button></div><div class="lbud"></div>';
+    var g=w.querySelector(".lbud");
+    list.forEach(function(p){
+      var it=(typeof INT!=="undefined"&&INT[p.intent])?INT[p.intent][2]:"";
+      var c=document.createElement("div");c.className="lcard";
+      c.innerHTML='<div style="display:flex;gap:12px;align-items:center"><span class="av2" style="background:linear-gradient(145deg,'+p.color+',#141026)">'+esc(p.name.charAt(0))+'</span>'+
+        '<div style="flex:1;min-width:0"><h4>'+esc(p.name)+', '+esc(p.age)+'</h4><p>From '+esc(p.from)+' · '+esc(p.area)+'</p></div></div>'+
+        '<p style="margin-top:8px">'+esc(it)+' · '+esc(p.when)+'</p><p class="small">'+esc(p.note)+'</p>'+
+        '<div class="lrow" style="margin-top:10px"><span class="small">'+esc(p.lang)+'</span><button class="pill on">Say hi</button></div>';
+      c.querySelector("button").onclick=function(){
+        if(typeof me!=="undefined"&&me&&typeof openBuddyChat==="function")openBuddyChat(p);else openBuddyWomen();
+      };
+      g.appendChild(c);
+    });
+    if(!list.length)g.innerHTML='<p class="small">No women buddies right now. Check back tonight.</p>';
+    w.querySelector("#lbOpen").onclick=openBuddyWomen;
+    v.appendChild(w);
+  }
+  var _rl=renderLadies;
+  renderLadies=function(){_rl();try{if(typeof lTab!=="undefined"&&lTab==="friend"&&typeof lady!=="undefined"&&lady)addBuddy()}catch(e){}};
+  renderLadies();
+})();
+</script>
+
+<script>
+/* ===== v23: girls' plans also on Buddy ===== */
+(function(){
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function posts(){return (typeof store!=="undefined")?store.get("np_lady_friend",[]):[]}
+  function hook(){
+    if(typeof lTab==="undefined"||lTab!=="friend")return;
+    var btn=document.getElementById("lfP"),inp=document.getElementById("lfT");
+    if(!btn||!inp||btn.dataset.lob)return;btn.dataset.lob="1";
+    var row=btn.closest(".post");
+    var lab=document.createElement("label");lab.className="chk";lab.style.margin="0 0 12px";
+    lab.innerHTML='<input type="checkbox" id="lfBuddy"> Also show on Buddy so more people can join you (first name only)';
+    if(row)row.insertAdjacentElement("afterend",lab);
+    var orig=btn.onclick;
+    btn.onclick=function(){
+      var on=document.getElementById("lfBuddy").checked,t=inp.value.trim();
+      if(orig)orig.call(btn);
+      if(on&&t){var ps=posts();if(ps[0]&&ps[0].t===t){ps[0].buddy=true;ps[0].at=Date.now();store.set("np_lady_friend",ps)}}
+      renderLOB();
+    };
+  }
+  if(typeof renderLadies==="function"){var _rl=renderLadies;renderLadies=function(){_rl();try{hook()}catch(e){}}}
+  var sec=document.getElementById("buddy");if(!sec)return;
+  var box=document.createElement("div");box.className="lob";box.id="lob";
+  var title=sec.querySelector(".sectiontitle");
+  if(title)title.insertAdjacentElement("afterend",box);else sec.insertBefore(box,sec.firstChild);
+  function renderLOB(){
+    var ps=posts().filter(function(p){return p.buddy});
+    if(!ps.length){box.innerHTML="";return}
+    var myName=(typeof me!=="undefined"&&me)?me.name:null;
+    box.innerHTML='<div class="lcard hl"><span class="lobtag">PATTAYA\'S EMPOWERED GIRLS</span><h4>Girls going out</h4><p>Plans shared by women from the ladies lounge. Ask to join, and always meet in public places.</p></div>'+
+      ps.map(function(p,i){var asked=myName&&(p.j||[]).indexOf(myName)>-1;
+        return '<div class="lcard"><div class="lrow"><div><h4>'+esc(String(p.who||"").split(/\s+/)[0])+'</h4><p>'+esc(p.t)+'</p></div><button class="pill '+(asked?'on':'')+'" data-i="'+i+'">'+(asked?'Requested':'Ask to join')+'</button></div></div>'}).join("")+
+      '<p class="small" id="lobMsg"></p>';
+    box.querySelectorAll("[data-i]").forEach(function(b){b.onclick=function(){
+      if(!myName){box.querySelector("#lobMsg").textContent="Create your Buddy profile below first, then ask to join.";var g=document.getElementById("buddyGate");if(g)g.scrollIntoView({behavior:"smooth"});return}
+      var all=posts(),t=ps[+b.dataset.i];
+      var k=all.findIndex(function(x){return x.t===t.t&&x.who===t.who});if(k<0)return;
+      all[k].j=all[k].j||[];if(all[k].j.indexOf(myName)<0)all[k].j.push(myName);
+      store.set("np_lady_friend",all);renderLOB();
+    }});
+  }
+  window.renderLOB=renderLOB;
+  renderLOB();
+  var _go=go;go=function(t){_go(t);if(t==="buddy")renderLOB()};
+  if(typeof renderBuddy==="function"){var _rb=renderBuddy;renderBuddy=function(){_rb();renderLOB()}}
+})();
+</script>
+
+<script>
+/* ===== v24: Raju & ladies desk — help first, sell with a smile ===== */
+(function(){
+  var LADIES_WA=""; /* ladies team WhatsApp, e.g. "66812345678" (country code, no + or spaces) */
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function $$(n){return typeof money==="function"?money(n):"฿"+n}
+  function pick(a){return a[Math.floor(Math.random()*a.length)]}
+  var ESS=[["e_pads","Sanitary pads & wipes kit",150],["e_power","Power bank (rental)",200],["e_hang","Hangover kit (ORS, water, snacks)",250],["e_ride","Safe ride home (in Pattaya)",300],["e_flip","Comfy flip-flops",190]];
+  if(typeof MALL!=="undefined")ESS.forEach(function(e,i){if(!MALL.some(function(m){return m.id===e[0]}))MALL.push({id:e[0],n:e[1],c:"Essentials",p:e[2],col:(typeof PAL!=="undefined"?PAL[i%PAL.length]:["#FF69B4","#9B5CFF"])})});
+  if(typeof renderMall==="function")try{renderMall()}catch(e){}
+  function item(id){return (typeof MALL!=="undefined")?MALL.find(function(m){return m.id===id}):null}
+  function club(id){return (typeof CLUBS!=="undefined")?CLUBS.find(function(c){return c.id===id}):null}
+  function venueIn(q){q=q.toLowerCase();return (typeof CLUBS!=="undefined")?CLUBS.find(function(c){var w=(c.name||"").toLowerCase().replace(/^(the|club)\s+/,"").split(/\s+/)[0];return w.length>2&&q.indexOf(w)>-1}):null}
+  function orderTo(m,v){
+    if(typeof orders==="undefined")return;
+    orders.unshift({n:m.n+(v?" → "+v.name:""),p:m.p,to:null});
+    store.set("np_orders",orders);
+    if(typeof renderMall==="function")try{renderMall()}catch(e){}
+  }
+  function ladiesPick(v){
+    if(v&&v.cat==="nightlife")return v;
+    return (typeof CLUBS!=="undefined")?(CLUBS.find(function(c){return c.indian})||CLUBS.find(function(c){return c.cat==="nightlife"})):null;
+  }
+  var SENSITIVE=[
+    {k:"mind",re:/suicid|kill myself|end my life|want to die|self.?harm|hopeless|panic attack|depress|can'?t cope|no reason to live/i,
+     title:"You're not alone",
+     text:"I'm really glad you told us. Please talk to someone right now. If you might act on these thoughts, call the ambulance on 1669.",
+     nums:[["Thailand mental health hotline (24 hours)","1323"],["Ambulance","1669"],["Tele-MANAS, India (from an Indian mobile)","14416"]]},
+    {k:"danger",re:/unsafe|follow(ing|ed)? me|scared|afraid|harass|danger|attack|touch(ed|ing)? me|spiked|drugged|help me|rape|assault|kidnap|threat|police/i,
+     title:"Your safety comes first",
+     text:"If you are in danger, call now. Stay close to club staff, security or your friends, and share your live location with someone you trust.",
+     nums:[["Tourist Police (English speaking)","1155"],["Police emergency","191"],["Ambulance","1669"]]},
+    {k:"medical",re:/emergency|accident|injur|bleed|hospital|faint|unconscious|chest pain|can'?t breathe|overdose|allerg|seizure/i,
+     title:"Let's get you help right now",
+     text:"Call the ambulance. If you can, tell staff at the venue, and they can call for you too.",
+     nums:[["Ambulance","1669"],["Tourist Police (English speaking)","1155"]]},
+    {k:"lost",re:/passport|stolen|robbed|theft|pickpocket|lost my|scam|cheated|missing/i,
+     title:"We'll help you sort this out",
+     text:"First, get a police report from the Tourist Police. You'll need it for insurance. For a lost passport, contact the Embassy of India in Bangkok once you have the report.",
+     nums:[["Tourist Police (English speaking)","1155"],["Police emergency","191"]]}
+  ];
+  function sensitive(q){return SENSITIVE.find(function(s){return s.re.test(q)})}
+  var RULES=[
+    {re:/pad|sanitary|period|tampon|napkin|menstru/i,sell:"e_pads",lines:[
+      "Ladies, we've got you. Ask the hostess first, they usually have some. Or let us be your hero: a kit delivered to your table, discreetly, before your favourite song ends.",
+      "No stress, no awkward walk to the bar. The club hostess often has pads, or we'll send a kit straight to your table.",
+      "Period emergencies wait for no one, and neither do we. Discreet kit, delivered to your table."]},
+    {re:/charg|battery|power ?bank|phone (is )?dead/i,sell:"e_power",lines:[
+      "A dead phone in Pattaya is a sad story. We'll bring a power bank so your photos, your ride and mummy's calls all stay alive.",
+      "Your phone is tired, your night isn't. Power bank to your table.",
+      "No battery, no selfies, no ride home. Let's fix all three at once."]},
+    {re:/hangover|drunk|vomit|dizzy|headache/i,sell:"e_hang",lines:[
+      "Last night was legendary, today your head disagrees. Water first, then let our hangover kit do the magic. Feeling very unwell? Call 1669.",
+      "Nimbu paani would be nice, but our hangover kit is faster. Drink water and rest. If you feel really unwell, call 1669."]},
+    {re:/taxi|cab|ride|go home|get home|transport|bolt|grab/i,sell:"e_ride",lines:[
+      "Cinderella got a pumpkin. You get a safe ride home, booked and tracked.",
+      "After midnight, skip the random bike taxi. Your safe ride home is one tap away."]},
+    {re:/shoe|heel|feet|flip/i,sell:"e_flip",lines:[
+      "Heels were a brave choice. Your feet would like a word. Comfy flip-flops to your table.",
+      "Dance all night, walk home happy. Flip-flops delivered."]},
+    {re:/table|club|party|tonight|dance|bollywood|entry/i,book:"ladies",lines:[
+      "Why stand when you can own the table? Your squad, your songs, your spotlight.",
+      "Tonight's plan: best table, best songs, best selfies. The ladies table does all three."]},
+    {re:/spa|massage|relax/i,book:"spa",lines:[
+      "You danced, you conquered. Now let a Thai massage undo it all.",
+      "Your feet carried you through Walking Street. Time to say thank you."]}
+  ];
+  var WAIT=["While our team replies, the dance floor is calling. Ladies tables start at "+$$(3000)+". Just saying.",
+            "Our team is on it. Meanwhile, a ladies table tonight? Good music, great view, better company."];
+  function supportHTML(s){
+    return '<div class="lcard hl"><h4>'+esc(s.title)+'</h4><p>'+esc(s.text)+'</p><div class="help">'+
+      s.nums.map(function(n){return '<a href="tel:'+n[1]+'"><span>'+esc(n[0])+'</span><b>'+n[1]+'</b></a>'}).join("")+'</div></div>';
+  }
+  function buildHelp(q,name){
+    var v=venueIn(q),s=sensitive(q),h="",acts=[];
+    if(s){h+=supportHTML(s)}
+    else{
+      var hits=RULES.filter(function(r){return r.re.test(q)});
+      hits.forEach(function(r){
+        if(r.sell){var m=item(r.sell);if(m){acts.push({t:"buy",m:m,v:v});
+          h+='<div class="lcard"><p>'+esc(pick(r.lines))+'</p><div class="lrow"><b>'+esc(m.n)+'</b><span class="small">'+$$(m.p)+'</span></div><button class="pill on" data-a="'+(acts.length-1)+'">Order '+(v?"to my table at "+esc(v.name):"now")+' · '+$$(m.p)+'</button></div>'}}
+        if(r.book){var c=r.book==="spa"?(typeof CLUBS!=="undefined"?CLUBS.find(function(x){return x.cat==="spa"}):null):ladiesPick(v);
+          if(c){acts.push({t:"book",c:c});h+='<div class="lcard"><p>'+esc(pick(r.lines))+'</p><button class="pill on" data-a="'+(acts.length-1)+'">'+(r.book==="spa"?"Book "+esc(c.name):"Book a ladies table at "+esc(c.name))+'</button></div>'}}
+      });
+      if(!hits.length){var lc=ladiesPick(v);if(lc){acts.push({t:"book",c:lc});h+='<div class="lcard"><p>'+esc(pick(WAIT))+'</p><button class="pill on" data-a="'+(acts.length-1)+'">Book a ladies table at '+esc(lc.name)+'</button></div>'}}
+    }
+    if(LADIES_WA){
+      var txt=(s?"URGENT · ":"")+"Ladies desk"+(name?" · "+name:"")+(v?" · at "+v.name:"")+": "+q;
+      h+='<a class="cta" style="display:block;text-align:center;text-decoration:none;margin-top:4px" target="_blank" rel="noopener" href="https://wa.me/'+LADIES_WA+'?text='+encodeURIComponent(txt)+'">Chat with our ladies team on WhatsApp</a>';
+    }
+    var d=document.createElement("div");d.className="ldhelp";d.innerHTML=h;
+    d.querySelectorAll("[data-a]").forEach(function(b){b.onclick=function(){
+      var a=acts[+b.dataset.a];
+      if(a.t==="buy"){orderTo(a.m,a.v);b.textContent="Ordered · our team will confirm";b.disabled=true}
+      else if(typeof openClub==="function")openClub(a.c);
+    }});
+    return d;
+  }
+  function hookDesk(){
+    if(typeof lTab==="undefined"||lTab!=="desk")return;
+    var btn=document.getElementById("ldGo"),inp=document.getElementById("ldIn");
+    if(!btn||!inp||btn.dataset.sell)return;btn.dataset.sell="1";
+    var orig=btn.onclick;
+    function run(){
+      var q=inp.value.trim();if(orig)orig.call(btn);if(!q)return;
+      var v=document.getElementById("lview"),old=v&&v.querySelector(".ldhelp");if(old)old.remove();
+      var row=inp.closest(".post"),nm=(typeof lady!=="undefined"&&lady)?lady.name:"";
+      if(row)row.insertAdjacentElement("afterend",buildHelp(q,nm));
+    }
+    btn.onclick=run;inp.onkeydown=function(e){if(e.key==="Enter")run()};
+  }
+  if(typeof renderLadies==="function"){var _rl=renderLadies;renderLadies=function(){_rl();try{hookDesk()}catch(e){}};try{hookDesk()}catch(e){}}
+  if(typeof localAnswer==="function"){
+    var _la=localAnswer;
+    localAnswer=function(q){
+      var s=sensitive(q);
+      if(s)return {text:s.title+". "+s.text+" "+s.nums.map(function(n){return n[0]+": "+n[1]}).join(" · "),ids:[]};
+      var a=_la(q);
+      if(!a.ids||!a.ids.length){
+        var picks=["nashaa","marina","coral"].filter(function(id){return club(id)});
+        return {text:pick(["Arre, tell me a bit more and I'll find the perfect spot. Meanwhile, these are what everyone's booking tonight:",
+                           "Pattaya has a thousand options. I'll save you 999. Start with these:",
+                           "Trust Raju, these three never disappoint:"]),ids:picks};
+      }
+      a.text=pick(["Bhai, trust me. These are the ones everyone's talking about tonight:",
+                   "Your perfect night is one tap away. My top picks:",
+                   "Raju-approved and ready to book. Your spot is confirmed in a minute:"]);
+      return a;
+    };
+  }
+  if(typeof ask==="function"&&typeof chatEl!=="undefined"){
+    var _ask=ask;
+    ask=async function(q){
+      var t=String(q||"").trim();
+      await _ask(q);
+      if(!t||sensitive(t))return;
+      var v=venueIn(t),box=document.createElement("div");box.className="recs";
+      RULES.filter(function(r){return r.sell&&r.re.test(t)}).forEach(function(r){var m=item(r.sell);if(!m)return;
+        if(typeof addMsg==="function")addMsg("bot",pick(r.lines));
+        var b=document.createElement("button");b.textContent="Order "+m.n+" · "+$$(m.p);
+        b.onclick=function(){orderTo(m,v);b.textContent="Ordered · we'll confirm";b.disabled=true};box.appendChild(b)});
+      if(box.children.length){chatEl.appendChild(box);box.scrollIntoView({block:"end"})}
+    };
+  }
+})();
+</script>
 </body>
 </html>
