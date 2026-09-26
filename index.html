@@ -5095,5 +5095,37 @@ body{top:0!important}
   ["renderGrid","renderRail","renderMall","renderBookings","renderMapCard"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
 </script>
+  <!-- ===== v39: exact photo names for remaining pages and clubs ===== -->
+<script>
+(function(){
+  if(typeof artSVG!=="function")return;
+  var CAT={nightlife:["nightclub"],indian:["Xindianrestaurants"],property:["xbuysellrent"]};
+  var CLUB=[["badsha","xbadshaaclub"],["fume","xfume"]];
+  function clubFile(name){var n=String(name||"").toLowerCase();for(var i=0;i<CLUB.length;i++)if(n.indexOf(CLUB[i][0])>-1)return CLUB[i][1];return null}
+  if(typeof CLUBS!=="undefined")CLUBS.forEach(function(c){var f=clubFile(c.name);if(f)c.photo="photos/"+f+".jpg"});
+  var base=artSVG;
+  artSVG=function(c){
+    var l="";
+    ((c&&c.cat&&CAT[c.cat])||[]).forEach(function(f){l+="url('photos/"+f+".jpg') center/cover no-repeat,"});
+    var f=c&&clubFile(c.name);if(f)l="url('photos/"+f+".jpg') center/cover no-repeat,"+l;
+    return l+base(c);
+  };
+  function patch(){
+    document.querySelectorAll(".art").forEach(function(a){
+      var nm=a.querySelector(".name");if(!nm)return;
+      var f=clubFile(nm.textContent);if(!f||a.dataset.np39)return;
+      a.dataset.np39="1";
+      var cur=getComputedStyle(a).backgroundImage;
+      a.style.backgroundImage='linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6)),url("photos/'+f+'.jpg")'+(cur&&cur!=="none"?","+cur:"");
+      a.style.backgroundSize="cover";a.style.backgroundPosition="center";a.style.backgroundRepeat="no-repeat";
+    });
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;patch()})})
+    .observe(document.body,{childList:true,subtree:true});
+  ["renderGrid","renderRail","renderMall","renderBookings","renderMapCard"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+  patch();
+})();
+</script>
 </body>
 </html>
