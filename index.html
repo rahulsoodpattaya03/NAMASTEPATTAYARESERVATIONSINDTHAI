@@ -4876,5 +4876,35 @@ body{top:0!important}
   ["renderGrid","renderRail","renderCats","renderMap"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
 </script>
+  <!-- ===== v34: Fume in the After-party row ===== -->
+<script>
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  function fume(){return CLUBS.find(function(c){return /fume/i.test(c.name||"")})}
+  function inject(){
+    var c=fume();if(!c)return;
+    [].slice.call(document.querySelectorAll("h2,h3,.sectiontitle")).forEach(function(h){
+      if(!/after.?party/i.test(h.textContent))return;
+      var start=h.closest(".lrow")||h,rail=start.nextElementSibling,n=0;
+      while(rail&&n<3&&!(rail.classList&&rail.classList.contains("rail"))){rail=rail.nextElementSibling;n++}
+      if(!rail||!rail.classList||!rail.classList.contains("rail"))return;
+      if(rail.querySelector("[data-np-fume]"))return;
+      var names=[].map.call(rail.querySelectorAll(".name"),function(x){return x.textContent.toLowerCase()});
+      if(names.some(function(t){return t.indexOf("fume")>-1}))return;
+      var b=document.createElement("button");b.className="rcard";b.dataset.npFume="1";
+      b.innerHTML='<div class="art" style="'+artStyle(c)+'"><span class="live">After 2 AM</span><span class="name"></span></div>'+
+        '<div class="meta"><div class="row"><span class="mu"></span></div><div class="row"><span>Till sunrise</span><span class="from">Book</span></div></div>';
+      b.querySelector(".name").textContent=c.name;
+      b.querySelector(".mu").textContent=c.music||"After-party";
+      b.onclick=function(){openClub(c)};
+      rail.insertBefore(b,rail.firstChild);
+    });
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;inject()})})
+    .observe(document.body,{childList:true,subtree:true});
+  inject();
+})();
+</script>
 </body>
 </html>
