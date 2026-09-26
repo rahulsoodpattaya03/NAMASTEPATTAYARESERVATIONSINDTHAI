@@ -5127,5 +5127,33 @@ body{top:0!important}
   patch();
 })();
 </script>
+  <!-- ===== v40: club's own photo always on top ===== -->
+<script>
+(function(){
+  if(typeof artSVG!=="function")return;
+  var base=artSVG;
+  artSVG=function(c){
+    var s=base(c);
+    if(c&&c.photo)s="linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6)),url('"+c.photo+"') center/cover no-repeat,"+s;
+    return s;
+  };
+  ["renderGrid","renderRail","renderMall","renderBookings","renderMapCard"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>
+  <!-- ===== v41: night clubs first, after-parties after ===== -->
+<script>
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  function isAfter(c){
+    return !!(c.after||c.afterparty||/after/i.test(c.type||"")||/after/i.test(c.music||"")||
+      (c.tags||[]).some(function(t){return /after/i.test(t)}));
+  }
+  var idx=[],items=[];
+  CLUBS.forEach(function(c,i){if(c.cat==="nightlife"){idx.push(i);items.push(c)}});
+  var ordered=items.filter(function(c){return !isAfter(c)}).concat(items.filter(isAfter));
+  idx.forEach(function(pos,k){CLUBS[pos]=ordered[k]});
+  ["renderGrid","renderRail"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>
 </body>
 </html>
