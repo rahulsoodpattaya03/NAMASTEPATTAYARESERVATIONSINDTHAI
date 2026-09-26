@@ -4958,5 +4958,38 @@ body{top:0!important}
   }
   var svc=document.getElementById("svcPage");
   if(svc)new MutationObserver(enhance).observe(svc,
+    <!-- ===== v36: category names + Skydiving ===== -->
+<script>
+(function(){
+  if(typeof CATS==="undefined")return;
+  var REN={golf:"Golf & Shooting Range",shopping:"Namaste Shopping",events:"Events, Groups & Gala Parties"};
+  if(typeof ICONS!=="undefined"&&!ICONS.skydiving)
+    ICONS.skydiving="M3 10a9 7 0 0 1 18 0 M3 10c2-1.5 4-1.5 6 0 M9 10c1-1.5 5-1.5 6 0 M15 10c2-1.5 4-1.5 6 0 M3 10l9 8 M21 10l-9 8 M9 10l3 8 M15 10l-3 8 M12 18v3";
+  if(!CATS.some(function(c){return c[0]==="skydiving"}))CATS.push(["skydiving","skydiving","Skydiving"]);
+  CATS.forEach(function(c){
+    var old=c[2];
+    if(REN[c[0]]){
+      c[2]=REN[c[0]];
+      if(typeof TYPES!=="undefined"){var i=TYPES.indexOf(old);if(i>-1)TYPES[i]=c[2]}
+      if(typeof state!=="undefined"&&state.type===old)state.type=c[2];
+    }
+    if(typeof CATNAME!=="undefined")CATNAME[c[0]]=c[2];
+    if(typeof CATICON!=="undefined")CATICON[c[0]]=c[1];
+  });
+  if(typeof TYPES!=="undefined"&&TYPES.indexOf("Skydiving")<0)TYPES.push("Skydiving");
+  if(typeof COMMISSION_CATS!=="undefined"&&COMMISSION_CATS.indexOf("skydiving")<0)COMMISSION_CATS.push("skydiving");
+  var mc=document.getElementById("mapCat");
+  if(mc){var v=mc.value;mc.innerHTML='<option value="">All services</option>'+CATS.map(function(c){return '<option value="'+c[0]+'">'+c[2]+'</option>'}).join("");mc.value=v}
+  /* banner text for the new page */
+  var svc=document.getElementById("svcPage");
+  if(svc)new MutationObserver(function(){
+    var s=history.state,cat=(s&&s.cat)||(location.hash.indexOf("#s/")===0?location.hash.slice(3):"");
+    if(cat!=="skydiving")return;
+    var p=svc.querySelector(".nph p");
+    if(p&&!p.dataset.np){p.dataset.np="1";p.textContent="Tandem skydives with certified instructors, with photos and video of your jump."}
+  }).observe(svc,{childList:true,subtree:true});
+  ["renderCats","renderChips","renderGrid","renderMap","renderEarn"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>                                           
 </body>
 </html>
