@@ -4850,5 +4850,31 @@ body{top:0!important}
   patch();
 })();
 </script>
+  <!-- ===== v32: beach clubs — Alexa, Byblos, Sina, Cave ===== -->
+<script>
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  var ADD=[
+    ["alexabeach","Alexa Beach Club","xalexabeach",["#FFD166","#EF476F"],"Beachfront club with DJs, sunset sessions and big party nights."],
+    ["byblosbeach","Byblos Beach Club","xbyblosbeachclub",["#FF4D6D","#7209B7"],"Pool and beach club with neon nights, live drums and cocktails."],
+    ["sinabeach","Sina Beach Club","xsinabeachclub",["#2FD1FF","#0B5D7A"],"Floating beach club out at sea, with a pool, daybeds and cabanas."],
+    ["cavebeach","Cave Beach Club","xcavebeachclub",["#E9C46A","#2A9D8F"],"Relaxed beach bar under the trees, with beanbags, Thai food and sea views."]
+  ];
+  ADD.forEach(function(a){
+    if(CLUBS.some(function(c){return c.id===a[0]||(c.name||"").toLowerCase()===a[1].toLowerCase()}))return;
+    var c={id:a[0],name:a[1],cat:"beach",area:"Pattaya",open:"Confirm with club",
+      sub:"Beach club",music:"Beach club",type:"Beach club",tags:["Beach club","Sunset"],
+      about:a[4]+" Send a request and our team will confirm with the club.",
+      art:a[3],photo:"photos/"+a[2]+".jpg",hosts:["Mr. Amit","Ms. Nok","Mr. Sunny"],
+      pkgs:[{n:"Entry / day pass",d:"Confirm at the door",p:0,left:99},
+            {n:"Daybed",d:"Up to 4 guests",p:0,left:6},
+            {n:"VIP cabana",d:"Up to 8 guests",p:0,left:3}]};
+    CLUBS.push(c);
+    if(typeof NIGHT!=="undefined")NIGHT.push(c);
+    if(typeof PARTNERS!=="undefined")PARTNERS.push(c);
+  });
+  ["renderGrid","renderRail","renderCats","renderMap"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>
 </body>
 </html>
