@@ -4991,6 +4991,73 @@ body{top:0!important}
   ["renderCats","renderChips","renderGrid","renderMap","renderEarn"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
 </script> 
-<!-- ===== v35: branded banner
+  <!-- ===== v35 + v37: branded banner + photo name styles ===== -->
+<style>
+.svchero.nph{height:auto;min-height:210px;flex-direction:column;align-items:flex-start;justify-content:flex-end;gap:6px;padding:18px}
+.nph .nphshade{position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.35) 0%,rgba(0,0,0,.15) 40%,rgba(0,0,0,.75) 100%);z-index:0}
+.nph .nphtop{position:absolute;top:14px;left:16px;display:flex;align-items:center;gap:10px;z-index:1}
+.nph .nphtop img{width:36px;height:36px;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.4)}
+.nph .nphtop span{font-size:10px;letter-spacing:.14em;color:#fff;font-weight:700;line-height:1.3;text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.nph h3{position:relative;z-index:1;margin:44px 0 0;font-size:clamp(24px,7vw,34px);line-height:1.05;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.6)}
+.nph p{position:relative;z-index:1;margin:0;max-width:34ch;color:rgba(255,255,255,.9);font-size:15px;text-shadow:0 1px 10px rgba(0,0,0,.7)}
+</style>
+<script>
+(function(){
+  if(typeof artSVG==="function"){
+    function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+    function variants(n){return ["photos/x"+n+".jpg","photos/x"+n+".jpeg","photos/"+cap(n)+".jpg","photos/"+n+".jpeg","photos/"+n+".png","photos/x"+n+".png"]}
+    var base=artSVG;
+    artSVG=function(c){
+      var l="";
+      if(c&&c.id)variants(c.id).forEach(function(u){l+="url('"+u+"') center/cover no-repeat,"});
+      if(c&&c.cat)variants(c.cat).forEach(function(u){l+="url('"+u+"') center/cover no-repeat,"});
+      return l+base(c);
+    };
+    ["renderGrid","renderRail","renderMall","renderBookings","renderMapCard"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+  }
+  var DESC={
+    nightlife:"Pattaya's best Indian and international clubs, plus after-parties till sunrise. Book your table in one tap.",
+    beach:"Sunset sessions, pool parties and daybeds by the sea.",
+    restaurants:"Thai, seafood and international dining, reserved for you.",
+    indian:"Pure veg, Jain, North and South Indian favourites.",
+    grocery:"Masala chai, spices and Indian groceries delivered to your hotel.",
+    hotels:"Sea-view resorts and city hotels, many with Indian breakfast.",
+    rental:"Scooters, cars and drivers delivered to your hotel.",
+    spa:"Thai, oil and foot massage to recharge after a big night.",
+    tours:"Coral Island, city tours and day trips with Hindi-speaking guides.",
+    water:"Jet ski, parasailing and banana boat on Pattaya's beaches.",
+    golf:"Golf courses and shooting ranges, with transfers.",
+    yacht:"Private yachts for birthdays, bachelor parties and sunsets.",
+    airport:"Fixed-price pickups from Bangkok and U-Tapao airports.",
+    shopping:"Night markets, malls and guided shopping trips.",
+    events:"Group trips, destination weddings, sangeet and gala parties.",
+    medical:"24-hour pharmacy delivery and doctor visits.",
+    concierge:"A personal host for your whole trip.",
+    visa:"Visa extensions, legal help, flights and show tickets.",
+    jet:"Private jets to India and across Asia.",
+    property:"Buy, sell or rent condos and villas in Pattaya.",
+    skydiving:"Tandem skydives with certified instructors, with photos and video of your jump."
+  };
+  function catNow(){
+    var s=history.state;if(s&&s.np==="s"&&s.cat)return s.cat;
+    var h=location.hash;return h.indexOf("#s/")===0?h.slice(3):null;
+  }
+  function enhance(){
+    var svc=document.getElementById("svcPage");if(!svc||svc.hidden)return;
+    var hero=svc.querySelector(".svchero");if(!hero||hero.classList.contains("nph"))return;
+    var cat=catNow();if(!cat)return;
+    var nm=(typeof CATNAME!=="undefined"&&CATNAME[cat])||"";
+    var logo=document.querySelector(".brandmark");
+    hero.classList.add("nph");
+    hero.innerHTML='<div class="nphshade"></div><div class="nphtop">'+(logo?'<img src="'+logo.src+'" alt="">':'')+
+      '<span class="notranslate" translate="no">NAMASTE PATTAYA<br>RESERVATIONS</span></div><h3></h3><p></p>';
+    hero.querySelector("h3").textContent=nm;
+    hero.querySelector("p").textContent=DESC[cat]||"Tap any place to see details and book.";
+  }
+  var svc=document.getElementById("svcPage");
+  if(svc)new MutationObserver(enhance).observe(svc,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
+  enhance();
+})();
+</script>
 </body>
 </html>
