@@ -5155,5 +5155,71 @@ body{top:0!important}
   ["renderGrid","renderRail"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
 </script>
+  <!-- ===== v42: home order + Namaste Gold elite members area ===== -->
+<style>
+.homeblk{margin:0 0 22px}
+.homeblk .hubtile.ladies{width:100%}
+.goldarea{margin:0 0 24px;padding:18px;border-radius:26px;border:1.5px solid transparent;
+  background:linear-gradient(160deg,rgba(26,20,6,.94),rgba(11,12,16,.94)) padding-box,linear-gradient(135deg,#FFF1C6,#B9904A,#FFE08A,#8A6A1E) border-box;
+  box-shadow:0 18px 50px -22px #E6B230}
+.goldarea .gtop{display:flex;gap:12px;align-items:center;margin-bottom:14px}
+.goldarea .gtop img{width:46px;height:46px;border-radius:12px;box-shadow:0 0 18px rgba(230,178,48,.5)}
+.goldarea .gk{font-size:11px;letter-spacing:.16em;font-weight:700;color:#E9D8A6}
+.goldarea h2{margin:2px 0 4px;font-size:22px;background:linear-gradient(90deg,#FFF1C6,#E6B230);-webkit-background-clip:text;background-clip:text;color:transparent}
+.goldarea p{margin:0;color:var(--muted);font-size:14px}
+.goldarea .gtiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.goldarea .gtiles button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px 10px;border-radius:18px;border:1px solid rgba(233,216,166,.3);background:rgba(233,216,166,.06);color:var(--ink)}
+.goldarea .gtiles .ic{width:22px;height:22px;color:#E9D8A6}
+.goldarea .gtiles b{font-size:14px;font-weight:600}
+.goldarea .gtiles small{font-size:11px;color:var(--muted)}
+.goldarea .gcta{width:100%;margin-top:12px;border:0;border-radius:999px;padding:13px;font-weight:700;background:linear-gradient(180deg,#F3E6C4,#B99B5C);color:#1A1406}
+@media (max-width:360px){.goldarea .gtiles{grid-template-columns:1fr}}
+</style>
+<script>
+(function(){
+  var ex=document.getElementById("explore");if(!ex)return;
+  var hero=ex.querySelector("section.hero");if(!hero)return;
+  var anchor=hero;
+  function after(el){anchor.insertAdjacentElement("afterend",el);anchor=el}
+
+  /* 1. Pattaya's Empowered Girls */
+  var lt=ex.querySelector(".hubtile.ladies");
+  if(lt){var w=document.createElement("div");w.className="homeblk";w.appendChild(lt);after(w)}
+
+  /* 2. Namaste Gold elite members area */
+  var g=document.createElement("section");g.className="goldarea";g.setAttribute("aria-label","Namaste Gold elite members area");
+  var gm=(typeof GOLDMARK!=="undefined")?'<img src="'+GOLDMARK+'" alt="">':'';
+  g.innerHTML='<div class="gtop">'+gm+'<div><span class="gk notranslate" translate="no">NAMASTE GOLD</span><h2>Elite Members Area</h2><p>Meet people, date and make friends in Pattaya.</p></div></div>'+
+    '<div class="gtiles">'+
+      '<button data-g="buddy">'+ico("buddy")+'<b>Find a buddy</b><small>Party, food, sports</small></button>'+
+      '<button data-g="dating">'+ico("heart")+'<b>Dating</b><small>Swipe and match</small></button>'+
+      '<button data-g="friend">'+ico("chat")+'<b>Find a friend</b><small>Meet people nearby</small></button>'+
+    '</div><button class="gcta" id="goldGo">Become a Gold member</button>';
+  after(g);
+
+  /* 3. All services */
+  var h=[].find.call(ex.querySelectorAll("h2"),function(x){return /all services/i.test(x.textContent)});
+  var cats=document.getElementById("cats");
+  if(h&&cats){var s=document.createElement("div");s.className="homeblk";s.appendChild(h);s.appendChild(cats);after(s)}
+
+  /* actions */
+  function toBuddy(intent,target){
+    go("buddy");
+    if(intent&&typeof myIntent!=="undefined"){
+      myIntent=intent;
+      try{if(typeof saveB==="function")saveB()}catch(e){}
+      ["renderIntents","renderLive","renderPeople","renderSwipe"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+    }
+    setTimeout(function(){var t=document.getElementById(target);if(t&&!t.closest("[hidden]"))t.scrollIntoView({behavior:"smooth",block:"start"})},200);
+  }
+  g.querySelector('[data-g="buddy"]').onclick=function(){toBuddy(null,"buddy")};
+  g.querySelector('[data-g="dating"]').onclick=function(){toBuddy("dating","swipe")};
+  g.querySelector('[data-g="friend"]').onclick=function(){toBuddy(null,"people")};
+  var gb=g.querySelector("#goldGo");
+  function goldState(){try{if(typeof isVIP==="function"&&isVIP())gb.textContent="You're a Gold member · manage"}catch(e){}}
+  gb.onclick=function(){var p=document.getElementById("premBtn");if(p)p.click();setTimeout(goldState,800)};
+  goldState();
+})();
+</script>
 </body>
 </html>
