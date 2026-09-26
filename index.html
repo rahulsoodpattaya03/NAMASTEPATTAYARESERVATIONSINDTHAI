@@ -4829,5 +4829,26 @@ body{top:0!important}
   patch();
 })();
 </script>
+  <!-- ===== v31: automatic club photos by name ===== -->
+<script>
+(function(){
+  function slug(t){return String(t||"").toLowerCase().replace(/[^a-z0-9]/g,"")}
+  function patch(){
+    document.querySelectorAll(".art").forEach(function(a){
+      if(a.dataset.npPhoto||a.dataset.npAuto)return;
+      var nm=a.querySelector(".name");if(!nm)return;
+      var s=slug(nm.textContent);if(!s)return;
+      a.dataset.npAuto=s;
+      var cur=getComputedStyle(a).backgroundImage;
+      a.style.backgroundImage='linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6)),url("photos/'+s+'.jpg")'+(cur&&cur!=="none"?","+cur:"");
+      a.style.backgroundSize="cover";a.style.backgroundPosition="center";a.style.backgroundRepeat="no-repeat";
+    });
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;patch()})})
+    .observe(document.body,{childList:true,subtree:true});
+  patch();
+})();
+</script>
 </body>
 </html>
