@@ -4264,5 +4264,498 @@ html,body{overflow-x:hidden}
   }
 })();
 </script>
+  <!-- ===== ALL-IN-ONE 2: v25 to v28 (dashboard, translate fix, lady view, lounge approval) ===== -->
+<style>
+.rsbtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.rsbtns .pill{margin:0}
+#dview .lcard .status{white-space:nowrap}
+#goog-gt-tt,.goog-te-balloon-frame,.goog-tooltip,.goog-tooltip:hover,
+.VIpgJd-yAWNEb-L7lbkb,.VIpgJd-ZVi9od-aZ2wEe-wOHMyf,.VIpgJd-ZVi9od-aZ2wEe-OiiCO,
+.VIpgJd-ZVi9od-ORHb-OEVmcd,iframe.skiptranslate{display:none!important;visibility:hidden!important}
+.goog-text-highlight,.VIpgJd-yAWNEb-VIpgJd-fmcmS-sn54Q,font{background:none!important;box-shadow:none!important}
+body{top:0!important}
+.selfie{display:flex;align-items:center;gap:12px;margin:12px 0}
+.selfprev{width:84px;height:84px;border-radius:16px;border:1px dashed var(--line);display:grid;place-items:center;font-size:11px;color:var(--muted);overflow:hidden;flex:0 0 auto;text-align:center}
+.selfprev img{width:100%;height:100%;object-fit:cover}
+.apimg{width:100%;height:220px;object-fit:cover;border-radius:14px;margin-bottom:8px;background:#111;display:block}
+.apbtns{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.apbtns .pill{margin:0}
+</style>
+
+<script>
+/* ===== v25: live club dashboard — staff roles & real reservations ===== */
+(function(){
+  var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
+  if(!sb||typeof store==="undefined")return;
+  var ROLES=[["waiter","Waiter"],["captain","Captain"],["asst_manager","Assistant manager"],["manager","Manager"],["general_manager","General manager"],["owner","Owner (boss)"]];
+  var LV={waiter:1,captain:2,asst_manager:3,manager:4,general_manager:5,owner:6},RL={};ROLES.forEach(function(r){RL[r[0]]=r[1]});
+  var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled"};
+  var SRC={app:"App",phone:"Phone",walkin:"Walk-in",whatsapp:"WhatsApp"};
+  var user=null,isAdm=false,myStaff={};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+  function M(n){n=Number(n)||0;return n?money(n):"฿0"}
+  function openSheet(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+ico("close")+'</button></div>'}
+  function lvlFor(v){return isAdm?99:(LV[myStaff[v]]||0)}
+  function venueName(id){var c=CLUBS.find(function(x){return x.id===id});return c?c.name:id}
+  function loginBtn(){var b=document.querySelector(".np-hbtn.user");if(b)b.click()}
+
+  var rawSet=store.set.bind(store),syncing=false;
+  async function syncUp(){
+    if(!user||syncing||typeof bookings==="undefined")return;syncing=true;
+    try{for(var i=0;i<bookings.length;i++){var bk=bookings[i];
+      if(bk.synced||!/^NP/.test(bk.code||"")||!bk.club)continue;
+      var r=await sb.from("np_bookings").insert({code:bk.code,venue_id:bk.club,customer_id:user.id,name:bk.name||"Guest",phone:bk.phone||null,night:ymd(bk.date),time:bk.time||null,guests:bk.guests||1,package:bk.pkg||null,total:bk.total||0,ref:bk.ref||null,source:"app",status:"confirmed",note:bk.host?("Host: "+bk.host):null});
+      if(!r.error||r.error.code==="23505"){bk.synced=true;rawSet("np_bookings",bookings)}
+    }}finally{syncing=false}
+  }
+  store.set=function(k,v){rawSet(k,v);if(k==="np_bookings")setTimeout(syncUp,0)};
+  async function syncDown(){
+    if(!user||typeof bookings==="undefined")return;
+    var r=await sb.from("np_bookings").select("code,venue_id,status,night,time,guests,table_label,package,total,name,phone").eq("customer_id",user.id);
+    if(r.error||!r.data)return;var ch=false;
+    r.data.forEach(function(x){
+      var bk=bookings.find(function(b){return b.code===x.code}),d=new Date(x.night+"T00:00:00").toISOString();
+      if(!bk){if(x.status!=="cancelled"){bookings.push({code:x.code,club:x.venue_id,pkg:x.package,guests:x.guests,date:d,time:x.time,name:x.name,phone:x.phone,total:Number(x.total)||0,status:x.status,table:x.table_label,synced:true});ch=true}return}
+      if(bk.status!==x.status||bk.time!==x.time||bk.guests!==x.guests||(bk.table||null)!==x.table_label||ymd(bk.date)!==x.night){
+        bk.status=x.status;bk.time=x.time;bk.guests=x.guests;bk.table=x.table_label;bk.date=d;ch=true}
+    });
+    if(ch){rawSet("np_bookings",bookings);if(typeof renderBookings==="function")renderBookings()}
+  }
+  function patchTickets(){
+    document.querySelectorAll("#bookingList .ticket").forEach(function(t,i){var bk=bookings[i];if(!bk)return;
+      var s=t.querySelector(".status");if(s&&bk.status)s.textContent=ST[bk.status]||s.textContent;
+      if(bk.table){var m=t.querySelector(".tbody");if(m&&!m.querySelector(".tbl-x")){var sp=document.createElement("span");sp.className="muted tbl-x";sp.textContent="Table "+bk.table;m.appendChild(sp)}}});
+  }
+  if(typeof renderBookings==="function"){var _rbk=renderBookings;renderBookings=function(){_rbk();try{patchTickets()}catch(e){}};renderBookings()}
+  var bl=document.getElementById("bookingList");
+  if(bl)bl.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest(".cancel");if(!b)return;
+    var t=b.closest(".ticket"),idx=[].indexOf.call(document.querySelectorAll("#bookingList .ticket"),t),bk=bookings[idx];if(!bk)return;
+    var code=bk.code,was=bk.synced;
+    setTimeout(function(){if(was&&user&&!bookings.some(function(x){return x.code===code}))sb.from("np_bookings").update({status:"cancelled"}).eq("code",code).then(function(){})},60);
+  },true);
+  new MutationObserver(function(){
+    var d=panel.querySelector(".done .code");if(!d||user||panel.querySelector(".nplog"))return;
+    var p=document.createElement("div");p.className="nplog";
+    p.innerHTML='<p class="about" style="color:var(--amber)">Log in so your booking reaches the club and you get live updates.</p><button class="cta ghost" id="npLogBk">Log in</button>';
+    d.parentNode.appendChild(p);
+    p.querySelector("#npLogBk").onclick=function(){closeSheet();setTimeout(loginBtn,350)};
+  }).observe(panel,{childList:true,subtree:true});
+
+  var closedCache={},curClub=null;
+  async function loadClosed(v){var r=await sb.from("np_venue_nights").select("night").eq("venue_id",v).eq("closed",true).gte("night",ymd(new Date()));closedCache[v]=(r.data||[]).map(function(x){return x.night})}
+  var _oc=openClub;openClub=function(c){curClub=c;_oc(c);loadClosed(c.id)};
+  panel.addEventListener("click",function(e){
+    if(!e.target.closest||!e.target.closest("#book")||!curClub||typeof dates==="undefined")return;
+    var sel=panel.querySelector("#fDay");if(!sel)return;
+    if((closedCache[curClub.id]||[]).indexOf(ymd(dates[+sel.value]))>-1){
+      e.stopImmediatePropagation();e.preventDefault();
+      var er=panel.querySelector("#err");if(er)er.textContent="Sorry, "+curClub.name+" is fully booked on this night. Please pick another date.";
+    }
+  },true);
+
+  if(typeof DNAV!=="undefined"){
+    if(!DNAV.some(function(d){return d[0]==="staff"}))DNAV.push(["staff","Staff"]);
+    if(!DNAV.some(function(d){return d[0]==="nights"}))DNAV.push(["nights","Open / close nights"]);
+  }
+  var resDate=ymd(new Date()),resFilter="all",chan=null,chanVenue=null;
+  if(typeof renderDash!=="function")return;
+  var _rd=renderDash;
+  renderDash=function(){_rd();try{enhance()}catch(e){console.error(e)}};
+  function subscribe(v){
+    if(chanVenue===v)return;if(chan)sb.removeChannel(chan);chanVenue=v;
+    chan=sb.channel("res-"+v).on("postgres_changes",{event:"*",schema:"public",table:"np_bookings",filter:"venue_id=eq."+v},function(){
+      var d=document.getElementById("dash");if(d&&!d.hidden&&typeof dTab!=="undefined"&&dTab==="res")renderDash();
+    }).subscribe();
+  }
+  function enhance(){
+    var dv=document.getElementById("dVenue");if(!dv)return;
+    dv.onchange=function(){renderDash()};
+    var keys=Object.keys(myStaff);
+    if(user&&!isAdm&&keys.length){
+      [].forEach.call(dv.options,function(o){var ok=keys.indexOf(o.value)>-1;o.hidden=!ok;o.disabled=!ok});
+      if(keys.indexOf(dv.value)<0){var k=keys.find(function(x){return [].some.call(dv.options,function(o){return o.value===x})});if(k){dv.value=k;_rd()}}
+    }
+    var lab=dv.closest("label");if(lab&&lab.firstChild&&lab.firstChild.nodeType===3)lab.firstChild.textContent=user?"Venue":"Venue (preview login)";
+    var view=document.getElementById("dview");if(!view)return;
+    var t=(typeof dTab!=="undefined")?dTab:"";
+    if(["res","staff","nights"].indexOf(t)<0){if(t!=="photos")view.insertAdjacentHTML("afterbegin",'<p class="small" style="margin:0 0 10px;color:var(--amber)">Sample numbers for now. Live data is coming.</p>');return}
+    var v=dv.value,lvl=lvlFor(v);
+    if(!user){view.innerHTML='<div class="lcard hl"><h4>Staff login</h4><p>Log in with your staff account to see live reservations for your club.</p><button class="pill on" id="dsLog" style="margin-top:10px">Log in</button></div>';view.querySelector("#dsLog").onclick=loginBtn;return}
+    if(!lvl){view.innerHTML='<div class="lcard"><h4>Not linked to '+esc(venueName(v))+'</h4><p>Ask your manager, general manager or owner to add your email ('+esc(user.email)+') in the Staff tab.</p></div>';return}
+    if(t==="res")renderRes(view,v,lvl);else if(t==="staff")renderStaff(view,v,lvl);else renderNights(view,v,lvl);
+  }
+
+  function renderRes(view,v,lvl){
+    view.innerHTML='<div class="fields" style="margin-bottom:10px"><label>Night<input type="date" id="rsD" value="'+resDate+'"></label>'+
+      '<label>Show<select id="rsF"><option value="all">All</option><option value="open">Not arrived yet</option><option value="arrived">Arrived</option><option value="no_show">No-show</option><option value="cancelled">Cancelled</option></select></label></div>'+
+      (lvl>=2?'<button class="cta" id="rsNew" style="margin:0 0 12px">+ New reservation</button>':'')+
+      '<p class="small" id="rsSum">Loading…</p><div id="rsList"></div>';
+    var rows=[],fS=view.querySelector("#rsF");fS.value=resFilter;
+    view.querySelector("#rsD").onchange=function(){resDate=this.value||ymd(new Date());load()};
+    fS.onchange=function(){resFilter=this.value;draw()};
+    if(lvl>=2)view.querySelector("#rsNew").onclick=function(){openForm(v,lvl,null)};
+    async function load(){
+      var r=await sb.from("np_bookings").select("*").eq("venue_id",v).eq("night",resDate).order("time",{ascending:true});
+      if(r.error){view.querySelector("#rsSum").textContent=r.error.message;return}
+      rows=r.data||[];draw();
+    }
+    function draw(){
+      var list=rows.filter(function(x){return resFilter==="all"||(resFilter==="open"?(x.status==="confirmed"||x.status==="pending"):x.status===resFilter)});
+      var live=rows.filter(function(x){return x.status!=="cancelled"});
+      var g=live.reduce(function(s,x){return s+(x.guests||0)},0),rev=live.reduce(function(s,x){return s+Number(x.total||0)},0);
+      view.querySelector("#rsSum").textContent=live.length+" booking"+(live.length===1?"":"s")+" · "+g+" guests"+(lvl>=4?" · "+M(rev):"");
+      var box=view.querySelector("#rsList");
+      if(!list.length){box.innerHTML='<p class="small">No reservations for this night yet.</p>';return}
+      box.innerHTML=list.map(function(x){var open=x.status==="confirmed"||x.status==="pending";
+        return '<div class="lcard" data-id="'+x.id+'"><div class="lrow"><div style="min-width:0"><h4>'+esc(x.name)+' · '+x.guests+' pax</h4>'+
+          '<p>'+esc(x.time||"")+(x.package?' · '+esc(x.package):'')+(x.table_label?' · Table '+esc(x.table_label):'')+'</p>'+
+          '<p class="small">'+esc(x.code)+' · '+(SRC[x.source]||esc(x.source))+(x.phone?' · <a href="tel:'+esc(x.phone)+'">'+esc(x.phone)+'</a>':'')+(lvl>=4&&Number(x.total)?' · '+M(x.total):'')+'</p>'+
+          (x.note?'<p class="small">Note: '+esc(x.note)+'</p>':'')+'</div><span class="status">'+(ST[x.status]||esc(x.status))+'</span></div>'+
+          '<div class="rsbtns">'+(open?'<button class="pill on" data-act="arrived">Arrived</button><button class="pill" data-act="no_show">No-show</button>':'')+
+          (lvl>=2?'<button class="pill" data-act="edit">Edit</button>':'')+
+          (lvl>=4&&x.status!=="cancelled"?'<button class="pill" data-act="cancel">Cancel</button>':'')+'</div></div>'}).join("");
+      box.querySelectorAll("[data-act]").forEach(function(b){b.onclick=async function(){
+        var id=b.closest("[data-id]").dataset.id,x=rows.find(function(r){return r.id===id}),a=b.dataset.act;
+        if(a==="edit")return openForm(v,lvl,x);
+        if(a==="cancel"&&!confirm("Cancel booking "+x.code+" for "+x.name+"?"))return;
+        b.disabled=true;
+        var r=await sb.from("np_bookings").update({status:a==="cancel"?"cancelled":a}).eq("id",id);
+        if(r.error){alert(r.error.message);b.disabled=false;return}
+        load();
+      }});
+    }
+    load();subscribe(v);
+  }
+
+  function openForm(v,lvl,x){
+    var isNew=!x;x=x||{night:resDate,guests:2,time:"22:00",status:"confirmed"};
+    var club=CLUBS.find(function(c){return c.id===v}),pk=club?club.pkgs.map(function(p){return p.n}):[];
+    var canBasic=lvl>=2,canWhen=isNew?lvl>=2:lvl>=3,canPrice=isNew?lvl>=2:lvl>=4;
+    function dis(ok){return ok?"":" disabled"}
+    var sts=Object.keys(ST).filter(function(s){if(lvl>=4)return true;if(s==="cancelled")return x.status==="cancelled";if(lvl>=2)return true;return s===x.status||s==="arrived"||s==="no_show"});
+    panel.innerHTML='<div class="pbody">'+head((isNew?"New reservation":"Edit "+esc(x.code))+" · "+esc(venueName(v)),"rfX")+
+      '<div class="fields" style="margin-top:12px">'+
+      '<label class="full">Guest name<input id="rfN" value="'+esc(x.name||"")+'"'+dis(canBasic)+'></label>'+
+      '<label class="full">WhatsApp / phone<input id="rfP" inputmode="tel" value="'+esc(x.phone||"")+'"'+dis(canBasic)+'></label>'+
+      '<label>Night<input type="date" id="rfD" value="'+esc(x.night)+'"'+dis(canWhen)+'></label>'+
+      '<label>Time<input id="rfT" value="'+esc(x.time||"")+'" placeholder="22:00"'+dis(canWhen)+'></label>'+
+      '<label>Guests<input id="rfG" inputmode="numeric" value="'+esc(x.guests)+'"'+dis(canWhen)+'></label>'+
+      '<label>Package<select id="rfK"'+dis(canWhen)+'><option value="">—</option>'+pk.map(function(n){return '<option'+(n===x.package?' selected':'')+'>'+esc(n)+'</option>'}).join("")+(x.package&&pk.indexOf(x.package)<0?'<option selected>'+esc(x.package)+'</option>':'')+'</select></label>'+
+      '<label>Table<input id="rfL" value="'+esc(x.table_label||"")+'" placeholder="e.g. VIP 3"'+dis(canBasic)+'></label>'+
+      '<label>Total (฿)<input id="rfM" inputmode="decimal" value="'+esc(x.total||"")+'"'+dis(canPrice)+'></label>'+
+      (isNew?'<label>Came by<select id="rfS"><option value="phone">Phone</option><option value="whatsapp">WhatsApp</option><option value="walkin">Walk-in</option></select></label>'
+            :'<label>Status<select id="rfSt">'+sts.map(function(s){return '<option value="'+s+'"'+(s===x.status?' selected':'')+'>'+ST[s]+'</option>'}).join("")+'</select></label>')+
+      '<label class="full">Note<input id="rfO" value="'+esc(x.note||"")+'" placeholder="e.g. birthday, cake at 12"'+dis(canBasic)+'></label></div>'+
+      '<p class="small">Your role: '+(isAdm?"Admin":RL[myStaff[v]])+'. Greyed-out fields need a higher role.</p>'+
+      '<button class="cta" id="rfGo">'+(isNew?"Add reservation":"Save changes")+'</button><p class="err" id="rfE" role="status"></p></div>';
+    var $=function(s){return panel.querySelector(s)},val=function(s){return ($(s).value||"").trim()},E=$("#rfE");
+    $("#rfX").onclick=closeSheet;
+    $("#rfGo").onclick=async function(){
+      var d={};
+      if(isNew||canBasic){d.name=val("#rfN");d.phone=val("#rfP")||null;d.table_label=val("#rfL")||null;d.note=val("#rfO")||null}
+      if(isNew||canWhen){d.night=val("#rfD");d.time=val("#rfT")||null;d.guests=parseInt(val("#rfG"),10)||0;d.package=val("#rfK")||null}
+      if(isNew||canPrice){d.total=parseFloat(val("#rfM"))||0}
+      if(("name" in d)&&!d.name){E.textContent="Add the guest's name.";return}
+      if(("night" in d)&&!d.night){E.textContent="Pick the night.";return}
+      if(("guests" in d)&&d.guests<1){E.textContent="Guests must be at least 1.";return}
+      this.disabled=true;var r;
+      if(isNew){d.venue_id=v;d.code="NP"+Math.random().toString(36).slice(2,7).toUpperCase();d.source=val("#rfS");d.status="confirmed";r=await sb.from("np_bookings").insert(d)}
+      else{d.status=val("#rfSt");r=await sb.from("np_bookings").update(d).eq("id",x.id)}
+      this.disabled=false;
+      if(r.error){E.textContent=r.error.message;return}
+      closeSheet();renderDash();
+    };
+    openSheet();
+  }
+
+  function renderStaff(view,v,lvl){
+    view.innerHTML='<div id="stList"><p class="small">Loading…</p></div>'+
+      (lvl>=5?'<div class="partner" style="margin-top:12px"><h3 style="font-size:16px;margin:0 0 6px">Add staff</h3><p class="small">They must sign up in the app first (Login button), then add their email here.</p>'+
+        '<div class="fields"><label class="full">Email<input id="sfE" type="email"></label><label>Name<input id="sfN"></label><label>Role<select id="sfR">'+
+        ROLES.filter(function(r){return isAdm||LV[r[0]]<lvl}).map(function(r){return '<option value="'+r[0]+'">'+r[1]+'</option>'}).join("")+
+        '</select></label></div><button class="cta" id="sfGo">Add staff</button><p class="err" id="sfM" role="status"></p></div>':'')+
+      '<div class="lcard" style="margin-top:12px"><h4>Who can do what</h4><p class="small">Waiter: see bookings, mark Arrived / No-show.<br>Captain: + tables, notes, new reservations.<br>Assistant manager: + date, time, guests, package.<br>Manager: + price, cancel, open or close nights.<br>General manager: + add or remove staff up to Manager.<br>Owner (boss): everything, including General managers.</p></div>';
+    async function load(){
+      var r=await sb.rpc("np_list_staff",{p_venue:v}),box=view.querySelector("#stList");
+      if(r.error){box.innerHTML='<p class="err">'+esc(r.error.message)+'</p>';return}
+      var rows=r.data||[];
+      box.innerHTML=rows.length?rows.map(function(s){var can=(isAdm||(lvl>=5&&LV[s.role]<lvl))&&s.user_id!==user.id;
+        return '<div class="lcard"><div class="lrow"><div style="min-width:0"><h4>'+esc(s.name||s.email)+'</h4><p class="small">'+esc(s.email)+'</p></div><span class="status">'+esc(RL[s.role]||s.role)+'</span></div>'+
+          (can?'<div class="rsbtns"><button class="pill" data-rm="'+s.user_id+'">Remove</button></div>':'')+'</div>'}).join(""):'<p class="small">No staff yet.</p>';
+      box.querySelectorAll("[data-rm]").forEach(function(b){b.onclick=async function(){
+        if(!confirm("Remove this person from "+venueName(v)+"?"))return;
+        var x=await sb.rpc("np_remove_staff",{p_venue:v,p_user:b.dataset.rm});
+        if(x.error){alert(x.error.message);return}load()}});
+    }
+    if(lvl>=5)view.querySelector("#sfGo").onclick=async function(){
+      var em=view.querySelector("#sfE").value.trim(),nm=view.querySelector("#sfN").value.trim(),m=view.querySelector("#sfM");
+      if(!/^\S+@\S+\.\S+$/.test(em)){m.textContent="Enter their email address.";return}
+      this.disabled=true;var r=await sb.rpc("np_add_staff",{p_venue:v,p_email:em,p_role:view.querySelector("#sfR").value,p_name:nm||null});this.disabled=false;
+      if(r.error){m.style.color="";m.textContent=r.error.message;return}
+      m.style.color="var(--ok)";m.textContent="Added. They will see this club when they open the dashboard.";
+      view.querySelector("#sfE").value="";view.querySelector("#sfN").value="";load();
+      if(em.toLowerCase()===String(user.email).toLowerCase())loadMe();
+    };
+    load();
+  }
+
+  function renderNights(view,v,lvl){
+    view.innerHTML=(lvl<4?'<p class="small">Only a Manager or above can open or close nights.</p>':'<p class="small">Close a night when you are full or have a private event. Customers cannot book closed nights.</p>')+'<div id="ntList"><p class="small">Loading…</p></div>';
+    async function load(){
+      var today=ymd(new Date()),r=await sb.from("np_venue_nights").select("*").eq("venue_id",v).gte("night",today),map={};
+      (r.data||[]).forEach(function(x){map[x.night]=x});
+      var h="";for(var i=0;i<21;i++){var d=new Date();d.setDate(d.getDate()+i);var n=ymd(d),x=map[n]||{},closed=!!x.closed;
+        h+='<div class="lcard"><div class="lrow"><b>'+(i===0?"Tonight":d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}))+'</b>'+
+          '<button class="pill '+(closed?'on':'')+'" data-n="'+n+'" data-c="'+(closed?1:0)+'"'+(lvl>=4?'':' disabled')+'>'+(closed?'Closed':'Open')+'</button></div>'+
+          (lvl>=4?'<div class="post" style="margin:8px 0 0"><input data-note="'+n+'" value="'+esc(x.note||"")+'" placeholder="Note, e.g. private event"><button data-save="'+n+'">Save</button></div>':(x.note?'<p class="small">'+esc(x.note)+'</p>':''))+'</div>'}
+      var box=view.querySelector("#ntList");box.innerHTML=h;
+      async function save(n,closed){var inp=box.querySelector('[data-note="'+n+'"]');
+        var r=await sb.from("np_venue_nights").upsert({venue_id:v,night:n,closed:closed,note:inp?inp.value.trim()||null:null});
+        if(r.error){alert(r.error.message);return}load()}
+      box.querySelectorAll("[data-n]").forEach(function(b){b.onclick=function(){save(b.dataset.n,b.dataset.c!=="1")}});
+      box.querySelectorAll("[data-save]").forEach(function(b){b.onclick=function(){var t=box.querySelector('[data-n="'+b.dataset.save+'"]');save(b.dataset.save,t.dataset.c==="1")}});
+    }
+    load();
+  }
+
+  new MutationObserver(function(){
+    if(!user||!(isAdm||Object.keys(myStaff).length))return;
+    var out=panel.querySelector("#umOut");if(!out||panel.querySelector("#npClub"))return;
+    var b=document.createElement("button");b.className="cta ghost";b.id="npClub";b.textContent="Club dashboard";
+    b.onclick=function(){closeSheet();go("dash")};
+    (panel.querySelector("#umCol")||out).insertAdjacentElement("beforebegin",b);
+  }).observe(panel,{childList:true,subtree:true});
+
+  async function loadMe(){
+    if(!user){isAdm=false;myStaff={};return}
+    var a=await sb.from("np_admins").select("user_id").eq("user_id",user.id);isAdm=!!(a.data&&a.data.length);
+    var s=await sb.from("np_venue_staff").select("venue_id,role").eq("user_id",user.id);
+    myStaff={};(s.data||[]).forEach(function(x){myStaff[x.venue_id]=x.role});
+    var d=document.getElementById("dash");if(d&&!d.hidden)renderDash();
+  }
+  var custChan=null;
+  async function onUser(u){
+    user=u;await loadMe();
+    if(u){syncUp();syncDown();
+      if(!custChan)custChan=sb.channel("my-bookings").on("postgres_changes",{event:"*",schema:"public",table:"np_bookings",filter:"customer_id=eq."+u.id},syncDown).subscribe();}
+  }
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){var u=s?s.user:null;if((u&&u.id)!==(user&&user.id))onUser(u)});
+  renderDash();
+})();
+</script>
+
+<script>
+/* ===== v26: translate Raju's replies ===== */
+(function(){
+  if(typeof ask!=="function"||typeof chatEl==="undefined")return;
+  var _a=ask;
+  ask=async function(q){
+    await _a(q);
+    try{
+      var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
+      if(lang==="en")return;
+      var all=[].slice.call(chatEl.children),lastMe=-1;
+      all.forEach(function(el,i){if(el.classList&&el.classList.contains("me"))lastMe=i});
+      all.slice(lastMe+1).forEach(function(el){if(el.classList&&el.classList.contains("bot")){var c=el.cloneNode(true);el.replaceWith(c)}});
+    }catch(e){}
+  };
+})();
+</script>
+
+<script>
+/* ===== v27: admin "Ladies lounge" view ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  function isAdminView(){try{return localStorage.getItem("np_lady_admin")==="1"}catch(e){return false}}
+  function enter(){
+    var nm=(panel.querySelector("#sheetTitle")||{}).textContent||"Admin";
+    nm=nm.replace(/^Hi,\s*/,"")||"Admin";
+    if(typeof lady==="undefined"||!lady){
+      lady={name:nm,insta:"",bio:"Admin",followers:0};
+      store.set("np_lady",lady);
+      try{localStorage.setItem("np_lady_admin","1")}catch(e){}
+    }
+    closeSheet();go("ladies");
+    if(typeof renderLadies==="function")renderLadies();
+  }
+  function exit(){
+    if(isAdminView()){
+      lady=null;
+      try{localStorage.removeItem("np_lady");localStorage.removeItem("np_lady_admin")}catch(e){}
+      if(typeof renderLadies==="function")renderLadies();
+    }
+    closeSheet();go("explore");
+  }
+  new MutationObserver(function(){
+    var adm=panel.querySelector(".adm");
+    if(!adm||adm.querySelector("#admLady"))return;
+    var on=typeof lady!=="undefined"&&!!lady;
+    var b=document.createElement("button");b.className="pill"+(on?" on":"");b.id="admLady";
+    b.textContent="Ladies lounge";b.onclick=enter;adm.appendChild(b);
+    if(isAdminView()){var x=document.createElement("button");x.className="pill";x.id="admLadyX";x.textContent="Exit lounge view";x.onclick=exit;adm.appendChild(x)}
+  }).observe(panel,{childList:true,subtree:true});
+})();
+</script>
+
+<script>
+/* ===== v28: ladies lounge — selfie + moderator approval ===== */
+(function(){
+  var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
+  var gate=document.getElementById("ladyGate");
+  if(!sb||!gate)return;
+  var BUCKET="np-lounge-selfies";
+  var user=null,isMod=false,isAdm=false,myApp=null,selfBlob=null,chan=null;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function val(id){var e=document.getElementById(id);return e?e.value.trim():""}
+  function chk(id){var e=document.getElementById(id);return !!(e&&e.checked)}
+  function adminView(){try{return localStorage.getItem("np_lady_admin")==="1"}catch(e){return false}}
+  function hasLady(){return typeof lady!=="undefined"&&!!lady}
+  function setLady(v){lady=v;try{if(v)localStorage.setItem("np_lady",JSON.stringify(v));else localStorage.removeItem("np_lady")}catch(e){}if(typeof renderLadies==="function")renderLadies()}
+  function openSheet(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+ico("close")+'</button></div>'}
+
+  var extra=document.createElement("div");
+  extra.innerHTML='<div class="fields"><label class="full">WhatsApp<input id="lWa" inputmode="tel" placeholder="+91 / +66"></label></div>'+
+    '<div class="selfie"><div class="selfprev" id="lSelfPrev">No selfie yet</div><div>'+
+    '<label class="pill on" style="cursor:pointer;display:inline-block">Take a selfie<input type="file" id="lSelf" accept="image/*" capture="user" hidden></label>'+
+    '<p class="small" style="margin:8px 0 0">Only our female moderators see your selfie, to confirm you are a woman. It is deleted once you are approved and never shown to other members.</p></div></div>';
+  var firstChk=gate.querySelector(".chk"),join=document.getElementById("lJoin");
+  (firstChk||join).insertAdjacentElement("beforebegin",extra);
+  [].forEach.call(gate.querySelectorAll("p.small"),function(p){if(/preview/i.test(p.textContent))p.hidden=true});
+  var stat=document.createElement("div");stat.id="lStat";gate.insertBefore(stat,gate.firstChild);
+  document.getElementById("lSelf").onchange=async function(){
+    var f=this.files&&this.files[0];if(!f)return;
+    var url=(typeof shrink==="function")?await shrink(f):null;
+    if(url){selfBlob=await (await fetch(url)).blob()}else{selfBlob=f;url=URL.createObjectURL(f)}
+    document.getElementById("lSelfPrev").innerHTML='<img alt="Your selfie" src="'+url+'">';
+  };
+  if(join){join.textContent="Send application";join.onclick=apply}
+
+  async function apply(){
+    var E=document.getElementById("lErr");E.style.color="";
+    function fail(t){E.textContent=t;join.disabled=false;join.textContent="Send application"}
+    if(!user){E.textContent="Please log in first with the Login button at the top, then apply.";var b=document.querySelector(".np-hbtn.user");if(b)b.click();return}
+    var nm=val("lName"),ig=val("lInsta").replace(/^@/,""),wa=val("lWa");
+    if(!nm)return fail("Add your first name.");
+    if(wa.replace(/\D/g,"").length<8)return fail("Add your WhatsApp number.");
+    if(!selfBlob)return fail("Take a selfie so our moderators can confirm you.");
+    if(!chk("lWoman"))return fail("This lounge is for women aged 18 and over.");
+    if(!chk("lRules"))return fail("Please agree to the community rules.");
+    join.disabled=true;join.textContent="Sending…";
+    var path=user.id+"/selfie.jpg";
+    var up=await sb.storage.from(BUCKET).upload(path,selfBlob,{upsert:true,contentType:"image/jpeg"});
+    if(up.error)return fail(up.error.message);
+    var r=await sb.from("np_lounge_members").upsert({user_id:user.id,name:nm,whatsapp:wa,instagram:ig||null,selfie_path:path,status:"pending",reason:null}).select().single();
+    if(r.error)return fail(r.error.message);
+    myApp=r.data;join.disabled=false;join.textContent="Send application";showStatus();
+  }
+  function showForm(show){gate.querySelectorAll(".fields,.selfie,.chk,#lJoin").forEach(function(el){el.hidden=!show})}
+  function showStatus(){
+    if(myApp&&myApp.status==="pending"){
+      stat.innerHTML='<div class="lcard hl"><h4>Application received</h4><p>Thank you, '+esc(myApp.name)+'. A female moderator will check your application soon. The lounge opens automatically once you are approved.</p></div>';showForm(false);
+    }else if(myApp&&myApp.status==="rejected"){
+      stat.innerHTML='<div class="lcard"><h4>Not approved yet</h4><p>'+esc(myApp.reason||"Please check your details and selfie, and apply again.")+'</p></div>';showForm(true);
+    }else{stat.innerHTML=user?'':'<div class="lcard"><p>Log in first with the Login button at the top, then apply here.</p></div>';showForm(true)}
+  }
+
+  async function refresh(){
+    if(adminView())return;
+    if(!user){myApp=null;showStatus();if(hasLady())setLady(null);return}
+    var r=await sb.from("np_lounge_members").select("*").eq("user_id",user.id).maybeSingle();
+    myApp=r.data||null;
+    if(isMod&&(!myApp||myApp.status!=="approved")){
+      if(!hasLady()){var m=user.user_metadata||{};setLady({name:String(m.name||user.email.split("@")[0]).split(/\s+/)[0],insta:"",bio:"Moderator",followers:0})}
+      return;
+    }
+    if(myApp&&myApp.status==="approved"){
+      if(!hasLady()||lady.name!==myApp.name)setLady({name:myApp.name,insta:myApp.instagram||"",bio:hasLady()?lady.bio:"",followers:hasLady()?lady.followers:0});
+    }else if(hasLady())setLady(null);
+    showStatus();
+  }
+
+  async function openApprovals(tab){
+    tab=tab||"pending";
+    panel.innerHTML='<div class="pbody">'+head("Lounge approvals","apX")+
+      '<div class="lnav" role="tablist" style="margin-top:12px">'+[["pending","Waiting"],["approved","Approved"],["rejected","Rejected"]].map(function(t){return '<button role="tab" data-t="'+t[0]+'" aria-selected="'+(t[0]===tab)+'">'+t[1]+'</button>'}).join("")+'</div>'+
+      '<div id="apList"><p class="small">Loading…</p></div>'+
+      (isAdm?'<div class="partner" style="margin-top:14px"><h3 style="font-size:16px;margin:0 0 6px">Moderators</h3><p class="small">Female moderators can approve members. She must sign up in the app first.</p><div id="modList" class="small">Loading…</div>'+
+        '<div class="post" style="margin-top:10px"><input id="modE" type="email" placeholder="Her email"><button id="modAdd">Add</button></div><p class="err" id="modM" role="status"></p></div>':'')+'</div>';
+    panel.querySelector("#apX").onclick=closeSheet;
+    panel.querySelectorAll("[data-t]").forEach(function(b){b.onclick=function(){openApprovals(b.dataset.t)}});
+    openSheet();
+    var r=await sb.from("np_lounge_members").select("*").eq("status",tab).order("created_at",{ascending:false});
+    var box=panel.querySelector("#apList");if(!box)return;
+    if(r.error){box.innerHTML='<p class="err">'+esc(r.error.message)+'</p>';return}
+    var rows=r.data||[];
+    if(!rows.length){box.innerHTML='<p class="small">Nothing here right now.</p>'}
+    else{
+      var html="";
+      for(var i=0;i<rows.length;i++){var x=rows[i],img="";
+        if(x.selfie_path){var s=await sb.storage.from(BUCKET).createSignedUrl(x.selfie_path,600);if(s.data)img='<img class="apimg" alt="Selfie of '+esc(x.name)+'" src="'+s.data.signedUrl+'">'}
+        var wa=String(x.whatsapp||"").replace(/\D/g,"");
+        html+='<div class="lcard" data-u="'+x.user_id+'">'+img+'<h4>'+esc(x.name)+'</h4>'+
+          '<p class="small">'+(wa?'<a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">'+esc(x.whatsapp)+'</a>':'')+(x.instagram?' · <a href="https://instagram.com/'+encodeURIComponent(x.instagram)+'" target="_blank" rel="noopener">@'+esc(x.instagram)+'</a>':'')+'</p>'+
+          '<p class="small">Applied '+new Date(x.created_at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+(x.reason?' · '+esc(x.reason):'')+'</p>'+
+          '<div class="apbtns">'+(tab!=="approved"?'<button class="pill on" data-a="approve">Approve</button>':'')+(tab!=="rejected"?'<button class="pill" data-a="reject">'+(tab==="approved"?"Remove from lounge":"Reject")+'</button>':'')+'</div></div>';
+      }
+      box.innerHTML=html;
+      box.querySelectorAll("[data-a]").forEach(function(b){b.onclick=async function(){
+        var uid=b.closest("[data-u]").dataset.u,x=rows.find(function(r){return r.user_id===uid}),r2;
+        b.disabled=true;
+        if(b.dataset.a==="approve"){
+          r2=await sb.from("np_lounge_members").update({status:"approved",reason:null,selfie_path:null}).eq("user_id",uid);
+          if(!r2.error&&x.selfie_path)await sb.storage.from(BUCKET).remove([x.selfie_path]);
+        }else{
+          var why=prompt("Reason (she will see this):","Your selfie was not clear. Please try again.");
+          if(why===null){b.disabled=false;return}
+          r2=await sb.from("np_lounge_members").update({status:"rejected",reason:why||null}).eq("user_id",uid);
+        }
+        if(r2.error){alert(r2.error.message);b.disabled=false;return}
+        openApprovals(tab);
+      }});
+    }
+    if(isAdm){
+      async function loadMods(){
+        var m=await sb.rpc("np_list_lounge_mods"),el=panel.querySelector("#modList");if(!el)return;
+        var list=m.data||[];
+        el.innerHTML=list.length?list.map(function(x){return '<div class="lrow" style="padding:6px 0"><span>'+esc(x.name||x.email)+' · '+esc(x.email)+'</span><button class="pill" data-rm="'+x.user_id+'">Remove</button></div>'}).join(""):"No moderators yet.";
+        el.querySelectorAll("[data-rm]").forEach(function(b){b.onclick=async function(){if(!confirm("Remove this moderator?"))return;await sb.rpc("np_remove_lounge_mod",{p_user:b.dataset.rm});loadMods()}});
+      }
+      loadMods();
+      panel.querySelector("#modAdd").onclick=async function(){
+        var e=panel.querySelector("#modE").value.trim(),M=panel.querySelector("#modM");
+        var r3=await sb.rpc("np_add_lounge_mod",{p_email:e});
+        if(r3.error){M.style.color="";M.textContent=r3.error.message;return}
+        M.style.color="var(--ok)";M.textContent="Moderator added.";panel.querySelector("#modE").value="";loadMods();
+      };
+    }
+  }
+  window.openLoungeApprovals=openApprovals;
+
+  new MutationObserver(function(){
+    var adm=panel.querySelector(".adm");
+    if(adm&&!adm.querySelector("#admLap")){var b=document.createElement("button");b.className="pill";b.id="admLap";b.textContent="Lounge approvals";b.onclick=function(){openApprovals("pending")};adm.appendChild(b)}
+    var out=panel.querySelector("#umOut");
+    if(isMod&&!isAdm&&out&&!panel.querySelector("#npLap")){var c=document.createElement("button");c.className="cta ghost";c.id="npLap";c.textContent="Lounge approvals";c.onclick=function(){openApprovals("pending")};out.insertAdjacentElement("beforebegin",c)}
+  }).observe(panel,{childList:true,subtree:true});
+
+  async function onUser(u){
+    user=u;isMod=false;isAdm=false;
+    if(u){
+      var m=await sb.rpc("np_is_lounge_mod");isMod=!!m.data;
+      var a=await sb.from("np_admins").select("user_id").eq("user_id",u.id);isAdm=!!(a.data&&a.data.length);
+      if(!chan)chan=sb.channel("lounge-me").on("postgres_changes",{event:"*",schema:"public",table:"np_lounge_members",filter:"user_id=eq."+u.id},refresh).subscribe();
+    }
+    refresh();
+  }
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){var u=s?s.user:null;if((u&&u.id)!==(user&&user.id))onUser(u)});
+  showStatus();
+})();
+</script>
 </body>
 </html>
