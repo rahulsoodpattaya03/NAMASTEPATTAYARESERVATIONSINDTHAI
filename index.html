@@ -4787,5 +4787,47 @@ body{top:0!important}
   ["renderGrid","renderRail","renderMall","renderBookings","renderMapCard"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
 </script>
+  <!-- ===== v30: club photos on every card, including After-party ===== -->
+<script>
+(function(){
+  var MAP=[
+    ["tony","xtonysbynashaaclub"],
+    ["barone","xbaronebynashaa"],["bar one","xbaronebynashaa"],
+    ["nashaa space","xnashaaspace"],
+    ["nashaa club","xnashaaclub"],
+    ["boss","xbossclub"],
+    ["ikka","xikka"],
+    ["jalwa","xjalwa"],
+    ["jannat","xjannatclub"],["jannaat","xjannatclub"],
+    ["kamaa","xkamaa"],["kaama","xkamaa"],
+    ["leela","xleela"],
+    ["myst","xmyst"],
+    ["republic","xrepublic"]
+  ];
+  function fileFor(name){
+    var n=String(name||"").toLowerCase().replace(/[’']/g,"");
+    for(var i=0;i<MAP.length;i++)if(n.indexOf(MAP[i][0])>-1)return MAP[i][1];
+    return null;
+  }
+  function patch(){
+    document.querySelectorAll(".art").forEach(function(a){
+      var nm=a.querySelector(".name");if(!nm)return;
+      var f=fileFor(nm.textContent);if(!f)return;
+      if(a.dataset.npPhoto===f)return;
+      a.dataset.npPhoto=f;
+      var cur=getComputedStyle(a).backgroundImage;
+      if(cur&&cur.indexOf("photos/"+f)>-1)return;
+      a.style.backgroundImage='linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6)),url("photos/'+f+'.jpg")'+(cur&&cur!=="none"?","+cur:"");
+      a.style.backgroundSize="cover";
+      a.style.backgroundPosition="center";
+      a.style.backgroundRepeat="no-repeat";
+    });
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;patch()})})
+    .observe(document.body,{childList:true,subtree:true});
+  patch();
+})();
+</script>
 </body>
 </html>
