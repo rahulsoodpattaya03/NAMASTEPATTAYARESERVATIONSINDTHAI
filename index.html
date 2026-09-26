@@ -4757,5 +4757,35 @@ body{top:0!important}
   showStatus();
 })();
 </script>
+  <!-- ===== v29: club photos from the photos folder ===== -->
+<script>
+(function(){
+  if(typeof artSVG!=="function"||typeof CLUBS==="undefined")return;
+  /* club name contains  →  photo file in /photos (order matters) */
+  var MAP=[
+    ["tony","xtonysbynashaaclub"],
+    ["barone","xbaronebynashaa"],["bar one","xbaronebynashaa"],
+    ["nashaa space","xnashaaspace"],
+    ["nashaa club","xnashaaclub"],
+    ["boss","xbossclub"],
+    ["ikka","xikka"],
+    ["jalwa","xjalwa"],
+    ["jannat","xjannatclub"],["jannaat","xjannatclub"],
+    ["kamaa","xkamaa"],["kaama","xkamaa"],
+    ["leela","xleela"],
+    ["myst","xmyst"],
+    ["republic","xrepublic"]
+  ];
+  CLUBS.forEach(function(c){
+    var n=(c.name||"").toLowerCase().replace(/[’']/g,"");
+    for(var i=0;i<MAP.length;i++){if(n.indexOf(MAP[i][0])>-1){c.photo="photos/"+MAP[i][1]+".jpg";break}}
+  });
+  var base=artSVG;
+  artSVG=function(c){
+    return (c&&c.photo)?"linear-gradient(180deg,rgba(0,0,0,0) 35%,rgba(0,0,0,.6)),url('"+c.photo+"') center/cover no-repeat,"+base(c):base(c);
+  };
+  ["renderGrid","renderRail","renderMall","renderBookings","renderMapCard"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>
 </body>
 </html>
