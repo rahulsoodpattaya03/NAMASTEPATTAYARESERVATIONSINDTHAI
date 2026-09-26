@@ -5059,5 +5059,41 @@ body{top:0!important}
   enhance();
 })();
 </script>
+  <!-- ===== v38: service photos with your file names ===== -->
+<script>
+(function(){
+  if(typeof artSVG!=="function")return;
+  var CATMAP={
+    nightlife:["xnightclubs","xnightclub","xnightlife","xnightclubsandafterparty","xnightclubandafterparty","xafterparty"],
+    beach:["xbeach","xbeachclub","xbeachclubs","xvipbeachclubs","xvipbeachclub"],
+    restaurants:["xrestaurants","xrestaurant"],
+    indian:["xindianrestaurants","xindianrestaurant","xindian","xindianfood"],
+    grocery:["xdesichaiandspices","xdesichai","xgrocery","xchai","xspices"],
+    hotels:["xhotelsresort","xhotelsresorts","xhotels","xhotel"],
+    rental:["xcarsandbikesrental","xcarsbikesrental","xrental","xcarrental","xbikerental"],
+    spa:["xmasaasageandspa","xmassageandspa","xspaandmassage","xspa"],
+    tours:["xtoursandexcursions","xtours","xtour","xexcursions"],
+    water:["xwatersports","xwatersport"],
+    golf:["xgolf","xhootingrange","xshootingrange"],
+    yacht:["xyatchparty","xyachtparty","xyacht"],
+    airport:["xairporttransfers","xairporttransfer","xairport"],
+    shopping:["xnamasteshopping","xshopping"],
+    events:["xevents"],
+    medical:["xmedicalservices","xmedical","xpharmacy"],
+    concierge:["xvipservices","xconcierge"],
+    visa:["xvisaservices","xvisa"],
+    jet:["xprivatejet","xjet"],
+    property:["xproperty","xrealestate","xbuysellrentproperty"],
+    skydiving:["xskydiving"]
+  };
+  var base=artSVG;
+  artSVG=function(c){
+    var l="",list=(c&&c.cat&&CATMAP[c.cat])||[];
+    list.forEach(function(f){l+="url('photos/"+f+".jpg') center/cover no-repeat,"});
+    return l+base(c);
+  };
+  ["renderGrid","renderRail","renderMall","renderBookings","renderMapCard"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+</script>
 </body>
 </html>
