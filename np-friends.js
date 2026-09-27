@@ -6,9 +6,9 @@
   function rer(list){list.forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
 
   if(typeof INTENTS!=="undefined")INTENTS.forEach(function(i){if(i[0]==="dating")i[2]="Meet new people in social places"});
-  if(typeof LNAV!=="undefined")LNAV.forEach(function(n){if(n[0]==="friend")n[1]="Find a buddy"});
+  if(typeof LNAV!=="undefined")LNAV.forEach(function(n){if(n[0]==="friend")n[1]="Meet new people"});
   var ht=document.querySelector('.hubtile[data-go="buddy"]');
-  if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Find a buddy";if(hs)hs.textContent="Meet travellers, safely"}
+  if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Meet new people";if(hs)hs.textContent="Meet travellers, safely"}
   var ga=document.querySelector(".goldarea");
   if(ga){
     var dt=ga.querySelector('[data-g="dating"]');if(dt)dt.hidden=true;
@@ -22,8 +22,8 @@
   var sec=document.getElementById("buddy");
   if(sec&&!document.getElementById("npPurpose")){
     var pc=document.createElement("div");pc.id="npPurpose";pc.className="lcard hl nppurpose";
-    pc.innerHTML='<span class="k">OUR PURPOSE</span><h4>Find a buddy is a social feature</h4>'+
-      '<p>It helps travellers meet in groups and in public places: for a club night, a meal, sports or sightseeing. It is not an escort, companion or matchmaking service.</p>'+
+    pc.innerHTML='<span class="k">OUR PURPOSE</span><h4>Meet new people is a social feature</h4>'+
+      '<p>Meet new people helps travellers meet in groups and in public places: for a club night, a meal, sports or sightseeing. It is not an escort, companion or matchmaking service.</p>'+
       '<ul><li>18+ only. Meet only in public places.</li>'+
       '<li>No money, gifts or payment may be offered or asked for meeting anyone.</li>'+
       '<li>Offering or asking for paid companionship or sexual services is forbidden under Thai law (Prevention and Suppression of Prostitution Act B.E. 2539). Such accounts are removed and may be reported to the Thai police.</li>'+
@@ -35,18 +35,18 @@
   var gate=document.getElementById("buddyGate");
   if(gate&&!document.getElementById("bRules")){
     var lab=document.createElement("label");lab.style.cssText="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px";
-    lab.innerHTML='<input type="checkbox" id="bRules"> I agree to the Find a buddy rules: social meetings in public places only, and no money or paid services of any kind.';
+    lab.innerHTML='<input type="checkbox" id="bRules"> I agree to the Meet new people rules: social meetings in public places only, and no money or paid services of any kind.';
     var st=document.getElementById("bStart");if(st)st.insertAdjacentElement("beforebegin",lab);
     gate.addEventListener("click",function(e){
       if(!e.target.closest||!e.target.closest("#bStart"))return;
-      if(!document.getElementById("bRules").checked){e.stopImmediatePropagation();e.preventDefault();var er=document.getElementById("bErr");if(er)er.textContent="Please agree to the Find a buddy rules."}
+      if(!document.getElementById("bRules").checked){e.stopImmediatePropagation();e.preventDefault();var er=document.getElementById("bErr");if(er)er.textContent="Please agree to the Meet new people rules."}
     },true);
   }
 
   var BAD=/(money|cash|\bpay\b|\bpaid\b|payment|price|\brate\b|baht|฿|\btip\b|short ?time|long ?time|happy ending|escort|\bsex)/i;
   function blocked(){var i=panel.querySelector("#bIn");return i&&BAD.test(i.value)}
   function warn(){var w=panel.querySelector("#bWarn");if(!w){w=document.createElement("p");w.id="bWarn";w.className="err";var bar=panel.querySelector(".chatbar");if(bar)bar.insertAdjacentElement("afterend",w)}
-    w.textContent="For everyone's safety, messages about money, payment or paid services are not allowed in Find a buddy. Please keep it social."}
+    w.textContent="For everyone's safety, messages about money, payment or paid services are not allowed in Meet new people. Please keep it social."}
   panel.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#bSend")&&blocked()){e.stopImmediatePropagation();e.preventDefault();warn()}},true);
   panel.addEventListener("keydown",function(e){if(e.target&&e.target.id==="bIn"&&e.key==="Enter"&&blocked()){e.stopImmediatePropagation();e.preventDefault();warn()}},true);
 
