@@ -214,3 +214,47 @@
   sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null);if(!r.data.session&&pending)openBoth("find")});
   sb.auth.onAuthStateChange(function(e,s){var u=s?s.user:null;if((u&&u.id)!==(user&&user.id))onUser(u)});
 })();
+
+/* ===== service names + Skydiving tile (on screen) ===== */
+(function(){
+  var REN={"Golf":"Golf & Shooting Range","Shopping & Markets":"Namaste Shopping","Event & Party Planning":"Events, Groups & Gala Parties"};
+  function fixText(el){[].forEach.call(el.childNodes,function(n){if(n.nodeType===3){var t=n.textContent.trim();if(REN[t])n.textContent=REN[t]}})}
+  function fix(){
+    document.querySelectorAll("#cats .cat, #chips .chip, #mapCat option, #svcPage h2, #svcPage h3").forEach(fixText);
+    var cats=document.getElementById("cats");
+    if(cats&&!cats.querySelector("[data-np-sky]")&&cats.lastElementChild){
+      var t=cats.lastElementChild.cloneNode(true);t.dataset.npSky="1";t.setAttribute("aria-pressed","false");
+      var ic=t.querySelector("span");
+      if(ic)ic.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 7 0 0 1 18 0 M3 10c2-1.5 4-1.5 6 0 M9 10c1-1.5 5-1.5 6 0 M15 10c2-1.5 4-1.5 6 0 M3 10l9 8 M21 10l-9 8 M9 10l3 8 M15 10l-3 8 M12 18v3"/></svg>';
+      [].forEach.call(t.childNodes,function(n){if(n.nodeType===3&&n.textContent.trim())n.textContent="Skydiving"});
+      t.onclick=function(){if(typeof window.openService==="function")openService("skydiving")};
+      cats.appendChild(t);
+    }
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;fix()})})
+    .observe(document.body,{childList:true,subtree:true});
+  fix();
+})();
+
+/* ===== one option "Meet new people" ===== */
+(function(){
+  function run(){
+    var ga=document.querySelector(".goldarea");
+    if(ga){
+      var b=ga.querySelector('[data-g="buddy"]');
+      if(b){b.querySelector("b").textContent="Meet new people";b.querySelector("small").textContent="Social meetups, safely"}
+      var d=ga.querySelector('[data-g="dating"]');if(d)d.hidden=true;
+      var f=ga.querySelector('[data-g="friend"]');
+      if(f){f.querySelector("b").textContent="Friends & bill splitter";f.querySelector("small").textContent="Find your group, share costs";
+        if(typeof window.openFinder==="function")f.onclick=function(){openFinder()}}
+      var gt=ga.querySelector(".gtiles");if(gt)gt.style.gridTemplateColumns="1fr 1fr";
+      var gp=ga.querySelector(".gtop p");if(gp)gp.textContent="Meet new people safely, find your friends and split bills.";
+    }
+    var ht=document.querySelector('.hubtile[data-go="buddy"]');
+    if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Meet new people";if(hs)hs.textContent="Social meetups, safely"}
+    var st=document.querySelector("#buddy .sectiontitle");if(st)st.textContent="Meet new people";
+    var ph=document.querySelector("#npPurpose h4");if(ph)ph.textContent="Meet new people is a social feature";
+  }
+  run();window.addEventListener("load",run);setTimeout(run,1500);
+})();
