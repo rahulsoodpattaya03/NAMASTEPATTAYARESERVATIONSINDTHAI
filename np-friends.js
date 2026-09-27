@@ -215,21 +215,20 @@
   sb.auth.onAuthStateChange(function(e,s){var u=s?s.user:null;if((u&&u.id)!==(user&&user.id))onUser(u)});
 })();
 
-/* ===== service names + Skydiving tile (on screen) ===== */
+/* ===== service names (on screen); Skydiving removed ===== */
 (function(){
+  try{
+    if(typeof CATS!=="undefined")for(var i=CATS.length-1;i>=0;i--)if(CATS[i][0]==="skydiving")CATS.splice(i,1);
+    if(typeof TYPES!=="undefined"){var ti=TYPES.indexOf("Skydiving");if(ti>-1)TYPES.splice(ti,1)}
+    if(typeof COMMISSION_CATS!=="undefined"){var ci=COMMISSION_CATS.indexOf("skydiving");if(ci>-1)COMMISSION_CATS.splice(ci,1)}
+    if(typeof CATNAME!=="undefined")delete CATNAME.skydiving;
+  }catch(e){}
   var REN={"Golf":"Golf & Shooting Range","Shopping & Markets":"Namaste Shopping","Event & Party Planning":"Events, Groups & Gala Parties"};
   function fixText(el){[].forEach.call(el.childNodes,function(n){if(n.nodeType===3){var t=n.textContent.trim();if(REN[t])n.textContent=REN[t]}})}
   function fix(){
     document.querySelectorAll("#cats .cat, #chips .chip, #mapCat option, #svcPage h2, #svcPage h3").forEach(fixText);
-    var cats=document.getElementById("cats");
-    if(cats&&!cats.querySelector("[data-np-sky]")&&cats.lastElementChild){
-      var t=cats.lastElementChild.cloneNode(true);t.dataset.npSky="1";t.setAttribute("aria-pressed","false");
-      var ic=t.querySelector("span");
-      if(ic)ic.innerHTML='<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10a9 7 0 0 1 18 0 M3 10c2-1.5 4-1.5 6 0 M9 10c1-1.5 5-1.5 6 0 M15 10c2-1.5 4-1.5 6 0 M3 10l9 8 M21 10l-9 8 M9 10l3 8 M15 10l-3 8 M12 18v3"/></svg>';
-      [].forEach.call(t.childNodes,function(n){if(n.nodeType===3&&n.textContent.trim())n.textContent="Skydiving"});
-      t.onclick=function(){if(typeof window.openService==="function")openService("skydiving")};
-      cats.appendChild(t);
-    }
+    /* Skydiving removed: take away any Skydiving tile, chip or option added earlier */
+    document.querySelectorAll("#cats .cat, #chips .chip, #mapCat option").forEach(function(el){if(el.textContent.trim()==="Skydiving")el.remove()});
   }
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;fix()})})
