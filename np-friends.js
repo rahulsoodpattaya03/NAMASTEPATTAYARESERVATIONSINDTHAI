@@ -588,3 +588,89 @@
     });
   }).observe(panel,{childList:true,subtree:true});
 })();
+
+/* ===== Anonymous analytics: 8 key steps, plus an "App analytics" report for admins ===== */
+(function(){
+  if(!window.supabase)return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var sid="";try{sid=localStorage.getItem("np_sid")||"";if(!sid){sid=Math.random().toString(36).slice(2)+Date.now().toString(36);localStorage.setItem("np_sid",sid)}}catch(e){}
+  var last={};
+  function track(ev,detail){
+    var k=ev+"|"+(detail||"");var now=Date.now();if(last[k]&&now-last[k]<3000)return;last[k]=now;
+    try{sb.from("np_events").insert({event:ev,detail:detail?String(detail).slice(0,80):null,sid:sid}).then(function(){},function(){})}catch(e){}
+  }
+  window.npTrack=track;
+  /* 1. app opened (once per visit) */
+  try{if(!sessionStorage.getItem("np_open")){sessionStorage.setItem("np_open","1");track("app_open")}}catch(e){track("app_open")}
+  /* 2. service opened */
+  if(typeof window.openService==="function"){var _os=window.openService;window.openService=function(cat){track("service_open",cat);return _os.apply(this,arguments)};try{openService=window.openService}catch(e){}}
+  /* 3. place viewed (tap on a venue card) */
+  document.addEventListener("click",function(e){
+    var card=e.target.closest&&e.target.closest(".art, .card, [data-id]");if(!card)return;
+    var nm=card.querySelector&&card.querySelector(".name");var name=nm?nm.textContent.trim():"";
+    if(!name||typeof CLUBS==="undefined")return;
+    var c=CLUBS.find(function(x){return x.name===name});if(c)track("place_view",c.id);
+  },true);
+  /* 4. booking form opened */
+  if(typeof panel!=="undefined")new MutationObserver(function(){
+    if(panel.dataset.npBk)return;
+    if(panel.querySelector('input[type="date"]')&&/guest|people|persons|pax/i.test(panel.textContent)){panel.dataset.npBk="1";track("booking_start")}
+  }).observe(panel,{childList:true,subtree:true});
+  if(typeof sheet!=="undefined")new MutationObserver(function(){if(!sheet.classList.contains("open")&&typeof panel!=="undefined")delete panel.dataset.npBk}).observe(sheet,{attributes:true,attributeFilter:["class"]});
+  /* 5. booking sent */
+  if(typeof store!=="undefined"&&typeof store.set==="function"){
+    var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
+    store.set=function(key,val){
+      try{if(key==="np_bookings"&&Array.isArray(val)){if(val.length>prev&&val[0]&&!/Monthly luxury/.test(val[0].pkg||""))track("booking_sent",val[0].club||"");prev=val.length}}catch(e){}
+      return _set.apply(this,arguments);
+    };
+  }
+  /* 6. Raju used */
+  if(typeof ask==="function"){var _a=ask;ask=function(q){track("raju_used");return _a.apply(this,arguments)}}
+  /* 7. Gold tapped   8. shared */
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("a,button");if(!b)return;
+    if(b.id==="premBtn")track("gold_tap");
+    var href=b.getAttribute&&b.getAttribute("href")||"";
+    if(/wa\.me|whatsapp|share|invite|refer/i.test(href+" "+b.textContent)&&!/sharing my location|share my location|stop sharing/i.test(b.textContent)){
+      var where=b.closest("section[id]");track("share",where?where.id:(document.getElementById("fdRoot")?"friends":"app"));
+    }
+  },true);
+
+  /* ---- report for admins ---- */
+  var isAdmin=null;
+  function checkAdmin(){return sb.rpc("np_is_admin").then(function(r){isAdmin=!r.error&&r.data===true;return isAdmin},function(){isAdmin=false;return false})}
+  sb.auth.onAuthStateChange(function(){isAdmin=null});
+  var NAMES={app_open:"Opened the app",service_open:"Opened a service",place_view:"Viewed a place",booking_start:"Started a booking",booking_sent:"Sent a booking",raju_used:"Asked Raju",gold_tap:"Tapped Gold",share:"Shared a link"};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  async function report(days){
+    panel.innerHTML='<div class="pbody" id="npRep"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">App analytics</h2><button class="theme" id="rpX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"×")+'</button></div>'+
+      '<div class="chips" style="margin:10px 0"><button class="pill'+(days===1?' on':'')+'" data-d="1">Today</button> <button class="pill'+(days===7?' on':'')+'" data-d="7">7 days</button> <button class="pill'+(days===30?' on':'')+'" data-d="30">30 days</button></div><div id="rpBody"><p class="small">Loading…</p></div></div>';
+    sheet.classList.add("open");document.body.style.overflow="hidden";
+    panel.querySelector("#rpX").onclick=closeSheet;
+    panel.querySelectorAll("[data-d]").forEach(function(b){b.onclick=function(){report(+b.dataset.d)}});
+    var r=await sb.rpc("np_event_report",{days:days}),body=panel.querySelector("#rpBody");if(!body)return;
+    if(r.error){body.innerHTML='<p class="err">'+esc(r.error.message)+'</p>';return}
+    var tot={},ppl={},svc={},plc={};
+    (r.data||[]).forEach(function(x){tot[x.event]=(tot[x.event]||0)+Number(x.n);ppl[x.event]=(ppl[x.event]||0)+Number(x.people);
+      if(x.event==="service_open"&&x.detail)svc[x.detail]=(svc[x.detail]||0)+Number(x.n);
+      if(x.event==="place_view"&&x.detail)plc[x.detail]=(plc[x.detail]||0)+Number(x.n)});
+    var base=ppl.app_open||0;
+    function row(ev){var p=ppl[ev]||0;var pc=base?Math.round(p*100/base)+"%":"";return '<div class="lrow" style="padding:10px 0;border-top:1px solid var(--line)"><span>'+NAMES[ev]+'</span><span><b>'+p+'</b> people <span class="small">'+pc+'</span></span></div>'}
+    function top(obj,label){var a=Object.keys(obj).sort(function(x,y){return obj[y]-obj[x]}).slice(0,5);if(!a.length)return "";
+      return '<h3 style="font-size:16px;margin:16px 0 6px">'+label+'</h3>'+a.map(function(k){return '<div class="lrow" style="padding:6px 0"><span>'+esc(k)+'</span><b>'+obj[k]+'</b></div>'}).join("")}
+    var svcN={};Object.keys(svc).forEach(function(k){svcN[(typeof CATNAME!=="undefined"&&CATNAME[k])||k]=svc[k]});
+    var plcN={};Object.keys(plc).forEach(function(k){var c=typeof CLUBS!=="undefined"&&CLUBS.find(function(x){return x.id===k});plcN[c?c.name:k]=plc[k]});
+    body.innerHTML='<h3 style="font-size:16px;margin:6px 0">Booking journey</h3>'+["app_open","service_open","place_view","booking_start","booking_sent"].map(row).join("")+
+      '<h3 style="font-size:16px;margin:16px 0 6px">Other actions</h3>'+["raju_used","gold_tap","share"].map(row).join("")+
+      top(svcN,"Top services")+top(plcN,"Top places")+
+      '<p class="small" style="margin-top:14px">Anonymous counts only: no names, emails or locations. "People" means different phones or browsers.</p>';
+  }
+  window.npReport=function(){report(7)};
+  if(typeof panel!=="undefined")new MutationObserver(function(){
+    if(panel.querySelector("#npRepBtn")||panel.querySelector("#npRep"))return;
+    var out=[].slice.call(panel.querySelectorAll("button")).find(function(b){return /log ?out/i.test(b.textContent)});if(!out)return;
+    var go=function(){if(panel.querySelector("#npRepBtn"))return;var b=document.createElement("button");b.id="npRepBtn";b.className=out.className||"pill";b.textContent="App analytics";b.style.marginRight="8px";out.insertAdjacentElement("beforebegin",b);b.onclick=function(){report(7)}};
+    if(isAdmin===true)go();else if(isAdmin===null)checkAdmin().then(function(a){if(a)go()});
+  }).observe(panel,{childList:true,subtree:true});
+})();
