@@ -386,13 +386,15 @@
     var res=null;
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
-      var r=await sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t}]),venues:venues(),lang:lang}});
-      if(!r.error&&r.data&&r.data.reply)res=r.data;
+      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t}]),venues:venues(),lang:lang}});
+      var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
+      var r=await Promise.race([call,timeout]);
+      if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
     }catch(e){}
     typing.remove();
-    if(!res)return _ask(q);
+    if(!res){try{return await _ask(q)}catch(e){if(typeof addMsg==="function")addMsg("bot","Sorry bhai, my network is slow right now. Please ask me again in a moment.");return}}
     var ids=(res.ids||[]).filter(function(id){return typeof CLUBS!=="undefined"&&CLUBS.some(function(c){return c.id===id})});
-    hist.push({role:"user",text:t},{role:"model",text:res.reply});if(hist.length>12)hist=hist.slice(-12);
+    hist.push({role:"user",text:t},{role:"model",text:res.reply});window.__npLastReply=res.reply;if(hist.length>12)hist=hist.slice(-12);
     var old=localAnswer;localAnswer=function(){return {text:res.reply,ids:ids}};
     try{await _ask(q)}finally{localAnswer=old}
   };
@@ -433,4 +435,87 @@
   /* add the perk to the Gold list */
   function perk(){var ul=document.querySelector(".gperks");if(ul&&!ul.querySelector("[data-np-skin]")){var li=document.createElement("li");li.dataset.npSkin="1";li.textContent="Choose your own app colours";ul.appendChild(li)}}
   perk();setTimeout(perk,1600);
+})();
+
+
+/* ===== Raju voice mode: speak to Raju (mic) and hear his answers (speaker). Uses the phone's own voice, free. ===== */
+(function(){
+  if(typeof ask!=="function")return;
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,TTS=window.speechSynthesis;
+  var LANGS={en:"en-IN",hi:"hi-IN",pa:"pa-IN",gu:"gu-IN",ta:"ta-IN",mr:"mr-IN",th:"th-TH"};
+  var voiceOn=false,fromMic=false,rec=null;
+  try{voiceOn=localStorage.getItem("np_raju_voice")==="1"}catch(e){}
+  function appLang(){var l="en";try{l=localStorage.getItem("np_lang")||"en"}catch(e){}return LANGS[l]||"en-IN"}
+  function detect(t){
+    if(/[\u0E00-\u0E7F]/.test(t))return "th-TH";
+    if(/[\u0A00-\u0A7F]/.test(t))return "pa-IN";
+    if(/[\u0A80-\u0AFF]/.test(t))return "gu-IN";
+    if(/[\u0B80-\u0BFF]/.test(t))return "ta-IN";
+    if(/[\u0900-\u097F]/.test(t))return appLang()==="mr-IN"?"mr-IN":"hi-IN";
+    return "en-IN";
+  }
+  function speak(t){
+    if(!TTS||!t)return;
+    try{
+      TTS.cancel();
+      var clean=String(t).replace(/[*_#>`]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"");
+      var u=new SpeechSynthesisUtterance(clean);u.lang=detect(clean);
+      var vs=TTS.getVoices()||[];
+      var v=vs.find(function(x){return x.lang===u.lang})||vs.find(function(x){return x.lang&&x.lang.slice(0,2)===u.lang.slice(0,2)});
+      if(v)u.voice=v;
+      TTS.speak(u);
+    }catch(e){}
+  }
+  function lastBotText(){
+    if(typeof chatEl==="undefined")return "";
+    var kids=[].slice.call(chatEl.children).reverse();
+    for(var i=0;i<kids.length;i++){var k=kids[i];if(/bot|raju|them/i.test(k.className)&&k.textContent.trim()&&!/typing/i.test(k.textContent))return k.textContent.trim()}
+    return "";
+  }
+  var _ask=ask;
+  ask=async function(q){
+    window.__npLastReply=null;
+    var r=await _ask(q);
+    if(voiceOn||fromMic){setTimeout(function(){speak(window.__npLastReply||lastBotText())},200)}
+    fromMic=false;
+    return r;
+  };
+  var MIC='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  var SPK_ON='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16 9a4 4 0 0 1 0 6M19 6a8 8 0 0 1 0 12"/></svg>';
+  var SPK_OFF='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+  if(!document.getElementById("npVoiceCss")){
+    var st=document.createElement("style");st.id="npVoiceCss";
+    st.textContent='.npvbtn{flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.06));color:var(--ink,#fff);display:inline-flex;align-items:center;justify-content:center;margin:0 4px;cursor:pointer}.npvbtn.on{border-color:#FF8A2A;color:#FF8A2A}.npvbtn.rec{background:#E5484D;color:#fff;border-color:#E5484D;animation:npvp 1s infinite}@keyframes npvp{50%{box-shadow:0 0 0 8px rgba(229,72,77,.25)}}';
+    document.head.appendChild(st);
+  }
+  function attach(){
+    var inp=document.querySelector('input[placeholder*="Hindi bhi"],input[placeholder^="Ask anything"],textarea[placeholder^="Ask anything"]');
+    if(!inp||inp.dataset.npVoice)return;
+    inp.dataset.npVoice="1";
+    var mic=document.createElement("button");mic.type="button";mic.className="npvbtn";mic.setAttribute("aria-label","Talk to Raju");mic.innerHTML=MIC;
+    var spk=document.createElement("button");spk.type="button";spk.className="npvbtn"+(voiceOn?" on":"");spk.setAttribute("aria-label","Raju reads answers aloud");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
+    inp.insertAdjacentElement("afterend",spk);inp.insertAdjacentElement("afterend",mic);
+    spk.onclick=function(){
+      voiceOn=!voiceOn;try{localStorage.setItem("np_raju_voice",voiceOn?"1":"0")}catch(e){}
+      spk.className="npvbtn"+(voiceOn?" on":"");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
+      if(!voiceOn&&TTS)TTS.cancel();else speak(appLang()==="hi-IN"?"नमस्ते! अब मैं बोलकर जवाब दूँगा।":"Namaste! I will read my answers out loud now.");
+    };
+    mic.onclick=function(){
+      if(!SR){alert("Voice typing doesn't work in this browser. Please use Chrome.");return}
+      if(rec){rec.stop();return}
+      if(TTS)TTS.cancel();
+      var ph=inp.placeholder,finalText="";
+      rec=new SR();rec.lang=appLang();rec.interimResults=true;rec.maxAlternatives=1;
+      mic.classList.add("rec");inp.placeholder="Listening… speak now";
+      rec.onresult=function(e){var t="";for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;inp.value=t;if(e.results[e.results.length-1].isFinal)finalText=t};
+      rec.onerror=function(e){if(e.error==="not-allowed")alert("Please allow the microphone for this app to talk to Raju.")};
+      rec.onend=function(){mic.classList.remove("rec");inp.placeholder=ph;rec=null;
+        var t=(finalText||inp.value).trim();if(t){inp.value="";fromMic=true;ask(t)}};
+      try{rec.start()}catch(e){mic.classList.remove("rec");inp.placeholder=ph;rec=null}
+    };
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;attach()})}).observe(document.body,{childList:true,subtree:true});
+  attach();
+  if(TTS&&TTS.onvoiceschanged!==undefined)TTS.onvoiceschanged=function(){};
 })();
