@@ -366,3 +366,35 @@
   if(typeof renderPackages==="function"){var _rp=renderPackages;renderPackages=function(){_rp();gate()}}
   gate();
 })();
+
+/* ===== Raju Guide: real AI (Gemini) through the Supabase "raju" function; old Raju stays as backup ===== */
+(function(){
+  if(typeof ask!=="function"||!window.supabase)return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var CRISIS=/suicid|kill myself|end my life|want to die|self.?harm|hopeless|unsafe|follow(ing|ed)? me|harass|attack|spiked|drugged|rape|assault|kidnap|emergency|accident|injur|bleed|unconscious|chest pain|overdose|passport|stolen|robbed/i;
+  var hist=[];
+  function venues(){
+    if(typeof CLUBS==="undefined")return "";
+    return CLUBS.map(function(c){var paid=(c.pkgs||[]).map(function(p){return p.p}).filter(Boolean),from=paid.length?Math.min.apply(null,paid):0;
+      return [c.id,c.name,c.cat,c.area,c.open,c.music||c.sub||"",from||"on request",c.type||""].join("|")}).join("\n");
+  }
+  var _ask=ask;
+  ask=async function(q){
+    var t=String(q||"").trim();
+    if(!t||CRISIS.test(t)||typeof localAnswer!=="function")return _ask(q);
+    var typing=document.createElement("div");typing.className="msg bot";typing.textContent="Raju is typing…";
+    if(typeof chatEl!=="undefined"){chatEl.appendChild(typing);typing.scrollIntoView({block:"end"})}
+    var res=null;
+    try{
+      var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
+      var r=await sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t}]),venues:venues(),lang:lang}});
+      if(!r.error&&r.data&&r.data.reply)res=r.data;
+    }catch(e){}
+    typing.remove();
+    if(!res)return _ask(q);
+    var ids=(res.ids||[]).filter(function(id){return typeof CLUBS!=="undefined"&&CLUBS.some(function(c){return c.id===id})});
+    hist.push({role:"user",text:t},{role:"model",text:res.reply});if(hist.length>12)hist=hist.slice(-12);
+    var old=localAnswer;localAnswer=function(){return {text:res.reply,ids:ids}};
+    try{await _ask(q)}finally{localAnswer=old}
+  };
+})();
