@@ -519,3 +519,72 @@
   attach();
   if(TTS&&TTS.onvoiceschanged!==undefined)TTS.onvoiceschanged=function(){};
 })();
+
+/* ===== Passwords: "Change password" when logged in, "Forgot password?" on the login screen, and the reset link from email ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  function X(){return typeof ico==="function"?ico("close"):"×"}
+  function openSheet(html){
+    panel.innerHTML='<div class="pbody" id="npPw">'+html+'</div>';
+    sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
+    var x=panel.querySelector("#pwX");if(x)x.onclick=closeSheet;
+  }
+  function form(title,intro){
+    openSheet('<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+title+'</h2><button class="theme" id="pwX" aria-label="Close">'+X()+'</button></div>'+
+      '<p class="about">'+intro+'</p><div class="fields">'+
+      '<label class="full">New password<input id="pw1" type="password" autocomplete="new-password" placeholder="At least 8 characters"></label>'+
+      '<label class="full">Type it again<input id="pw2" type="password" autocomplete="new-password"></label></div>'+
+      '<button class="cta" id="pwSave">Save new password</button><p class="err" id="pwE"></p>');
+    panel.querySelector("#pwSave").onclick=async function(){
+      var a=panel.querySelector("#pw1").value,b=panel.querySelector("#pw2").value,E=panel.querySelector("#pwE");
+      if(a.length<8){E.textContent="Use at least 8 characters, with letters and numbers.";return}
+      if(!/[a-z]/i.test(a)||!/\d/.test(a)){E.textContent="Use both letters and numbers.";return}
+      if(a!==b){E.textContent="The two passwords are different.";return}
+      this.disabled=true;
+      var r=await sb.auth.updateUser({password:a});
+      this.disabled=false;
+      if(r.error){E.textContent=r.error.message;return}
+      openSheet('<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Password changed</h2><button class="theme" id="pwX" aria-label="Close">'+X()+'</button></div><p class="about">Your new password is saved. Use it next time you log in.</p>');
+    };
+  }
+  window.npChangePassword=function(){form("Change password","Choose a new password for your account.")};
+  /* reset link from email opens the app here */
+  sb.auth.onAuthStateChange(function(ev){if(ev==="PASSWORD_RECOVERY")setTimeout(function(){form("Set a new password","Welcome back. Choose a new password for your account.")},400)});
+  function forgot(emailInput){
+    var em=(emailInput&&emailInput.value||"").trim();
+    openSheet('<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Forgot password</h2><button class="theme" id="pwX" aria-label="Close">'+X()+'</button></div>'+
+      '<p class="about">Enter your email. We will send you a link to choose a new password.</p><div class="fields"><label class="full">Email<input id="fpE" type="email" autocomplete="email" value="'+em.replace(/"/g,"")+'"></label></div>'+
+      '<button class="cta" id="fpGo">Send reset link</button><p class="err" id="fpMsg"></p>');
+    panel.querySelector("#fpGo").onclick=async function(){
+      var e=panel.querySelector("#fpE").value.trim(),M=panel.querySelector("#fpMsg");
+      if(!/^\S+@\S+\.\S+$/.test(e)){M.textContent="Please enter a valid email.";return}
+      this.disabled=true;
+      var r=await sb.auth.resetPasswordForEmail(e,{redirectTo:location.origin+location.pathname});
+      this.disabled=false;
+      M.style.color="var(--ok)";M.textContent=r.error?"":"If this email has an account, the reset link is on its way. Check your inbox and spam folder.";
+      if(r.error){M.style.color="";M.textContent=r.error.message}
+    };
+  }
+  /* add the buttons to the existing account and login screens */
+  var busy=false;
+  new MutationObserver(function(){
+    if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;
+      if(panel.querySelector("#npPw"))return;
+      var btns=[].slice.call(panel.querySelectorAll("button"));
+      var out=btns.find(function(b){return /log ?out/i.test(b.textContent)});
+      if(out&&!panel.querySelector("#npChangePw")){
+        var c=document.createElement("button");c.id="npChangePw";c.className=out.className||"pill";c.textContent="Change password";
+        c.style.marginRight="8px";out.insertAdjacentElement("beforebegin",c);c.onclick=function(){npChangePassword()};
+      }
+      var pw=panel.querySelector('input[type="password"]');
+      if(pw&&!out&&!panel.querySelector("#npForgot")&&!/forgot/i.test(panel.textContent)){
+        var em=panel.querySelector('input[type="email"]');
+        var f=document.createElement("button");f.id="npForgot";f.type="button";f.className="linkbtn";f.textContent="Forgot password?";
+        f.style.cssText="display:block;margin:8px 0 0";
+        (pw.closest("label")||pw).insertAdjacentElement("afterend",f);
+        f.onclick=function(){forgot(em)};
+      }
+    });
+  }).observe(panel,{childList:true,subtree:true});
+})();
