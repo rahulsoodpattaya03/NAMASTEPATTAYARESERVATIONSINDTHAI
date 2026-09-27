@@ -5240,21 +5240,7 @@ body{top:0!important}
 #bsRoot .chkl label{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 10px;font-size:13px}
 .bsamt{font-weight:700;white-space:nowrap}
 </style>
-  <script>
-(function(){
-  var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
-  var TITLE="Find My Friends & Bill Splitter";
-  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
-  function rer(list){list.forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
-
-  if(typeof INTENTS!=="undefined")INTENTS.forEach(function(i){if(i[0]==="dating")i[2]="Meet new people"});
-  if(typeof LNAV!=="undefined")LNAV.forEach(function(n){if(n[0]==="friend")n[1]="Find a buddy"});
-  var ht=document.querySelector('.hubtile[data-go="buddy"]');
-  if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Find a buddy";if(hs)hs.textContent="Meet travellers, safely"}
-  var ga=document.querySelector(".goldarea");
-  if(ga){
-    var dt=ga.querySelector('[data-g="dating"]');if(dt)dt.hidden=true;
-    var gt=ga.querySelector(".gtiles");if(gt)gt.style.gridTemplateColumns="1fr 1fr";
-    var gb=ga.querySelector('[data-g="buddy"] small');
+<script>
+<script src="np-friends.js"></script>
 </body>
 </html>
