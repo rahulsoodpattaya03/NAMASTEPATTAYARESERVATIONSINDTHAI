@@ -1,11 +1,11 @@
 /* Namaste Pattaya Reservations: Find a buddy (one feature, clear purpose), Find My Friends & Bill Splitter */
 (function(){
   var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
-  var TITLE="Find My Friends & Bill Splitter";
+  var TITLE="Friends Location & Bill Splitter";
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function rer(list){list.forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
 
-  if(typeof INTENTS!=="undefined")INTENTS.forEach(function(i){if(i[0]==="dating")i[2]="Meet new people"});
+  if(typeof INTENTS!=="undefined")INTENTS.forEach(function(i){if(i[0]==="dating")i[2]="Meet new people in social places"});
   if(typeof LNAV!=="undefined")LNAV.forEach(function(n){if(n[0]==="friend")n[1]="Find a buddy"});
   var ht=document.querySelector('.hubtile[data-go="buddy"]');
   if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Find a buddy";if(hs)hs.textContent="Meet travellers, safely"}
@@ -94,7 +94,7 @@
     var root=document.getElementById("fdRoot");if(!root)return;
     var h='<div></div><p class="about">Got separated from your group? Share your location with your friends only, and find each other fast.</p>';
     if(!user){
-      h+='<p class="small">Log in first to use Find my friends.</p><button class="cta" id="fdLog">Log in</button>';
+      h+='<p class="small">Log in first to use Friends location.</p><button class="cta" id="fdLog">Log in</button>';
     }else if(!code){
       h+='<button class="cta" id="fdNew">Start a group</button>'+
         '<p class="small" style="margin:14px 0 6px">Or join your friends with their code:</p>'+
@@ -153,7 +153,7 @@
   function renderBills(){
     var root=document.getElementById("bsRoot");if(!root)return;
     if(!user){root.innerHTML='<p class="about">Log in first to split bills with your group.</p>';return}
-    if(!code){root.innerHTML='<p class="about">Start or join a group in <b>Find my friends</b> first. Then everyone in the group can add and split bills here.</p><button class="cta" id="bsGo">Go to Find my friends</button>';
+    if(!code){root.innerHTML='<p class="about">Start or join a group in <b>Friends location</b> first. Then everyone in the group can add and split bills here.</p><button class="cta" id="bsGo">Go to Friends location</button>';
       root.querySelector("#bsGo").onclick=function(){tab="find";show()};return}
     var total=bills.reduce(function(s,b){return s+Number(b.amount)},0),st=settle(),myN=(user.user_metadata||{}).name||"Me";
     var h='<div class="lcard hl"><span class="k">GROUP '+esc(code)+'</span><h4>Total spent: '+B(total)+' <span class="small">('+inr(total)+')</span></h4><p class="small">'+members.length+' people in this group</p></div>'+
@@ -195,7 +195,7 @@
   function openBoth(which){
     tab=which||tab;
     panel.innerHTML='<div class="fbhead"><h2 id="sheetTitle">'+TITLE+'</h2><button class="theme" id="fbX" aria-label="Close">'+ico("close")+'</button></div>'+
-      '<div class="fbtabs" role="tablist"><button role="tab" data-t="find">Find my friends</button><button role="tab" data-t="bill">Bill splitter</button></div>'+
+      '<div class="fbtabs" role="tablist"><button role="tab" data-t="find">Friends location</button><button role="tab" data-t="bill">Bill splitter</button></div>'+
       '<div class="pbody" id="fdRoot"></div><div class="pbody" id="bsRoot"></div>';
     panel.querySelector("#fbX").onclick=closeSheet;
     panel.querySelectorAll(".fbtabs [data-t]").forEach(function(b){b.onclick=function(){tab=b.dataset.t;show()}});
@@ -237,24 +237,132 @@
   fix();
 })();
 
-/* ===== one option "Meet new people" ===== */
+/* ===== home: Namaste Gold (Meet new people) + Friends Location & Bill Splitter for everyone ===== */
 (function(){
+  function vip(){try{return typeof isVIP==="function"&&!!isVIP()}catch(e){return false}}
+  function css(){
+    if(document.getElementById("npGoldCss"))return;
+    var st=document.createElement("style");st.id="npGoldCss";
+    st.textContent='.gperks{margin:12px 0 0;padding:0;list-style:none}.gperks li{display:flex;gap:8px;align-items:flex-start;padding:6px 0;font-size:14px;color:var(--ink)}.gperks li::before{content:"";flex:0 0 8px;height:8px;margin-top:7px;border-radius:50%;background:linear-gradient(135deg,#FFF1C6,#B9904A)}'+
+      '.gshoot{width:100%;margin-top:8px;border:1px solid rgba(233,216,166,.5);border-radius:999px;padding:11px;background:transparent;color:#E9D8A6;font-weight:600}'+
+      '.npflb{width:100%;margin:0 0 24px}.npflb .hubtile{width:100%}';
+    document.head.appendChild(st);
+  }
   function run(){
+    css();
     var ga=document.querySelector(".goldarea");
     if(ga){
       var b=ga.querySelector('[data-g="buddy"]');
-      if(b){b.querySelector("b").textContent="Meet new people";b.querySelector("small").textContent="Social meetups, safely"}
+      if(b){b.querySelector("b").textContent="Meet new people";b.querySelector("small").textContent="Unlimited likes and swipes, shown first"}
       var d=ga.querySelector('[data-g="dating"]');if(d)d.hidden=true;
-      var f=ga.querySelector('[data-g="friend"]');
-      if(f){f.querySelector("b").textContent="Friends & bill splitter";f.querySelector("small").textContent="Find your group, share costs";
-        if(typeof window.openFinder==="function")f.onclick=function(){openFinder()}}
-      var gt=ga.querySelector(".gtiles");if(gt)gt.style.gridTemplateColumns="1fr 1fr";
-      var gp=ga.querySelector(".gtop p");if(gp)gp.textContent="Meet new people safely, find your friends and split bills.";
+      var f=ga.querySelector('[data-g="friend"]');if(f)f.hidden=true;
+      var gt=ga.querySelector(".gtiles");if(gt)gt.style.gridTemplateColumns="1fr";
+      var gp=ga.querySelector(".gtop p");if(gp)gp.textContent="Premium access for our most valued guests.";
+      if(!ga.querySelector(".gperks")){
+        var ul=document.createElement("ul");ul.className="gperks";
+        ul.innerHTML='<li>Unlimited likes and swipes in Meet new people, and your profile shown first</li>'+
+          '<li>All Elite packages</li>'+
+          '<li>Elite and luxury services (yacht, private jet, VIP concierge) with priority booking</li>'+
+          '<li>One luxury photo and video shoot every month with our photographer</li>';
+        (gt||ga).insertAdjacentElement("afterend",ul);
+        var sh=document.createElement("button");sh.className="gshoot";sh.id="npShoot";
+        ul.insertAdjacentElement("afterend",sh);
+        sh.onclick=shoot;
+      }
+      paintShoot();
+    }
+    /* Friends Location & Bill Splitter: for everyone, its own tile under the gold area */
+    if(ga&&!document.getElementById("npFLB")){
+      var w=document.createElement("div");w.className="npflb";w.id="npFLB";
+      w.innerHTML='<button class="hubtile">'+(typeof ico==="function"?'<span>'+ico("map")+'</span>':'')+'<b>Friends Location &amp; Bill Splitter</b><small>Free for everyone · find your group and share costs</small></button>';
+      ga.insertAdjacentElement("afterend",w);
+      w.querySelector("button").onclick=function(){if(typeof window.openFinder==="function")openFinder()};
     }
     var ht=document.querySelector('.hubtile[data-go="buddy"]');
     if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Meet new people";if(hs)hs.textContent="Social meetups, safely"}
-    var st=document.querySelector("#buddy .sectiontitle");if(st)st.textContent="Meet new people";
+    var stt=document.querySelector("#buddy .sectiontitle");if(stt)stt.textContent="Meet new people";
     var ph=document.querySelector("#npPurpose h4");if(ph)ph.textContent="Meet new people is a social feature";
+    var fb=document.getElementById("npFindBtn");if(fb)fb.textContent="Friends Location & Bill Splitter";
   }
-  run();window.addEventListener("load",run);setTimeout(run,1500);
+  /* monthly luxury shoot for Gold members */
+  function month(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)}
+  function paintShoot(){
+    var sh=document.getElementById("npShoot");if(!sh)return;
+    var done=false;try{done=localStorage.getItem("np_shoot_month")===month()}catch(e){}
+    sh.textContent=!vip()?"Monthly luxury shoot · Gold members":(done?"This month's luxury shoot is booked":"Book my luxury shoot this month");
+    sh.disabled=vip()&&done;
+  }
+  function shoot(){
+    if(!vip()){var p=document.getElementById("premBtn");if(p)p.click();return}
+    try{if(localStorage.getItem("np_shoot_month")===month())return}catch(e){}
+    if(typeof bookings!=="undefined"&&typeof store!=="undefined"){
+      var who="";try{who=(JSON.parse(localStorage.getItem("np_buddy")||"null")||{}).name||""}catch(e){}
+      bookings.unshift({code:"NP"+Math.random().toString(36).slice(2,7).toUpperCase(),club:"vip",pkg:"Monthly luxury photo and video shoot (Gold)",guests:1,date:new Date().toISOString(),time:"To be planned",name:who||"Gold member",phone:"",total:0,cat:"concierge"});
+      store.set("np_bookings",bookings);
+      if(typeof renderBookings==="function")try{renderBookings()}catch(e){}
+    }
+    try{localStorage.setItem("np_shoot_month",month())}catch(e){}
+    alert("Your luxury shoot request is in. Our team will contact you to plan the date and place.");
+    paintShoot();
+  }
+  run();window.addEventListener("load",run);setTimeout(run,1500);setTimeout(paintShoot,3000);
+})();
+
+/* ===== Meet new people: 10 free likes/swipes per 24 hours, unlimited for Gold ===== */
+(function(){
+  var LIM=10,KEY="np_swipes",DAY=864e5;
+  function vip(){try{return typeof isVIP==="function"&&!!isVIP()}catch(e){return false}}
+  function used(){var a=[];try{a=JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){}var n=Date.now();return a.filter(function(t){return n-t<DAY})}
+  function add(){var a=used();a.push(Date.now());try{localStorage.setItem(KEY,JSON.stringify(a))}catch(e){}}
+  function left(){return vip()?Infinity:Math.max(0,LIM-used().length)}
+  function hoursLeft(){var a=used();if(!a.length)return 0;return Math.max(1,Math.ceil((DAY-(Date.now()-a[0]))/36e5))}
+  function counter(){
+    var sw=document.querySelector(".swbtns");if(!sw)return;
+    var c=document.getElementById("npLikes");
+    if(!c){c=document.createElement("p");c.id="npLikes";c.className="small";c.style.cssText="text-align:center;margin:0 0 10px";sw.insertAdjacentElement("afterend",c)}
+    c.textContent=vip()?"Gold member · unlimited likes and swipes · shown first":("Free likes and swipes left today: "+left()+" of "+LIM+" · Gold = unlimited");
+  }
+  function blockMsg(){
+    if(typeof panel==="undefined")return;
+    panel.innerHTML='<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Daily limit reached</h2><button class="theme" id="lmX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"×")+'</button></div>'+
+      '<p class="about">You have used your '+LIM+' free likes and swipes. More in about '+hoursLeft()+' hours.</p>'+
+      '<p class="about">Namaste Gold members get unlimited likes and swipes, and are shown first.</p>'+
+      '<button class="cta" id="lmGold">Become a Gold member</button></div>';
+    panel.querySelector("#lmX").onclick=closeSheet;
+    panel.querySelector("#lmGold").onclick=function(){closeSheet();setTimeout(function(){var p=document.getElementById("premBtn");if(p)p.click()},300)};
+    sheet.classList.add("open");document.body.style.overflow="hidden";
+  }
+  if(typeof decide==="function"){
+    var _d=decide;
+    decide=function(p,yes,card){
+      if(!vip()&&left()<=0){if(card){card.style.transform=""}blockMsg();counter();return}
+      if(!vip())add();
+      _d(p,yes,card);counter();
+    };
+  }
+  var people=document.getElementById("people");
+  if(people)people.addEventListener("click",function(e){
+    var j=e.target.closest&&e.target.closest(".join");if(!j||/chat/i.test(j.textContent))return;
+    if(!vip()&&left()<=0){e.stopImmediatePropagation();e.preventDefault();blockMsg();return}
+    if(!vip())add();setTimeout(counter,50);
+  },true);
+  if(typeof renderSwipe==="function"){var _rs=renderSwipe;renderSwipe=function(){_rs();counter()}}
+  counter();setTimeout(counter,1500);
+})();
+
+/* ===== Elite package: Gold members only ===== */
+(function(){
+  function vip(){try{return typeof isVIP==="function"&&!!isVIP()}catch(e){return false}}
+  function gate(){
+    if(typeof pSel==="undefined"||pSel!=="elite"||vip())return;
+    var el=document.getElementById("pbuild");if(!el)return;
+    var req=el.querySelector("#pReq");if(!req||req.dataset.np)return;
+    req.dataset.np="1";req.textContent="Gold members only · Become Gold";
+    req.onclick=function(){var p=document.getElementById("premBtn");if(p)p.click()};
+    var n=document.createElement("p");n.className="small";n.style.color="var(--amber)";
+    n.textContent="The Elite package is included for Namaste Gold members.";
+    req.insertAdjacentElement("beforebegin",n);
+  }
+  if(typeof renderPackages==="function"){var _rp=renderPackages;renderPackages=function(){_rp();gate()}}
+  gate();
 })();
