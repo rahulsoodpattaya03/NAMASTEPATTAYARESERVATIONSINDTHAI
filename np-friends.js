@@ -397,3 +397,40 @@
     try{await _ask(q)}finally{localAnswer=old}
   };
 })();
+
+/* ===== Aurora AI for everyone; only Namaste Gold (premium) members can choose other app colours ===== */
+(function(){
+  function premium(){try{return (typeof isVIP==="function"&&!!isVIP())||(typeof isPremium==="function"&&!!isPremium())}catch(e){return false}}
+  function auroraKey(){
+    if(typeof SKINS==="undefined")return null;
+    for(var i=0;i<SKINS.length;i++){var s=SKINS[i];if(/aurora/i.test(String(s[0])+" "+String(s[1])))return s[0]}
+    return null;
+  }
+  var k=auroraKey();if(!k)return;
+  function apply(){
+    if(document.documentElement.dataset.skin===k)return;
+    if(typeof applySkin==="function"){try{applySkin(k);return}catch(e){}}
+    document.documentElement.dataset.skin=k;
+  }
+  function enforce(){
+    if(premium()){
+      var chosen=null;try{chosen=localStorage.getItem("np_skin_user")}catch(e){}
+      if(!chosen)apply();
+    }else apply();
+  }
+  enforce();window.addEventListener("load",enforce);setTimeout(enforce,1500);setTimeout(enforce,4000);
+  /* normal users: the App colours screen becomes a Gold perk */
+  if(typeof panel!=="undefined")new MutationObserver(function(){
+    if(premium())return;
+    if(!panel.querySelector(".pskin")||panel.querySelector("#npSkinGold"))return;
+    panel.innerHTML='<div class="pbody" id="npSkinGold"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">App colours</h2><button class="theme" id="skX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"×")+'</button></div>'+
+      '<p class="about">Your app uses the Aurora AI look.</p><p class="about">Choosing your own app colours is a Namaste Gold perk.</p>'+
+      '<button class="cta" id="skGold">Become a Gold member</button></div>';
+    panel.querySelector("#skX").onclick=closeSheet;
+    panel.querySelector("#skGold").onclick=function(){closeSheet();setTimeout(function(){var b=document.getElementById("premBtn");if(b)b.click()},300)};
+    enforce();
+  }).observe(panel,{childList:true,subtree:true});
+  /* add the perk to the Gold list */
+  function perk(){var ul=document.querySelector(".gperks");if(ul&&!ul.querySelector("[data-np-skin]")){var li=document.createElement("li");li.dataset.npSkin="1";li.textContent="Choose your own app colours";ul.appendChild(li)}}
+  perk();setTimeout(perk,1600);
+})();
