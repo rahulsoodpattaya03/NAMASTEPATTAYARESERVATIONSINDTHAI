@@ -674,3 +674,23 @@
     if(isAdmin===true)go();else if(isAdmin===null)checkAdmin().then(function(a){if(a)go()});
   }).observe(panel,{childList:true,subtree:true});
 })();
+
+/* ===== Tagline: "Bharat ke liye, ek Bhartiye ka tohfa" everywhere in the app ===== */
+(function(){
+  var MAP=[
+    [/Bhartiyon ke liye,? ek Bhartiya ka tohfa/gi,"Bharat ke liye, ek Bhartiye ka tohfa"],
+    [/भारतीयों के लिए,? एक भारतीय का तोहफ़ा/g,"भारत के लिए, एक भारतीय का तोहफ़ा"],
+    [/भारतीयों के लिए,? एक भारतीय का तोहफा/g,"भारत के लिए, एक भारतीय का तोहफ़ा"]
+  ];
+  function fix(root){
+    var w=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,null),n;
+    while((n=w.nextNode())){
+      var t=n.nodeValue;if(!t||t.indexOf("tohfa")<0&&t.indexOf("तोहफ")<0&&!/Bhartiy/i.test(t))continue;
+      var u=t;MAP.forEach(function(m){u=u.replace(m[0],m[1])});
+      if(u!==t)n.nodeValue=u;
+    }
+  }
+  fix();
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;fix()})}).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
