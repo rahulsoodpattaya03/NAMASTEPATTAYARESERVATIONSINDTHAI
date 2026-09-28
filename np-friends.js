@@ -507,41 +507,8 @@
     st.textContent='.npvbtn{flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.06));color:var(--ink,#fff);display:inline-flex;align-items:center;justify-content:center;margin:0 4px;cursor:pointer}.npvbtn.on{border-color:#FF8A2A;color:#FF8A2A}.npvbtn.rec{background:#E5484D;color:#fff;border-color:#E5484D;animation:npvp 1s infinite}@keyframes npvp{50%{box-shadow:0 0 0 8px rgba(229,72,77,.25)}}';
     document.head.appendChild(st);
   }
-  var spks=[];
-  function syncSpk(){spks.forEach(function(b){b.className="npvbtn"+(voiceOn?" on":"");b.innerHTML=voiceOn?SPK_ON:SPK_OFF})}
-  function toggleSpk(){
-    voiceOn=!voiceOn;try{localStorage.setItem("np_raju_voice",voiceOn?"1":"0")}catch(e){}
-    syncSpk();
-    if(!voiceOn&&TTS)TTS.cancel();else speak(appLang()==="hi-IN"?"नमस्ते! अब मैं बोलकर जवाब दूँगा।":"Namaste! I will read my answers out loud now.");
-  }
-  /* main Raju box on the home screen: add mic + speaker next to its "Ask" button */
-  function attachHome(){
-    [].slice.call(document.querySelectorAll("button,a")).forEach(function(b){
-      if(b.dataset.npVoiceHome||b.classList.contains("npvbtn"))return;
-      if(!/^ask$/i.test((b.textContent||"").trim()))return;
-      var card=b.parentElement,n=0;
-      while(card&&n<5&&!/raju/i.test(card.textContent||"")){card=card.parentElement;n++}
-      if(!card||!/raju/i.test(card.textContent||""))return;
-      b.dataset.npVoiceHome="1";
-      var mic=document.createElement("button");mic.type="button";mic.className="npvbtn";mic.setAttribute("aria-label","Talk to Raju");mic.innerHTML=MIC;
-      var spk=document.createElement("button");spk.type="button";spk.className="npvbtn";spk.setAttribute("aria-label","Raju reads answers aloud");
-      spks.push(spk);syncSpk();spk.onclick=function(e){e.stopPropagation();toggleSpk()};
-      mic.onclick=function(e){
-        e.stopPropagation();b.click();
-        var tries=0,t=setInterval(function(){
-          tries++;
-          var m=[].slice.call(document.querySelectorAll('button[aria-label="Talk to Raju"]')).filter(function(x){return x!==mic&&x.offsetParent!==null})[0];
-          if(m){clearInterval(t);m.click()}else if(tries>20)clearInterval(t);
-        },150);
-      };
-      b.insertAdjacentElement("afterend",spk);b.insertAdjacentElement("afterend",mic);
-    });
-  }
   function attach(){
-    attachHome();
-    [].slice.call(document.querySelectorAll('input[placeholder*="Hindi bhi"],textarea[placeholder*="Hindi bhi"],input[placeholder^="Ask anything"],textarea[placeholder^="Ask anything"],input[placeholder*="Raju"],textarea[placeholder*="Raju"]')).forEach(attachOne);
-  }
-  function attachOne(inp){
+    var inp=document.querySelector('input[placeholder*="Hindi bhi"],input[placeholder^="Ask anything"],textarea[placeholder^="Ask anything"]');
     if(!inp||inp.dataset.npVoice)return;
     inp.dataset.npVoice="1";
     var mic=document.createElement("button");mic.type="button";mic.className="npvbtn";mic.setAttribute("aria-label","Talk to Raju");mic.innerHTML=MIC;
@@ -549,7 +516,11 @@
     var vb=document.createElement("button");vb.type="button";vb.className="npvbtn";vb.setAttribute("aria-label","Change Raju's voice");vb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="4"/><path d="M3 21c0-4 3-6 6-6s6 2 6 6M17 7a4 4 0 0 1 0 6M20 5a7 7 0 0 1 0 10"/></svg>';
     vb.onclick=function(){nextVoice(vb)};
     inp.insertAdjacentElement("afterend",vb);inp.insertAdjacentElement("afterend",spk);inp.insertAdjacentElement("afterend",mic);
-    spks.push(spk);spk.onclick=toggleSpk;
+    spk.onclick=function(){
+      voiceOn=!voiceOn;try{localStorage.setItem("np_raju_voice",voiceOn?"1":"0")}catch(e){}
+      spk.className="npvbtn"+(voiceOn?" on":"");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
+      if(!voiceOn&&TTS)TTS.cancel();else speak(appLang()==="hi-IN"?"नमस्ते! अब मैं बोलकर जवाब दूँगा।":"Namaste! I will read my answers out loud now.");
+    };
     mic.onclick=function(){
       if(!SR){alert("Voice typing doesn't work in this browser. Please use Chrome.");return}
       if(rec){rec.stop();return}
