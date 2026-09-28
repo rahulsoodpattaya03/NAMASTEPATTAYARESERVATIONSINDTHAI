@@ -454,17 +454,36 @@
     if(/[\u0900-\u097F]/.test(t))return appLang()==="mr-IN"?"mr-IN":"hi-IN";
     return "en-IN";
   }
-  function speak(t){
+  var MALE=/male|\bman\b|rishi|hemant|madhur|ravi|prabhat|kiran|arjun|aarav|niranjan|valluvar|mohan|hid-|hie-|end-|enm-|ene-/i;
+  var FEMALE=/female|woman|lekha|veena|swara|kalpana|heera|priya|neerja|aditi|ananya|sapna|pooja|premwadee|kanya|hia-|hic-/i;
+  function voicesFor(lang){var vs=(TTS&&TTS.getVoices())||[];var ex=vs.filter(function(x){return x.lang&&x.lang.replace("_","-").toLowerCase()===lang.toLowerCase()});return ex.length?ex:vs.filter(function(x){return x.lang&&x.lang.slice(0,2).toLowerCase()===lang.slice(0,2)})}
+  function pickVoice(lang){
+    var list=voicesFor(lang);if(!list.length)return null;
+    var saved=null;try{saved=localStorage.getItem("np_raju_voice_"+lang.slice(0,2))}catch(e){}
+    if(saved){var s0=list.find(function(x){return x.name===saved});if(s0)return s0}
+    return list.find(function(x){return MALE.test(x.name)})||list.find(function(x){return !FEMALE.test(x.name)&&x.localService!==false})||list.find(function(x){return !FEMALE.test(x.name)})||list[0];
+  }
+  function speak(t,forceLang){
     if(!TTS||!t)return;
     try{
       TTS.cancel();
       var clean=String(t).replace(/[*_#>`]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"");
-      var u=new SpeechSynthesisUtterance(clean);u.lang=detect(clean);
-      var vs=TTS.getVoices()||[];
-      var v=vs.find(function(x){return x.lang===u.lang})||vs.find(function(x){return x.lang&&x.lang.slice(0,2)===u.lang.slice(0,2)});
-      if(v)u.voice=v;
+      var u=new SpeechSynthesisUtterance(clean);u.lang=forceLang||detect(clean);
+      var v=pickVoice(u.lang);if(v)u.voice=v;
+      var male=v&&MALE.test(v.name);
+      u.pitch=male?0.95:0.8;   /* deeper voice when the phone has no male voice */
+      u.rate=0.95;             /* a little slower = clearer */
       TTS.speak(u);
     }catch(e){}
+  }
+  /* let the user choose Raju's voice: each tap on the voice button tries the next voice */
+  function nextVoice(btn){
+    var lang=appLang(),list=voicesFor(lang);
+    if(!list.length){alert("This phone has no voice for this language. Add one in the phone's Text-to-speech settings.");return}
+    var cur=pickVoice(lang),i=list.indexOf(cur),nx=list[(i+1)%list.length];
+    try{localStorage.setItem("np_raju_voice_"+lang.slice(0,2),nx.name)}catch(e){}
+    btn.title="Voice "+((i+1)%list.length+1)+" of "+list.length;
+    speak(lang==="hi-IN"?"Namaste bhai, main Raju hoon. Kya ye awaaz theek hai?":"Namaste, I am Raju. Does this voice sound good?",lang);
   }
   function lastBotText(){
     if(typeof chatEl==="undefined")return "";
@@ -494,7 +513,9 @@
     inp.dataset.npVoice="1";
     var mic=document.createElement("button");mic.type="button";mic.className="npvbtn";mic.setAttribute("aria-label","Talk to Raju");mic.innerHTML=MIC;
     var spk=document.createElement("button");spk.type="button";spk.className="npvbtn"+(voiceOn?" on":"");spk.setAttribute("aria-label","Raju reads answers aloud");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
-    inp.insertAdjacentElement("afterend",spk);inp.insertAdjacentElement("afterend",mic);
+    var vb=document.createElement("button");vb.type="button";vb.className="npvbtn";vb.setAttribute("aria-label","Change Raju's voice");vb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="4"/><path d="M3 21c0-4 3-6 6-6s6 2 6 6M17 7a4 4 0 0 1 0 6M20 5a7 7 0 0 1 0 10"/></svg>';
+    vb.onclick=function(){nextVoice(vb)};
+    inp.insertAdjacentElement("afterend",vb);inp.insertAdjacentElement("afterend",spk);inp.insertAdjacentElement("afterend",mic);
     spk.onclick=function(){
       voiceOn=!voiceOn;try{localStorage.setItem("np_raju_voice",voiceOn?"1":"0")}catch(e){}
       spk.className="npvbtn"+(voiceOn?" on":"");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
