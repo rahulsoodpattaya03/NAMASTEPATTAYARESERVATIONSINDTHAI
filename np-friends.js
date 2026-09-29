@@ -387,7 +387,7 @@
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
       var extra=window.__npOrderInfo||"";window.__npOrderInfo=null;
-      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:venues(),lang:lang}});
+      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+venues(),lang:lang}});
       var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
       var r=await Promise.race([call,timeout]);
       if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
