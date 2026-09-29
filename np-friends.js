@@ -1170,18 +1170,23 @@
     while(el.parentElement&&el.parentElement.textContent.length<el.textContent.length+40&&el.parentElement.tagName!=="SECTION")el=el.parentElement;
     return el;
   }
+  /* move the app's own tagline line (under "Namaste. Pattaya made easy…") to just above the Raju box */
   function buildTag(){
-    var rc=rajuCard();if(!rc)return;
-    var home=rc.closest("section");if(!home)return;
-    var card=rc;while(card.parentElement&&card.parentElement!==home)card=card.parentElement;
-    if(card.previousElementSibling&&card.previousElementSibling.classList.contains("nptag"))return;
     var old=document.querySelector(".nptag");if(old)old.remove();
-    var hi=lang()==="hi";
-    var line=document.createElement("p");line.className="nptag";
-    line.textContent=hi?"भारत के लिए, एक भारतीय का तोहफ़ा। जय हिन्द":"Bharat ke liye, ek Bhartiye ka tohfa. Jai Hind";
-    card.parentElement.insertBefore(line,card);
+    var rc=rajuCard();if(!rc)return;
+    var cands=[].slice.call(document.querySelectorAll("body *")).filter(function(el){
+      var t=el.textContent||"";return /tohfa|तोहफ़ा|तोहफा/.test(t)&&t.length<220&&!el.closest("#panel,.sheet,#rajuChat,script,style")&&!rc.contains(el);
+    });
+    if(!cands.length)return;
+    /* the smallest block that holds the whole tagline (English + Hindi together if they are side by side) */
+    cands.sort(function(a,b){return a.textContent.length-b.textContent.length});
+    var tag=cands.find(function(el){return /tohfa/i.test(el.textContent)&&/तोहफ/.test(el.textContent)})||cands[0];
+    if(tag.dataset.npMoved)return;
+    var box=rc;while(box.parentElement&&!box.parentElement.contains(tag))box=box.parentElement;
+    if(!box.parentElement)return;
+    box.parentElement.insertBefore(tag,box);
+    tag.dataset.npMoved="1";tag.style.display="block";tag.style.textAlign="center";tag.style.margin="4px 0 10px";
   }
-  var busy=false;
   /* Raju box on Home: keep it compact */
   function compactRaju(){
     var rc=rajuCard();if(!rc||rc.dataset.npCompact)return;rc.dataset.npCompact="1";
@@ -1210,6 +1215,7 @@
     [ta,tb].forEach(function(el){if(parseFloat(getComputedStyle(el).minHeight)>0)el.style.minHeight="0"});
   }
   function run(){try{buildTag();compactRaju();tightenGap()}catch(e){}}
+  var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true});
   run();
 })();
