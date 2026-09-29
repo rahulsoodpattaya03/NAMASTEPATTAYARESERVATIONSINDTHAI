@@ -769,10 +769,19 @@
       if(CATS_FOR_DASH.indexOf(cat)<0)return;
       sent[b.code]=1;
       var g=parseInt(b.guests,10);
-      sb.from("np_orders").insert({code:s(b.code,20),venue_id:s(b.club,60),venue_name:s(c?c.name:b.club,120),category:s(cat,40),
+      var base={code:s(b.code,20),venue_id:s(b.club,60),venue_name:s(c?c.name:b.club,120),category:s(cat,40),
         customer_name:s(b.name,80),customer_phone:s(b.phone,30),package:s(b.pkg,200),guests:isNaN(g)?null:Math.max(0,Math.min(500,g)),
-        booking_date:s(b.date,40),booking_time:s(b.time,40),total:Number(b.total)>=0?Number(b.total):null,note:s(b.note||b.notes||b.request,500)})
-        .then(function(r){if(r&&r.error){delete sent[b.code];console.warn("order not sent",r.error.message)}});
+        booking_date:s(b.date,40),booking_time:s(b.time,40),total:Number(b.total)>=0?Number(b.total):null,note:s(b.note||b.notes||b.request,500)};
+      var row=base;
+      if(b.order_type&&b.order_type!=="dine_in"){row=Object.assign({},base,{order_type:b.order_type,delivery_address:s(b.address,300)})}
+      sb.from("np_orders").insert(row).then(function(r){
+        if(r&&r.error&&row!==base){
+          /* database not updated yet for delivery: send without it, keep the info in the note */
+          var nb=Object.assign({},base,{note:s(((b.order_type==="delivery"?"DELIVERY to: "+(b.address||""):"TAKEAWAY")+" | "+(base.note||"")),500)});
+          return sb.from("np_orders").insert(nb);
+        }
+        return r;
+      }).then(function(r){if(r&&r.error){delete sent[b.code];console.warn("order not sent",r.error.message)}});
     }catch(e){}
   }
   var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
@@ -827,4 +836,93 @@
     art:["#E5861A","#2A1A3A"],photo:"photos/Xindianrestaurants.jpg",hosts:["Test host"],
     pkgs:[{n:"Table for 2",d:"Test booking",p:0,left:99},{n:"Table for 4",d:"Test booking",p:0,left:99},{n:"Group dinner (8+)",d:"Test booking",p:0,left:99}]});
   ["renderGrid","renderRail","renderCats","renderMap"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
+
+/* ===== Restaurants: Dine-in / Takeaway / Delivery choice in the booking form ===== */
+(function(){
+  if(typeof panel==="undefined"||typeof CLUBS==="undefined"||typeof store==="undefined")return;
+  var FOOD=["restaurants","indian"],lastPlace=null,choice={type:"dine_in",addr:""};
+  document.addEventListener("click",function(e){
+    var card=e.target.closest&&e.target.closest(".art, .card, [data-id]");if(!card)return;
+    var id=card.dataset&&card.dataset.id,nm=card.querySelector&&card.querySelector(".name"),name=nm?nm.textContent.trim():"";
+    var c=CLUBS.find(function(x){return (id&&x.id===id)||(name&&x.name===name)});if(c)lastPlace=c;
+  },true);
+  function placeNow(){
+    var t=((panel.querySelector("#sheetTitle")||{}).textContent||"").trim();
+    var c=CLUBS.find(function(x){return t&&(t===x.name||t.indexOf(x.name)>-1)});
+    if(!c){var pt=panel.textContent||"";c=CLUBS.filter(function(x){return x.name&&pt.indexOf(x.name)>-1}).sort(function(a,b){return b.name.length-a.name.length})[0]}
+    return c||lastPlace;
+  }
+  if(!document.getElementById("npDelCss")){
+    var st=document.createElement("style");st.id="npDelCss";
+    st.textContent='.npdel{margin:12px 0}.npdel .npseg{display:flex;gap:6px}.npdel .npseg button{flex:1;padding:10px 6px;border-radius:12px;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.05));color:var(--ink,#fff);font-weight:600}'+
+      '.npdel .npseg button[aria-pressed="true"]{border-color:#E5861A;background:rgba(229,134,26,.18);color:#E5861A}.npdel textarea{width:100%;margin-top:8px;border-radius:12px;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.05));color:var(--ink,#fff);padding:10px;min-height:64px;font:inherit}'+
+      '.npdel .nploc{margin-top:6px;background:none;border:0;color:#E5861A;font-weight:600;padding:4px 0}.npdel small{display:block;opacity:.7;margin-top:4px}';
+    document.head.appendChild(st);
+  }
+  function build(){
+    if(panel.querySelector(".npdel"))return;
+    var date=panel.querySelector('input[type="date"]');if(!date)return;
+    var c=placeNow();if(!c||FOOD.indexOf(c.cat)<0)return;
+    choice={type:"dine_in",addr:""};
+    var box=document.createElement("div");box.className="npdel";
+    box.innerHTML='<div class="npseg" role="group" aria-label="Order type"><button type="button" data-t="dine_in" aria-pressed="true">Dine-in</button><button type="button" data-t="takeaway" aria-pressed="false">Takeaway</button><button type="button" data-t="delivery" aria-pressed="false">Delivery</button></div>'+
+      '<div class="npaddr" hidden><textarea placeholder="Delivery address: hotel name, room number, street"></textarea><button type="button" class="nploc">📍 Add my current location</button><small>The restaurant will call you to confirm the order and delivery time.</small></div>';
+    var anchor=(date.closest("label")||date);anchor.insertAdjacentElement("beforebegin",box);
+    var addr=box.querySelector(".npaddr"),ta=box.querySelector("textarea");
+    [].forEach.call(box.querySelectorAll("[data-t]"),function(b){b.onclick=function(){
+      choice.type=b.dataset.t;[].forEach.call(box.querySelectorAll("[data-t]"),function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
+      addr.hidden=choice.type!=="delivery";if(!addr.hidden)ta.focus();
+    }});
+    ta.oninput=function(){choice.addr=ta.value.trim()};
+    box.querySelector(".nploc").onclick=function(){
+      if(!navigator.geolocation){alert("Location is not available on this phone.");return}
+      navigator.geolocation.getCurrentPosition(function(p){
+        var link="https://maps.google.com/?q="+p.coords.latitude.toFixed(6)+","+p.coords.longitude.toFixed(6);
+        ta.value=(ta.value.trim()?ta.value.trim()+"\n":"")+link;choice.addr=ta.value.trim();
+      },function(){alert("Please allow location for this app, or type your address.")},{enableHighAccuracy:true,timeout:10000});
+    };
+  }
+  /* don't send a delivery order without an address */
+  panel.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("button");if(!b||!panel.querySelector(".npdel"))return;
+    if(b.closest(".npdel"))return;
+    if(/book|send|confirm|request|reserve/i.test(b.textContent)&&choice.type==="delivery"&&!choice.addr){
+      e.preventDefault();e.stopImmediatePropagation();alert("Please add your delivery address.");var ta=panel.querySelector(".npdel textarea");if(ta)ta.focus();
+    }
+  },true);
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;build()})}).observe(panel,{childList:true,subtree:true});
+  /* add the choice to the booking before it is saved and sent to the restaurant */
+  var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
+  store.set=function(key,val){
+    try{
+      if(key==="np_bookings"&&Array.isArray(val)){
+        if(val.length>prev&&val[0]){
+          var b=val[0],c=CLUBS.find(function(x){return x.id===b.club});
+          if(c&&FOOD.indexOf(c.cat)>-1&&choice.type!=="dine_in"){
+            b.order_type=choice.type;if(choice.type==="delivery")b.address=choice.addr;
+            b.pkg=(choice.type==="delivery"?"Delivery · ":"Takeaway · ")+(b.pkg||"");
+          }
+          choice={type:"dine_in",addr:""};
+        }
+        prev=val.length;
+      }
+    }catch(e){}
+    return _set.apply(this,arguments);
+  };
+})();
+
+/* ===== Restaurant partners: open the restaurant dashboard instead of the club dashboard ===== */
+(function(){
+  if(!window.supabase||typeof go!=="function")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var rest=false;
+  function isRest(u){var m=(u&&u.user_metadata)||{};return m.role==="partner"&&/restaurant|food|cafe/i.test(String(m.venue_type||""))}
+  function check(){sb.auth.getSession().then(function(r){var s=r.data&&r.data.session;rest=!!(s&&isRest(s.user));
+    var d=document.getElementById("dash");if(rest&&d&&!d.hidden)location.href="restaurant.html"})}
+  var _go=go;
+  go=function(t){if(t==="dash"&&rest){location.href="restaurant.html";return}return _go.apply(this,arguments)};
+  sb.auth.onAuthStateChange(function(){setTimeout(check,50)});
+  check();
 })();
