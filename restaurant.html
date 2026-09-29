@@ -302,8 +302,9 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
           $("orders").innerHTML='<div class="empty"><b>'+(ph?"Registration received":"One more step: add a photo")+'</b>'+
             (ph?"Namaste Pattaya will check "+esc(md.venue||"your restaurant")+" and connect it to the app. After that, your orders appear here. Sign in again later.":"A photo of your restaurant is required before we can approve it.")+'</div>'+
             '<div class="form"><b>Restaurant photo</b>'+(ph?'<img src="'+esc(ph)+'" alt="Your restaurant photo" style="display:block;width:100%;max-height:220px;object-fit:cover;border-radius:10px;margin-top:8px">':'')+
-            '<label for="rpFile">'+(ph?"Change photo":"Upload a photo of your restaurant (front, inside or food)")+'</label><input id="rpFile" type="file" accept="image/*"><div class="msg" id="rpMsg"></div></div>';
-          $("rpFile").onchange=async function(e){var f=e.target.files&&e.target.files[0];if(!f)return;$("rpMsg").className="msg ok";$("rpMsg").textContent="Uploading…";
+            '<label for="rpFile">'+(ph?"Change photo":"Upload a photo of your restaurant (front, inside or food)")+'</label><label class="tog"><input type="checkbox" id="rpOk"> I own this photo or have permission to use it, and Namaste Pattaya may show it in the app.</label><input id="rpFile" type="file" accept="image/*" style="margin-top:10px"><div class="msg" id="rpMsg"></div></div>';
+          $("rpFile").onchange=async function(e){var f=e.target.files&&e.target.files[0];if(!f)return;
+            if(!$("rpOk").checked){$("rpMsg").className="msg";$("rpMsg").textContent="Please tick the box to confirm you may use this photo.";e.target.value="";return}$("rpMsg").className="msg ok";$("rpMsg").textContent="Uploading…";
             var d=await shrink(f);if(!d){$("rpMsg").className="msg";$("rpMsg").textContent="Could not read this photo, try another.";return}
             try{localStorage.setItem(PKEY,JSON.stringify({email:user.email.toLowerCase(),data:d}))}catch(err){}
             var u=await uploadPending();if(!u){$("rpMsg").className="msg";$("rpMsg").textContent="Upload failed. Please try again.";return}
