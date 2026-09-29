@@ -840,61 +840,91 @@
   ["renderGrid","renderRail","renderCats","renderMap"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
 
-/* ===== Restaurants: Dine-in / Takeaway / Delivery choice in the booking form ===== */
+/* ===== Restaurants: Dine-in / Takeaway / Delivery choice in the booking form; no DJ song request or photo-on-screen for restaurants ===== */
 (function(){
-  if(typeof panel==="undefined"||typeof CLUBS==="undefined"||typeof store==="undefined")return;
+  if(typeof CLUBS==="undefined"||typeof store==="undefined")return;
   var FOOD=["restaurants","indian"],lastPlace=null,choice={type:"dine_in",addr:""};
+  var BTN=/book|send|confirm|request|reserve|बुक/i;
+  var CLUBONLY=/(song|dj|music)[^.]{0,20}request|request[^.]{0,20}(song|dj|music)|(photo|picture|pic|name|message|video)[^.]{0,20}on (the )?(big |led )?screen|screen (message|shout|display)|led screen/i;
+  function vis(el){return !!(el&&el.offsetParent!==null)}
+  function isFood(c){return !!(c&&FOOD.indexOf(c.cat)>-1)}
   document.addEventListener("click",function(e){
     var card=e.target.closest&&e.target.closest(".art, .card, [data-id]");if(!card)return;
     var id=card.dataset&&card.dataset.id,nm=card.querySelector&&card.querySelector(".name"),name=nm?nm.textContent.trim():"";
     var c=CLUBS.find(function(x){return (id&&x.id===id)||(name&&x.name===name)});if(c)lastPlace=c;
   },true);
-  function placeNow(){
-    var t=((panel.querySelector("#sheetTitle")||{}).textContent||"").trim();
-    var c=CLUBS.find(function(x){return t&&(t===x.name||t.indexOf(x.name)>-1)});
-    if(!c){var pt=panel.textContent||"";c=CLUBS.filter(function(x){return x.name&&pt.indexOf(x.name)>-1}).sort(function(a,b){return b.name.length-a.name.length})[0]}
-    return c||lastPlace;
+  function venueIn(root){
+    var hs=root.querySelectorAll("h1,h2,h3,h4,#sheetTitle,.name,.vname,.title");
+    for(var i=0;i<hs.length;i++){var t=hs[i].textContent.trim();var c=CLUBS.find(function(x){return x.name&&(t===x.name||t.indexOf(x.name)===0)});if(c)return c}
+    var txt=root.textContent||"";
+    var m=CLUBS.filter(function(x){return x.name&&x.name.length>3&&txt.indexOf(x.name)>-1}).sort(function(a,b){return b.name.length-a.name.length})[0];
+    return m||lastPlace;
   }
+  function containerOf(el){return el.closest(".pbody")||el.closest("#panel")||el.closest(".sheet")||el.closest("section")||el.parentElement}
   if(!document.getElementById("npDelCss")){
     var st=document.createElement("style");st.id="npDelCss";
-    st.textContent='.npdel{margin:12px 0}.npdel .npseg{display:flex;gap:6px}.npdel .npseg button{flex:1;padding:10px 6px;border-radius:12px;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.05));color:var(--ink,#fff);font-weight:600}'+
+    st.textContent='.npdel{margin:12px 0}.npdel .npdl{font-weight:600;margin:0 0 6px}.npdel .npseg{display:flex;gap:6px}.npdel .npseg button{flex:1;padding:10px 6px;border-radius:12px;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.05));color:var(--ink,#fff);font-weight:600}'+
       '.npdel .npseg button[aria-pressed="true"]{border-color:#E5861A;background:rgba(229,134,26,.18);color:#E5861A}.npdel textarea{width:100%;margin-top:8px;border-radius:12px;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.05));color:var(--ink,#fff);padding:10px;min-height:64px;font:inherit}'+
       '.npdel .nploc{margin-top:6px;background:none;border:0;color:#E5861A;font-weight:600;padding:4px 0}.npdel small{display:block;opacity:.7;margin-top:4px}';
     document.head.appendChild(st);
   }
-  function build(){
-    if(panel.querySelector(".npdel"))return;
-    var date=panel.querySelector('input[type="date"]');if(!date)return;
-    var c=placeNow();if(!c||FOOD.indexOf(c.cat)<0)return;
+  function makeBox(){
     choice={type:"dine_in",addr:""};
     var box=document.createElement("div");box.className="npdel";
-    box.innerHTML='<div class="npseg" role="group" aria-label="Order type"><button type="button" data-t="dine_in" aria-pressed="true">Dine-in</button><button type="button" data-t="takeaway" aria-pressed="false">Takeaway</button><button type="button" data-t="delivery" aria-pressed="false">Delivery</button></div>'+
+    box.innerHTML='<p class="npdl">How do you want your food?</p><div class="npseg" role="group" aria-label="Order type"><button type="button" data-t="dine_in" aria-pressed="true">Dine-in</button><button type="button" data-t="takeaway" aria-pressed="false">Takeaway</button><button type="button" data-t="delivery" aria-pressed="false">Delivery</button></div>'+
       '<div class="npaddr" hidden><textarea placeholder="Delivery address: hotel name, room number, street"></textarea><button type="button" class="nploc">📍 Add my current location</button><small>The restaurant will call you to confirm the order and delivery time.</small></div>';
-    var anchor=(date.closest("label")||date);anchor.insertAdjacentElement("beforebegin",box);
     var addr=box.querySelector(".npaddr"),ta=box.querySelector("textarea");
-    [].forEach.call(box.querySelectorAll("[data-t]"),function(b){b.onclick=function(){
+    [].forEach.call(box.querySelectorAll("[data-t]"),function(b){b.onclick=function(e){e.preventDefault();
       choice.type=b.dataset.t;[].forEach.call(box.querySelectorAll("[data-t]"),function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});
       addr.hidden=choice.type!=="delivery";if(!addr.hidden)ta.focus();
     }});
     ta.oninput=function(){choice.addr=ta.value.trim()};
-    box.querySelector(".nploc").onclick=function(){
+    box.querySelector(".nploc").onclick=function(e){e.preventDefault();
       if(!navigator.geolocation){alert("Location is not available on this phone.");return}
       navigator.geolocation.getCurrentPosition(function(p){
         var link="https://maps.google.com/?q="+p.coords.latitude.toFixed(6)+","+p.coords.longitude.toFixed(6);
         ta.value=(ta.value.trim()?ta.value.trim()+"\n":"")+link;choice.addr=ta.value.trim();
       },function(){alert("Please allow location for this app, or type your address.")},{enableHighAccuracy:true,timeout:10000});
     };
+    return box;
+  }
+  function hideClubExtras(root){
+    [].forEach.call(root.querySelectorAll("label,button,li,.addon,.opt,.chk,.extra,.row,p,div,span"),function(el){
+      if(el.dataset.npHid||el.closest(".npdel")||el.closest("[data-np-hid]"))return;
+      var t=(el.textContent||"").trim();if(!t||t.length>160||!CLUBONLY.test(t))return;
+      /* hide the smallest block that holds this option */
+      var kids=[].slice.call(el.children).filter(function(k){return CLUBONLY.test(k.textContent||"")});
+      if(kids.length)return;
+      var row=el.closest("label,li,.addon,.opt,.chk,.extra")||el;
+      row.dataset.npHid="1";row.style.display="none";
+    });
+  }
+  function scan(){
+    /* booking forms: any visible date field, or a visible booking button */
+    var anchors=[].slice.call(document.querySelectorAll('input[type="date"],input[type="datetime-local"]')).filter(function(d){return vis(d)&&!d.closest("#dash")});
+    if(!anchors.length)anchors=[].slice.call(document.querySelectorAll("button")).filter(function(b){return vis(b)&&BTN.test(b.textContent)&&!b.closest("#dash,.npdel,nav,header")&&/guest|people|person|pax|table|date|time/i.test((containerOf(b)||{}).textContent||"")});
+    anchors.forEach(function(el){
+      var box=containerOf(el);if(!box)return;
+      var c=venueIn(box);if(!isFood(c))return;
+      hideClubExtras(box);
+      if(box.querySelector(".npdel"))return;
+      var at=el.tagName==="INPUT"?(el.closest("label")||el):el;
+      at.insertAdjacentElement("beforebegin",makeBox());
+    });
+    /* restaurant page / package list outside the form */
+    var cur=lastPlace;
+    if(isFood(cur))[].forEach.call(document.querySelectorAll(".pbody,#panel,section"),function(sec){if(vis(sec)&&venueIn(sec)===cur)hideClubExtras(sec)});
   }
   /* don't send a delivery order without an address */
-  panel.addEventListener("click",function(e){
-    var b=e.target.closest&&e.target.closest("button");if(!b||!panel.querySelector(".npdel"))return;
-    if(b.closest(".npdel"))return;
-    if(/book|send|confirm|request|reserve/i.test(b.textContent)&&choice.type==="delivery"&&!choice.addr){
-      e.preventDefault();e.stopImmediatePropagation();alert("Please add your delivery address.");var ta=panel.querySelector(".npdel textarea");if(ta)ta.focus();
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("button");if(!b||b.closest(".npdel"))return;
+    var box=containerOf(b);if(!box||!box.querySelector(".npdel"))return;
+    if(BTN.test(b.textContent)&&choice.type==="delivery"&&!choice.addr){
+      e.preventDefault();e.stopImmediatePropagation();alert("Please add your delivery address.");var ta=box.querySelector(".npdel textarea");if(ta)ta.focus();
     }
   },true);
   var busy=false;
-  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;build()})}).observe(panel,{childList:true,subtree:true});
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{scan()}catch(e){}},120)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden","class"]});
   /* add the choice to the booking before it is saved and sent to the restaurant */
   var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
   store.set=function(key,val){
@@ -902,7 +932,7 @@
       if(key==="np_bookings"&&Array.isArray(val)){
         if(val.length>prev&&val[0]){
           var b=val[0],c=CLUBS.find(function(x){return x.id===b.club});
-          if(c&&FOOD.indexOf(c.cat)>-1&&choice.type!=="dine_in"){
+          if(isFood(c)&&choice.type!=="dine_in"){
             b.order_type=choice.type;if(choice.type==="delivery")b.address=choice.addr;
             b.pkg=(choice.type==="delivery"?"Delivery · ":"Takeaway · ")+(b.pkg||"");
           }
