@@ -746,7 +746,7 @@
   function fmt(n){return n.toLocaleString("en-US")}
   function render(){
     var svc=document.getElementById("svcPage");if(!svc||svc.hidden)return;
-    var cat=catNow(),list=cat&&P[cat];
+    var cat=catNow(),list=cat&&P[cat];if(cat==="restaurants")list=(P.indian||[]).filter(function(it){return /pure veg|vegetarian/i.test(it[0]+" "+it[3])});
     var old=svc.querySelector(".npprod");
     if(old&&old.dataset.cat===cat)return;
     if(old)old.remove();
@@ -1555,4 +1555,136 @@
   window.addEventListener("resize",function(){setTimeout(function(){placeRaju();closeGap()},100)});
   window.addEventListener("load",function(){setTimeout(closeGap,300)});
   run();setTimeout(run,800);setTimeout(run,2500);
+})();
+
+/* ===== Indian food services (29 Sep 2026):
+   "Restaurants" is now "Indian Restaurants – Only Veg" (Shudh Shakahari)
+   "Indian Restaurants" is now "Indian Restaurants – Veg & Non-Veg"
+   10 food categories inside both. Nothing deleted: places not confirmed pure veg move to Veg & Non-Veg. ===== */
+(function(){
+  var VEG="restaurants",MIX="indian";
+  var VEG_NAME="Indian Restaurants – Only Veg",MIX_NAME="Indian Restaurants – Veg & Non-Veg";
+  /* Restaurant ids whose OWNER confirmed 100% pure veg (no meat, no fish, no egg). Add an id only after confirmation. */
+  var VEG_IDS=[];
+  var COMMON=[
+    ["punjabi","Punjabi",/punjab|amritsar|kulcha|tandoor|north indian/i],
+    ["gujarati","Gujarati",/gujarat|dhokla|thepla|khakhra/i],
+    ["rajasthani","Rajasthani",/rajasthan|marwar|dal baati|baati/i],
+    ["south","South Indian",/south indian|dosa|idli|madras|chettinad|kerala|udupi/i],
+    ["maharashtrian","Maharashtrian",/maharash|mumbai|vada pav|pav bhaji|misal/i],
+    ["bengali","Bengali",/bengal|kolkata|calcutta/i]
+  ];
+  var TAIL=[
+    ["street","Street Food & Chaat",/street food|chaat|pani ?puri|golgappa/i],
+    ["indochinese","Indo-Chinese",/indo.?chinese|hakka|manchurian/i],
+    ["thali","Thali & Mithai",/thali|mithai|sweets|halwai/i]
+  ];
+  var CUIS={};
+  CUIS[VEG]=COMMON.concat([["jain","Jain food",/\bjain\b/i]],TAIL);
+  CUIS[MIX]=COMMON.concat([["mughlai","Mughlai",/mughlai|biryani|kebab|awadhi|hyderabad/i]],TAIL);
+  var sel={};sel[VEG]="all";sel[MIX]="all";
+
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function list(){return (typeof CLUBS!=="undefined"&&CLUBS)||[]}
+  function isVeg(c){return !!(c&&(c.veg===true||c.pureVeg===true||VEG_IDS.indexOf(c.id)>-1))}
+  function catNow(){var s=history.state;if(s&&s.np==="s"&&s.cat)return s.cat;var h=location.hash;return h.indexOf("#s/")===0?decodeURIComponent(h.slice(3)):null}
+  function rerender(){["renderGrid","renderRail","renderCats","renderMap"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
+
+  /* 1. new names in the app's data */
+  function names(){
+    try{
+      if(typeof CATS!=="undefined")CATS.forEach(function(c){if(!Array.isArray(c))return;
+        for(var i=1;i<c.length;i++){if(c[0]===VEG&&c[i]==="Restaurants")c[i]=VEG_NAME;if(c[0]===MIX&&/^Indian restaurants$/i.test(String(c[i])))c[i]=MIX_NAME}});
+      if(typeof CATNAME!=="undefined"){CATNAME[VEG]=VEG_NAME;CATNAME[MIX]=MIX_NAME}
+    }catch(e){}
+  }
+  /* 2. only confirmed pure-veg places stay in Only Veg; the rest move to Veg & Non-Veg */
+  function move(){
+    var n=0;list().forEach(function(c){if(c&&c.cat===VEG&&!isVeg(c)){c.cat=MIX;c.npMovedFromRestaurants=true;n++}});
+    if(n)rerender();return n;
+  }
+  /* 3. new names on screen */
+  var TXT={"Restaurants":VEG_NAME,"Indian Restaurants":MIX_NAME,"Indian restaurants":MIX_NAME};
+  function fixText(){
+    var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,todo=[];
+    while((n=w.nextNode())){var t=(n.nodeValue||"").trim();if(TXT[t])todo.push(n)}
+    todo.forEach(function(n){var t=n.nodeValue.trim();n.nodeValue=n.nodeValue.replace(t,TXT[t])});
+  }
+
+  /* 4. the 10 food categories inside both services */
+  if(!document.getElementById("npCuisCss")){
+    var st=document.createElement("style");st.id="npCuisCss";
+    st.textContent='#npCuis{margin:10px 0 14px}'+
+      '#npCuis .vegnote{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin:0 0 10px;border-radius:14px;font-size:13px;line-height:1.4;color:var(--ink,#fff);background:rgba(20,120,60,.18);border:1px solid rgba(60,200,110,.55)}'+
+      '#npCuis .vegdot{flex:0 0 18px;height:18px;margin-top:1px;border:2px solid #2FBF62;border-radius:3px;display:flex;align-items:center;justify-content:center}'+
+      '#npCuis .vegdot:after{content:"";width:8px;height:8px;border-radius:50%;background:#2FBF62}'+
+      '#npCuis .row{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}'+
+      '#npCuis .row::-webkit-scrollbar{display:none}'+
+      '#npCuis button{flex:0 0 auto;padding:9px 14px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}'+
+      '#npCuis button.on{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '#npCuisEmpty{margin:10px 0;padding:14px;border-radius:14px;font-size:14px;line-height:1.45;text-align:center;color:var(--ink,#fff);background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.25)}';
+    document.head.appendChild(st);
+  }
+  function venueOf(card){
+    var id=card.getAttribute&&(card.getAttribute("data-id")||card.getAttribute("data-club"));
+    var L=list(),c=id?L.find(function(x){return x.id===id}):null;if(c)return c;
+    var nm=card.querySelector&&card.querySelector(".name");
+    if(nm){var t=nm.textContent.trim();c=L.find(function(x){return x.name===t});if(c)return c}
+    var txt=card.textContent||"",best=null;
+    L.forEach(function(x){if(x.name&&txt.indexOf(x.name)>-1&&(!best||x.name.length>best.name.length))best=x});
+    return best;
+  }
+  function matches(c,key,re){
+    if(!c)return false;
+    if(c.cuisine===key||(Array.isArray(c.cuisine)&&c.cuisine.indexOf(key)>-1))return true;
+    return re.test([c.name,c.sub,c.music,c.about,c.type,(c.tags||[]).join(" ")].join(" "));
+  }
+  function render(){
+    var svc=document.getElementById("svcPage");if(!svc)return;
+    var cat=catNow(),bar=svc.querySelector("#npCuis"),emp=svc.querySelector("#npCuisEmpty");
+    if(svc.hidden||!CUIS[cat]){if(bar)bar.remove();if(emp)emp.remove();return}
+    var grid=svc.querySelector("#svcGrid");
+    if(!bar||bar.dataset.cat!==cat){
+      if(bar)bar.remove();sel[cat]="all";
+      bar=document.createElement("div");bar.id="npCuis";bar.dataset.cat=cat;
+      bar.innerHTML=(cat===VEG?'<div class="vegnote"><span class="vegdot" aria-hidden="true"></span><span><b>Shudh Shakahari · 100% pure veg.</b> No meat, no fish, no egg. We list a restaurant here only after the owner confirms it.</span></div>':'')+
+        '<div class="row" role="tablist"><button type="button" class="on" data-k="all">All</button>'+
+        CUIS[cat].map(function(x){return '<button type="button" data-k="'+x[0]+'">'+esc(x[1])+'</button>'}).join("")+'</div>';
+      if(grid&&grid.parentNode)grid.parentNode.insertBefore(bar,grid);
+      else{var h=svc.querySelector("h2");if(h)h.insertAdjacentElement("afterend",bar);else svc.insertBefore(bar,svc.firstChild)}
+      bar.querySelectorAll("[data-k]").forEach(function(b){b.onclick=function(){
+        sel[cat]=b.dataset.k;bar.querySelectorAll("[data-k]").forEach(function(x){x.classList.toggle("on",x===b)});filter();
+        try{if(typeof window.npTrack==="function")window.npTrack("food_category",cat+":"+b.dataset.k)}catch(e){}
+      }});
+    }
+    filter();
+  }
+  function filter(){
+    var svc=document.getElementById("svcPage");if(!svc)return;
+    var cat=catNow();if(!CUIS[cat])return;
+    var grid=svc.querySelector("#svcGrid"),k=sel[cat]||"all";
+    var item=CUIS[cat].find(function(x){return x[0]===k}),shown=0;
+    if(grid)[].forEach.call(grid.children,function(card){
+      if(card.id==="npCuisEmpty")return;
+      var c=venueOf(card);if(!c){if(card.offsetParent!==null)shown++;return}
+      var ok=(cat!==VEG||isVeg(c))&&(k==="all"||matches(c,k,item[2]));
+      var want=ok?"":"none";if(card.style.display!==want)card.style.display=want;
+      if(ok)shown++;
+    });
+    var emp=svc.querySelector("#npCuisEmpty");
+    var msg=shown?"":(k!=="all"?"No "+item[1]+" restaurants here yet. Coming soon.":
+      (cat===VEG?"Pure-veg restaurants are joining soon. Own a pure-veg Indian restaurant? Register as a partner from your account.":"Indian restaurants are joining soon."));
+    if(!msg){if(emp)emp.remove();return}
+    if(!emp){emp=document.createElement("div");emp.id="npCuisEmpty";
+      if(grid&&grid.parentNode)grid.insertAdjacentElement("afterend",emp);else svc.appendChild(emp)}
+    if(emp.textContent!==msg)emp.textContent=msg;
+  }
+
+  function all(){names();move();fixText();render()}
+  all();window.addEventListener("load",all);setTimeout(all,1500);setTimeout(all,4000);
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;fixText();render()})})
+    .observe(document.body,{childList:true,subtree:true});
+  window.addEventListener("hashchange",function(){setTimeout(render,50)});
+  window.addEventListener("popstate",function(){setTimeout(render,50)});
 })();
