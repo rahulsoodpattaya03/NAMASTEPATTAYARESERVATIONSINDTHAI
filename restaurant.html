@@ -67,6 +67,10 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
 .facts small{color:var(--muted);font-size:12px}
 .facts b{font-size:15px;font-variant-numeric:tabular-nums}
 .pkg{margin:0 0 6px;font-weight:600}
+.otype{display:inline-block;font-weight:800;border-radius:8px;padding:4px 10px;margin:0 0 8px;background:#E9E3F5;color:var(--plum2)}
+.otype.delivery{background:#DDEFE4;color:var(--leaf)}
+.addr{background:#EEF4EF;border-radius:6px;padding:8px 10px;font-size:14px;margin:0 0 8px;white-space:pre-line}
+.addr a{color:var(--indigo);font-weight:700}
 .note{background:#FFF1D6;border-radius:6px;padding:8px 10px;font-size:14px;margin:6px 0}
 .contact{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
 .btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700;min-height:44px}
@@ -133,6 +137,7 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
     <div id="lgForm">
       <input id="lgEmail" type="email" autocomplete="email" placeholder="Email">
       <input id="lgPass" type="password" autocomplete="current-password" placeholder="Password">
+      <input id="lgPass2" class="hide" type="password" autocomplete="new-password" placeholder="Type the password again">
       <button class="btn pri" id="lgGo">Sign in</button>
       <button class="link" id="lgNew">New here? Create an account</button>
       <button class="link" id="lgForgot">Forgot password?</button>
@@ -188,6 +193,7 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
         <div class="actions"><button class="btn pri" id="adSave">Add restaurant</button></div>
         <div class="msg" id="adMsg"></div>
       </div>
+      <div id="adReq"></div>
       <div id="adList"></div>
     </section>
   </main>
@@ -216,11 +222,16 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
   var mode="in";
   function showLogin(){ $("app").classList.add("hide");$("loginView").classList.remove("hide") }
   function lgMsg(t,ok){var m=$("lgMsg");m.textContent=t||"";m.className="msg"+(ok?" ok":"")}
-  $("lgNew").onclick=function(){mode=mode==="in"?"up":"in";$("lgGo").textContent=mode==="in"?"Sign in":"Create account";$("lgNew").textContent=mode==="in"?"New here? Create an account":"Have an account? Sign in";$("lgPass").autocomplete=mode==="in"?"current-password":"new-password";lgMsg("")};
+  $("lgNew").onclick=function(){mode=mode==="in"?"up":"in";var up=mode==="up";
+    $("lgTitle").textContent=up?"Create your account":"Restaurant dashboard";
+    $("lgSub").textContent=up?"Use the email Namaste Pattaya linked to your restaurant, and choose a password (at least 8 characters).":"Namaste Pattaya partners. Sign in with the email your restaurant was registered with.";
+    $("lgPass").placeholder=up?"Choose a password":"Password";$("lgPass2").classList.toggle("hide",!up);$("lgForgot").classList.toggle("hide",up);
+    $("lgGo").textContent=up?"Create account":"Sign in";$("lgNew").textContent=up?"Have an account? Sign in":"New here? Create an account";$("lgPass").autocomplete=up?"new-password":"current-password";lgMsg("")};
   $("lgGo").onclick=async function(){
     var e=$("lgEmail").value.trim(),p=$("lgPass").value;
     if(!e||!p){lgMsg("Enter your email and password.");return}
     if(mode==="up"&&p.length<8){lgMsg("Password must be at least 8 characters.");return}
+    if(mode==="up"&&p!==$("lgPass2").value){lgMsg("The two passwords don't match.");return}
     lgMsg("Please wait…",true);
     var r=mode==="in"?await sb.auth.signInWithPassword({email:e,password:p}):await sb.auth.signUp({email:e,password:p,options:{emailRedirectTo:location.href.split("#")[0]}});
     if(r.error){lgMsg(r.error.message);return}
@@ -259,6 +270,17 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
       venues=v.data||[];
       $("loginView").classList.add("hide");$("app").classList.remove("hide");
       $("nAdmin").classList.toggle("hide",!isAdmin);
+      if(!venues.length&&!isAdmin){
+        var md=user.user_metadata||{};
+        if(md.role==="partner"){
+          await sb.from("np_partner_requests").insert({email:user.email,venue_name:md.venue||null,venue_type:md.venue_type||null,contact_name:md.name||null,phone:md.phone||null});
+          var rq=await sb.from("np_partner_requests").select("status").eq("user_id",user.id).maybeSingle();
+          var st=rq.data&&rq.data.status;
+          $("venueName").textContent=md.venue||"Your restaurant";$("chips").innerHTML="";
+          $("orders").innerHTML='<div class="empty"><b>'+(st==="rejected"?"Registration not approved":"Registration received")+'</b>'+(st==="rejected"?"Please contact Namaste Pattaya on WhatsApp.":"Namaste Pattaya will check "+esc(md.venue||"your restaurant")+" and connect it to the app. After that, your orders appear here. Sign in again later.")+'</div>';
+          return;
+        }
+      }
       if(!venues.length){
         $("venueName").textContent=isAdmin?"No restaurants yet":"Not linked yet";
         $("orders").innerHTML='<div class="empty"><b>'+(isAdmin?"Add your first restaurant":"Your email isn't linked to a restaurant")+'</b>'+(isAdmin?"Open the Admin tab below.":"Ask Namaste Pattaya to add "+esc(user.email)+" to your restaurant, then sign in again.")+'</div>';
@@ -289,10 +311,10 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
     if(fresh.length)alertNew(fresh.length);
     renderOrders(fresh);
   }
-  function counts(){var c={all:orders.length};Object.keys(STATUS).forEach(function(k){c[k]=0});orders.forEach(function(o){c[o.status]=(c[o.status]||0)+1});return c}
+  function counts(){var c={all:orders.length,delivery:orders.filter(function(o){return o.order_type==="delivery"&&o.status!=="done"&&o.status!=="cancelled"}).length};Object.keys(STATUS).forEach(function(k){c[k]=0});orders.forEach(function(o){c[o.status]=(c[o.status]||0)+1});return c}
   function renderChips(){
-    var c=counts(),keys=["new","confirmed","in_progress","done","cancelled","all"];
-    $("chips").innerHTML=keys.map(function(k){return '<button class="chip'+(filter===k?" on":"")+'" data-s="'+k+'">'+(k==="all"?"All":STATUS[k])+' <span class="n">'+c[k]+'</span></button>'}).join("");
+    var c=counts(),keys=["new","confirmed","in_progress","delivery","done","cancelled","all"];
+    $("chips").innerHTML=keys.map(function(k){return '<button class="chip'+(filter===k?" on":"")+'" data-s="'+k+'">'+(k==="all"?"All":k==="delivery"?"🛵 Deliveries":STATUS[k])+' <span class="n">'+c[k]+'</span></button>'}).join("");
     [].forEach.call($("chips").children,function(b){b.onclick=function(){filter=b.dataset.s;renderOrders()}});
     var n=c.new||0,bd=$("newBadge");bd.textContent=n;bd.classList.toggle("hide",!n);
     document.title=(n?"("+n+") ":"")+"Restaurant Dashboard – Namaste Pattaya";
@@ -309,7 +331,7 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
   }
   function renderOrders(fresh){
     renderChips();
-    var list=orders.filter(function(o){return filter==="all"||o.status===filter});
+    var list=orders.filter(function(o){return filter==="all"||(filter==="delivery"?(o.order_type==="delivery"&&o.status!=="done"&&o.status!=="cancelled"):o.status===filter)});
     if(!list.length){$("orders").innerHTML='<div class="empty"><b>'+(filter==="new"?"No new orders right now":"Nothing here")+'</b>'+(filter==="new"?"New orders from the app appear here instantly, with a sound.":"")+'</div>';return}
     var active=staff.filter(function(s){return s.active});
     $("orders").innerHTML=list.map(function(o){
@@ -323,6 +345,8 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
       return '<article class="ticket s-'+o.status+((fresh||[]).indexOf(o.id)>-1?" fresh":"")+'" data-id="'+o.id+'">'+
         '<div class="thead"><div><h3>'+esc(o.customer_name||"Guest")+'</h3><span class="status '+o.status+'">'+STATUS[o.status]+'</span></div><div style="text-align:right"><div class="code">#'+esc(o.code||o.id.slice(0,6))+'</div><div class="ago">'+ago(o.created_at)+'</div></div></div>'+
         '<div class="facts"><div><small>Date</small><b>'+esc(when(o)||"–")+'</b></div><div><small>Time</small><b>'+esc(o.booking_time||"–")+'</b></div><div><small>Guests</small><b>'+(o.guests==null?"–":o.guests)+'</b></div></div>'+
+        (o.order_type&&o.order_type!=="dine_in"?'<p class="otype '+o.order_type+'">'+(o.order_type==="delivery"?"🛵 Delivery":"🥡 Takeaway")+'</p>':'')+
+        (o.order_type==="delivery"&&o.delivery_address?'<div class="addr">'+esc(o.delivery_address).replace(/(https:\/\/maps\.google\.com\/\?q=[\d.,-]+)/g,'<a href="$1" target="_blank" rel="noopener">Open in Maps</a>')+(/maps\.google/.test(o.delivery_address)?'':' <a href="https://maps.google.com/?q='+encodeURIComponent(o.delivery_address)+'" target="_blank" rel="noopener">Open in Maps</a>')+'</div>':'')+
         (o.package?'<p class="pkg">'+esc(o.package)+(o.total?' · ฿'+Number(o.total).toLocaleString("en-US"):'')+'</p>':'')+
         (o.note?'<div class="note">'+esc(o.note)+'</div>':'')+
         phoneLinks(o.customer_phone)+
@@ -422,6 +446,29 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
     $("adPick").innerHTML='<option value="">'+(appPlaces.length?"Choose a restaurant…":"No list found – type the ID below")+'</option>'+
       appPlaces.map(function(c){return '<option value="'+esc(c.id)+'">'+esc(c.name||c.id)+'</option>'}).join("");
     $("adPick").onchange=function(){var c=appPlaces.find(function(x){return x.id===$("adPick").value});if(c){$("adId").value=c.id;$("adName").value=c.name||c.id}};
+    var q=await sb.from("np_partner_requests").select("*").eq("status","pending").order("created_at");
+    var reqs=q.error?[]:q.data;
+    $("adReq").innerHTML=reqs.length?'<p class="hint" style="margin:0 0 8px">Waiting for approval ('+reqs.length+')</p>'+reqs.map(function(x){
+      return '<div class="form" data-req="'+x.user_id+'"><b>'+esc(x.venue_name||"Unnamed venue")+'</b> <span class="role">'+esc(x.venue_type||"")+'</span>'+
+        '<div class="hint">'+esc([x.contact_name,x.phone,x.email].filter(Boolean).join(" · "))+'</div>'+
+        '<label>Connect to restaurant in the app</label><select data-rv><option value="">Choose…</option>'+appPlaces.map(function(c){return '<option value="'+esc(c.id)+'">'+esc(c.name||c.id)+'</option>'}).join("")+'</select>'+
+        '<label>…or type its Venue ID</label><input data-ri placeholder="e.g. np-test-restaurant">'+
+        '<div class="actions"><button class="btn ok sm" data-ok>Approve</button><button class="btn bad sm" data-no>Reject</button></div></div>'}).join(""):"";
+    [].forEach.call($("adReq").querySelectorAll("[data-req]"),function(box){
+      var x=reqs.find(function(r){return r.user_id===box.dataset.req});
+      box.querySelector("[data-rv]").onchange=function(e){box.querySelector("[data-ri]").value=e.target.value};
+      box.querySelector("[data-no]").onclick=async function(){if(!confirm("Reject "+(x.venue_name||"this venue")+"?"))return;await sb.from("np_partner_requests").update({status:"rejected"}).eq("user_id",x.user_id);loadAdmin()};
+      box.querySelector("[data-ok]").onclick=async function(){
+        var id=box.querySelector("[data-ri]").value.trim();if(!id){toast("Choose the restaurant or type its Venue ID");return}
+        var place=appPlaces.find(function(c){return c.id===id});
+        var a=await sb.from("np_partner_venues").upsert({venue_id:id,name:(place&&place.name)||x.venue_name||id});
+        if(a.error){toast(a.error.message);return}
+        var b=await sb.from("np_partner_staff").insert({venue_id:id,name:x.contact_name||"Owner",role:"owner",email:(x.email||"").toLowerCase()||null,phone:x.phone||null,active:true});
+        if(b.error){toast(b.error.message);return}
+        await sb.from("np_partner_requests").update({status:"approved",venue_id:id}).eq("user_id",x.user_id);
+        toast("Approved – they can sign in now");loadAdmin();
+      };
+    });
     var r=await sb.from("np_partner_venues").select("venue_id,name").order("name");
     $("adList").innerHTML=(r.data&&r.data.length)?'<p class="hint" style="margin:0 0 8px">Restaurants on the dashboard</p>'+r.data.map(function(v){return '<div class="person"><div class="av">'+esc(v.name.charAt(0))+'</div><div class="who"><b>'+esc(v.name)+'</b><small>'+esc(v.venue_id)+'</small></div></div>'}).join(""):"";
   }
