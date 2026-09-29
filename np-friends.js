@@ -705,8 +705,8 @@
     [/भारतीयों के लिए,? एक भारतीय का तोहफ़ा/g,"भारत के लिए, एक भारतीय का तोहफ़ा"],
     [/भारतीयों के लिए,? एक भारतीय का तोहफा/g,"भारत के लिए, एक भारतीय का तोहफ़ा"],
     /* add "Jai Hind" after the tagline (only once) */
-    [/(Bharat ke liye, ek Bhartiye ka tohfa)(?![.!]?\s*[·|,-]?\s*Jai Hind)/gi,"$1. Jai Hind 🇮🇳"],
-    [/(भारत के लिए, एक भारतीय का तोहफ़ा)(?![।.!]?\s*[·|,-]?\s*जय हिन्द)/g,"$1। जय हिन्द 🇮🇳"]
+    [/(Bharat ke liye, ek Bhartiye ka tohfa)(?![.!]?\s*[·|,-]?\s*Jai Hind)/gi,"$1. Jai Hind"],
+    [/(भारत के लिए, एक भारतीय का तोहफ़ा)(?![।.!]?\s*[·|,-]?\s*जय हिन्द)/g,"$1। जय हिन्द"]
   ];
   function fix(root){
     var w=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,null),n;
@@ -1205,7 +1205,8 @@
   function buildSearch(){
     if(document.getElementById("npSearch"))return;
     var cats=document.getElementById("cats");if(!cats)return;
-    var home=cats.closest("section")||cats.parentElement;if(!home)return;
+    var rc=rajuCard();
+    var home=(rc&&rc.closest("section"))||cats.closest("section")||cats.parentElement;if(!home)return;
     var box=document.createElement("div");box.id="npSearch";box.setAttribute("role","search");
     var hi=lang()==="hi";
     box.innerHTML='<div class="npsb"><span aria-hidden="true">🔍</span><input type="search" enterkeyhint="search" aria-label="Search services and places" placeholder="'+(hi?"खोजें: मसाज, इंडियन खाना, होटल, याट…":"Search: massage, Indian food, hotel, yacht…")+'"><button type="button" class="npx" aria-label="Clear search" hidden>✕</button></div><div class="npres" hidden></div>';
@@ -1247,11 +1248,44 @@
     var old=document.querySelector(".nptag");if(old)old.remove();
     var hi=lang()==="hi";
     var line=document.createElement("p");line.className="nptag";
-    line.textContent=hi?"भारत के लिए, एक भारतीय का तोहफ़ा। जय हिन्द 🇮🇳":"Bharat ke liye, ek Bhartiye ka tohfa. Jai Hind 🇮🇳";
+    line.textContent=hi?"भारत के लिए, एक भारतीय का तोहफ़ा। जय हिन्द":"Bharat ke liye, ek Bhartiye ka tohfa. Jai Hind";
     card.parentElement.insertBefore(line,card);
   }
   var busy=false;
-  function run(){try{buildSearch();buildTag()}catch(e){}}
+  /* keep the search bar at the very top of Home, above Raju */
+  function placeSearch(){
+    var box=document.getElementById("npSearch"),rc=rajuCard();if(!box||!rc)return;
+    var home=rc.closest("section");if(!home)return;
+    if(box.parentElement!==home||home.firstElementChild!==box)home.insertBefore(box,home.firstElementChild);
+  }
+  /* Raju box on Home: keep it compact */
+  function compactRaju(){
+    var rc=rajuCard();if(!rc||rc.dataset.npCompact)return;rc.dataset.npCompact="1";
+    rc.style.minHeight="0";rc.style.height="auto";rc.style.maxHeight="none";
+    [].forEach.call(rc.querySelectorAll("img,svg,video,canvas"),function(m){if(m.closest("button"))return;var h=m.getBoundingClientRect().height;if(h>90){m.style.maxHeight="72px";m.style.width="auto";m.style.objectFit="contain"}});
+    [].forEach.call(rc.querySelectorAll("*"),function(el){var cs=getComputedStyle(el);if(parseFloat(cs.minHeight)>120){el.style.minHeight="0"}if(parseFloat(cs.height)>320&&!el.querySelector("input,textarea")){el.style.height="auto"}});
+  }
+  /* less empty space between the money converter and Pattaya's Empowered Girls */
+  var gapDone=false;window.addEventListener("hashchange",function(){gapDone=false});window.addEventListener("popstate",function(){gapDone=false});
+  function tightenGap(){
+    if(gapDone)return;
+    var all=[].slice.call(document.querySelectorAll("section *"));
+    function smallest(re){var h=all.filter(function(el){return re.test(el.textContent||"")&&!el.closest("#npSearch,#panel,.sheet")});h.sort(function(a,b){return a.textContent.length-b.textContent.length});return h[0]}
+    var emp=smallest(/Empowered Girls/i),conv=smallest(/(currency|converter|convert|exchange)/i);
+    if(!emp||!conv)return;
+    function block(el){while(el.parentElement&&el.parentElement.tagName!=="SECTION"&&el.parentElement.children.length===1)el=el.parentElement;return el}
+    var a=block(conv),b=block(emp);
+    var p=a.parentElement;while(p&&!p.contains(b))p=p.parentElement;if(!p)return;
+    function top(el){while(el.parentElement!==p)el=el.parentElement;return el}
+    var ta=top(a),tb=top(b);if(ta===tb)return;
+    for(var n=ta.nextElementSibling;n&&n!==tb;n=n.nextElementSibling){
+      if(!(n.textContent||"").trim()&&!n.querySelector("img,svg,canvas,input,button,video,iframe"))n.style.display="none";
+      else{n.style.marginTop="8px";n.style.marginBottom="8px"}
+    }
+    ta.style.marginBottom="12px";tb.style.marginTop="12px";gapDone=true;
+    [ta,tb].forEach(function(el){if(parseFloat(getComputedStyle(el).minHeight)>0)el.style.minHeight="0"});
+  }
+  function run(){try{buildSearch();buildTag();placeSearch();compactRaju();tightenGap()}catch(e){}}
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true});
   run();
 })();
