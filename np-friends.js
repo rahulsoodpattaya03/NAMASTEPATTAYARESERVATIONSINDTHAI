@@ -270,13 +270,8 @@
       }
       paintShoot();
     }
-    /* Friends Location & Bill Splitter: for everyone, its own tile under the gold area */
-    if(ga&&!document.getElementById("npFLB")){
-      var w=document.createElement("div");w.className="npflb";w.id="npFLB";
-      w.innerHTML='<button class="hubtile">'+(typeof ico==="function"?'<span>'+ico("map")+'</span>':'')+'<b>Friends Location &amp; Bill Splitter</b><small>Free for everyone · find your group and share costs</small></button>';
-      ga.insertAdjacentElement("afterend",w);
-      w.querySelector("button").onclick=function(){if(typeof window.openFinder==="function")openFinder()};
-    }
+    /* Friends Location & Bill Splitter: moved to the All services grid (29 Sep 2026) */
+    var oldFLB=document.getElementById("npFLB");if(oldFLB)oldFLB.remove();
     var ht=document.querySelector('.hubtile[data-go="buddy"]');
     if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Meet new people";if(hs)hs.textContent="Social meetups, safely"}
     var stt=document.querySelector("#buddy .sectiontitle");if(stt)stt.textContent="Meet new people";
@@ -1762,4 +1757,349 @@
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;build()})}).observe(panel,{childList:true,subtree:true});
   build();
+})();
+
+/* ===== Meet new people (REAL, 29 Sep 2026): one meeting feature for the whole app.
+   Real profiles on Supabase, selfie check for women (admin approves), search, messages,
+   block & report. The Empowered Girls lounge shows the same people (verified women only).
+   Old demo screens (sample profiles saved only on one phone) are hidden, not deleted. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var BAD=/(money|cash|\bpay\b|\bpaid\b|payment|price|\brate\b|baht|฿|\btip\b|short ?time|long ?time|happy ending|escort|\bsex|sponsor|sugar ?daddy)/i;
+  var INT=[["party","Club night"],["food","Food & dinner"],["beach","Beach & sea"],["sight","Sightseeing"],["sports","Sports"],["shop","Shopping"],["coffee","Coffee & chat"]];
+  var WHEN=["Now","Tonight","Tomorrow","This weekend","Any day"];
+  var user=null,mine=null,loaded=false,setupErr="",people=[],blocks=[],adminOK=false;
+  var q={main:"",lounge:""},show="all",chatWith=null,chan=null,unread={},editing=false;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function X(){return typeof ico==="function"?ico("close"):"×"}
+  function intName(k){var x=INT.find(function(i){return i[0]===k});return x?x[1]:""}
+  function isWoman(p){return p&&p.gender==="woman"}
+  function womanOK(){return adminOK||(mine&&mine.gender==="woman"&&mine.verify_status==="verified")}
+  function shrink(file,max,cb){var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){var k=Math.min(1,max/Math.max(img.width,img.height)),cv=document.createElement("canvas");cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);cv.toBlob(function(b){cb(b)},"image/jpeg",0.82)};
+    img.onerror=function(){URL.revokeObjectURL(url);cb(null)};img.src=url}
+  function sheetOpen(html){panel.innerHTML=html;sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+X()+'</button></div>'}
+
+  if(!document.getElementById("npMeetCss")){
+    var st=document.createElement("style");st.id="npMeetCss";
+    st.textContent='#npMeet{margin:12px 0 24px}.npm-card{border-radius:18px;padding:14px;margin:0 0 12px;background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.12);color:var(--ink,#fff)}'+
+      '.npm-card.hl{border-color:rgba(199,160,255,.45);box-shadow:0 0 16px rgba(170,110,255,.14)}'+
+      '.npm-row{display:flex;gap:12px;align-items:center}.npm-av{flex:0 0 56px;height:56px;border-radius:50%;background:linear-gradient(145deg,#8B5CFF,#ED93B1) center/cover;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#fff}'+
+      '.npm-who{flex:1;min-width:0}.npm-who b{display:block;font-size:16px}.npm-who small{display:block;opacity:.75;font-size:13px}'+
+      '.npm-bdg{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin:4px 4px 0 0}.npm-bdg.ver{background:rgba(47,191,98,.2);color:#7BE3A0;border:1px solid rgba(47,191,98,.5)}.npm-bdg.nov{background:rgba(255,255,255,.08);color:#ccc}.npm-bdg.pen{background:rgba(233,185,73,.18);color:#E9B949}'+
+      '.npm-plan{margin:10px 0 0;font-size:14px;line-height:1.4}.npm-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}'+
+      '.npm-btn{border-radius:999px;padding:9px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2)}.npm-btn.pri{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '.npm-search{display:flex;gap:8px;margin:0 0 12px}.npm-search input{flex:1;min-width:0;padding:12px 14px;border-radius:14px;font:inherit;font-size:15px;color:var(--ink,#fff);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2)}'+
+      '.npm-search select{padding:10px;border-radius:14px;font:inherit;color:var(--ink,#fff);background:rgba(20,16,34,.95);border:1px solid rgba(255,255,255,.2)}'+
+      '.npm-empty{text-align:center;padding:18px;opacity:.8;font-size:14px}.npm-msgs{display:flex;flex-direction:column;gap:8px;margin:14px 0;max-height:52vh;overflow-y:auto}'+
+      '.npm-m{max-width:80%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.35;background:rgba(255,255,255,.08);align-self:flex-start;word-wrap:break-word}.npm-m.me{align-self:flex-end;background:rgba(233,185,73,.22)}'+
+      '.npm-unread{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:#ED93B1;color:#1a1026;font-size:12px;font-weight:700;text-align:center;margin-left:6px}'+
+      '#npMeet .fields label,#npmSheet .fields label{display:block}.npm-chk{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px}.npm-chk input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}';
+    document.head.appendChild(st);
+  }
+
+  /* ---------- data ---------- */
+  async function loadMe(){
+    if(!user){mine=null;loaded=true;return}
+    var r=await sb.from("np_meet_profiles").select("*").eq("user_id",user.id).maybeSingle();
+    setupErr=r.error?(/relation|does not exist|schema/i.test(r.error.message)?"setup":r.error.message):"";
+    mine=r.data||null;loaded=true;
+  }
+  async function loadPeople(){
+    if(!user||!mine){people=[];return}
+    var r=await sb.from("np_meet_profiles").select("user_id,name,age,gender,city,languages,intent,when_txt,plan,photo_url,verify_status,updated_at")
+      .eq("active",true).neq("user_id",user.id).order("updated_at",{ascending:false}).limit(400);
+    people=(r.data||[]).filter(function(p){return !isWoman(p)||p.verify_status==="verified"});
+    var b=await sb.from("np_meet_blocks").select("blocked").eq("blocker",user.id);blocks=(b.data||[]).map(function(x){return x.blocked});
+  }
+  async function checkAdmin(){try{var r=await sb.rpc("np_is_admin");adminOK=!r.error&&r.data===true}catch(e){adminOK=false}}
+  async function refresh(){await loadMe();await loadPeople();paintAll()}
+
+  /* ---------- cards ---------- */
+  function badge(p){return p.verify_status==="verified"?'<span class="npm-bdg ver">✓ Verified</span>':(p.verify_status==="pending"?'<span class="npm-bdg pen">Check pending</span>':'<span class="npm-bdg nov">Not verified</span>')}
+  function av(p){return p.photo_url?'<span class="npm-av" style="background-image:url(\''+esc(p.photo_url)+'\')"></span>':'<span class="npm-av">'+esc((p.name||"?").charAt(0).toUpperCase())+'</span>'}
+  function personCard(p){
+    var bits=[p.age,p.city].filter(Boolean).join(" · ");
+    return '<div class="npm-card"><div class="npm-row">'+av(p)+'<div class="npm-who"><b>'+esc(p.name)+'</b><small>'+esc(bits)+(p.languages?' · '+esc(p.languages):'')+'</small>'+badge(p)+'</div></div>'+
+      ((p.intent||p.when_txt)?'<p class="npm-plan"><b>'+esc(intName(p.intent))+'</b>'+(p.when_txt?' · '+esc(p.when_txt):'')+'</p>':'')+
+      (p.plan?'<p class="npm-plan" style="margin-top:4px;opacity:.9">'+esc(p.plan)+'</p>':'')+
+      '<div class="npm-acts"><button class="npm-btn pri" data-hi="'+p.user_id+'">Say hi'+(unread[p.user_id]?'<span class="npm-unread">'+unread[p.user_id]+'</span>':'')+'</button><button class="npm-btn" data-more="'+p.user_id+'">Report or block</button></div></div>';
+  }
+  function match(p,txt){if(!txt)return true;txt=txt.toLowerCase();
+    return [p.name,p.city,p.languages,p.plan,intName(p.intent),p.when_txt].join(" ").toLowerCase().indexOf(txt)>-1}
+
+  /* ---------- main screen (Buddy / Meet new people) ---------- */
+  function mount(){
+    var s=document.getElementById("buddy");if(!s)return null;
+    ["buddyGate","buddyMain","lob"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.setProperty("display","none","important")});
+    s.querySelectorAll(".howto").forEach(function(e){e.style.setProperty("display","none","important")});
+    var t=s.querySelector(".sectiontitle");if(t&&t.textContent!=="Meet new people")t.textContent="Meet new people";
+    var root=document.getElementById("npMeet");
+    if(!root){root=document.createElement("div");root.id="npMeet";
+      var after=document.getElementById("npPurpose")||t;if(after)after.insertAdjacentElement("afterend",root);else s.appendChild(root)}
+    return root;
+  }
+  function paintMain(){
+    var root=mount();if(!root)return;
+    if(!user){root.innerHTML='<div class="npm-card hl"><b>Log in to meet people</b><p class="npm-plan">Create a free account, then make your Meet new people profile. Real travellers, 18+, public places only.</p><div class="npm-acts"><button class="npm-btn pri" id="npmLogin">Log in or sign up</button></div></div>';
+      root.querySelector("#npmLogin").onclick=function(){var b=document.querySelector(".np-hbtn.user")||document.getElementById("acctBtn");if(b)b.click()};return}
+    if(!loaded){root.innerHTML='<p class="npm-empty">Loading…</p>';return}
+    if(setupErr==="setup"){root.innerHTML='<div class="npm-card"><b>Almost ready</b><p class="npm-plan">Meet new people is being set up. Please check back soon.</p></div>';return}
+    if(!mine||editing){root.innerHTML=formHTML();wireForm(root);return}
+    var h=myCard()+(adminOK?'<div class="npm-card"><b>Admin</b><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button></div></div>':'')+
+      '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people">'+
+      '<select id="npmShow" aria-label="Show"><option value="all">Everyone</option><option value="woman">Women</option><option value="man">Men</option></select></div><div id="npmList"></div>';
+    root.innerHTML=h;
+    root.querySelector("#npmShow").value=show;
+    root.querySelector("#npmQ").oninput=function(){q.main=this.value;list(root.querySelector("#npmList"),q.main,show)};
+    root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show)};
+    wireMine(root);if(root.querySelector("#npmAdmin"))root.querySelector("#npmAdmin").onclick=openAdmin;
+    list(root.querySelector("#npmList"),q.main,show);
+  }
+  function myCard(){
+    var s=mine.verify_status,msg="";
+    if(isWoman(mine)){
+      msg=s==="verified"?'You are verified. Other people can see you.':
+        s==="pending"?'Selfie sent. We are checking it and you will get the Verified badge soon. Until then, other people cannot see your profile.':
+        s==="rejected"?'Your selfie was not approved. Please send a clear new selfie.':'Women need a quick selfie check before others can see them. It keeps everyone safe.';
+    }else msg=s==="verified"?'You are verified.':s==="pending"?'Selfie sent. We are checking it.':'Optional: verify with a selfie to get the Verified badge.';
+    var tot=Object.keys(unread).reduce(function(a,k){return a+unread[k]},0);
+    return '<div class="npm-card hl"><div class="npm-row">'+av(mine)+'<div class="npm-who"><b>'+esc(mine.name)+' (you)</b><small>'+esc(intName(mine.intent))+(mine.when_txt?' · '+esc(mine.when_txt):'')+'</small>'+badge(mine)+'</div></div>'+
+      '<p class="npm-plan">'+esc(msg)+'</p><div class="npm-acts">'+
+      ((s==="none"||s==="rejected")?'<button class="npm-btn pri" id="npmSelfie">Verify with a selfie</button>':'')+
+      '<button class="npm-btn" id="npmInbox">Messages'+(tot?'<span class="npm-unread">'+tot+'</span>':'')+'</button><button class="npm-btn" id="npmEdit">Edit profile</button></div></div>';
+  }
+  function wireMine(root){
+    if(root.querySelector("#npmSelfie"))root.querySelector("#npmSelfie").onclick=openSelfie;
+    if(root.querySelector("#npmInbox"))root.querySelector("#npmInbox").onclick=openInbox;
+    if(root.querySelector("#npmEdit"))root.querySelector("#npmEdit").onclick=function(){editing=true;paintMain()};
+  }
+  function list(el,txt,sh,womenOnly){
+    if(!el)return;
+    var l=people.filter(function(p){return blocks.indexOf(p.user_id)<0&&(womenOnly?isWoman(p):(sh==="all"||p.gender===sh))&&match(p,txt)});
+    el.innerHTML=l.length?l.map(personCard).join(""):'<p class="npm-empty">'+(txt?'Nobody found for "'+esc(txt)+'".':(womenOnly?'No verified women here yet. Invite your friends!':'No one here yet. Be the first, and invite your friends!'))+'</p>';
+    el.querySelectorAll("[data-hi]").forEach(function(b){b.onclick=function(){var p=people.find(function(x){return x.user_id===b.dataset.hi});if(p)openChat(p)}});
+    el.querySelectorAll("[data-more]").forEach(function(b){b.onclick=function(){var p=people.find(function(x){return x.user_id===b.dataset.more});if(p)openMore(p)}});
+  }
+
+  /* ---------- profile form ---------- */
+  function formHTML(){
+    var m=mine||{};
+    return '<div class="npm-card hl"><b>'+(mine?"Edit your profile":"Create your profile")+'</b><p class="npm-plan">Meet travellers for a club night, a meal, sports or sightseeing. Social meetings only, in public places.</p>'+
+      '<div class="fields"><label>First name<input id="mfN" maxlength="40" value="'+esc(m.name||"")+'"></label>'+
+      '<label>Age<input id="mfA" inputmode="numeric" maxlength="2" value="'+esc(m.age||"")+'"></label>'+
+      '<label>I am<select id="mfG"><option value="man">Man</option><option value="woman">Woman</option><option value="other">Other</option></select></label>'+
+      '<label>From (city)<input id="mfC" maxlength="60" placeholder="e.g. Mumbai" value="'+esc(m.city||"")+'"></label>'+
+      '<label class="full">Languages<input id="mfL" maxlength="80" placeholder="Hindi, English" value="'+esc(m.languages||"")+'"></label>'+
+      '<label>Up for<select id="mfI">'+INT.map(function(i){return '<option value="'+i[0]+'">'+i[1]+'</option>'}).join("")+'</select></label>'+
+      '<label>When<select id="mfW">'+WHEN.map(function(w){return '<option>'+w+'</option>'}).join("")+'</select></label>'+
+      '<label class="full">Your plan (optional)<input id="mfP" maxlength="140" placeholder="e.g. Walking Street tonight, want a group" value="'+esc(m.plan||"")+'"></label>'+
+      '<label class="full">Profile photo (optional)<input id="mfF" type="file" accept="image/*"></label></div>'+
+      '<label class="npm-chk"><input type="checkbox" id="mfPh"> This is my own photo.</label>'+
+      '<label class="npm-chk"><input type="checkbox" id="mf18"'+(mine?" checked":"")+'> I am 18 or older.</label>'+
+      '<label class="npm-chk"><input type="checkbox" id="mfR"'+(mine?" checked":"")+'> I agree to the rules: social meetings in public places only, no money, gifts or paid services of any kind.</label>'+
+      '<div class="npm-acts"><button class="npm-btn pri" id="mfSave">Save profile</button>'+(mine?'<button class="npm-btn" id="mfCancel">Cancel</button><button class="npm-btn" id="mfHide">'+(mine.active?"Hide my profile":"Show my profile")+'</button>':'')+'</div><p class="err" id="mfE"></p></div>';
+  }
+  function wireForm(root){
+    var $=function(s){return root.querySelector(s)},m=mine||{};
+    $("#mfG").value=m.gender||"man";$("#mfI").value=m.intent||"party";$("#mfW").value=m.when_txt||"Tonight";
+    if($("#mfCancel"))$("#mfCancel").onclick=function(){editing=false;paintMain()};
+    if($("#mfHide"))$("#mfHide").onclick=async function(){await sb.from("np_meet_profiles").update({active:!mine.active}).eq("user_id",user.id);editing=false;refresh()};
+    $("#mfSave").onclick=async function(){
+      var E=$("#mfE"),n=$("#mfN").value.trim(),a=parseInt($("#mfA").value,10),p=$("#mfP").value.trim(),f=$("#mfF").files&&$("#mfF").files[0];
+      if(!n){E.textContent="Add your first name.";return}
+      if(!(a>=18&&a<=99)){E.textContent="You must be 18 or older.";return}
+      if(!$("#mf18").checked){E.textContent="Please confirm you are 18 or older.";return}
+      if(!$("#mfR").checked){E.textContent="Please agree to the rules.";return}
+      if(BAD.test(n+" "+p)){E.textContent="Money, prices or paid services are not allowed. Please keep it social.";return}
+      if(f&&!$("#mfPh").checked){E.textContent="Please confirm it is your own photo.";return}
+      this.disabled=true;E.textContent="Saving…";
+      var row={name:n,age:a,gender:$("#mfG").value,city:$("#mfC").value.trim()||null,languages:$("#mfL").value.trim()||null,intent:$("#mfI").value,when_txt:$("#mfW").value,plan:p||null,active:true};
+      if(f){var blob=await new Promise(function(ok){shrink(f,900,ok)});
+        if(blob){var path=user.id+"/photo.jpg",up=await sb.storage.from("meet-photos").upload(path,blob,{upsert:true,contentType:"image/jpeg"});
+          if(!up.error)row.photo_url=sb.storage.from("meet-photos").getPublicUrl(path).data.publicUrl+"?v="+Date.now()}}
+      var r=mine?await sb.from("np_meet_profiles").update(row).eq("user_id",user.id):await sb.from("np_meet_profiles").insert(row);
+      this.disabled=false;
+      if(r.error){E.textContent=r.error.message;return}
+      var wasNew=!mine;editing=false;await refresh();
+      if(isWoman(mine)&&(mine.verify_status==="none"||mine.verify_status==="rejected")&&wasNew)openSelfie();
+    };
+  }
+
+  /* ---------- selfie check ---------- */
+  function openSelfie(){
+    sheetOpen('<div class="pbody" id="npmSheet">'+head("Selfie check","smX")+
+      '<p class="about">Take a clear selfie of your face. Only the Namaste Pattaya team sees it, just to check you are real. It is never shown on your profile and is deleted after the check.</p>'+
+      '<div class="fields"><label class="full">Selfie<input id="sfF" type="file" accept="image/*" capture="user"></label></div>'+
+      '<label class="npm-chk"><input type="checkbox" id="sfOk"> I agree my selfie is used only to verify my profile.</label>'+
+      '<button class="cta" id="sfGo">Send for checking</button><p class="err" id="sfE"></p></div>');
+    panel.querySelector("#smX").onclick=closeSheet;
+    panel.querySelector("#sfGo").onclick=async function(){
+      var f=panel.querySelector("#sfF").files&&panel.querySelector("#sfF").files[0],E=panel.querySelector("#sfE");
+      if(!f){E.textContent="Take or choose a selfie first.";return}
+      if(!panel.querySelector("#sfOk").checked){E.textContent="Please tick the box to agree.";return}
+      this.disabled=true;E.textContent="Sending…";
+      var blob=await new Promise(function(ok){shrink(f,1000,ok)});
+      if(!blob){this.disabled=false;E.textContent="Could not read this photo. Try again.";return}
+      var up=await sb.storage.from("meet-selfies").upload(user.id+"/selfie.jpg",blob,{upsert:true,contentType:"image/jpeg"});
+      if(up.error){this.disabled=false;E.textContent=up.error.message;return}
+      var r=await sb.from("np_meet_profiles").update({verify_status:"pending"}).eq("user_id",user.id);
+      if(r.error){this.disabled=false;E.textContent=r.error.message;return}
+      sheetOpen('<div class="pbody">'+head("Selfie sent","smX")+'<p class="about">Thank you! We are checking it. You will get the Verified badge soon.</p></div>');
+      panel.querySelector("#smX").onclick=closeSheet;refresh();
+    };
+  }
+
+  /* ---------- report / block ---------- */
+  function openMore(p){
+    sheetOpen('<div class="pbody">'+head(esc(p.name),"moX")+
+      '<div class="fields"><label class="full">What happened? (for a report)<input id="moR" maxlength="300" placeholder="e.g. asked for money"></label></div>'+
+      '<button class="cta" id="moRep">Report to Namaste Pattaya</button><button class="cta ghost" id="moBlk">Block '+esc(p.name)+'</button><p class="err" id="moE"></p></div>');
+    panel.querySelector("#moX").onclick=closeSheet;
+    panel.querySelector("#moRep").onclick=async function(){var r=await sb.from("np_meet_reports").insert({reported:p.user_id,reason:panel.querySelector("#moR").value.trim()||null});
+      panel.querySelector("#moE").style.color=r.error?"":"var(--ok)";panel.querySelector("#moE").textContent=r.error?r.error.message:"Thank you. We review every report."};
+    panel.querySelector("#moBlk").onclick=async function(){if(!confirm("Block "+p.name+"? You will not see each other or be able to message."))return;
+      await sb.from("np_meet_blocks").insert({blocked:p.user_id});closeSheet();refresh()};
+  }
+
+  /* ---------- messages ---------- */
+  function subscribe(){
+    if(chan){sb.removeChannel(chan);chan=null}if(!user)return;
+    chan=sb.channel("meet-"+user.id).on("postgres_changes",{event:"INSERT",schema:"public",table:"np_meet_messages",filter:"recipient=eq."+user.id},function(ev){
+      var m=ev.new;if(chatWith&&m.sender===chatWith.user_id&&panel.querySelector("#chBox")){addMsg(m);return}
+      unread[m.sender]=(unread[m.sender]||0)+1;paintAll();
+    }).subscribe();
+  }
+  function addMsg(m){var box=panel.querySelector("#chBox");if(!box)return;var d=document.createElement("div");d.className="npm-m"+(m.sender===user.id?" me":"");d.textContent=m.body;box.appendChild(d);box.scrollTop=box.scrollHeight}
+  async function openChat(p){
+    if(!mine){paintMain();return}
+    chatWith=p;delete unread[p.user_id];
+    sheetOpen('<div class="pbody">'+head("Chat with "+esc(p.name),"chX")+'<p class="small">Meet only in public places. Never send money. Report anyone who asks for money or paid services.</p>'+
+      '<div class="npm-msgs" id="chBox"><p class="npm-empty">Loading…</p></div><div class="post"><input id="chIn" maxlength="500" placeholder="Say hi…"><button id="chGo">Send</button></div><p class="err" id="chE"></p></div>');
+    panel.querySelector("#chX").onclick=function(){chatWith=null;closeSheet();paintAll()};
+    var me=user.id,them=p.user_id;
+    var r=await sb.from("np_meet_messages").select("*").or("and(sender.eq."+me+",recipient.eq."+them+"),and(sender.eq."+them+",recipient.eq."+me+")").order("created_at").limit(200);
+    var box=panel.querySelector("#chBox");if(!box)return;box.innerHTML=(r.data&&r.data.length)?"":'<p class="npm-empty">Say hi and tell '+esc(p.name)+' your plan.</p>';
+    (r.data||[]).forEach(addMsg);
+    async function send(){
+      var inp=panel.querySelector("#chIn"),E=panel.querySelector("#chE"),t=inp.value.trim();if(!t)return;
+      if(BAD.test(t)){E.textContent="Messages about money, payment or paid services are not allowed. Please keep it social.";return}
+      E.textContent="";inp.value="";
+      var s=await sb.from("np_meet_messages").insert({recipient:them,body:t}).select().single();
+      if(s.error){E.textContent=/row-level|policy/i.test(s.error.message)?"Message not sent. It may break the rules, or one of you has blocked the other.":s.error.message;inp.value=t;return}
+      var em=box.querySelector(".npm-empty");if(em)em.remove();addMsg(s.data);
+    }
+    panel.querySelector("#chGo").onclick=send;
+    panel.querySelector("#chIn").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();send()}};
+  }
+  async function openInbox(){
+    sheetOpen('<div class="pbody">'+head("Messages","ibX")+'<div id="ibL"><p class="npm-empty">Loading…</p></div></div>');
+    panel.querySelector("#ibX").onclick=closeSheet;
+    var r=await sb.from("np_meet_messages").select("*").or("sender.eq."+user.id+",recipient.eq."+user.id).order("created_at",{ascending:false}).limit(300);
+    var seen={},convs=[];(r.data||[]).forEach(function(m){var o=m.sender===user.id?m.recipient:m.sender;if(!seen[o]){seen[o]=1;convs.push({o:o,m:m})}});
+    var need=convs.map(function(c){return c.o}).filter(function(id){return !people.find(function(p){return p.user_id===id})});
+    if(need.length){var pr=await sb.from("np_meet_profiles").select("user_id,name,age,gender,city,languages,intent,when_txt,plan,photo_url,verify_status").in("user_id",need);(pr.data||[]).forEach(function(p){people.push(p)})}
+    var el=panel.querySelector("#ibL");if(!el)return;
+    el.innerHTML=convs.length?convs.map(function(c){var p=people.find(function(x){return x.user_id===c.o})||{user_id:c.o,name:"Member"};
+      return '<div class="npm-card" data-c="'+c.o+'" style="cursor:pointer"><div class="npm-row">'+av(p)+'<div class="npm-who"><b>'+esc(p.name)+(unread[c.o]?'<span class="npm-unread">'+unread[c.o]+'</span>':'')+'</b><small>'+esc((c.m.sender===user.id?"You: ":"")+c.m.body)+'</small></div></div></div>'}).join(""):'<p class="npm-empty">No messages yet. Tap "Say hi" on someone\'s profile.</p>';
+    el.querySelectorAll("[data-c]").forEach(function(d){d.onclick=function(){var p=people.find(function(x){return x.user_id===d.dataset.c});if(p)openChat(p)}});
+  }
+
+  /* ---------- admin: verify women, see reports ---------- */
+  async function openAdmin(){
+    if(!adminOK){await checkAdmin();if(!adminOK)return}
+    sheetOpen('<div class="pbody">'+head("Admin · Meet new people","adX")+'<div id="adBody"><p class="npm-empty">Loading…</p></div></div>');
+    panel.querySelector("#adX").onclick=closeSheet;
+    var r=await sb.from("np_meet_profiles").select("*").eq("verify_status","pending").order("updated_at");
+    var rep=await sb.from("np_meet_reports").select("*").eq("status","open").order("created_at",{ascending:false}).limit(50);
+    var pend=r.data||[],reps=rep.data||[],names={};
+    if(reps.length){var ids=reps.map(function(x){return x.reported});var nm=await sb.from("np_meet_profiles").select("user_id,name,age,city").in("user_id",ids);(nm.data||[]).forEach(function(p){names[p.user_id]=p.name+", "+p.age+(p.city?" · "+p.city:"")})}
+    var h='<h3 style="font-size:16px;margin:10px 0">Waiting for selfie check ('+pend.length+')</h3>';
+    for(var i=0;i<pend.length;i++){var p=pend[i],u=await sb.storage.from("meet-selfies").createSignedUrl(p.user_id+"/selfie.jpg",600);
+      h+='<div class="npm-card" data-u="'+p.user_id+'"><div class="npm-row">'+av(p)+'<div class="npm-who"><b>'+esc(p.name)+', '+esc(p.age)+'</b><small>'+esc(p.gender)+' · '+esc(p.city||"")+'</small></div></div>'+
+        (u.data&&u.data.signedUrl?'<img src="'+esc(u.data.signedUrl)+'" alt="Selfie of '+esc(p.name)+'" style="display:block;width:100%;max-height:320px;object-fit:contain;border-radius:12px;margin-top:10px;background:#000">':'<p class="npm-plan">No selfie found.</p>')+
+        '<p class="small" style="margin-top:8px">Check: real face, looks 18+, matches the profile photo, gender matches.</p>'+
+        '<div class="npm-acts"><button class="npm-btn pri" data-ok>Approve</button><button class="npm-btn" data-no>Reject</button></div></div>'}
+    if(!pend.length)h+='<p class="npm-empty">Nobody waiting.</p>';
+    h+='<h3 style="font-size:16px;margin:18px 0 10px">Open reports ('+reps.length+')</h3>'+(reps.length?reps.map(function(x){return '<div class="npm-card" data-r="'+x.id+'"><p class="npm-plan" style="margin:0"><b>Reported:</b> '+esc(names[x.reported]||"Member")+'</p><p class="npm-plan">'+esc(x.reason||"No reason given")+'</p><p class="small">'+new Date(x.created_at).toLocaleString("en-GB")+'</p><div class="npm-acts"><button class="npm-btn" data-hide="'+x.reported+'">Hide this profile</button><button class="npm-btn" data-done>Mark done</button></div></div>'}).join(""):'<p class="npm-empty">No open reports.</p>');
+    var b=panel.querySelector("#adBody");if(!b)return;b.innerHTML=h;
+    b.querySelectorAll("[data-u]").forEach(function(c){var id=c.dataset.u;
+      async function set(v){var x=await sb.from("np_meet_profiles").update({verify_status:v}).eq("user_id",id);if(x.error){alert(x.error.message);return}
+        await sb.storage.from("meet-selfies").remove([id+"/selfie.jpg"]);c.remove()}
+      c.querySelector("[data-ok]").onclick=function(){set("verified")};
+      c.querySelector("[data-no]").onclick=function(){if(confirm("Reject this selfie?"))set("rejected")};
+    });
+    b.querySelectorAll("[data-r]").forEach(function(c){
+      c.querySelector("[data-done]").onclick=async function(){await sb.from("np_meet_reports").update({status:"done"}).eq("id",c.dataset.r);c.remove()};
+      c.querySelector("[data-hide]").onclick=async function(){if(!confirm("Hide this profile from everyone?"))return;var x=await sb.from("np_meet_profiles").update({active:false}).eq("user_id",this.dataset.hide);alert(x.error?x.error.message:"Profile hidden.")};
+    });
+  }
+  window.npMeetAdmin=openAdmin;
+  /* the old "Admin page" button (n8n passcode, no longer working) now opens this admin screen */
+  new MutationObserver(function(){
+    panel.querySelectorAll('a[href="admin.html"]').forEach(function(a){
+      if(a.dataset.npm)return;a.dataset.npm="1";a.textContent="Verify women & reports";a.setAttribute("href","#");
+      a.addEventListener("click",function(e){e.preventDefault();openAdmin()});
+    });
+  }).observe(panel,{childList:true,subtree:true});
+
+  /* ---------- Empowered Girls lounge: verified women only, same people (women), search ---------- */
+  function paintLounge(){
+    var gate=document.getElementById("ladyGate");
+    if(gate){
+      var box=document.getElementById("npLGate");
+      if(!box){box=document.createElement("div");box.id="npLGate";gate.insertBefore(box,gate.firstChild);
+        [].forEach.call(gate.children,function(ch){if(ch!==box)ch.style.setProperty("display","none","important")})}
+      var s=mine&&mine.verify_status;
+      box.innerHTML='<p class="about" style="margin:0 0 10px">This lounge is for verified women only, so the space stays safe and private.</p>'+
+        '<p class="about">'+(!user?"Log in first, then create your Meet new people profile as a woman and send a quick selfie.":
+          !mine?"Create your Meet new people profile (as a woman) and send a quick selfie.":
+          mine.gender!=="woman"?"Only women can enter this lounge.":
+          s==="pending"?"Your selfie is being checked. You will get access soon.":
+          "Send a quick selfie from your Meet new people profile to get access.")+'</p>'+
+        (mine&&mine.gender!=="woman"?'':'<button class="cta" id="npLGo">Go to Meet new people</button>');
+      var g=box.querySelector("#npLGo");if(g)g.onclick=function(){if(typeof go==="function")go("buddy")};
+    }
+    try{
+      if(womanOK()){if(!lady){lady={name:(mine&&mine.name)||"Admin",insta:"",bio:adminOK&&!mine?"Moderator":"",followers:0};store.set("np_lady",lady)}}
+      else if(lady){lady=null}
+    }catch(e){}
+  }
+  function paintLoungeFriend(){
+    try{if(typeof lTab==="undefined"||lTab!=="friend"||!lady)return}catch(e){return}
+    var v=document.getElementById("lview");if(!v||v.querySelector("#npLMeet"))return;
+    v.innerHTML='<div id="npLMeet"><div class="npm-card hl"><b>Meet new people · women</b><p class="npm-plan">The same Meet new people as outside, showing verified women only. Say hi, make a plan, meet in public places.</p><div class="npm-acts"><button class="npm-btn" id="npLAll">Open Meet new people</button></div></div>'+
+      '<div class="npm-search"><input id="npLQ" type="search" placeholder="Search women by name, city, language, plan…" value="'+esc(q.lounge)+'" aria-label="Search women"></div><div id="npLList"></div></div>';
+    v.querySelector("#npLAll").onclick=function(){go("buddy")};
+    v.querySelector("#npLQ").oninput=function(){q.lounge=this.value;list(v.querySelector("#npLList"),q.lounge,"woman",true)};
+    if(!mine)v.querySelector("#npLList").innerHTML='<p class="npm-empty">Create your Meet new people profile first.</p>';
+    else list(v.querySelector("#npLList"),q.lounge,"woman",true);
+  }
+  if(typeof renderLadies==="function"){var _rl=renderLadies;renderLadies=function(){paintLounge();_rl();paintLoungeFriend()}}
+
+  /* ---------- Friends Location & Bill Splitter: tile in the All services grid ---------- */
+  function flbTile(){
+    var cats=document.getElementById("cats");if(!cats||document.getElementById("npFLBcat"))return;
+    var b=document.createElement("button");b.className="cat";b.id="npFLBcat";b.type="button";
+    b.innerHTML='<span>'+(typeof ico==="function"?ico("map"):"")+'</span>';b.append("Friends Location & Bill Splitter");
+    b.onclick=function(e){e.stopPropagation();if(typeof window.openFinder==="function")openFinder()};
+    cats.appendChild(b);
+  }
+
+  function paintAll(){paintMain();try{if(typeof renderLadies==="function")renderLadies()}catch(e){}}
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;flbTile();mount()})}).observe(document.body,{childList:true,subtree:true});
+  flbTile();
+  async function onUser(u){
+    var changed=(u&&u.id)!==(user&&user.id);user=u;if(!changed&&loaded)return;
+    loaded=false;mine=null;people=[];unread={};paintMain();
+    if(u){await checkAdmin();subscribe()}else{adminOK=false;if(chan){sb.removeChannel(chan);chan=null}}
+    await refresh();
+  }
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+  if(typeof go==="function"){var _go=go;go=function(t){_go(t);if(t==="buddy"){paintMain();if(user&&mine)loadPeople().then(paintMain)}}}
 })();
