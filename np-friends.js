@@ -816,3 +816,15 @@
   new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;add()})}).observe(panel,{childList:true,subtree:true});
   sb.auth.onAuthStateChange(function(){allowed=null;uid=null});
 })();
+
+/* ===== TEST restaurant for trying the restaurant dashboard (remove before launch) ===== */
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  if(CLUBS.some(function(c){return c.id==="np-test-restaurant"}))return;
+  CLUBS.push({id:"np-test-restaurant",name:"Namaste Test Kitchen (TEST)",cat:"indian",area:"Central Pattaya",open:"12:00 – 23:00",
+    sub:"Indian restaurant",music:"Indian restaurant",type:"Restaurant",tags:["Test","Indian food"],
+    about:"This is a TEST restaurant to try the restaurant dashboard. Bookings here are not real.",
+    art:["#E5861A","#2A1A3A"],photo:"photos/Xindianrestaurants.jpg",hosts:["Test host"],
+    pkgs:[{n:"Table for 2",d:"Test booking",p:0,left:99},{n:"Table for 4",d:"Test booking",p:0,left:99},{n:"Group dinner (8+)",d:"Test booking",p:0,left:99}]});
+  ["renderGrid","renderRail","renderCats","renderMap"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+})();
