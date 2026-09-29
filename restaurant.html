@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2A1A3A">
+<title>Restaurant Dashboard – Namaste Pattaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --plum:#2A1A3A; --plum2:#3B2752; --paper:#FFF9EF; --bg:#F4EDE2; --ink:#231B2B; --muted:#76697F;
+  --saffron:#E5861A; --leaf:#2E8A57; --chili:#C23B2A; --indigo:#3F55B8; --line:#E6DCCB;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Figtree,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--saffron);outline-offset:2px}
+.hide{display:none!important}
+
+/* top */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--plum);color:#fff;padding:14px 16px 12px}
+.top .row{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.brand{display:flex;flex-direction:column}
+.brand small{opacity:.7;font-size:12px}
+.brand b{font-size:19px;font-weight:800;letter-spacing:-.01em}
+.live{display:inline-flex;align-items:center;gap:6px;font-size:12px;opacity:.85}
+.live i{width:8px;height:8px;border-radius:50%;background:#7BE0A4;box-shadow:0 0 0 0 rgba(123,224,164,.6);animation:pulse 2s infinite}
+.live.off i{background:#999;animation:none}
+@keyframes pulse{70%{box-shadow:0 0 0 8px rgba(123,224,164,0)}}
+.top select{background:var(--plum2);border:1px solid rgba(255,255,255,.2);border-radius:10px;color:#fff;padding:6px 8px;max-width:55vw}
+.ghost{background:transparent;border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:999px;padding:6px 12px;font-size:13px}
+
+main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
+
+/* chips */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 12px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;font-size:14px;display:flex;gap:6px;align-items:center}
+.chip .n{min-width:22px;height:22px;border-radius:11px;background:var(--bg);display:inline-flex;align-items:center;justify-content:center;font-size:12px;padding:0 6px}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.chip.on .n{background:rgba(255,255,255,.18)}
+.chip[data-s="new"] .n{background:var(--saffron);color:#fff}
+
+/* tickets */
+.ticket{position:relative;background:var(--paper);border-radius:6px;margin:0 0 16px;padding:16px 16px 14px;border-left:6px solid var(--muted);
+  box-shadow:0 1px 0 var(--line)}
+.ticket::after{content:"";position:absolute;left:0;right:0;bottom:-7px;height:8px;
+  background:radial-gradient(circle at 6px -1px,transparent 6px,var(--paper) 6.5px) 0 0/12px 8px repeat-x}
+.ticket.s-new{border-left-color:var(--saffron)}
+.ticket.s-confirmed{border-left-color:var(--indigo)}
+.ticket.s-in_progress{border-left-color:var(--plum2)}
+.ticket.s-done{border-left-color:var(--leaf);opacity:.85}
+.ticket.s-cancelled{border-left-color:var(--chili);opacity:.7}
+.ticket.fresh{animation:flash 1.6s ease-out 2}
+@keyframes flash{30%{background:#FFE7C4}}
+.thead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.thead h3{margin:0;font-size:18px;font-weight:800}
+.code{font-variant-numeric:tabular-nums;color:var(--muted);font-size:13px}
+.status{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:2px 8px;margin-top:4px;color:#fff;background:var(--muted)}
+.status.new{background:var(--saffron)}.status.confirmed{background:var(--indigo)}.status.in_progress{background:var(--plum2)}.status.done{background:var(--leaf)}.status.cancelled{background:var(--chili)}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);padding:10px 0}
+.facts div{display:flex;flex-direction:column}
+.facts small{color:var(--muted);font-size:12px}
+.facts b{font-size:15px;font-variant-numeric:tabular-nums}
+.pkg{margin:0 0 6px;font-weight:600}
+.note{background:#FFF1D6;border-radius:6px;padding:8px 10px;font-size:14px;margin:6px 0}
+.contact{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.btn{border:0;border-radius:10px;padding:11px 16px;font-weight:700;min-height:44px}
+.btn.pri{background:var(--ink);color:#fff}
+.btn.ok{background:var(--leaf);color:#fff}
+.btn.go{background:var(--indigo);color:#fff}
+.btn.sf{background:var(--saffron);color:#fff}
+.btn.bad{background:transparent;color:var(--chili);border:1px solid var(--chili)}
+.btn.soft{background:#fff;border:1px solid var(--line)}
+.btn.sm{padding:8px 12px;min-height:38px;font-size:14px}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.assign{display:flex;align-items:center;gap:8px;margin-top:8px;font-size:14px}
+.assign select{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px;background:#fff}
+.ago{color:var(--muted);font-size:12px}
+.empty{text-align:center;color:var(--muted);padding:40px 16px}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+
+/* staff */
+.sec h2{font-size:22px;margin:4px 0 2px;font-weight:800}
+.sec>p{color:var(--muted);margin:0 0 14px}
+.person{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.av{flex:0 0 44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;background:var(--plum2)}
+.person .who{flex:1;min-width:0}
+.person .who b{display:block}
+.person .who small{color:var(--muted)}
+.role{font-size:12px;font-weight:700;background:var(--bg);border-radius:6px;padding:2px 7px;margin-left:4px}
+.person.off{opacity:.55}
+.form{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;margin:0 0 16px}
+.form label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}
+.form input,.form select{width:100%;border:1px solid var(--line);border-radius:10px;padding:11px;background:#fff}
+.form .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.form .hint{font-size:12px;color:var(--muted);margin-top:4px}
+.tog{display:flex;align-items:center;gap:8px;margin-top:12px;font-weight:600}
+.tog input{width:22px;height:22px}
+
+/* login */
+.login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--plum)}
+.card{background:var(--paper);border-radius:16px;padding:24px;width:100%;max-width:380px}
+.card h1{margin:0 0 4px;font-size:24px;font-weight:800}
+.card p{color:var(--muted);margin:0 0 16px}
+.card input{width:100%;border:1px solid var(--line);border-radius:10px;padding:12px;margin:0 0 10px;background:#fff}
+.card .btn{width:100%;margin-top:4px}
+.link{background:none;border:0;color:var(--indigo);font-weight:600;padding:10px 0;display:block;margin:4px auto 0}
+.msg{font-size:14px;margin:8px 0;color:var(--chili)}
+.msg.ok{color:var(--leaf)}
+
+/* bottom nav */
+.nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);display:flex;padding-bottom:env(safe-area-inset-bottom,0px);z-index:6}
+.nav button{flex:1;background:none;border:0;padding:10px 4px 12px;font-weight:700;font-size:13px;color:var(--muted);display:flex;flex-direction:column;align-items:center;gap:3px}
+.nav button svg{width:24px;height:24px}
+.nav button.on{color:var(--ink)}
+.nav .badge{position:relative}
+.nav .badge em{position:absolute;top:-4px;right:-10px;background:var(--saffron);color:#fff;font-style:normal;font-size:11px;border-radius:9px;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;padding:0 4px}
+.toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:600;z-index:9;max-width:90vw}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div id="loginView" class="login hide">
+  <div class="card">
+    <h1 id="lgTitle">Restaurant dashboard</h1>
+    <p id="lgSub">Namaste Pattaya partners. Sign in with the email your restaurant was registered with.</p>
+    <div id="lgForm">
+      <input id="lgEmail" type="email" autocomplete="email" placeholder="Email">
+      <input id="lgPass" type="password" autocomplete="current-password" placeholder="Password">
+      <button class="btn pri" id="lgGo">Sign in</button>
+      <button class="link" id="lgNew">New here? Create an account</button>
+      <button class="link" id="lgForgot">Forgot password?</button>
+    </div>
+    <div id="lgReset" class="hide">
+      <input id="lgNewPass" type="password" autocomplete="new-password" placeholder="New password (at least 8 characters)">
+      <button class="btn pri" id="lgSave">Save new password</button>
+    </div>
+    <div class="msg" id="lgMsg"></div>
+  </div>
+</div>
+
+<div id="app" class="hide">
+  <header class="top">
+    <div class="row">
+      <div class="brand"><small>Namaste Pattaya · Partner</small><b id="venueName">Restaurant</b></div>
+      <button class="ghost" id="outBtn">Log out</button>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <span class="live" id="live"><i></i><span>Live</span></span>
+      <select id="venuePick" class="hide" aria-label="Choose restaurant"></select>
+    </div>
+  </header>
+
+  <main>
+    <section id="tabOrders">
+      <div class="chips" id="chips"></div>
+      <div id="orders"></div>
+    </section>
+
+    <section id="tabStaff" class="sec hide">
+      <h2>Your team</h2>
+      <p>Everyone added with an email can sign in here and see orders.</p>
+      <div id="staffFormWrap"></div>
+      <div id="staffList"></div>
+    </section>
+
+    <section id="tabAdmin" class="sec hide">
+      <h2>Add a restaurant</h2>
+      <p>Admins only. Link a restaurant from the app to its owner's email.</p>
+      <div class="form">
+        <label for="adPick">Restaurant from the app</label>
+        <select id="adPick"><option value="">Loading…</option></select>
+        <div class="two">
+          <div><label for="adId">Venue ID</label><input id="adId" placeholder="e.g. tandoori-nights"></div>
+          <div><label for="adName">Name</label><input id="adName" placeholder="Restaurant name"></div>
+        </div>
+        <div class="hint">The Venue ID must match the restaurant's id in the app, or its orders won't arrive.</div>
+        <div class="two">
+          <div><label for="adOwner">Owner name</label><input id="adOwner" placeholder="Owner name"></div>
+          <div><label for="adEmail">Owner email</label><input id="adEmail" type="email" placeholder="owner@email.com"></div>
+        </div>
+        <div class="actions"><button class="btn pri" id="adSave">Add restaurant</button></div>
+        <div class="msg" id="adMsg"></div>
+      </div>
+      <div id="adList"></div>
+    </section>
+  </main>
+
+  <nav class="nav">
+    <button id="nOrders" class="on"><span class="badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></svg><em id="newBadge" class="hide">0</em></span>Orders</button>
+    <button id="nStaff"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.5"/><path d="M16.5 14.2c2.8.3 5 2.3 5 5.3"/></svg>Staff</button>
+    <button id="nAdmin" class="hide"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg>Admin</button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script>
+(function(){
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var $=function(id){return document.getElementById(id)};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function toast(t){var d=document.createElement("div");d.className="toast";d.textContent=t;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
+
+  var user=null,isAdmin=false,venues=[],venue=null,myRole=null,orders=[],staff=[],filter="new",chan=null,poll=null,seen={},firstLoad=true;
+  var STATUS={new:"New",confirmed:"Confirmed",in_progress:"In progress",done:"Done",cancelled:"Cancelled"};
+  var ROLES={owner:"Owner",manager:"Manager",waiter:"Waiter",kitchen:"Kitchen",cashier:"Cashier",delivery:"Delivery",other:"Other"};
+  function canManage(){return isAdmin||myRole==="owner"||myRole==="manager"}
+
+  /* ---------- login ---------- */
+  var mode="in";
+  function showLogin(){ $("app").classList.add("hide");$("loginView").classList.remove("hide") }
+  function lgMsg(t,ok){var m=$("lgMsg");m.textContent=t||"";m.className="msg"+(ok?" ok":"")}
+  $("lgNew").onclick=function(){mode=mode==="in"?"up":"in";$("lgGo").textContent=mode==="in"?"Sign in":"Create account";$("lgNew").textContent=mode==="in"?"New here? Create an account":"Have an account? Sign in";$("lgPass").autocomplete=mode==="in"?"current-password":"new-password";lgMsg("")};
+  $("lgGo").onclick=async function(){
+    var e=$("lgEmail").value.trim(),p=$("lgPass").value;
+    if(!e||!p){lgMsg("Enter your email and password.");return}
+    if(mode==="up"&&p.length<8){lgMsg("Password must be at least 8 characters.");return}
+    lgMsg("Please wait…",true);
+    var r=mode==="in"?await sb.auth.signInWithPassword({email:e,password:p}):await sb.auth.signUp({email:e,password:p,options:{emailRedirectTo:location.href.split("#")[0]}});
+    if(r.error){lgMsg(r.error.message);return}
+    if(mode==="up"&&!r.data.session){lgMsg("Check your email to confirm your account, then sign in.",true);return}
+    lgMsg("");
+  };
+  $("lgForgot").onclick=async function(){
+    var e=$("lgEmail").value.trim();if(!e){lgMsg("Type your email first, then tap Forgot password.");return}
+    var r=await sb.auth.resetPasswordForEmail(e,{redirectTo:location.href.split("#")[0]});
+    lgMsg(r.error?r.error.message:"Reset link sent. Check your email.",!r.error);
+  };
+  $("lgSave").onclick=async function(){
+    var p=$("lgNewPass").value;if(p.length<8){lgMsg("At least 8 characters, please.");return}
+    var r=await sb.auth.updateUser({password:p});
+    if(r.error){lgMsg(r.error.message);return}
+    $("lgReset").classList.add("hide");$("lgForm").classList.remove("hide");toast("Password saved");start();
+  };
+  $("outBtn").onclick=async function(){stopLive();await sb.auth.signOut();location.reload()};
+
+  sb.auth.onAuthStateChange(function(ev,session){
+    if(ev==="PASSWORD_RECOVERY"){showLogin();$("lgForm").classList.add("hide");$("lgReset").classList.remove("hide");$("lgTitle").textContent="Set a new password";$("lgSub").textContent="";return}
+    var u=session?session.user:null;
+    if(u&&(!user||u.id!==user.id)){user=u;start()}
+    if(!u&&user){user=null;showLogin()}
+  });
+  sb.auth.getSession().then(function(r){var s=r.data&&r.data.session;if(s){user=s.user;start()}else showLogin()});
+
+  /* ---------- start ---------- */
+  var starting=false;
+  async function start(){
+    if(starting||!$("lgReset").classList.contains("hide"))return;starting=true;
+    try{
+      var a=await sb.rpc("np_is_admin");isAdmin=!a.error&&a.data===true;
+      var v=await sb.rpc("np_my_venues");
+      if(v.error){showLogin();lgMsg(/function|does not exist/i.test(v.error.message)?"Dashboard is not set up yet (run the SQL in Supabase).":v.error.message);return}
+      venues=v.data||[];
+      $("loginView").classList.add("hide");$("app").classList.remove("hide");
+      $("nAdmin").classList.toggle("hide",!isAdmin);
+      if(!venues.length){
+        $("venueName").textContent=isAdmin?"No restaurants yet":"Not linked yet";
+        $("orders").innerHTML='<div class="empty"><b>'+(isAdmin?"Add your first restaurant":"Your email isn't linked to a restaurant")+'</b>'+(isAdmin?"Open the Admin tab below.":"Ask Namaste Pattaya to add "+esc(user.email)+" to your restaurant, then sign in again.")+'</div>';
+        $("chips").innerHTML="";if(isAdmin)tab("admin");return;
+      }
+      var saved=null;try{saved=localStorage.getItem("np_rest_venue")}catch(e){}
+      var pick=venues.find(function(x){return x.venue_id===saved})||venues[0];
+      var vp=$("venuePick");vp.classList.toggle("hide",venues.length<2);
+      vp.innerHTML=venues.map(function(x){return '<option value="'+esc(x.venue_id)+'">'+esc(x.name)+'</option>'}).join("");
+      vp.onchange=function(){useVenue(venues.find(function(x){return x.venue_id===vp.value}))};
+      useVenue(pick);
+    }finally{starting=false}
+  }
+  function useVenue(v){
+    venue=v;myRole=v.role;try{localStorage.setItem("np_rest_venue",v.venue_id)}catch(e){}
+    $("venuePick").value=v.venue_id;$("venueName").textContent=v.name;
+    orders=[];seen={};firstLoad=true;loadOrders();loadStaff();goLive();
+  }
+
+  /* ---------- orders ---------- */
+  async function loadOrders(){
+    if(!venue)return;
+    var r=await sb.from("np_orders").select("*").eq("venue_id",venue.venue_id).order("created_at",{ascending:false}).limit(150);
+    if(r.error){$("orders").innerHTML='<div class="empty"><b>Could not load orders</b>'+esc(r.error.message)+'</div>';return}
+    var fresh=[];
+    r.data.forEach(function(o){if(!seen[o.id]){if(!firstLoad&&o.status==="new")fresh.push(o.id);seen[o.id]=1}});
+    orders=r.data;firstLoad=false;
+    if(fresh.length)alertNew(fresh.length);
+    renderOrders(fresh);
+  }
+  function counts(){var c={all:orders.length};Object.keys(STATUS).forEach(function(k){c[k]=0});orders.forEach(function(o){c[o.status]=(c[o.status]||0)+1});return c}
+  function renderChips(){
+    var c=counts(),keys=["new","confirmed","in_progress","done","cancelled","all"];
+    $("chips").innerHTML=keys.map(function(k){return '<button class="chip'+(filter===k?" on":"")+'" data-s="'+k+'">'+(k==="all"?"All":STATUS[k])+' <span class="n">'+c[k]+'</span></button>'}).join("");
+    [].forEach.call($("chips").children,function(b){b.onclick=function(){filter=b.dataset.s;renderOrders()}});
+    var n=c.new||0,bd=$("newBadge");bd.textContent=n;bd.classList.toggle("hide",!n);
+    document.title=(n?"("+n+") ":"")+"Restaurant Dashboard – Namaste Pattaya";
+  }
+  function when(o){
+    var d=o.booking_date?new Date(o.booking_date):null,ds=o.booking_date||"";
+    if(d&&!isNaN(d))ds=d.toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"});
+    return ds;
+  }
+  function ago(t){var s=(Date.now()-new Date(t))/1000;if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+" min ago";if(s<86400)return Math.floor(s/3600)+" h ago";return new Date(t).toLocaleDateString("en-GB",{day:"numeric",month:"short"})}
+  function phoneLinks(p){
+    if(!p)return "";var d=String(p).replace(/[^\d+]/g,""),w=d.replace(/^\+/,"");
+    return '<div class="contact"><a class="btn soft sm" href="tel:'+esc(d)+'">Call '+esc(p)+'</a><a class="btn soft sm" href="https://wa.me/'+esc(w)+'" target="_blank" rel="noopener">WhatsApp</a></div>';
+  }
+  function renderOrders(fresh){
+    renderChips();
+    var list=orders.filter(function(o){return filter==="all"||o.status===filter});
+    if(!list.length){$("orders").innerHTML='<div class="empty"><b>'+(filter==="new"?"No new orders right now":"Nothing here")+'</b>'+(filter==="new"?"New orders from the app appear here instantly, with a sound.":"")+'</div>';return}
+    var active=staff.filter(function(s){return s.active});
+    $("orders").innerHTML=list.map(function(o){
+      var acts="";
+      if(o.status==="new")acts='<button class="btn sf" data-a="confirmed">Confirm</button><button class="btn bad" data-a="cancelled">Cancel</button>';
+      else if(o.status==="confirmed")acts='<button class="btn go" data-a="in_progress">Start</button><button class="btn bad" data-a="cancelled">Cancel</button>';
+      else if(o.status==="in_progress")acts='<button class="btn ok" data-a="done">Mark done</button>';
+      else acts='<button class="btn soft sm" data-a="new">Reopen</button>';
+      var opts='<option value="">Not assigned</option>'+active.map(function(s){return '<option value="'+s.id+'"'+(o.assigned_staff===s.id?" selected":"")+'>'+esc(s.name)+' ('+ROLES[s.role]+')</option>'}).join("");
+      if(o.assigned_staff&&!active.some(function(s){return s.id===o.assigned_staff}))opts+='<option value="'+o.assigned_staff+'" selected>Former staff</option>';
+      return '<article class="ticket s-'+o.status+((fresh||[]).indexOf(o.id)>-1?" fresh":"")+'" data-id="'+o.id+'">'+
+        '<div class="thead"><div><h3>'+esc(o.customer_name||"Guest")+'</h3><span class="status '+o.status+'">'+STATUS[o.status]+'</span></div><div style="text-align:right"><div class="code">#'+esc(o.code||o.id.slice(0,6))+'</div><div class="ago">'+ago(o.created_at)+'</div></div></div>'+
+        '<div class="facts"><div><small>Date</small><b>'+esc(when(o)||"–")+'</b></div><div><small>Time</small><b>'+esc(o.booking_time||"–")+'</b></div><div><small>Guests</small><b>'+(o.guests==null?"–":o.guests)+'</b></div></div>'+
+        (o.package?'<p class="pkg">'+esc(o.package)+(o.total?' · ฿'+Number(o.total).toLocaleString("en-US"):'')+'</p>':'')+
+        (o.note?'<div class="note">'+esc(o.note)+'</div>':'')+
+        phoneLinks(o.customer_phone)+
+        '<div class="assign"><span>Staff</span><select data-assign aria-label="Assign staff">'+opts+'</select></div>'+
+        '<div class="actions">'+acts+'</div></article>';
+    }).join("");
+    [].forEach.call($("orders").querySelectorAll(".ticket"),function(t){
+      var id=t.dataset.id;
+      [].forEach.call(t.querySelectorAll("[data-a]"),function(b){b.onclick=function(){
+        if(b.dataset.a==="cancelled"&&!confirm("Cancel this order?"))return;
+        update(id,{status:b.dataset.a})}});
+      t.querySelector("[data-assign]").onchange=function(e){update(id,{assigned_staff:e.target.value||null})};
+    });
+  }
+  async function update(id,patch){
+    patch.updated_at=new Date().toISOString();
+    var o=orders.find(function(x){return x.id===id});if(o)Object.assign(o,patch);renderOrders();
+    var r=await sb.from("np_orders").update(patch).eq("id",id);
+    if(r.error){toast("Not saved: "+r.error.message);loadOrders()}else if(patch.status)toast(STATUS[patch.status]);
+  }
+
+  /* new order alert: sound + vibration */
+  var actx=null;
+  document.addEventListener("click",function(){if(!actx){try{actx=new (window.AudioContext||window.webkitAudioContext)()}catch(e){}}},{once:true});
+  function alertNew(n){
+    toast(n===1?"New order!":n+" new orders!");
+    try{navigator.vibrate&&navigator.vibrate([200,100,200])}catch(e){}
+    if(!actx)return;
+    [0,0.25,0.5].forEach(function(t,i){var o=actx.createOscillator(),g=actx.createGain();o.frequency.value=i===2?988:784;o.connect(g);g.connect(actx.destination);
+      g.gain.setValueAtTime(0.0001,actx.currentTime+t);g.gain.exponentialRampToValueAtTime(0.3,actx.currentTime+t+0.02);g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+t+0.22);
+      o.start(actx.currentTime+t);o.stop(actx.currentTime+t+0.25)});
+  }
+  function goLive(){
+    stopLive();
+    chan=sb.channel("orders-"+venue.venue_id).on("postgres_changes",{event:"*",schema:"public",table:"np_orders",filter:"venue_id=eq."+venue.venue_id},function(){loadOrders()})
+      .subscribe(function(s){$("live").classList.toggle("off",s!=="SUBSCRIBED");$("live").querySelector("span").textContent=s==="SUBSCRIBED"?"Live":"Checking every 20 s"});
+    poll=setInterval(loadOrders,20000);
+  }
+  function stopLive(){if(chan){sb.removeChannel(chan);chan=null}if(poll){clearInterval(poll);poll=null}}
+  document.addEventListener("visibilitychange",function(){if(!document.hidden&&venue)loadOrders()});
+
+  /* ---------- staff ---------- */
+  var editing=null;
+  async function loadStaff(){
+    if(!venue)return;
+    var r=await sb.from("np_partner_staff").select("*").eq("venue_id",venue.venue_id).order("active",{ascending:false}).order("name");
+    staff=r.error?[]:r.data;renderStaff();renderOrders();
+  }
+  function staffForm(s){
+    s=s||{role:"waiter",active:true};
+    var roles=Object.keys(ROLES).filter(function(k){return k!=="owner"||isAdmin||myRole==="owner"});
+    return '<div class="form" id="sf"><b>'+(s.id?"Edit "+esc(s.name):"Add staff member")+'</b>'+
+      '<div class="two"><div><label for="sfName">Name</label><input id="sfName" value="'+esc(s.name||"")+'"></div>'+
+      '<div><label for="sfRole">Role</label><select id="sfRole">'+roles.map(function(k){return '<option value="'+k+'"'+(s.role===k?" selected":"")+'>'+ROLES[k]+'</option>'}).join("")+'</select></div></div>'+
+      '<div class="two"><div><label for="sfPhone">Phone</label><input id="sfPhone" type="tel" value="'+esc(s.phone||"")+'" placeholder="+66…"></div>'+
+      '<div><label for="sfShift">Shift</label><input id="sfShift" value="'+esc(s.shift||"")+'" placeholder="e.g. 5 pm – 1 am"></div></div>'+
+      '<label for="sfEmail">Email for dashboard login (optional)</label><input id="sfEmail" type="email" value="'+esc(s.email||"")+'" placeholder="Leave empty if they don\'t need to log in">'+
+      '<div class="hint">They create an account on this page with the same email.</div>'+
+      '<label class="tog"><input type="checkbox" id="sfActive"'+(s.active?" checked":"")+'> Working now (active)</label>'+
+      '<div class="actions"><button class="btn pri" id="sfSave">'+(s.id?"Save":"Add to team")+'</button>'+(s.id?'<button class="btn soft" id="sfCancel">Close</button><button class="btn bad" id="sfDel">Remove</button>':'')+'</div></div>';
+  }
+  function renderStaff(){
+    var m=canManage();
+    $("staffFormWrap").innerHTML=m?staffForm(editing):'<p class="hint">Only the owner or a manager can change the team.</p>';
+    if(m){
+      $("sfSave").onclick=saveStaff;
+      if($("sfCancel"))$("sfCancel").onclick=function(){editing=null;renderStaff()};
+      if($("sfDel"))$("sfDel").onclick=async function(){if(!confirm("Remove "+editing.name+" from the team?"))return;var r=await sb.from("np_partner_staff").delete().eq("id",editing.id);if(r.error)toast(r.error.message);else{editing=null;toast("Removed");loadStaff()}};
+    }
+    if(!staff.length){$("staffList").innerHTML='<div class="empty"><b>No team members yet</b>'+(m?"Add your first staff member above.":"")+'</div>';return}
+    $("staffList").innerHTML=staff.map(function(s){
+      var busy=orders.filter(function(o){return o.assigned_staff===s.id&&(o.status==="confirmed"||o.status==="in_progress")}).length;
+      return '<div class="person'+(s.active?"":" off")+'"><div class="av">'+esc((s.name||"?").trim().charAt(0).toUpperCase())+'</div>'+
+        '<div class="who"><b>'+esc(s.name)+'<span class="role">'+ROLES[s.role]+'</span></b><small>'+[s.shift,s.active?(busy?busy+" open order"+(busy>1?"s":""):"Free"):"Off",s.email?"Can log in":""].filter(Boolean).map(esc).join(" · ")+'</small></div>'+
+        (s.phone?'<a class="btn soft sm" href="tel:'+esc(s.phone)+'" aria-label="Call '+esc(s.name)+'">Call</a>':'')+
+        (m&&(s.role!=="owner"||isAdmin||myRole==="owner")?'<button class="btn soft sm" data-edit="'+s.id+'">Edit</button>':'')+'</div>';
+    }).join("");
+    [].forEach.call($("staffList").querySelectorAll("[data-edit]"),function(b){b.onclick=function(){editing=staff.find(function(x){return x.id===b.dataset.edit});renderStaff();window.scrollTo({top:0,behavior:"smooth"})}});
+  }
+  async function saveStaff(){
+    var row={venue_id:venue.venue_id,name:$("sfName").value.trim(),role:$("sfRole").value,phone:$("sfPhone").value.trim()||null,
+      shift:$("sfShift").value.trim()||null,email:($("sfEmail").value.trim().toLowerCase())||null,active:$("sfActive").checked};
+    if(!row.name){toast("Enter a name");return}
+    var r=editing&&editing.id?await sb.from("np_partner_staff").update(row).eq("id",editing.id):await sb.from("np_partner_staff").insert(row);
+    if(r.error){toast("Not saved: "+r.error.message);return}
+    toast(editing&&editing.id?"Saved":"Added to team");editing=null;loadStaff();
+  }
+
+  /* ---------- admin ---------- */
+  var appPlaces=[];
+  async function loadAdmin(){
+    try{
+      var j=await fetch("clubs.json",{cache:"no-store"}).then(function(r){return r.json()});
+      var arr=Array.isArray(j)?j:(j.clubs||j.places||j.venues||[]);
+      appPlaces=arr.filter(function(c){return c&&c.id&&/restaurant|indian|food|grocery/i.test(String(c.cat||c.category||""))});
+    }catch(e){appPlaces=[]}
+    $("adPick").innerHTML='<option value="">'+(appPlaces.length?"Choose a restaurant…":"No list found – type the ID below")+'</option>'+
+      appPlaces.map(function(c){return '<option value="'+esc(c.id)+'">'+esc(c.name||c.id)+'</option>'}).join("");
+    $("adPick").onchange=function(){var c=appPlaces.find(function(x){return x.id===$("adPick").value});if(c){$("adId").value=c.id;$("adName").value=c.name||c.id}};
+    var r=await sb.from("np_partner_venues").select("venue_id,name").order("name");
+    $("adList").innerHTML=(r.data&&r.data.length)?'<p class="hint" style="margin:0 0 8px">Restaurants on the dashboard</p>'+r.data.map(function(v){return '<div class="person"><div class="av">'+esc(v.name.charAt(0))+'</div><div class="who"><b>'+esc(v.name)+'</b><small>'+esc(v.venue_id)+'</small></div></div>'}).join(""):"";
+  }
+  $("adSave").onclick=async function(){
+    var id=$("adId").value.trim(),nm=$("adName").value.trim(),on=$("adOwner").value.trim(),em=$("adEmail").value.trim().toLowerCase(),m=$("adMsg");
+    if(!id||!nm){m.className="msg";m.textContent="Venue ID and name are needed.";return}
+    var r=await sb.from("np_partner_venues").upsert({venue_id:id,name:nm});
+    if(r.error){m.className="msg";m.textContent=r.error.message;return}
+    if(em){var s=await sb.from("np_partner_staff").insert({venue_id:id,name:on||"Owner",role:"owner",email:em,active:true});if(s.error){m.className="msg";m.textContent=s.error.message;return}}
+    m.className="msg ok";m.textContent=nm+" added."+(em?" The owner can now create an account here with "+em+".":"");
+    ["adId","adName","adOwner","adEmail"].forEach(function(k){$(k).value=""});
+    var v=await sb.rpc("np_my_venues");venues=v.data||venues;
+    var vp=$("venuePick");vp.innerHTML=venues.map(function(x){return '<option value="'+esc(x.venue_id)+'">'+esc(x.name)+'</option>'}).join("");vp.classList.toggle("hide",venues.length<2);
+    if(!venue&&venues.length)useVenue(venues[0]);
+    loadAdmin();
+  };
+
+  /* ---------- tabs ---------- */
+  function tab(t){
+    ["orders","staff","admin"].forEach(function(k){$("tab"+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle("hide",k!==t);$("n"+k.charAt(0).toUpperCase()+k.slice(1)).classList.toggle("on",k===t)});
+    if(t==="admin")loadAdmin();
+    window.scrollTo(0,0);
+  }
+  $("nOrders").onclick=function(){tab("orders")};
+  $("nStaff").onclick=function(){tab("staff")};
+  $("nAdmin").onclick=function(){tab("admin")};
+})();
+</script>
+</body>
+</html>
