@@ -781,3 +781,38 @@
     return _set.apply(this,arguments);
   };
 })();
+
+/* ===== Account screen: "Restaurant dashboard" button for admins and restaurant owners/staff ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var allowed=null,checking=false,uid=null;
+  function check(cb){
+    if(checking)return;checking=true;
+    sb.auth.getSession().then(function(r){
+      var s=r.data&&r.data.session;
+      if(!s){allowed=false;uid=null;checking=false;return}
+      if(uid===s.user.id&&allowed!==null){checking=false;cb();return}
+      uid=s.user.id;
+      sb.rpc("np_my_venues").then(function(v){allowed=!v.error&&!!(v.data&&v.data.length);
+        if(!allowed)return sb.rpc("np_is_admin").then(function(a){allowed=!a.error&&a.data===true});
+      }).then(function(){checking=false;cb()},function(){checking=false});
+    });
+  }
+  function add(){
+    if(panel.querySelector("#npRestDash"))return;
+    var out=[].slice.call(panel.querySelectorAll("button")).find(function(b){return /log ?out/i.test(b.textContent)});
+    if(!out)return;
+    check(function(){
+      if(!allowed||panel.querySelector("#npRestDash"))return;
+      var o=[].slice.call(panel.querySelectorAll("button")).find(function(b){return /log ?out/i.test(b.textContent)});if(!o)return;
+      var b=document.createElement("button");b.id="npRestDash";b.type="button";b.className=o.className||"pill";b.textContent="Restaurant dashboard";
+      b.style.cssText="display:block;margin:0 0 10px";
+      var anchor=panel.querySelector("#npChangePw")||o;anchor.insertAdjacentElement("beforebegin",b);
+      b.onclick=function(){location.href="restaurant.html"};
+    });
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;add()})}).observe(panel,{childList:true,subtree:true});
+  sb.auth.onAuthStateChange(function(){allowed=null;uid=null});
+})();
