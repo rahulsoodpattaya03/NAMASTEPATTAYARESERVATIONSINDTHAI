@@ -703,7 +703,10 @@
   var MAP=[
     [/Bhartiyon ke liye,? ek Bhartiya ka tohfa/gi,"Bharat ke liye, ek Bhartiye ka tohfa"],
     [/भारतीयों के लिए,? एक भारतीय का तोहफ़ा/g,"भारत के लिए, एक भारतीय का तोहफ़ा"],
-    [/भारतीयों के लिए,? एक भारतीय का तोहफा/g,"भारत के लिए, एक भारतीय का तोहफ़ा"]
+    [/भारतीयों के लिए,? एक भारतीय का तोहफा/g,"भारत के लिए, एक भारतीय का तोहफ़ा"],
+    /* add "Jai Hind" after the tagline (only once) */
+    [/(Bharat ke liye, ek Bhartiye ka tohfa)(?![.!]?\s*[·|,-]?\s*Jai Hind)/gi,"$1. Jai Hind 🇮🇳"],
+    [/(भारत के लिए, एक भारतीय का तोहफ़ा)(?![।.!]?\s*[·|,-]?\s*जय हिन्द)/g,"$1। जय हिन्द 🇮🇳"]
   ];
   function fix(root){
     var w=document.createTreeWalker(root||document.body,NodeFilter.SHOW_TEXT,null),n;
@@ -1145,4 +1148,110 @@
   }
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{scan();photoRights()}catch(e){}},160)}).observe(document.body,{childList:true,subtree:true});
+})();
+
+/* ===== Home: search bar at the top (services + places) and the tagline line above Raju ===== */
+(function(){
+  if(typeof CATS==="undefined")return;
+  var SYN={
+    restaurants:"food khana dinner lunch breakfast eat restaurant veg nonveg thali",
+    indian:"indian food khana dal roti biryani paneer punjabi south indian dosa veg jain thali desi",
+    grocery:"grocery groceries masala spices atta dal rice ghee maggi haldiram kirana sabzi chai",
+    hotels:"hotel room stay resort kamra villa accommodation",
+    spa:"massage spa thai massage oil foot relax",
+    tours:"tour trip island koh larn sightseeing excursion day trip",
+    water:"water sports jet ski parasailing banana boat diving snorkeling sea beach",
+    golf:"golf shooting range gun sports",
+    yacht:"yacht boat cruise catamaran party boat",
+    rental:"rent car bike scooter gaadi motorbike self drive",
+    airport:"airport taxi transfer pickup drop cab bangkok suvarnabhumi",
+    shopping:"shopping market mall clothes shop buy sell",
+    events:"event party birthday wedding group gala anniversary",
+    medical:"doctor hospital clinic pharmacy medicine dawai emergency",
+    concierge:"concierge vip help assistant guide",
+    nightlife:"club nightclub night party disco dj dance after party"
+  };
+  function catName(i){var tiles=document.querySelectorAll("#cats .cat");var t=tiles[i]?tiles[i].textContent.trim():"";
+    return t||(typeof CATNAME!=="undefined"&&CATNAME[CATS[i][0]])||CATS[i][1]||CATS[i][0]}
+  function norm(s){return String(s||"").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g,"")}
+  function search(q){
+    q=norm(q).trim();if(q.length<2)return [];
+    var words=q.split(/\s+/),out=[];
+    CATS.forEach(function(c,i){
+      var key=c[0],name=catName(i),hay=norm(name+" "+key+" "+(SYN[key]||""));
+      var hit=words.every(function(w){return hay.indexOf(w)>-1});
+      if(hit)out.push({t:"svc",key:key,name:name,score:norm(name).indexOf(q)===0?0:1});
+    });
+    (typeof CLUBS!=="undefined"?CLUBS:[]).forEach(function(c){
+      if(!c||!c.name)return;
+      var ci=CATS.findIndex(function(x){return x[0]===c.cat}),cn=ci>-1?catName(ci):"";
+      var hay=norm([c.name,c.area,cn,c.sub,c.music,c.type,(c.tags||[]).join(" "),SYN[c.cat]||""].join(" "));
+      if(words.every(function(w){return hay.indexOf(w)>-1}))out.push({t:"place",c:c,name:c.name,sub:[cn,c.area].filter(Boolean).join(" · "),score:norm(c.name).indexOf(q)>-1?1:2});
+    });
+    return out.sort(function(a,b){return a.score-b.score}).slice(0,12);
+  }
+  if(!document.getElementById("npSearchCss")){
+    var st=document.createElement("style");st.id="npSearchCss";
+    st.textContent='#npSearch{position:relative;margin:4px 0 14px}#npSearch .npsb{display:flex;align-items:center;gap:8px;border:1px solid var(--line,rgba(255,255,255,.18));background:var(--surface,rgba(255,255,255,.06));border-radius:14px;padding:0 12px}'+
+      '#npSearch input{flex:1;border:0;background:transparent;color:var(--ink,#fff);font:inherit;font-size:16px;padding:13px 0;outline:none;min-width:0}#npSearch .npx{background:none;border:0;color:inherit;opacity:.6;font-size:18px;padding:6px}'+
+      '#npSearch .npres{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;background:var(--bg,#14101c);border:1px solid var(--line,rgba(255,255,255,.18));border-radius:14px;max-height:60vh;overflow:auto;box-shadow:0 12px 30px rgba(0,0,0,.35)}'+
+      '#npSearch .npr{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line,rgba(255,255,255,.08));color:var(--ink,#fff);padding:12px 14px;font:inherit}#npSearch .npr small{display:block;opacity:.65;font-size:12px}'+
+      '#npSearch .npr b{font-weight:600}#npSearch .npnone{padding:14px;opacity:.7;font-size:14px}'+
+      '.nptag{text-align:center;font-weight:600;font-size:15px;margin:6px 0 12px;color:#E9B949;letter-spacing:.01em}';
+    document.head.appendChild(st);
+  }
+  function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function lang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
+  function buildSearch(){
+    if(document.getElementById("npSearch"))return;
+    var cats=document.getElementById("cats");if(!cats)return;
+    var home=cats.closest("section")||cats.parentElement;if(!home)return;
+    var box=document.createElement("div");box.id="npSearch";box.setAttribute("role","search");
+    var hi=lang()==="hi";
+    box.innerHTML='<div class="npsb"><span aria-hidden="true">🔍</span><input type="search" enterkeyhint="search" aria-label="Search services and places" placeholder="'+(hi?"खोजें: मसाज, इंडियन खाना, होटल, याट…":"Search: massage, Indian food, hotel, yacht…")+'"><button type="button" class="npx" aria-label="Clear search" hidden>✕</button></div><div class="npres" hidden></div>';
+    home.insertBefore(box,home.firstElementChild);
+    var inp=box.querySelector("input"),res=box.querySelector(".npres"),x=box.querySelector(".npx");
+    function show(){
+      var q=inp.value;x.hidden=!q;
+      if(norm(q).trim().length<2){res.hidden=true;res.innerHTML="";return}
+      var r=search(q);
+      res.innerHTML=r.length?r.map(function(it,i){return '<button type="button" class="npr" data-i="'+i+'">'+(it.t==="svc"?'<b>'+esc(it.name)+'</b><small>Service</small>':'<b>'+esc(it.name)+'</b><small>'+esc(it.sub||"Place")+'</small>')+'</button>'}).join(""):'<div class="npnone">Nothing found. Try another word, or ask Raju 🙂</div>';
+      res.hidden=false;
+      [].forEach.call(res.querySelectorAll(".npr"),function(b){b.onclick=function(){
+        var it=r[+b.dataset.i];res.hidden=true;inp.blur();
+        try{if(typeof track==="function")track("search",{q:String(q).slice(0,40)})}catch(e){}
+        if(it.t==="svc"){if(typeof window.openService==="function")window.openService(it.key)}
+        else{if(typeof openClub==="function")openClub(it.c);else if(typeof window.openService==="function")window.openService(it.c.cat)}
+      }});
+    }
+    inp.addEventListener("input",show);
+    inp.addEventListener("focus",show);
+    inp.addEventListener("keydown",function(e){if(e.key==="Enter"){var f=res.querySelector(".npr");if(f)f.click()}if(e.key==="Escape"){res.hidden=true}});
+    x.onclick=function(){inp.value="";show();inp.focus()};
+    document.addEventListener("click",function(e){if(!box.contains(e.target))res.hidden=true});
+  }
+  /* tagline line just above the main Raju box on home */
+  function rajuCard(){
+    var hits=[].slice.call(document.querySelectorAll("#cats ~ *, section *")).filter(function(el){
+      return el.children.length<12&&/Raju/.test(el.textContent||"")&&/(Hindi bhi|ask me anything|हिंदी)/i.test(el.textContent||"")&&!el.closest("#panel,.sheet,#rajuChat,#npSearch");
+    });
+    /* the smallest block that is still a "card" */
+    hits.sort(function(a,b){return a.textContent.length-b.textContent.length});
+    var el=hits[0];if(!el)return null;
+    while(el.parentElement&&el.parentElement.textContent.length<el.textContent.length+40&&el.parentElement.tagName!=="SECTION")el=el.parentElement;
+    return el;
+  }
+  function buildTag(){
+    var card=rajuCard();if(!card||!card.parentElement)return;
+    if(card.previousElementSibling&&card.previousElementSibling.classList.contains("nptag"))return;
+    var old=document.querySelector(".nptag");if(old)old.remove();
+    var hi=lang()==="hi";
+    var line=document.createElement("p");line.className="nptag";
+    line.textContent=hi?"भारत के लिए, एक भारतीय का तोहफ़ा। जय हिन्द 🇮🇳":"Bharat ke liye, ek Bhartiye ka tohfa. Jai Hind 🇮🇳";
+    card.parentElement.insertBefore(line,card);
+  }
+  var busy=false;
+  function run(){try{buildSearch();buildTag()}catch(e){}}
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true});
+  run();
 })();
