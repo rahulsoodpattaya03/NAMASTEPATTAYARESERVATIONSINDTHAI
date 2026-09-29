@@ -386,12 +386,14 @@
     var res=null;
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
-      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t}]),venues:venues(),lang:lang}});
+      var extra=window.__npOrderInfo||"";window.__npOrderInfo=null;
+      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:venues(),lang:lang}});
       var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
       var r=await Promise.race([call,timeout]);
       if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
     }catch(e){}
     typing.remove();
+    if(!res&&extra)res={reply:extra,ids:[]};
     if(!res){try{return await _ask(q)}catch(e){if(typeof addMsg==="function")addMsg("bot","Sorry bhai, my network is slow right now. Please ask me again in a moment.");return}}
     var ids=(res.ids||[]).filter(function(id){return typeof CLUBS!=="undefined"&&CLUBS.some(function(c){return c.id===id})});
     hist.push({role:"user",text:t},{role:"model",text:res.reply});window.__npLastReply=res.reply;if(hist.length>12)hist=hist.slice(-12);
@@ -925,4 +927,94 @@
   go=function(t){if(t==="dash"&&rest){location.href="restaurant.html";return}return _go.apply(this,arguments)};
   sb.auth.onAuthStateChange(function(){setTimeout(check,50)});
   check();
+})();
+
+/* ===== Raju: order status. Customer asks "where is my order" or gives an order number (NP…) ===== */
+(function(){
+  if(typeof ask!=="function"||!window.supabase)return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var FOOD=["restaurants","indian"];
+  var CODE=/\bNP[A-Z0-9]{5}\b/gi;
+  var ASKS=/(order|booking|delivery|deliver|khana|food|parcel|takeaway|table|ऑर्डर|बुकिंग|खाना)/i;
+  var WHAT=/(status|where|when|kab|kahan|kaha|kidhar|ready|confirm|number|update|late|abhi tak|kitni der|kitna time|pahunch|aaya|aayega|track|कहाँ|कब|स्टेटस)/i;
+  var SAY={new:"the restaurant has received it and will confirm it very soon",confirmed:"the restaurant has confirmed it",in_progress:"the restaurant is preparing it now",done:"it is completed",cancelled:"it was cancelled by the restaurant – please contact our team on WhatsApp"};
+  function myCodes(){
+    try{
+      var list=(typeof bookings!=="undefined"&&Array.isArray(bookings))?bookings:[];
+      return list.filter(function(b){var c=(typeof CLUBS!=="undefined")?CLUBS.find(function(x){return x.id===b.club}):null;return FOOD.indexOf(b.cat||(c&&c.cat))>-1&&b.code})
+        .slice(0,3).map(function(b){return String(b.code).toUpperCase()});
+    }catch(e){return []}
+  }
+  function mins(t){var m=Math.round((Date.now()-new Date(t))/60000);return m<1?"just now":m<60?m+" min ago":Math.round(m/60)+" h ago"}
+  async function lookup(q){
+    var typed=(String(q).match(CODE)||[]).map(function(c){return c.toUpperCase()});
+    var codes=typed.length?typed:myCodes();
+    if(!codes.length)return "No restaurant order was found on this phone. Ask the customer for their order number – it starts with NP and is shown in My bookings.";
+    var r=await sb.rpc("np_order_status",{codes:codes});
+    if(r.error)return null;
+    if(!r.data||!r.data.length)return typed.length?"No order was found with number "+typed.join(", ")+". Ask the customer to check the number in My bookings (it starts with NP), or to message our team on WhatsApp.":"The order has not reached the restaurant yet. Ask the customer to wait a minute and ask again, or to message our team on WhatsApp.";
+    return r.data.map(function(o){
+      var kind=o.order_type==="delivery"?"delivery order":o.order_type==="takeaway"?"takeaway order":"table booking";
+      var extra=o.order_type==="delivery"&&o.staff_assigned&&(o.status==="in_progress"||o.status==="confirmed")?" A delivery person has been assigned.":"";
+      return "Order "+o.code+" ("+kind+" at "+(o.venue_name||"the restaurant")+"): "+(SAY[o.status]||o.status)+". Last update "+mins(o.updated_at)+"."+extra;
+    }).join(" ")+" The restaurant will call the customer if anything changes.";
+  }
+  var _ask=ask;
+  ask=async function(q){
+    var t=String(q||"");
+    CODE.lastIndex=0;
+    var isOrder=CODE.test(t)||(ASKS.test(t)&&WHAT.test(t));CODE.lastIndex=0;
+    if(isOrder){try{var info=await Promise.race([lookup(t),new Promise(function(ok){setTimeout(function(){ok(null)},6000)})]);if(info)window.__npOrderInfo=info}catch(e){}}
+    try{return await _ask.apply(this,arguments)}finally{window.__npOrderInfo=null}
+  };
+})();
+
+/* ===== Partner sign-up: restaurant photo (required for restaurants) ===== */
+(function(){
+  if(typeof panel==="undefined"||!window.supabase)return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var KEY="np_pending_venue_photo",photo=null;
+  function isRestType(v){return /restaurant|food|cafe/i.test(String(v||""))}
+  function shrink(file,cb){
+    var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){var m=1280,w=img.width,h=img.height,k=Math.min(1,m/Math.max(w,h));
+      var cv=document.createElement("canvas");cv.width=Math.round(w*k);cv.height=Math.round(h*k);cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);
+      URL.revokeObjectURL(url);cb(cv.toDataURL("image/jpeg",0.82))};
+    img.onerror=function(){URL.revokeObjectURL(url);cb(null)};img.src=url;
+  }
+  function build(){
+    var t=panel.querySelector("#ppT"),go=panel.querySelector("#ppGo");
+    if(!t||!go||panel.querySelector("#npVPhoto"))return;
+    photo=null;
+    var lab=document.createElement("label");lab.className="full";lab.id="npVPhotoWrap";
+    lab.innerHTML='Photo of your restaurant<input id="npVPhoto" type="file" accept="image/*"><span id="npVPrev" style="display:block;margin-top:6px"></span>';
+    (t.closest("label")||t).insertAdjacentElement("afterend",lab);
+    function show(){lab.style.display=isRestType(t.value)?"":"none"}
+    t.addEventListener("change",show);show();
+    lab.querySelector("#npVPhoto").onchange=function(e){var f=e.target.files&&e.target.files[0];if(!f)return;
+      shrink(f,function(d){photo=d;lab.querySelector("#npVPrev").innerHTML=d?'<img src="'+d+'" alt="Restaurant photo preview" style="width:100%;max-height:180px;object-fit:cover;border-radius:12px">':"Could not read this photo, please choose another."})};
+    go.addEventListener("click",function(e){
+      if(!isRestType(t.value))return;
+      if(!photo){e.preventDefault();e.stopImmediatePropagation();var m=panel.querySelector("#ppM");if(m)m.textContent="Please add a photo of your restaurant.";return}
+      var em=panel.querySelector("#ppE");try{localStorage.setItem(KEY,JSON.stringify({email:(em?em.value.trim().toLowerCase():""),data:photo}))}catch(err){}
+    },true);
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;build()})}).observe(panel,{childList:true,subtree:true});
+  /* upload the saved photo as soon as the restaurant is signed in (here or on restaurant.html) */
+  window.npUploadVenuePhoto=async function(client,user){
+    try{
+      var raw=localStorage.getItem(KEY);if(!raw)return null;var p=JSON.parse(raw);
+      if(p.email&&user.email&&p.email!==user.email.toLowerCase())return null;
+      var blob=await (await fetch(p.data)).blob(),path=user.id+"/venue.jpg";
+      var up=await client.storage.from("partner-photos").upload(path,blob,{upsert:true,contentType:"image/jpeg"});
+      if(up.error)return null;
+      var url=client.storage.from("partner-photos").getPublicUrl(path).data.publicUrl+"?v="+Date.now();
+      var md=user.user_metadata||{};
+      var ins=await client.from("np_partner_requests").insert({email:user.email,venue_name:md.venue||null,venue_type:md.venue_type||null,contact_name:md.name||null,phone:md.phone||null,photo_url:url});
+      if(ins.error)await client.from("np_partner_requests").update({photo_url:url}).eq("user_id",user.id);
+      localStorage.removeItem(KEY);return url;
+    }catch(e){return null}
+  };
+  sb.auth.onAuthStateChange(function(ev,s){if(s&&s.user&&(s.user.user_metadata||{}).role==="partner")window.npUploadVenuePhoto(sb,s.user)});
 })();
