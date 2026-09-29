@@ -126,6 +126,14 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
 .nav .badge em{position:absolute;top:-4px;right:-10px;background:var(--saffron);color:#fff;font-style:normal;font-size:11px;border-radius:9px;min-width:18px;height:18px;display:flex;align-items:center;justify-content:center;padding:0 4px}
 .toast{position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;font-weight:600;z-index:9;max-width:90vw}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+/* food type & food categories */
+.food .opts{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.food .opt{display:inline-flex!important;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:8px 12px!important;margin:0!important;font-size:14px!important;background:#fff;cursor:pointer}
+.food .opt input{width:18px!important;height:18px;padding:0;margin:0;flex:0 0 auto}
+.food .opt:has(input:checked){border-color:var(--ink);background:var(--bg)}
+.food .vegok{display:none}
+.food.isveg .vegok{display:flex}
+.fbadge{display:inline-block;font-size:12px;font-weight:700;border-radius:6px;padding:2px 7px;margin:4px 4px 0 0;background:var(--bg)}
 </style>
 </head>
 <body>
@@ -169,6 +177,7 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
     </section>
 
     <section id="tabStaff" class="sec hide">
+      <div id="foodWrap"></div>
       <h2>Your team</h2>
       <p>Everyone added with an email can sign in here and see orders.</p>
       <div id="staffFormWrap"></div>
@@ -217,6 +226,51 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
   var STATUS={new:"New",confirmed:"Confirmed",in_progress:"In progress",done:"Done",cancelled:"Cancelled"};
   var ROLES={owner:"Owner",manager:"Manager",waiter:"Waiter",kitchen:"Kitchen",cashier:"Cashier",delivery:"Delivery",other:"Other"};
   function canManage(){return isAdmin||myRole==="owner"||myRole==="manager"}
+
+  /* ---------- food type (veg / non-veg / both) and food categories ---------- */
+  var FOOD_TYPES=[["veg","🟢 Pure Veg (Shudh Shakahari)"],["nonveg","🔴 Non-Veg"],["both","🟢🔴 Veg & Non-Veg"]];
+  var FOODS=[["punjabi","Punjabi"],["gujarati","Gujarati"],["rajasthani","Rajasthani"],["south","South Indian"],["maharashtrian","Maharashtrian"],["bengali","Bengali"],["jain","Jain food"],["mughlai","Mughlai"],["street","Street Food & Chaat"],["indochinese","Indo-Chinese"],["thali","Thali & Mithai"]];
+  function foodName(k,list){var x=(list||FOODS).find(function(f){return f[0]===k});return x?x[1]:k}
+  function foodBadges(t,c){if(!t&&!(c&&c.length))return '<div class="hint">Food type not chosen yet</div>';
+    return '<div>'+(t?'<span class="fbadge">'+esc(foodName(t,FOOD_TYPES))+'</span>':'')+(c||[]).map(function(k){return '<span class="fbadge">'+esc(foodName(k))+'</span>'}).join("")+'</div>'}
+  function foodForm(id,t,c,btn){
+    c=c||[];
+    return '<div class="form food'+(t==="veg"?" isveg":"")+'" id="'+id+'"><b>Your food</b>'+
+      '<label>Food type (choose one)</label><div class="opts">'+FOOD_TYPES.map(function(f){return '<label class="opt"><input type="radio" name="'+id+'T" value="'+f[0]+'"'+(t===f[0]?" checked":"")+'> '+f[1]+'</label>'}).join("")+'</div>'+
+      '<label class="tog vegok"><input type="checkbox" data-vegok'+(t==="veg"?" checked":"")+'> I confirm we serve 100% pure veg food: no meat, no fish, no egg.</label>'+
+      '<label>Food you serve (choose one or more)</label><div class="opts">'+FOODS.map(function(f){return '<label class="opt"><input type="checkbox" data-cu value="'+f[0]+'"'+(c.indexOf(f[0])>-1?" checked":"")+'> '+esc(f[1])+'</label>'}).join("")+'</div>'+
+      '<div class="hint">Pure Veg shows in "Indian Restaurants – Only Veg". Non-Veg and Veg &amp; Non-Veg show in "Indian Restaurants – Veg &amp; Non-Veg".</div>'+
+      '<div class="actions"><button class="btn pri" data-fsave>'+(btn||"Save")+'</button></div><div class="msg" data-fmsg></div></div>';
+  }
+  function foodWire(box,onSave){
+    if(!box)return;
+    box.querySelectorAll('input[type=radio]').forEach(function(r){r.onchange=function(){box.classList.toggle("isveg",r.value==="veg"&&r.checked)}});
+    box.querySelector("[data-fsave]").onclick=async function(){
+      var m=box.querySelector("[data-fmsg]");m.className="msg";
+      var t=(box.querySelector('input[type=radio]:checked')||{}).value;
+      var c=[].map.call(box.querySelectorAll("[data-cu]:checked"),function(x){return x.value});
+      if(!t){m.textContent="Choose Pure Veg, Non-Veg or Veg & Non-Veg.";return}
+      if(t==="veg"&&!box.querySelector("[data-vegok]").checked){m.textContent="Please tick the box to confirm 100% pure veg.";return}
+      if(!c.length){m.textContent="Choose at least one type of food you serve.";return}
+      this.disabled=true;var err=null;try{err=await onSave(t,c)}catch(e){err="Not saved. Please try again."}this.disabled=false;
+      if(err){m.textContent=err;return}
+      m.className="msg ok";m.textContent="Saved.";
+    };
+  }
+  async function loadFood(){
+    var w=$("foodWrap");if(!w)return;
+    if(!venue){w.innerHTML="";return}
+    var t=null,c=[];
+    var r=await sb.rpc("np_venue_food");
+    if(!r.error&&r.data){var x=r.data.find(function(v){return v.venue_id===venue.venue_id});if(x){t=x.food_type;c=x.cuisines||[]}}
+    if(!canManage()){w.innerHTML='<div class="form"><b>Your food</b>'+foodBadges(t,c)+'<div class="hint">Only the owner or a manager can change this.</div></div>';return}
+    w.innerHTML=foodForm("fdVenue",t,c,"Save food type");
+    foodWire($("fdVenue"),async function(nt,nc){
+      var s=await sb.rpc("np_set_venue_food",{p_venue_id:venue.venue_id,p_food_type:nt,p_cuisines:nc});
+      if(s.error)return /function|does not exist/i.test(s.error.message)?"Please run np-restaurant-dashboard-4.sql in Supabase first.":s.error.message;
+      return null;
+    });
+  }
 
   /* ---------- login ---------- */
   var mode="in";
@@ -294,6 +348,7 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
         var md=user.user_metadata||{};
         if(md.role==="partner"){
           await sb.from("np_partner_requests").insert({email:user.email,venue_name:md.venue||null,venue_type:md.venue_type||null,contact_name:md.name||null,phone:md.phone||null});
+          if(md.food_type){try{await sb.from("np_partner_requests").update({food_type:md.food_type,cuisines:md.cuisines||null}).eq("user_id",user.id)}catch(e){}}
           await uploadPending();
           var rq=await sb.from("np_partner_requests").select("status,photo_url").eq("user_id",user.id).maybeSingle();
           var st=rq.data&&rq.data.status,ph=rq.data&&rq.data.photo_url;
@@ -309,6 +364,13 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
             try{localStorage.setItem(PKEY,JSON.stringify({email:user.email.toLowerCase(),data:d}))}catch(err){}
             var u=await uploadPending();if(!u){$("rpMsg").className="msg";$("rpMsg").textContent="Upload failed. Please try again.";return}
             starting=false;start()};
+          $("orders").insertAdjacentHTML("beforeend",foodForm("fdReq",md.food_type,md.cuisines,"Save food type"));
+          foodWire($("fdReq"),async function(nt,nc){
+            var u1=await sb.from("np_partner_requests").update({food_type:nt,cuisines:nc}).eq("user_id",user.id);
+            await sb.auth.updateUser({data:{food_type:nt,cuisines:nc}});
+            if(u1.error)return /column|schema/i.test(u1.error.message)?"Please ask Namaste Pattaya to finish the setup, then try again.":u1.error.message;
+            md.food_type=nt;md.cuisines=nc;return null;
+          });
           return;
         }
       }
@@ -328,7 +390,7 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
   function useVenue(v){
     venue=v;myRole=v.role;try{localStorage.setItem("np_rest_venue",v.venue_id)}catch(e){}
     $("venuePick").value=v.venue_id;$("venueName").textContent=v.name;
-    orders=[];seen={};firstLoad=true;loadOrders();loadStaff();goLive();
+    orders=[];seen={};firstLoad=true;loadOrders();loadStaff();loadFood();goLive();
   }
 
   /* ---------- orders ---------- */
@@ -482,7 +544,7 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
     $("adReq").innerHTML=reqs.length?'<p class="hint" style="margin:0 0 8px">Waiting for approval ('+reqs.length+')</p>'+reqs.map(function(x){
       return '<div class="form" data-req="'+x.user_id+'"><b>'+esc(x.venue_name||"Unnamed venue")+'</b> <span class="role">'+esc(x.venue_type||"")+'</span>'+
         (x.photo_url?'<img src="'+esc(x.photo_url)+'" alt="Photo of '+esc(x.venue_name||"venue")+'" style="display:block;width:100%;max-height:200px;object-fit:cover;border-radius:10px;margin:8px 0">':'<div class="msg">No photo yet – they must upload one before you approve.</div>')+
-        '<div class="hint">'+esc([x.contact_name,x.phone,x.email].filter(Boolean).join(" · "))+'</div>'+
+        '<div class="hint">'+esc([x.contact_name,x.phone,x.email].filter(Boolean).join(" · "))+'</div>'+foodBadges(x.food_type,x.cuisines)+
         '<label>Connect to restaurant in the app</label><select data-rv><option value="">Choose…</option>'+appPlaces.map(function(c){return '<option value="'+esc(c.id)+'">'+esc(c.name||c.id)+'</option>'}).join("")+'</select>'+
         '<label>…or type its Venue ID</label><input data-ri placeholder="e.g. np-test-restaurant">'+
         '<div class="actions"><button class="btn ok sm" data-ok>Approve</button><button class="btn bad sm" data-no>Reject</button></div></div>'}).join(""):"";
@@ -495,7 +557,9 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
         if(!x.photo_url&&!confirm("This restaurant has no photo yet. Approve anyway?"))return;
         var place=appPlaces.find(function(c){return c.id===id});
         var vrow={venue_id:id,name:(place&&place.name)||x.venue_name||id};if(x.photo_url)vrow.photo_url=x.photo_url;
-        var a=await sb.from("np_partner_venues").upsert(vrow);
+        var fr=x.food_type?Object.assign({},vrow,{food_type:x.food_type,cuisines:x.cuisines||null}):vrow;
+        var a=await sb.from("np_partner_venues").upsert(fr);
+        if(a.error&&fr!==vrow){a=await sb.from("np_partner_venues").upsert(vrow);if(!a.error)toast("Approved, but food type not saved: run np-restaurant-dashboard-4.sql")}
         if(a.error){toast(a.error.message);return}
         var b=await sb.from("np_partner_staff").insert({venue_id:id,name:x.contact_name||"Owner",role:"owner",email:(x.email||"").toLowerCase()||null,phone:x.phone||null,active:true});
         if(b.error){toast(b.error.message);return}

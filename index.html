@@ -1347,7 +1347,7 @@ AFTER.slice().reverse().forEach(m=>CLUBS.unshift({id:m[0],name:m[1],cat:"nightli
   pkgs:[{n:"Entry",d:"Walk-in, confirm at the door",p:0,left:99},{n:"Standard table",d:"Up to 6 guests, 1 bottle",p:6000,left:6},{n:"Ladies table",d:"Up to 4 women",p:3000,left:4},{n:"VIP table",d:"Up to 10 guests, 2 bottles, host",p:15000,left:2}]}));
 
 /* currency */
-const INR_PER_THB = 2.6; // approx — update to live rate later
+const INR_PER_THB = 2.89; // 1 THB = 2.89 INR (set 29 Sep 2026)
 let cur = store0("np_cur","INR");
 function store0(k,f){try{const v=localStorage.getItem(k);return v?JSON.parse(v):f}catch(e){return f}}
 function money(n){ if(!n) return "On request"; return cur==="INR" ? "₹"+Math.round(n*INR_PER_THB).toLocaleString("en-IN") : baht(n); }
@@ -2879,7 +2879,7 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
         if(phone.replace(/\D/g,"").length<8)return msg("Add a WhatsApp number with at least 8 digits.");
         if(pw.length<8)return msg("Use a password with at least 8 characters.");
         btn.disabled=true;
-        var r=await sb.auth.signUp({email:email,password:pw,options:{data:{role:"partner",venue:venue,venue_type:$("#ppT").value,name:name,phone:phone,partner_status:"pending"},emailRedirectTo:location.origin+location.pathname}});
+        var r=await sb.auth.signUp({email:email,password:pw,options:{data:{role:"partner",venue:venue,venue_type:$("#ppT").value,name:name,phone:phone,partner_status:"pending",food_type:(window.npFood&&window.npFood.food_type)||null,cuisines:(window.npFood&&window.npFood.cuisines)||null},emailRedirectTo:location.origin+location.pathname}});
         btn.disabled=false;
         if(r.error)return msg(r.error.message);
         if(r.data.session){closeSheet();go("dash")}else msg("Venue registered. Check your email and tap the link to confirm, then sign in.",true);
@@ -2913,7 +2913,7 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
 
   var days=document.getElementById("days");
   if(days){
-    var rate=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.6;
+    var rate=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.89;
     var NAMES={en:"English",hi:"हिन्दी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
     var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
     var row=document.createElement("section");row.className="npx-row";row.setAttribute("aria-label","Language, time and currency");
@@ -3227,7 +3227,7 @@ html,body{overflow-x:hidden}
   var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
   if(!sb)return;
   var user=null;
-  var ADMINS=["rahulsood30071990@gmail.com"];,"jaishreeradhey@yahoo.com"
+  var ADMINS=["rahulsood30071990@gmail.com","jaishreeradhey@yahoo.com"];
   function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function openSheet(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
   function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+ico("close")+'</button></div>'}
@@ -3373,7 +3373,7 @@ html,body{overflow-x:hidden}
       if(!name){M.textContent="Add a contact person.";return}
       if(phone.replace(/\D/g,"").length<8){M.textContent="Add a WhatsApp number with at least 8 digits.";return}
       this.disabled=true;
-      var r=await sb.auth.updateUser({data:{role:"partner",venue:venue,venue_type:$("#pvT").value,name:name,phone:phone,partner_status:"pending"}});
+      var r=await sb.auth.updateUser({data:{role:"partner",venue:venue,venue_type:$("#pvT").value,name:name,phone:phone,partner_status:"pending",food_type:(window.npFood&&window.npFood.food_type)||null,cuisines:(window.npFood&&window.npFood.cuisines)||null}});
       this.disabled=false;
       if(r.error){M.textContent=r.error.message;return}
       paint(r.data.user);menu();
@@ -3821,7 +3821,7 @@ html,body{overflow-x:hidden}
   var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
   if(!sb)return;
   var user=null;
-  var ADMINS=["rahulsood30071990@gmail.com"];
+  var ADMINS=["rahulsood30071990@gmail.com","jaishreeradhey@yahoo.com"];
   function esc(s){return String(s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function openSheet(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
   function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+ico("close")+'</button></div>'}
@@ -3967,7 +3967,7 @@ html,body{overflow-x:hidden}
       if(!name){M.textContent="Add a contact person.";return}
       if(phone.replace(/\D/g,"").length<8){M.textContent="Add a WhatsApp number with at least 8 digits.";return}
       this.disabled=true;
-      var r=await sb.auth.updateUser({data:{role:"partner",venue:venue,venue_type:$("#pvT").value,name:name,phone:phone,partner_status:"pending"}});
+      var r=await sb.auth.updateUser({data:{role:"partner",venue:venue,venue_type:$("#pvT").value,name:name,phone:phone,partner_status:"pending",food_type:(window.npFood&&window.npFood.food_type)||null,cuisines:(window.npFood&&window.npFood.cuisines)||null}});
       this.disabled=false;
       if(r.error){M.textContent=r.error.message;return}
       paint(r.data.user);menu();

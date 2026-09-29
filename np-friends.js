@@ -131,7 +131,7 @@
 
   var tab="find",bills=[],bchan=null,bchanCode="";
   function B(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")}
-  function inr(n){var r=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.6;return "₹"+Math.round((Number(n)||0)*r).toLocaleString("en-IN")}
+  function inr(n){var r=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.89;return "₹"+Math.round((Number(n)||0)*r).toLocaleString("en-IN")}
   async function loadBills(){
     if(!user||!code){renderBills();return}
     var m=await sb.from("np_finder").select("user_id,name").eq("code",code);members=m.data||members;
@@ -1053,6 +1053,7 @@
       var md=user.user_metadata||{};
       var ins=await client.from("np_partner_requests").insert({email:user.email,venue_name:md.venue||null,venue_type:md.venue_type||null,contact_name:md.name||null,phone:md.phone||null,photo_url:url});
       if(ins.error)await client.from("np_partner_requests").update({photo_url:url}).eq("user_id",user.id);
+      if(md.food_type){try{await client.from("np_partner_requests").update({food_type:md.food_type,cuisines:md.cuisines||null}).eq("user_id",user.id)}catch(e){}}
       localStorage.removeItem(KEY);return url;
     }catch(e){return null}
   };
@@ -1680,11 +1681,85 @@
     if(emp.textContent!==msg)emp.textContent=msg;
   }
 
-  function all(){names();move();fixText();render()}
+  /* 5. food type and food categories chosen by restaurant owners (restaurant dashboard) */
+  var FOODROWS=[];
+  function applyFood(){
+    var n=0;FOODROWS.forEach(function(r){
+      var c=list().find(function(x){return x.id===r.venue_id});
+      if(!c||(c.cat!==VEG&&c.cat!==MIX))return;
+      if(Array.isArray(r.cuisines)&&r.cuisines.length)c.cuisine=r.cuisines;
+      c.foodType=r.food_type;
+      var want=r.food_type==="veg"?VEG:MIX;c.veg=r.food_type==="veg";
+      if(c.cat!==want){c.cat=want;n++}
+    });
+    if(n)rerender();
+  }
+  function loadFood(){
+    try{if(!window.supabase)return;
+      var cl=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+      cl.rpc("np_venue_food").then(function(r){if(r&&!r.error&&Array.isArray(r.data)){FOODROWS=r.data;applyFood();render()}},function(){});
+    }catch(e){}
+  }
+  loadFood();
+
+  function all(){names();applyFood();move();fixText();render()}
   all();window.addEventListener("load",all);setTimeout(all,1500);setTimeout(all,4000);
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;fixText();render()})})
     .observe(document.body,{childList:true,subtree:true});
   window.addEventListener("hashchange",function(){setTimeout(render,50)});
   window.addEventListener("popstate",function(){setTimeout(render,50)});
+})();
+
+/* ===== Partner sign-up: restaurants choose Pure Veg / Non-Veg / Veg & Non-Veg and the food they serve ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  var TYPES=[["veg","🟢 Pure Veg (Shudh Shakahari)"],["nonveg","🔴 Non-Veg"],["both","🟢🔴 Veg & Non-Veg"]];
+  var FOODS=[["punjabi","Punjabi"],["gujarati","Gujarati"],["rajasthani","Rajasthani"],["south","South Indian"],["maharashtrian","Maharashtrian"],["bengali","Bengali"],["jain","Jain food"],["mughlai","Mughlai"],["street","Street Food & Chaat"],["indochinese","Indo-Chinese"],["thali","Thali & Mithai"]];
+  function isRest(v){return /restaurant|food|cafe/i.test(String(v||""))}
+  if(!document.getElementById("npFoodCss")){
+    var st=document.createElement("style");st.id="npFoodCss";
+    st.textContent='#npFoodWrap{grid-column:1/-1;margin-top:6px}#npFoodWrap .fl{display:block;font-size:13px;font-weight:600;margin:10px 0 6px}'+
+      '#npFoodWrap .opts{display:flex;flex-wrap:wrap;gap:8px}'+
+      '#npFoodWrap .opt{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:13px;cursor:pointer;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2)}'+
+      '#npFoodWrap .opt input{width:18px;height:18px;margin:0;flex:0 0 auto}'+
+      '#npFoodWrap .opt:has(input:checked){border-color:#E9B949;background:rgba(233,185,73,.16)}'+
+      '#npFoodWrap .vegok{display:none;gap:8px;align-items:flex-start;margin-top:10px;font-size:13px;padding:10px 12px;border-radius:12px;background:rgba(20,120,60,.18);border:1px solid rgba(60,200,110,.55)}'+
+      '#npFoodWrap .vegok input{width:20px;height:20px;margin:0;flex:0 0 auto}#npFoodWrap.isveg .vegok{display:flex}';
+    document.head.appendChild(st);
+  }
+  function build(){
+    [["#ppT","#ppGo","#ppM"],["#pvT","#pvGo","#pvM"]].forEach(function(ids){
+      var t=panel.querySelector(ids[0]),go=panel.querySelector(ids[1]);
+      if(!t||!go||panel.querySelector("#npFoodWrap"))return;
+      window.npFood=null;
+      var w=document.createElement("div");w.id="npFoodWrap";w.className="full";
+      w.innerHTML='<span class="fl">Food type (choose one)</span><div class="opts">'+
+        TYPES.map(function(x){return '<label class="opt"><input type="radio" name="npFT" value="'+x[0]+'"> '+x[1]+'</label>'}).join("")+'</div>'+
+        '<label class="vegok"><input type="checkbox" id="npVegOk"> I confirm we serve 100% pure veg food: no meat, no fish, no egg.</label>'+
+        '<span class="fl">Food you serve (choose one or more)</span><div class="opts">'+
+        FOODS.map(function(x){return '<label class="opt"><input type="checkbox" class="npCu" value="'+x[0]+'"> '+x[1]+'</label>'}).join("")+'</div>';
+      var anchor=panel.querySelector("#npVPhotoWrap")||t.closest("label")||t;
+      anchor.insertAdjacentElement("afterend",w);
+      function show(){w.style.display=isRest(t.value)?"":"none"}
+      t.addEventListener("change",show);show();
+      w.querySelectorAll('input[name="npFT"]').forEach(function(r){r.onchange=function(){w.classList.toggle("isveg",r.value==="veg"&&r.checked)}});
+    });
+  }
+  panel.addEventListener("click",function(e){
+    var go=e.target.closest&&e.target.closest("#ppGo,#pvGo");if(!go)return;
+    var w=panel.querySelector("#npFoodWrap"),t=panel.querySelector("#ppT")||panel.querySelector("#pvT");
+    if(!w||!t||!isRest(t.value)){window.npFood=null;return}
+    var M=panel.querySelector("#ppM")||panel.querySelector("#pvM");
+    function stop(msg){e.preventDefault();e.stopImmediatePropagation();if(M){M.style.color="";M.textContent=msg}}
+    var ft=(w.querySelector('input[name="npFT"]:checked')||{}).value;
+    var cu=[].map.call(w.querySelectorAll(".npCu:checked"),function(x){return x.value});
+    if(!ft)return stop("Choose your food type: Pure Veg, Non-Veg or Veg & Non-Veg.");
+    if(ft==="veg"&&!w.querySelector("#npVegOk").checked)return stop("Please tick the box to confirm 100% pure veg.");
+    if(!cu.length)return stop("Choose at least one type of food you serve (Punjabi, Gujarati…).");
+    window.npFood={food_type:ft,cuisines:cu};
+  },true);
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;build()})}).observe(panel,{childList:true,subtree:true});
+  build();
 })();
