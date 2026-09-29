@@ -1118,7 +1118,12 @@
   function scan(){
     var btns=[].slice.call(document.querySelectorAll("button")).filter(function(b){
       if(!vis(b)||!BTN.test(b.textContent)||b.closest("#dash,.npdel,nav,header,.nppdpa"))return false;
-      var box=containerOf(b);return box&&(box.querySelector('input[type="date"],input[type="datetime-local"]')||/guest|people|person|pax/i.test(box.textContent||""));
+      var box=containerOf(b);if(!box)return false;
+      /* only real booking forms: never the home page or a list of venue cards */
+      var form=box.closest("#panel,.sheet,.pbody")||box.matches("#panel,.sheet,.pbody");
+      var hasDate=box.querySelector('input[type="date"],input[type="datetime-local"]');
+      if(!form&&(!hasDate||box.querySelectorAll("[data-id]").length>1))return false;
+      return hasDate||/guest|people|person|pax/i.test(box.textContent||"");
     });
     btns.forEach(function(b){
       var box=containerOf(b);if(box.querySelector(".nppdpa"))return;
@@ -1218,4 +1223,307 @@
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true});
   run();
+})();
+
+/* ===== Home upgrade (29 Sep 2026): Tonight in Pattaya, Pattaya today + safety, quick actions,
+   club rows you can swipe, "Tables from" price label, smaller Raju above the nav bar,
+   5-tab nav with a "More" tab (nothing deleted), readable text over the neon sign,
+   clearer consent box, and bottom space so nothing hides behind the nav bar ===== */
+(function(){
+  var SVC=["grocery","indian","restaurants","hotels","spa","tours","water","golf","yacht","rental","airport","shopping","events","medical","concierge"];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function norm(t){return String(t||"").replace(/\s+/g," ").trim()}
+  function inPop(el){return !!(el&&el.closest&&el.closest("#panel,.sheet,#rajuChat,#svcPage,#npMoreSheet"))}
+  function list(){return (typeof CLUBS!=="undefined"&&CLUBS)||[]}
+  function isNight(c){return c&&SVC.indexOf(c.cat)<0&&!/restaurant/i.test(c.type||"")}
+  function smallest(re,root,max){
+    var h=[].slice.call((root||document).querySelectorAll("body *")).filter(function(el){
+      var t=el.textContent||"";return re.test(t)&&(!max||t.length<max)&&!inPop(el)&&!/^(SCRIPT|STYLE)$/.test(el.tagName)});
+    h.sort(function(a,b){return a.textContent.length-b.textContent.length});return h[0]||null;
+  }
+
+  /* ---------- styles (match the app: dark glass, purple-pink glow, gold text) ---------- */
+  if(!document.getElementById("npHomeCss")){
+    var st=document.createElement("style");st.id="npHomeCss";
+    st.textContent=
+    '#npHomeFill{margin:14px 0 6px;position:relative;z-index:1}'+
+    '#npHomeFill .nph{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 10px}'+
+    '#npHomeFill .nph h3{margin:0;font-size:19px;font-weight:700;color:var(--ink,#fff)}'+
+    '#npHomeFill .nph span{font-size:13px;color:#E9B949;font-weight:600}'+
+    '.nptrow{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}'+
+    '.nptrow::-webkit-scrollbar{display:none}'+
+    '.nptcard{flex:0 0 72%;max-width:280px;scroll-snap-align:start;border-radius:20px;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:var(--ink,#fff);font:inherit;'+
+      'background:rgba(16,13,28,.62);border:1px solid rgba(199,160,255,.38);box-shadow:0 0 18px rgba(170,110,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}'+
+    '.nptcard .ph{height:92px;background-size:cover;background-position:center;position:relative}'+
+    '.nptcard .ph:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(10,8,20,.85))}'+
+    '.nptcard .bd{padding:10px 12px 12px}'+
+    '.nptcard .tm{font-size:12px;color:#E9B949;font-weight:600}'+
+    '.nptcard .nm{font-size:16px;font-weight:700;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '.nptcard .sb{font-size:12.5px;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '.nptcard .go{display:inline-block;margin-top:9px;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid rgba(237,147,177,.6);color:#F7C4D8}'+
+    '.npstrip{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin:8px 0 0;padding:10px 12px;border-radius:16px;'+
+      'background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:13px;color:var(--ink,#fff)}'+
+    '.npstrip .wx{display:flex;align-items:center;gap:6px;opacity:.9}'+
+    '.npstrip .sos{display:flex;gap:6px}'+
+    '.npstrip .sos a{text-decoration:none;font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;border:1px solid rgba(255,120,120,.55);color:#FFB4B4;white-space:nowrap}'+
+    '.npqa{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}'+
+    '.npqa button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;font:inherit;font-size:12px;font-weight:600;color:var(--ink,#fff);cursor:pointer;'+
+      'background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}'+
+    '.npqa button svg{color:#ED93B1}'+
+    /* club rows you can swipe */
+    '.npswipe{display:flex!important;flex-wrap:nowrap!important;gap:12px!important;overflow-x:auto!important;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:6px}'+
+    '.npswipe::-webkit-scrollbar{display:none}'+
+    '.npswipe>*{flex:0 0 82%!important;max-width:340px!important;width:auto!important;scroll-snap-align:start;margin:0!important}'+
+    /* readable text over the neon background */
+    '.npreadable{background:rgba(12,10,22,.78)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);position:relative;z-index:1}'+
+    /* consent box: solid panel, bright checkbox */
+    '.nppdpa{background:rgba(18,14,30,.94)!important;border:1px solid rgba(237,147,177,.5);border-radius:14px;padding:12px 14px!important;opacity:1!important;color:#F3EFFF;position:relative;z-index:2}'+
+    '.nppdpa input[type=checkbox]{-webkit-appearance:none;appearance:none;width:22px!important;height:22px!important;flex:0 0 22px!important;border:2px solid #ED93B1;border-radius:6px;background:transparent;margin:0!important;cursor:pointer}'+
+    '.nppdpa input[type=checkbox]:checked{background:#ED93B1 url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%231a1026%27 stroke-width=%273.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M5 12l5 5 9-10%27/%3E%3C/svg%3E") center/16px no-repeat}'+
+    '.nppdpa.err{border-color:#ff6b5b}'+
+    /* More sheet */
+    '#npMoreSheet{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}'+
+    '#npMoreSheet .in{width:100%;max-width:520px;margin:0 10px calc(12px + env(safe-area-inset-bottom));padding:16px;border-radius:22px;background:rgba(18,14,30,.97);border:1px solid rgba(199,160,255,.38);box-shadow:0 0 24px rgba(170,110,255,.2);color:var(--ink,#fff)}'+
+    '#npMoreSheet h4{margin:0 0 12px;font-size:17px}'+
+    '#npMoreSheet .it{display:flex;align-items:center;gap:12px;width:100%;padding:14px;margin-top:8px;border-radius:14px;font:inherit;font-size:15px;font-weight:600;color:inherit;text-align:left;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}'+
+    '#npMoreSheet .it svg{color:#ED93B1;flex:0 0 auto}'+
+    '#npMoreSheet .x{width:100%;margin-top:12px;padding:12px;border-radius:14px;font:inherit;font-weight:600;color:inherit;background:transparent;border:1px solid rgba(255,255,255,.18);cursor:pointer}'+
+    '@media (prefers-reduced-motion:reduce){.nptrow,.npswipe{scroll-behavior:auto}}';
+    document.head.appendChild(st);
+  }
+
+  function ic(d){return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>'}
+  var I={
+    table:ic('<path d="M4 10h16M6 10v9M18 10v9M8 6h8l2 4H6z"/>'),
+    plane:ic('<path d="M3 20h18M4 14l16-4-1-3-6 1-5-5H6l2 6-4 1z"/>'),
+    food:ic('<path d="M6 3v8a2 2 0 0 0 4 0V3M8 11v10M16 3c-2 2-2 6 0 8v10"/>'),
+    island:ic('<path d="M3 20c3-2 6-2 9 0s6 2 9 0M12 18V8M12 8c-3-3-6-2-7 0M12 8c3-3 6-2 7 0M12 8c-1-3-3-4-5-4"/>'),
+    sun:ic('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+    dots:ic('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'),
+    chat:ic('<path d="M4 5h16v11H9l-5 4z"/>'),
+    wallet:ic('<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3zM3 7l12-3v3M16 13h2"/>'),
+    plus:ic('<path d="M12 5v14M5 12h14"/>')
+  };
+
+  /* ---------- open a venue the same way a tap on its card does ---------- */
+  function openVenue(c){
+    var card=document.querySelector('[data-id="'+(window.CSS&&CSS.escape?CSS.escape(c.id):c.id)+'"]');
+    if(card){card.click();return}
+    if(typeof window.openService==="function"&&SVC.indexOf(c.cat)>-1){window.openService(c.cat);return}
+    scrollToClubs();
+  }
+  function scrollToClubs(){
+    var h=[].slice.call(document.querySelectorAll("h2,h3")).find(function(x){return /clubs/i.test(x.textContent)&&!inPop(x)});
+    if(h)h.scrollIntoView({behavior:"smooth",block:"start"});
+  }
+  function svc(cat){if(typeof window.openService==="function")window.openService(cat)}
+
+  /* ---------- Tonight in Pattaya + Pattaya today + quick actions ---------- */
+  var dayLabel="Tonight";
+  function tonightCards(){
+    var cl=list().filter(function(c){return c&&c.id!=="np-test-restaurant"});
+    var night=cl.filter(isNight),food=cl.filter(function(c){return c.cat==="indian"});
+    return night.slice(0,6).concat(food.slice(0,3));
+  }
+  function cardHtml(c,i){
+    var bg=c.photo?'url(\''+esc(c.photo)+'\')':'linear-gradient(135deg,'+esc((c.art||[])[0]||"#534AB7")+','+esc((c.art||[])[1]||"#26215C")+')';
+    var open=norm(c.open||"").split(/[–-]/)[0].trim();
+    return '<button type="button" class="nptcard" data-npi="'+i+'"><div class="ph" style="background-image:'+bg+'"></div><div class="bd">'+
+      '<div class="tm">'+esc(/\d/.test(open)?("From "+open):(open||"Open late"))+(c.area?" · "+esc(c.area):"")+'</div>'+
+      '<div class="nm">'+esc(c.name)+'</div><div class="sb">'+esc(c.music||c.sub||"")+'</div>'+
+      '<span class="go">'+(isNight(c)?"Book a table":"Book now")+'</span></div></button>';
+  }
+  function renderTonight(box){
+    var cards=tonightCards(),row=box.querySelector(".nptrow"),h=box.querySelector(".nph h3");
+    if(h)h.textContent=(dayLabel==="Tonight"?"Tonight":dayLabel)+" in Pattaya";
+    if(!row)return;
+    row.innerHTML=cards.length?cards.map(cardHtml).join(""):'<div class="sb" style="opacity:.7;padding:8px">Venues appear here as partners join.</div>';
+    [].forEach.call(row.querySelectorAll(".nptcard"),function(b){b.onclick=function(){openVenue(cards[+b.dataset.npi])}});
+  }
+  var WX={0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Cloudy",45:"Fog",48:"Fog",51:"Drizzle",53:"Drizzle",55:"Drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",80:"Showers",81:"Showers",82:"Heavy showers",95:"Thunderstorm",96:"Thunderstorm",99:"Thunderstorm"};
+  var wxText=null;
+  function loadWeather(box){
+    var el=box.querySelector(".wx span");if(!el)return;
+    if(wxText){el.textContent=wxText;return}
+    try{
+      fetch("https://api.open-meteo.com/v1/forecast?latitude=12.93&longitude=100.88&current=temperature_2m,weather_code&daily=sunset&timezone=Asia%2FBangkok&forecast_days=1")
+      .then(function(r){return r.json()}).then(function(d){
+        var t=Math.round(d.current.temperature_2m),w=WX[d.current.weather_code]||"",ss=(d.daily&&d.daily.sunset&&d.daily.sunset[0]||"").slice(11,16);
+        wxText="Pattaya "+t+"°C"+(w?", "+w.toLowerCase():"")+(ss?"  ·  Sunset "+ss:"");
+        var e=document.querySelector("#npHomeFill .wx span");if(e)e.textContent=wxText;
+      }).catch(function(){});
+    }catch(e){}
+  }
+  function build(){
+    var box=document.createElement("div");box.id="npHomeFill";
+    box.innerHTML='<div class="nph"><h3>Tonight in Pattaya</h3><span>Swipe</span></div><div class="nptrow"></div>'+
+      '<div class="npstrip"><div class="wx">'+I.sun+'<span>Pattaya today</span></div>'+
+      '<div class="sos"><a href="tel:1155">Tourist police 1155</a><a href="tel:1669">Ambulance 1669</a></div></div>'+
+      '<div class="npqa">'+
+        '<button type="button" data-qa="table">'+I.table+'Book a table</button>'+
+        '<button type="button" data-qa="airport">'+I.plane+'Airport pickup</button>'+
+        '<button type="button" data-qa="indian">'+I.food+'Indian food</button>'+
+        '<button type="button" data-qa="tours">'+I.island+'Island tour</button></div>';
+    [].forEach.call(box.querySelectorAll("[data-qa]"),function(b){b.onclick=function(){
+      var q=b.dataset.qa;if(q==="table")scrollToClubs();else svc(q);
+      try{if(window.npTrack)window.npTrack("service_open","quick_"+q)}catch(e){}
+    }});
+    return box;
+  }
+  function placeFill(){
+    if(document.getElementById("npHomeFill"))return;
+    var conv=smallest(/approx\.?\s*rate/i,null,400)||smallest(/(currency|converter)/i,null,400);
+    if(!conv)return;
+    var emp=smallest(/Empowered Girls/i,null,400);
+    var anchor=conv;
+    if(emp){var p=conv.parentElement;while(p&&!p.contains(emp))p=p.parentElement;
+      if(p){anchor=conv;while(anchor.parentElement!==p)anchor=anchor.parentElement}}
+    else{while(anchor.parentElement&&anchor.parentElement.tagName!=="SECTION")anchor=anchor.parentElement}
+    var box=build();anchor.insertAdjacentElement("afterend",box);
+    renderTonight(box);loadWeather(box);
+  }
+  /* date chips (Tonight, Wed 30, ...) change the heading */
+  document.addEventListener("click",function(e){
+    var el=e.target;if(!el||!el.closest||inPop(el))return;
+    for(var i=0;i<4&&el;i++,el=el.parentElement){
+      var t=norm(el.textContent);var m=t.match(/^(tonight|today|mon|tue|wed|thu|fri|sat|sun)[a-z]*\s*(\d{1,2})$/i);
+      if(m){dayLabel=/tonight|today/i.test(m[1])?"Tonight":(m[1].charAt(0).toUpperCase()+m[1].slice(1,3).toLowerCase()+" "+m[2]);
+        var b=document.getElementById("npHomeFill");if(b)renderTonight(b);return}
+    }
+  },true);
+
+  /* ---------- club rows you can swipe ---------- */
+  function swipeRows(){
+    [].forEach.call(document.querySelectorAll("h2,h3"),function(h){
+      if(!/clubs/i.test(h.textContent)||inPop(h)||h.closest("#npHomeFill"))return;
+      var sc=h.parentElement,first=null;
+      for(var n=h.nextElementSibling,k=0;n&&k<4&&!first;n=n.nextElementSibling,k++){if(/^H[1-3]$/.test(n.tagName))break;first=n.matches("[data-id]")?n:n.querySelector("[data-id]")}
+      if(!first&&sc){var nx=sc.nextElementSibling;if(nx&&!nx.querySelector("h2"))first=nx.querySelector("[data-id]")}
+      if(!first)return;
+      var row=first.parentElement;
+      if(row&&!row.classList.contains("npswipe")&&row.querySelectorAll(":scope>[data-id]").length>1)row.classList.add("npswipe");
+    });
+  }
+
+  /* ---------- "from ₹7,800" becomes "Tables from ₹7,800" on nightlife cards ---------- */
+  function priceLabels(){
+    [].forEach.call(document.querySelectorAll("[data-id]"),function(card){
+      if(card.dataset.npTbl)return;
+      var c=list().find(function(x){return x.id===card.dataset.id});if(!isNight(c))return;
+      var w=document.createTreeWalker(card,NodeFilter.SHOW_TEXT,null),n;
+      while((n=w.nextNode())){if(/^\s*from\s*(?=[₹฿$\d])/i.test(n.nodeValue)||/^\s*from\s*$/i.test(n.nodeValue)&&n.parentElement&&/^\s*from\s*[₹฿]/i.test(n.parentElement.textContent)){
+        n.nodeValue=n.nodeValue.replace(/^(\s*)from/i,"$1Tables from");card.dataset.npTbl="1";break}}
+    });
+  }
+
+  /* ---------- bottom nav: 5 tabs + "More" (Concierge, Earn, For clubs stay, just moved) ---------- */
+  var MORE=["Concierge","Earn","For clubs"],moreBtn=null,navInfo=null;
+  function findNav(){
+    var navs=[].slice.call(document.querySelectorAll("nav, [role=navigation]")).filter(function(n){var t=norm(n.textContent);return /Explore/.test(t)&&/Bookings/.test(t)});
+    var nav=navs[0];if(!nav)return null;
+    function item(label){var h=[].slice.call(nav.querySelectorAll("*")).filter(function(el){return norm(el.textContent)===label});h.sort(function(a,b){return a.querySelectorAll("*").length-b.querySelectorAll("*").length});return h[0]}
+    var a=item("Explore"),b=item("Map");if(!a||!b)return null;
+    var p=a.parentElement;while(p&&!p.contains(b))p=p.parentElement;if(!p)return null;
+    function top(el){while(el&&el.parentElement!==p)el=el.parentElement;return el}
+    var items={};[].forEach.call(p.children,function(ch){var t=norm(ch.textContent);if(t)items[t]=ch});
+    return {nav:nav,row:p,items:items,top:top};
+  }
+  function setupNav(){
+    if(moreBtn&&document.body.contains(moreBtn))return;
+    var n=findNav();if(!n)return;
+    var hidden=MORE.map(function(l){return n.items[l]}).filter(Boolean);if(hidden.length<2)return;
+    var tpl=n.items["Buddy"]||n.items["Map"];if(!tpl)return;
+    moreBtn=tpl.cloneNode(true);
+    moreBtn.removeAttribute("onclick");moreBtn.removeAttribute("id");moreBtn.removeAttribute("href");
+    [].forEach.call(moreBtn.querySelectorAll("[onclick],[id]"),function(x){x.removeAttribute("onclick");x.removeAttribute("id")});
+    Object.keys(moreBtn.dataset).forEach(function(k){delete moreBtn.dataset[k]});
+    var lab=[].slice.call(moreBtn.querySelectorAll("*")).concat([moreBtn]).filter(function(el){return norm(el.textContent)===norm(tpl.textContent)&&!el.children.length})[0];
+    if(lab)lab.textContent="More";else moreBtn.appendChild(document.createTextNode("More"));
+    var sv=moreBtn.querySelector("svg,img,i");if(sv){var t=document.createElement("span");t.innerHTML=I.dots;var ns=t.firstChild;ns.setAttribute("width",sv.getAttribute("width")||"24");ns.setAttribute("height",sv.getAttribute("height")||"24");sv.replaceWith(ns)}
+    moreBtn.id="npMoreTab";moreBtn.setAttribute("aria-label","More");
+    moreBtn.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();openMore(hidden)});
+    var base=tpl.className;
+    hidden.forEach(function(h){h.dataset.npBase=h.className;h.style.display="none";h.dataset.npMoved="more"});
+    var last=hidden[hidden.length-1];last.insertAdjacentElement("afterend",moreBtn);
+    base=base.split(/\s+/).filter(function(c){return !/^(on|active|sel|selected|current|cur)$/i.test(c)}).join(" ");
+    moreBtn.className=base;
+    var cs=getComputedStyle(n.row);if(cs.display==="grid")n.row.style.gridTemplateColumns="repeat("+[].filter.call(n.row.children,function(c){return c.style.display!=="none"}).length+",minmax(0,1fr))";
+    navInfo={row:n.row,hidden:hidden,tpl:tpl};
+    /* light up "More" when one of its tabs is the open page */
+    new MutationObserver(function(){
+      var extra=[];hidden.forEach(function(h){h.className.split(/\s+/).forEach(function(c){if(c&&h.dataset.npBase.split(/\s+/).indexOf(c)<0&&extra.indexOf(c)<0)extra.push(c)})});
+      var want=extra.length?base+" "+extra.join(" "):base;
+      if(moreBtn.className!==want)moreBtn.className=want;
+    }).observe(n.row,{attributes:true,subtree:true,attributeFilter:["class"]});
+  }
+  function openMore(hidden){
+    var old=document.getElementById("npMoreSheet");if(old)old.remove();
+    var ico={"Concierge":I.chat,"Earn":I.wallet,"For clubs":I.plus};
+    var sh=document.createElement("div");sh.id="npMoreSheet";
+    sh.innerHTML='<div class="in" role="dialog" aria-label="More"><h4>More</h4>'+hidden.map(function(h,i){var t=norm(h.textContent);return '<button type="button" class="it" data-i="'+i+'">'+(ico[t]||I.dots)+esc(t)+'</button>'}).join("")+'<button type="button" class="x">Close</button></div>';
+    sh.addEventListener("click",function(e){
+      var it=e.target.closest(".it");
+      if(it){sh.remove();var h=hidden[+it.dataset.i];var clk=h.matches("button,a,[onclick]")?h:(h.querySelector("button,a,[onclick]")||h);clk.click();return}
+      if(e.target===sh||e.target.closest(".x"))sh.remove();
+    });
+    document.body.appendChild(sh);
+  }
+
+  /* ---------- smaller floating Raju above the nav bar + bottom space ---------- */
+  function navGap(){
+    var n=document.querySelector("#npMoreTab");var nav=n&&n.closest("nav,[role=navigation]");
+    if(!nav){var f=findNav();nav=f&&f.nav}
+    if(!nav)return 0;var r=nav.getBoundingClientRect();if(!r.height)return 0;return Math.max(0,window.innerHeight-r.top);
+  }
+  var fab=null;
+  function findFab(){
+    if(fab&&document.body.contains(fab))return fab;
+    var W=window.innerWidth,H=window.innerHeight,best=null;
+    [].forEach.call(document.querySelectorAll("body *"),function(el){
+      if(el.closest("nav,[role=navigation],#panel,.sheet,#rajuChat,#npMoreSheet,#npHomeFill"))return;
+      if(getComputedStyle(el).position!=="fixed")return;
+      var r=el.getBoundingClientRect();
+      if(r.width<40||r.width>260||r.height<40||r.height>260||r.right<W*0.6||r.bottom<H*0.5)return;
+      if(!el.querySelector("img,svg,canvas,video")&&!/raju|help chahiye/i.test(el.textContent||""))return;
+      if(el.querySelector("nav")||best)return;
+      best=el;
+    });
+    var p=best;while(p&&p.parentElement&&p.parentElement!==document.body){if(getComputedStyle(p.parentElement).position==="fixed"){var pr=p.parentElement.getBoundingClientRect();if(pr.width<=260&&pr.height<=260)best=p.parentElement}p=p.parentElement}
+    return fab=best;
+  }
+  function placeRaju(){
+    var g=navGap();if(!g)return;
+    var f=findFab();
+    if(f){f.style.setProperty("scale","0.66");f.style.setProperty("transform-origin","100% 100%");
+      f.style.setProperty("top","auto","important");f.style.setProperty("bottom",(g+10)+"px","important");f.style.setProperty("right","12px","important");f.dataset.npFab="1"}
+    var pad=(g+28)+"px";
+    document.body.style.paddingBottom=pad;
+    [].forEach.call(document.querySelectorAll("main,section,#home,#explore,#night,#cats,.page,.screen,.view"),function(el){
+      if(el.closest("#panel,.sheet,#rajuChat"))return;
+      var cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.clientHeight>window.innerHeight*0.6)el.style.paddingBottom=pad;
+    });
+  }
+
+  /* ---------- readable text over the neon sign ---------- */
+  function readable(){
+    [/Pattaya made easy for Indian travellers/i,/^\s*Tonight\b.{8,}/i].forEach(function(re){
+      var el=smallest(re,null,260);if(!el||el.closest("#npHomeFill")||el.dataset.npRead)return;
+      var box=el;
+      for(var i=0;i<3&&box.parentElement;i++){var cs=getComputedStyle(box);if(parseFloat(cs.borderTopWidth)>0||parseFloat(cs.borderTopLeftRadius)>=10)break;box=box.parentElement}
+      if(box.tagName==="SECTION"||box===document.body)box=el;
+      box.classList.add("npreadable");el.dataset.npRead="1";
+    });
+  }
+
+  function run(){
+    [placeFill,swipeRows,priceLabels,setupNav,placeRaju,readable].forEach(function(f){try{f()}catch(e){}});
+  }
+  var busy=false;
+  new MutationObserver(function(m){
+    if(busy)return;
+    if(m.every(function(x){return x.target&&x.target.closest&&x.target.closest("#npHomeFill,#npMoreSheet")}))return;
+    busy=true;setTimeout(function(){busy=false;run()},250);
+  }).observe(document.body,{childList:true,subtree:true});
+  window.addEventListener("resize",function(){setTimeout(placeRaju,100)});
+  run();setTimeout(run,800);setTimeout(run,2500);
 })();
