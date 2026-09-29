@@ -1288,7 +1288,22 @@
     '#npMoreSheet .it{display:flex;align-items:center;gap:12px;width:100%;padding:14px;margin-top:8px;border-radius:14px;font:inherit;font-size:15px;font-weight:600;color:inherit;text-align:left;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}'+
     '#npMoreSheet .it svg{color:#ED93B1;flex:0 0 auto}'+
     '#npMoreSheet .x{width:100%;margin-top:12px;padding:12px;border-radius:14px;font:inherit;font-weight:600;color:inherit;background:transparent;border:1px solid rgba(255,255,255,.18);cursor:pointer}'+
-    '@media (prefers-reduced-motion:reduce){.nptrow,.npswipe{scroll-behavior:auto}}';
+    '@media (prefers-reduced-motion:reduce){.nptrow,.npswipe{scroll-behavior:auto}}'+
+    /* compact version, as in the agreed preview */
+    '#npHomeFill .nph{margin-bottom:8px}#npHomeFill .nph h3{font-size:17px}#npHomeFill .npall{cursor:pointer;font-size:13px}'+
+    '.nptrow{gap:10px}'+
+    '.nptcard{flex:0 0 42%;max-width:170px;min-height:118px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;border-radius:16px}'+
+    '.nptcard .ph{position:absolute;inset:0;height:auto}'+
+    '.nptcard .ph:after{background:linear-gradient(180deg,rgba(10,8,20,.25) 0%,rgba(10,8,20,.92) 70%)}'+
+    '.nptcard .bd{position:relative;z-index:1;padding:9px 10px 10px}'+
+    '.nptcard .tm{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '.nptcard .nm{font-size:14px;margin:1px 0}.nptcard .sb{font-size:11px}'+
+    '.nptcard .go{margin-top:4px;padding:0;border:0;border-radius:0;font-size:11px;color:#ED93B1}'+
+    '.npstrip{flex-wrap:nowrap;gap:6px;padding:7px 10px;border-radius:12px;font-size:12px}'+
+    '.npstrip .wx{gap:5px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.npstrip .wx span{overflow:hidden;text-overflow:ellipsis}'+
+    '.npstrip .sos{flex:0 0 auto;gap:5px}.npstrip .sos a{font-size:11px;padding:3px 8px}'+
+    '.npqa{gap:6px;margin-top:8px}'+
+    '.npqa button{gap:4px;padding:8px 2px;border-radius:12px;font-size:11px}.npqa button svg{width:18px;height:18px}';
     document.head.appendChild(st);
   }
 
@@ -1327,7 +1342,7 @@
   }
   function cardHtml(c,i){
     var bg=c.photo?'url(\''+esc(c.photo)+'\')':'linear-gradient(135deg,'+esc((c.art||[])[0]||"#534AB7")+','+esc((c.art||[])[1]||"#26215C")+')';
-    var open=norm(c.open||"").split(/[–-]/)[0].trim();
+    var open=norm(c.open||"").split(/\s[—–-]\s|[–]/)[0].trim();if(!/\d/.test(open))open=open.split(/[—,]/)[0].trim();
     return '<button type="button" class="nptcard" data-npi="'+i+'"><div class="ph" style="background-image:'+bg+'"></div><div class="bd">'+
       '<div class="tm">'+esc(/\d/.test(open)?("From "+open):(open||"Open late"))+(c.area?" · "+esc(c.area):"")+'</div>'+
       '<div class="nm">'+esc(c.name)+'</div><div class="sb">'+esc(c.music||c.sub||"")+'</div>'+
@@ -1349,21 +1364,22 @@
       fetch("https://api.open-meteo.com/v1/forecast?latitude=12.93&longitude=100.88&current=temperature_2m,weather_code&daily=sunset&timezone=Asia%2FBangkok&forecast_days=1")
       .then(function(r){return r.json()}).then(function(d){
         var t=Math.round(d.current.temperature_2m),w=WX[d.current.weather_code]||"",ss=(d.daily&&d.daily.sunset&&d.daily.sunset[0]||"").slice(11,16);
-        wxText="Pattaya "+t+"°C"+(w?", "+w.toLowerCase():"")+(ss?"  ·  Sunset "+ss:"");
+        wxText=t+"°C"+(w?" "+w.toLowerCase():"")+(ss?" · Sunset "+ss:"");
         var e=document.querySelector("#npHomeFill .wx span");if(e)e.textContent=wxText;
       }).catch(function(){});
     }catch(e){}
   }
   function build(){
     var box=document.createElement("div");box.id="npHomeFill";
-    box.innerHTML='<div class="nph"><h3>Tonight in Pattaya</h3><span>Swipe</span></div><div class="nptrow"></div>'+
-      '<div class="npstrip"><div class="wx">'+I.sun+'<span>Pattaya today</span></div>'+
-      '<div class="sos"><a href="tel:1155">Tourist police 1155</a><a href="tel:1669">Ambulance 1669</a></div></div>'+
+    box.innerHTML='<div class="nph"><h3>Tonight in Pattaya</h3><span class="npall" role="button" tabindex="0">See all</span></div><div class="nptrow"></div>'+
+      '<div class="npstrip"><div class="wx">'+I.sun.replace(/22/g,"16")+'<span>Pattaya today</span></div>'+
+      '<div class="sos"><a href="tel:1155">Police 1155</a><a href="tel:1669">SOS 1669</a></div></div>'+
       '<div class="npqa">'+
-        '<button type="button" data-qa="table">'+I.table+'Book a table</button>'+
-        '<button type="button" data-qa="airport">'+I.plane+'Airport pickup</button>'+
+        '<button type="button" data-qa="table">'+I.table+'Table</button>'+
+        '<button type="button" data-qa="airport">'+I.plane+'Pickup</button>'+
         '<button type="button" data-qa="indian">'+I.food+'Indian food</button>'+
         '<button type="button" data-qa="tours">'+I.island+'Island tour</button></div>';
+    box.querySelector(".npall").onclick=scrollToClubs;
     [].forEach.call(box.querySelectorAll("[data-qa]"),function(b){b.onclick=function(){
       var q=b.dataset.qa;if(q==="table")scrollToClubs();else svc(q);
       try{if(window.npTrack)window.npTrack("service_open","quick_"+q)}catch(e){}
@@ -1437,8 +1453,10 @@
     moreBtn.removeAttribute("onclick");moreBtn.removeAttribute("id");moreBtn.removeAttribute("href");
     [].forEach.call(moreBtn.querySelectorAll("[onclick],[id]"),function(x){x.removeAttribute("onclick");x.removeAttribute("id")});
     Object.keys(moreBtn.dataset).forEach(function(k){delete moreBtn.dataset[k]});
-    var lab=[].slice.call(moreBtn.querySelectorAll("*")).concat([moreBtn]).filter(function(el){return norm(el.textContent)===norm(tpl.textContent)&&!el.children.length})[0];
-    if(lab)lab.textContent="More";else moreBtn.appendChild(document.createTextNode("More"));
+    var tw=document.createTreeWalker(moreBtn,NodeFilter.SHOW_TEXT,null),tn,done=false,tns=[];
+    while((tn=tw.nextNode()))if(tn.nodeValue.trim())tns.push(tn);
+    tns.forEach(function(x){if(!done){x.nodeValue=x.nodeValue.replace(/\S[\s\S]*\S|\S/,"More");done=true}else x.nodeValue=""});
+    if(!done)moreBtn.appendChild(document.createTextNode("More"));
     var sv=moreBtn.querySelector("svg,img,i");if(sv){var t=document.createElement("span");t.innerHTML=I.dots;var ns=t.firstChild;ns.setAttribute("width",sv.getAttribute("width")||"24");ns.setAttribute("height",sv.getAttribute("height")||"24");sv.replaceWith(ns)}
     moreBtn.id="npMoreTab";moreBtn.setAttribute("aria-label","More");
     moreBtn.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();openMore(hidden)});
@@ -1515,8 +1533,18 @@
     });
   }
 
+  function closeGap(){
+    var box=document.getElementById("npHomeFill");if(!box||!box.offsetParent)return;
+    var conv=smallest(/approx\.?\s*rate/i,null,400)||smallest(/(currency|converter)/i,null,400);if(!conv)return;
+    var row=conv;for(var i=0;i<6&&row.parentElement;i++){if(/Language/i.test(row.textContent)&&!row.contains(box))break;row=row.parentElement}
+    if(row.contains(box))row=conv;
+    var cur=parseFloat(box.style.marginTop)||0;
+    var stuff=box.getBoundingClientRect().top-row.getBoundingClientRect().bottom-cur;
+    var want=stuff>16?(16-stuff):14;
+    if(Math.abs(want-cur)>1)box.style.marginTop=Math.round(want)+"px";
+  }
   function run(){
-    [placeFill,swipeRows,priceLabels,setupNav,placeRaju,readable].forEach(function(f){try{f()}catch(e){}});
+    [placeFill,swipeRows,priceLabels,setupNav,placeRaju,readable,closeGap].forEach(function(f){try{f()}catch(e){}});
   }
   var busy=false;
   new MutationObserver(function(m){
@@ -1524,6 +1552,7 @@
     if(m.every(function(x){return x.target&&x.target.closest&&x.target.closest("#npHomeFill,#npMoreSheet")}))return;
     busy=true;setTimeout(function(){busy=false;run()},250);
   }).observe(document.body,{childList:true,subtree:true});
-  window.addEventListener("resize",function(){setTimeout(placeRaju,100)});
+  window.addEventListener("resize",function(){setTimeout(function(){placeRaju();closeGap()},100)});
+  window.addEventListener("load",function(){setTimeout(closeGap,300)});
   run();setTimeout(run,800);setTimeout(run,2500);
 })();
