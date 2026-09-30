@@ -366,6 +366,22 @@
   if(typeof ask!=="function"||!window.supabase)return;
   var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
   var CRISIS=/suicid|kill myself|end my life|want to die|self.?harm|hopeless|unsafe|follow(ing|ed)? me|harass|attack|spiked|drugged|rape|assault|kidnap|emergency|accident|injur|bleed|unconscious|chest pain|overdose|passport|stolen|robbed/i;
+  /* Raju's own original character (1 Oct 2026). Not based on any real actor or film character. */
+  var PERSONA="RAJU'S CHARACTER (always stay in this character): You are Raju, Namaste Pattaya's own friendly local guide, an original character. "+
+    "You are a warm Indian 'bhai' who has lived in Pattaya for many years and knows every street, club, Indian restaurant, beach and shortcut. "+
+    "Speak warm, simple Hinglish (mix easy Hindi and English) unless the guest writes in another language; then answer in their language. "+
+    "Be a little filmy and cheerful, but always respectful. Greet with 'Namaste ji' at the start of a new chat. Call guests 'sir', 'madam' or 'bhai' naturally. "+
+    "Keep answers short and useful (2 to 5 short lines on a phone). "+
+    "FILMI STYLE: you love Bollywood and talk with filmi flair. In about half of your replies (never in emergencies or serious problems), add ONE short filmi one-liner of your own. "+
+    "Use Raju's own signature lines, or write new original ones in the same style: 'Tension mat lo, Raju hai na!' / 'Pattaya aaye ho, toh yaadein le kar hi jaoge!' / "+
+    "'Raju ke hote hue, aapka plan kabhi flop nahi hoga.' / 'Table book karo, baaki picture Raju sambhal lega.' / 'Yeh Pattaya hai bhai, yahan raatein bhi Bollywood jitni lambi hoti hain.' / "+
+    "'Dost ka saath aur Raju ki planning, hit hi hit!' / 'Khana veg ho ya non-veg, swaad full-on filmi hoga!' / 'Sunset dekhna hai? 6 baje beach pe aaiye, scene ready hai.' / "+
+    "'Safety pehle, masti baad mein. Yeh Raju ka usool hai.' / 'Aap mehmaan ho, aur Pattaya aapka stage!' / 'Kal ka episode bhi plan kar dein?'. "+
+    "Only use these or new original lines: never copy or slightly change real dialogues from films, and never quote song lyrics. "+
+    "When it really helps, end with one short tip starting with 'Raju ki salah:' (for example safety, timing, Grab taxi, dress code, carrying passport copy). "+
+    "Values: safety first, honest advice, never pushy, never flirt, always respectful to women, never help with anything illegal. "+
+    "Never say you are a real person, a film character or any actor, and never quote film dialogues or song lyrics. If asked who you are: 'Main Raju hoon, Namaste Pattaya ka apna guide.' "+
+    "In any emergency, drop the jokes: be calm and clear, and give Tourist Police 1155 and ambulance 1669.";
   var hist=[];
   function venues(){
     if(typeof CLUBS==="undefined")return "";
@@ -382,7 +398,7 @@
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
       var extra=window.__npOrderInfo||"";window.__npOrderInfo=null;
-      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+venues(),lang:lang}});
+      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+PERSONA+"\n\n"+venues(),lang:lang}});
       var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
       var r=await Promise.race([call,timeout]);
       if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
@@ -2965,4 +2981,46 @@
   function show(){document.documentElement.classList.remove("np-loading")}
   requestAnimationFrame(function(){requestAnimationFrame(show)});
   setTimeout(show,800);
+})();
+
+/* ===== Card backgrounds (1 Oct 2026): soft artwork on the right side of 10 Home cards.
+   Drawn with code (no photos), sits behind the text, nothing else changes. ===== */
+(function(){
+  if(document.getElementById("npArtCss"))return;
+  function svg(vb,body){return 'url("data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+vb+'" preserveAspectRatio="xMaxYMid slice">'+body+'</svg>')+'")'}
+  function glow(id,c,o){return '<radialGradient id="'+id+'"><stop offset="0" stop-color="'+c+'" stop-opacity="'+o+'"/><stop offset="1" stop-color="'+c+'" stop-opacity="0"/></radialGradient>'}
+  var ART={
+    raju:svg("0 0 380 330",'<defs>'+glow("a","#7F77DD",".45")+glow("b","#1D9E75",".22")+'</defs><circle cx="70" cy="70" r="90" fill="url(#a)"/><circle cx="340" cy="300" r="90" fill="url(#b)"/>'+
+      '<g fill="#AFA9EC" fill-opacity=".1"><rect x="0" y="306" width="380" height="24"/><rect x="18" y="282" width="16" height="48"/><rect x="38" y="272" width="22" height="58"/><rect x="250" y="278" width="18" height="52"/><rect x="272" y="266" width="24" height="64"/><rect x="352" y="282" width="20" height="48"/></g>'+
+      '<g fill="none" stroke="#AFA9EC" stroke-opacity=".18" stroke-width="1.2"><circle cx="200" cy="296" r="30"/><path d="M200 266 V326 M170 296 H230 M179 275 L221 317 M221 275 L179 317"/></g>'+
+      '<g fill="none" stroke="#5DCAA5" stroke-opacity=".2" stroke-width="1.6"><path d="M335 330 C338 312 336 300 330 288 M330 288 C318 282 308 284 300 292 M330 288 C340 278 352 278 360 284 M330 288 C326 276 318 270 308 270"/></g>'+
+      '<g fill="#fff" opacity=".3"><circle cx="150" cy="16" r="1.2"/><circle cx="30" cy="190" r="1"/><circle cx="365" cy="200" r="1.2"/></g>'),
+    lang:svg("0 0 140 170",'<defs>'+glow("a","#7F77DD",".35")+'</defs><circle cx="125" cy="150" r="60" fill="url(#a)"/><g fill="#CECBF6" font-family="sans-serif"><text x="74" y="22" font-size="13" opacity=".12">नमस्ते</text><text x="92" y="42" font-size="11" opacity=".1">สวัสดี</text><text x="76" y="162" font-size="11" opacity=".1">வணக்கம்</text></g>'),
+    conv:svg("0 0 230 170",'<defs>'+glow("a","#1D9E75",".35")+'</defs><circle cx="200" cy="150" r="80" fill="url(#a)"/><text x="150" y="150" font-size="90" font-family="sans-serif" fill="#9FE1CB" opacity=".08">฿</text><text x="185" y="95" font-size="70" font-family="sans-serif" fill="#FAC775" opacity=".08">₹</text><path d="M120 160 C160 120 190 150 235 105" fill="none" stroke="#5DCAA5" stroke-opacity=".3" stroke-width="1.5"/>'),
+    girls:svg("0 0 380 160",'<defs>'+glow("a","#ED93B1",".55")+glow("b","#AFA9EC",".45")+'</defs><circle cx="300" cy="40" r="90" fill="url(#a)"/><circle cx="350" cy="130" r="70" fill="url(#b)"/><circle cx="220" cy="140" r="50" fill="url(#a)"/>'+
+      '<circle cx="270" cy="70" r="12" fill="#F4C0D1" opacity=".35"/><circle cx="330" cy="95" r="7" fill="#F4C0D1" opacity=".5"/><circle cx="245" cy="30" r="5" fill="#fff" opacity=".4"/><circle cx="360" cy="45" r="9" fill="#CECBF6" opacity=".35"/>'+
+      '<path d="M150 150 C230 90 280 150 380 70" fill="none" stroke="#ED93B1" stroke-opacity=".55" stroke-width="2.5"/><path d="M170 160 C250 110 300 165 390 95" fill="none" stroke="#ED93B1" stroke-opacity=".35" stroke-width="1.2"/>'+
+      '<g transform="translate(318 58)" fill="none" stroke="#F4C0D1" stroke-opacity=".55" stroke-width="1.6"><path d="M0 26 C-12 14 -12 0 0 -10 C12 0 12 14 0 26Z"/><path d="M0 26 C-20 22 -30 10 -28 -2 C-16 0 -6 10 0 26Z"/><path d="M0 26 C20 22 30 10 28 -2 C16 0 6 10 0 26Z"/></g>'),
+    gold:svg("0 0 380 170",'<defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#FAC775" stop-opacity="0"/><stop offset=".45" stop-color="#FAC775" stop-opacity=".9"/><stop offset=".8" stop-color="#EF9F27" stop-opacity=".6"/><stop offset="1" stop-color="#BA7517" stop-opacity=".2"/></linearGradient>'+glow("g","#EF9F27",".35")+'</defs>'+
+      '<circle cx="320" cy="60" r="110" fill="url(#g)"/><path d="M120 170 C200 110 250 150 390 60" fill="none" stroke="url(#w)" stroke-width="3"/><path d="M140 175 C220 125 270 165 400 80" fill="none" stroke="url(#w)" stroke-width="1.5"/><path d="M100 165 C190 100 240 130 390 35" fill="none" stroke="url(#w)" stroke-width="1"/>'+
+      '<circle cx="300" cy="45" r="2.5" fill="#FAEEDA"/><circle cx="345" cy="110" r="2" fill="#FAEEDA" opacity=".8"/>'),
+    packages:svg("0 0 180 150",'<defs>'+glow("a","#F0997B",".4")+'</defs><circle cx="150" cy="40" r="70" fill="url(#a)"/><g fill="none" stroke="#FAC775" stroke-opacity=".35" stroke-width="1.4"><rect x="118" y="30" width="44" height="34" rx="4"/><path d="M140 30 V64 M118 44 H162"/><path d="M140 30 C132 18 122 22 130 30 M140 30 C148 18 158 22 150 30"/></g><g fill="#FAC775" opacity=".5"><circle cx="112" cy="70" r="2"/><circle cx="170" cy="22" r="2.5"/><circle cx="155" cy="100" r="1.8"/></g>'),
+    buddy:svg("0 0 180 150",'<defs>'+glow("a","#ED93B1",".38")+'</defs><circle cx="145" cy="45" r="70" fill="url(#a)"/><g stroke="#ED93B1" stroke-opacity=".35" stroke-width="1.2"><path d="M110 30 L150 50 L130 85 L165 95 M150 50 L172 28 M130 85 L105 70"/></g><g fill="#ED93B1" fill-opacity=".55"><circle cx="110" cy="30" r="5"/><circle cx="150" cy="50" r="7"/><circle cx="130" cy="85" r="6"/><circle cx="165" cy="95" r="4.5"/><circle cx="172" cy="28" r="4"/></g>'),
+    mall:svg("0 0 180 150",'<defs>'+glow("a","#7F77DD",".42")+'</defs><circle cx="150" cy="50" r="70" fill="url(#a)"/><g fill="none" stroke="#CECBF6" stroke-opacity=".35" stroke-width="1.4"><path d="M118 40 H150 L154 80 H114 Z"/><path d="M126 40 C126 28 142 28 142 40"/><path d="M148 58 H172 L175 92 H145 Z"/><path d="M154 58 C154 48 166 48 166 58"/></g>'),
+    paybill:svg("0 0 180 150",'<defs>'+glow("a","#1D9E75",".4")+'</defs><circle cx="150" cy="50" r="70" fill="url(#a)"/><g fill="none" stroke="#9FE1CB" stroke-opacity=".38" stroke-width="1.3"><path d="M120 20 H160 V78 L154 73 L148 78 L142 73 L136 78 L130 73 L124 78 L120 74 Z"/><path d="M128 34 H152 M128 44 H152 M128 54 H144"/><path d="M140 20 V78" stroke-dasharray="3 3"/></g><g fill="none" stroke="#5DCAA5" stroke-opacity=".5" stroke-width="1.8"><circle cx="158" cy="104" r="11"/><path d="M152 104 L156 108 L164 99"/></g>'),
+    dash:svg("0 0 180 150",'<defs>'+glow("a","#EF9F27",".35")+'</defs><circle cx="150" cy="60" r="70" fill="url(#a)"/><g fill="#FAC775" fill-opacity=".22"><rect x="112" y="80" width="12" height="30" rx="2"/><rect x="130" y="64" width="12" height="46" rx="2"/><rect x="148" y="48" width="12" height="62" rx="2"/><rect x="166" y="30" width="12" height="80" rx="2"/></g><path d="M108 76 L128 60 L146 64 L170 26" fill="none" stroke="#FAC775" stroke-opacity=".6" stroke-width="1.8"/><circle cx="170" cy="26" r="3.5" fill="#FAC775" fill-opacity=".8"/>')
+  };
+  var MAP=[["#rajuCard","raju"],["#npxLang","lang"],[".npx-tools","conv"],[".hubtile.ladies","girls"],[".goldarea","gold"],
+    ['.hubtile[data-go="packages"]',"packages",'rgba(240,153,123,.45)'],['.hubtile[data-go="buddy"]',"buddy",'rgba(237,147,177,.45)'],
+    ['.hubtile[data-go="mall"]',"mall",'rgba(175,169,236,.45)'],['.hubtile[data-go="paybill"]',"paybill",'rgba(93,202,165,.45)'],['.hubtile[data-go="dash"]',"dash",'rgba(239,159,39,.45)']];
+  var css='.npart{isolation:isolate}.npart::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-repeat:no-repeat;background-size:100% 100%}';
+  css+='.goldarea.npart::before{bottom:auto;height:170px;border-bottom-left-radius:0;border-bottom-right-radius:0;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}';
+  MAP.forEach(function(m){css+=m[0]+'.npart::before{background-image:'+ART[m[1]]+'}';if(m[2])css+=m[0]+'.npart{border-color:'+m[2]+'}'});
+  var st=document.createElement("style");st.id="npArtCss";st.textContent=css;document.head.appendChild(st);
+  function tag(){MAP.forEach(function(m){document.querySelectorAll(m[0]).forEach(function(el){
+    if(el.classList.contains("npart"))return;
+    if(getComputedStyle(el).position==="static")el.style.position="relative";
+    el.classList.add("npart")})})}
+  tag();window.addEventListener("load",tag);setTimeout(tag,1500);
+  var busy=false;new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;tag()})}).observe(document.body,{childList:true,subtree:true});
 })();
