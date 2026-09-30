@@ -2959,3 +2959,10 @@
   sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
   window.npAdvanceSettings=ADV;
 })();
+
+/* ===== no-flash: Home is arranged, show the page (index.html hides it for a moment while loading) ===== */
+(function(){
+  function show(){document.documentElement.classList.remove("np-loading")}
+  requestAnimationFrame(function(){requestAnimationFrame(show)});
+  setTimeout(show,800);
+})();
