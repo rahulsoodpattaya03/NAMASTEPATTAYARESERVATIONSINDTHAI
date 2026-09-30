@@ -2770,3 +2770,50 @@
   window.addEventListener("load",function(){setTimeout(apply,300)});
   document.addEventListener("visibilitychange",function(){if(!document.hidden)apply()});
 })();
+
+/* ===== VIP Beach Clubs right after the night clubs: own row on Home (after the club rows),
+   and in the full list they now come straight after the night clubs instead of at the bottom ===== */
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function beach(){return CLUBS.filter(function(c){return c&&c.cat==="beach"})}
+  /* 1. order: beach clubs directly after the last night club */
+  function reorder(){
+    var b=beach();if(!b.length)return false;
+    var rest=CLUBS.filter(function(c){return !(c&&c.cat==="beach")}),last=-1;
+    rest.forEach(function(c,i){if(c&&c.cat==="nightlife")last=i});
+    if(last<0)return false;
+    var want=rest.slice(0,last+1).concat(b,rest.slice(last+1));
+    if(want.every(function(c,i){return CLUBS[i]===c}))return false;
+    Array.prototype.splice.apply(CLUBS,[0,CLUBS.length].concat(want));
+    try{if(typeof renderGrid==="function")renderGrid()}catch(e){}
+    return true;
+  }
+  /* 2. Home row "VIP Beach Clubs" after the club rows */
+  function row(){
+    var after=document.getElementById("afterRail")||document.getElementById("indRail");if(!after)return;
+    var list=beach();var r=document.getElementById("npBeachRail");
+    if(!list.length){if(r){r.remove();var h=document.getElementById("npBeachHead");if(h)h.remove()}return}
+    if(!r){
+      var head=document.createElement("div");head.className="lrow";head.id="npBeachHead";head.style.margin="0 0 10px";
+      head.innerHTML='<h2 class="sectiontitle" style="font-size:20px;margin:0">VIP Beach Clubs · sunset to late</h2><span class="off30">Daybeds &amp; cabanas</span>';
+      r=document.createElement("div");r.className="rail";r.id="npBeachRail";
+      after.insertAdjacentElement("afterend",head);head.insertAdjacentElement("afterend",r);
+    }
+    var key=list.map(function(c){return c.id}).join(",")+"|"+(typeof cur!=="undefined"?cur:"");
+    if(r.dataset.k===key)return;r.dataset.k=key;r.innerHTML="";
+    list.forEach(function(c){
+      var paid=(c.pkgs||[]).map(function(p){return p.p}).filter(Boolean),from=paid.length?Math.min.apply(null,paid):0;
+      var b=document.createElement("button");b.className="rcard";b.type="button";
+      b.innerHTML='<div class="art" style="'+(typeof artStyle==="function"?artStyle(c):"")+'"><span class="live">Beach club</span><span class="name"></span></div>'+
+        '<div class="meta"><div class="row"><span class="mu"></span></div><div class="row"><span class="hr"></span><span class="from">'+(from&&typeof money==="function"?"from "+money(from):"Book")+'</span></div></div>';
+      b.querySelector(".name").textContent=c.name;b.querySelector(".mu").textContent=c.music||c.sub||"Beach club";
+      b.querySelector(".hr").textContent=/\d/.test(c.open||"")?c.open:(c.area||"Pattaya");
+      b.onclick=function(){try{if(window.npTrack)window.npTrack("place_view",c.id)}catch(e){}if(typeof openClub==="function")openClub(c)};
+      r.appendChild(b);
+    });
+  }
+  function run(){try{reorder()}catch(e){}try{row()}catch(e){}}
+  run();window.addEventListener("load",run);setTimeout(run,1500);setTimeout(run,4000);
+  var btn=document.getElementById("curBtn");if(btn)btn.addEventListener("click",function(){setTimeout(row,50)});
+})();
