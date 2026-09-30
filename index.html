@@ -2630,7 +2630,7 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
 .roles button small{display:block;color:var(--muted);font-weight:400;font-size:11px}
 .atabs button[aria-selected="true"],.roles button[aria-pressed="true"]{border-color:var(--glow);box-shadow:0 0 0 2px var(--glow)}
 </style>
-<script>
+<script type="text/plain" data-note="old broken copy, kept but switched off">
 (function(){
   var SUPA_URL="https://mymtgbmcjbwsnetzwgoy.supabase.co";
   var SUPA_KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
@@ -4294,7 +4294,7 @@ body{top:0!important}
   var user=null,isAdm=false,myStaff={};
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
-  function M(n){n=Number(n)||0;return n?money(n):"฿0"}
+  function M(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")} /* dashboards always in baht (bills are in baht) */
   function openSheet(){sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
   function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+ico("close")+'</button></div>'}
   function lvlFor(v){return isAdm?99:(LV[myStaff[v]]||0)}
@@ -4916,7 +4916,7 @@ body{top:0!important}
 .nph h3{position:relative;z-index:1;margin:44px 0 0;font-size:clamp(24px,7vw,34px);line-height:1.05;color:#fff;text-shadow:0 2px 16px rgba(0,0,0,.6)}
 .nph p{position:relative;z-index:1;margin:0;max-width:34ch;color:rgba(255,255,255,.9);font-size:15px;text-shadow:0 1px 10px rgba(0,0,0,.7)}
 </style>
-<script>
+<script type="text/plain" data-note="old broken copy, kept but switched off">
 (function(){
   var DESC={
     nightlife:"Pattaya's best Indian and international clubs, plus after-parties till sunrise. Book your table in one tap.",
