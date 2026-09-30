@@ -3024,3 +3024,7 @@
   tag();window.addEventListener("load",tag);setTimeout(tag,1500);
   var busy=false;new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;tag()})}).observe(document.body,{childList:true,subtree:true});
 })();
+
+/* ===== Clearer photos: lighter dark layer on photos (index.html), names keep a soft shadow so they stay readable ===== */
+(function(){if(document.getElementById("npPhotoCss"))return;var s=document.createElement("style");s.id="npPhotoCss";
+  s.textContent='.art .name,.art h2.name{text-shadow:0 2px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.6)!important}.art{image-rendering:auto}';document.head.appendChild(s)})();
