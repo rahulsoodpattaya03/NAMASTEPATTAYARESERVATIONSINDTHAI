@@ -2458,3 +2458,226 @@
   sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
   sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
 })();
+
+/* ===== Admin Control Center (30 Sep 2026): one place for every dashboard + booking inbox
+   with live notifications (bell, sound, phone notification) and Telegram alerts.
+   Also saves bookings from guests who are not logged in, so no booking is lost. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var user=null,isAdm=false,items=[],filter="new",q="",chan=null,unseen=0,loaded=false,open=false;
+  var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled",new:"New",in_progress:"Preparing",done:"Done"};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function M(n){n=Math.round(Number(n)||0);return typeof money==="function"?money(n):"฿"+n.toLocaleString("en-US")}
+  function X(){return typeof ico==="function"?ico("close"):"×"}
+  function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+  function club(id){return (typeof CLUBS!=="undefined"?CLUBS:[]).find(function(x){return x.id===id})}
+  function vname(id,fb){var c=club(id);return c?c.name:(fb||(id==="vip"?"Package / VIP request":String(id||"").replace(/-/g," ")))}
+  function catName(id,fb){var c=club(id),k=(c&&c.cat)||fb||"";return (typeof CATNAME!=="undefined"&&CATNAME[k])||k}
+
+  /* ---------- guests without an account: save their booking online too ---------- */
+  if(typeof store!=="undefined"&&typeof store.set==="function"){
+    var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
+    store.set=function(key,val){
+      try{if(key==="np_bookings"&&Array.isArray(val)){if(val.length>prev&&val[0])guestSave(val[0]);prev=val.length}}catch(e){}
+      return _set.apply(this,arguments);
+    };
+  }
+  function guestSave(bk){
+    if(!bk||!/^NP/.test(bk.code||"")||!bk.club)return;
+    sb.auth.getSession().then(function(r){
+      if(r.data&&r.data.session)return; /* logged-in bookings are saved by the club dashboard sync */
+      sb.from("np_bookings").insert({code:bk.code,venue_id:bk.club,customer_id:null,name:bk.name||"Guest",phone:bk.phone||null,night:ymd(bk.date||new Date()),
+        time:bk.time||null,guests:parseInt(bk.guests,10)||1,package:bk.pkg||null,total:Number(bk.total)||0,ref:bk.ref||null,source:"app",status:"confirmed"}).then(function(){},function(){});
+    });
+  }
+
+  /* ---------- sound + phone notification ---------- */
+  function beep(){try{var C=window.AudioContext||window.webkitAudioContext;if(!C)return;var c=new C(),t=c.currentTime;
+    [0,0.18].forEach(function(d,i){var o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=i?1175:880;g.gain.setValueAtTime(0.0001,t+d);g.gain.exponentialRampToValueAtTime(0.3,t+d+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+d+0.25);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+0.3)})}catch(e){}}
+  function notify(title,body){
+    try{if(!("Notification" in window)||Notification.permission!=="granted")return;
+      var opt={body:body,tag:"np-"+Date.now(),icon:"photos/icon-192.png"};
+      if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(function(reg){if(reg&&reg.showNotification)reg.showNotification(title,opt);else new Notification(title,opt)},function(){new Notification(title,opt)});
+      else new Notification(title,opt);
+    }catch(e){}
+  }
+
+  /* ---------- data ---------- */
+  async function load(){
+    var since=new Date();since.setDate(since.getDate()-60);
+    var b=await sb.from("np_bookings").select("*").gte("night",ymd(since)).order("night",{ascending:false}).limit(600);
+    var o=await sb.from("np_orders").select("*").order("created_at",{ascending:false}).limit(300);
+    var map={};
+    (b.data||[]).forEach(function(x){map[x.code||("b"+x.id)]={t:"b",id:x.id,code:x.code,venue:x.venue_id,vname:vname(x.venue_id),cat:catName(x.venue_id),name:x.name,phone:x.phone,night:x.night,time:x.time,guests:x.guests,pkg:x.package,total:Number(x.final_bill!=null?x.final_bill:x.total)||0,status:x.status,source:x.source,ref:x.ref,seen:!!x.admin_seen,created:x.created_at,guest:!x.customer_id}});
+    (o.data||[]).forEach(function(x){var k=x.code||("o"+x.id),e=map[k];
+      var row={t:"o",id:x.id,code:x.code,venue:x.venue_id,vname:x.venue_name||vname(x.venue_id),cat:catName(x.venue_id,x.category),name:x.customer_name,phone:x.customer_phone,night:String(x.booking_date||"").slice(0,10),time:x.booking_time,guests:x.guests,pkg:x.package,total:Number(x.total)||0,status:x.status,source:"app",order_type:x.order_type,address:x.delivery_address,seen:!!x.admin_seen,created:x.created_at};
+      if(e){e.order=row;e.order_type=x.order_type;e.address=x.delivery_address;e.seen=e.seen&&row.seen;e.ostatus=x.status}else map[k]=row});
+    items=Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return String(b.created||b.night).localeCompare(String(a.created||a.night))});
+    unseen=items.filter(function(x){return !x.seen&&x.status!=="cancelled"}).length;loaded=true;bell();
+  }
+  function subscribe(){
+    if(chan){sb.removeChannel(chan);chan=null}
+    chan=sb.channel("np-admin-inbox")
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"np_bookings"},function(ev){fresh("New booking",ev.new.name,ev.new.venue_id,ev.new.night,ev.new.guests)})
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"np_orders"},function(ev){fresh("New restaurant order",ev.new.customer_name,ev.new.venue_id,ev.new.booking_date,ev.new.guests,ev.new.venue_name)})
+      .on("postgres_changes",{event:"UPDATE",schema:"public",table:"np_bookings"},function(){soft()})
+      .on("postgres_changes",{event:"UPDATE",schema:"public",table:"np_orders"},function(){soft()})
+      .subscribe();
+  }
+  var st=null;function soft(){clearTimeout(st);st=setTimeout(function(){load().then(function(){if(open)draw()})},600)}
+  function fresh(kind,name,venue,night,guests,vn){
+    beep();notify("🔔 "+kind,(name||"Guest")+" · "+vname(venue,vn)+(night?" · "+String(night).slice(0,10):"")+(guests?" · "+guests+" pax":""));
+    toast("🔔 "+kind+": "+(name||"Guest")+" · "+vname(venue,vn));soft();
+  }
+  function toast(t){var d=document.createElement("div");d.className="npcc-toast";d.textContent=t;d.onclick=function(){d.remove();openCC()};document.body.appendChild(d);setTimeout(function(){d.remove()},7000)}
+
+  /* ---------- styles ---------- */
+  if(!document.getElementById("npccCss")){
+    var s=document.createElement("style");s.id="npccCss";
+    s.textContent='#npBell{position:fixed;left:14px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;width:52px;height:52px;border-radius:50%;border:1px solid rgba(233,185,73,.7);background:rgba(18,14,30,.95);color:#E9B949;display:none;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(233,185,73,.25);cursor:pointer}'+
+      '#npBell.show{display:flex}#npBell b{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#E5484D;color:#fff;font-size:12px;line-height:22px;text-align:center}'+
+      '.npcc-toast{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));z-index:10000;padding:14px 16px;border-radius:16px;background:rgba(18,14,30,.97);border:1px solid #E9B949;color:#fff;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer}'+
+      '.npcc-tabs{display:flex;gap:6px;margin:12px 0}.npcc-tabs button{flex:1;padding:10px 6px;border-radius:12px;font:inherit;font-weight:600;font-size:14px;color:var(--ink,#fff);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14)}.npcc-tabs button[aria-selected="true"]{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '.npcc-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}.npcc-chips::-webkit-scrollbar{display:none}.npcc-chips button{flex:0 0 auto;padding:7px 12px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;color:var(--ink,#fff);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18)}.npcc-chips button.on{border-color:#ED93B1;background:rgba(237,147,177,.18)}'+
+      '.npcc-it{border-radius:16px;padding:12px 14px;margin:0 0 10px;background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.12)}.npcc-it.new{border-color:#E9B949;box-shadow:0 0 12px rgba(233,185,73,.18)}'+
+      '.npcc-it .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.npcc-it h4{margin:0;font-size:15px}.npcc-it p{margin:3px 0 0;font-size:13px;opacity:.85}.npcc-it .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E9B949;margin-right:6px}'+
+      '.npcc-it .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.npcc-it .acts a,.npcc-it .acts button{padding:7px 12px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2)}.npcc-it .acts .pri{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '.npcc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.npcc-grid button{text-align:left;padding:14px;border-radius:16px;font:inherit;color:var(--ink,#fff);background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.12);cursor:pointer}.npcc-grid b{display:block;font-size:15px}.npcc-grid small{display:block;opacity:.75;margin-top:4px;font-size:12px}.npcc-grid .n{color:#E9B949;font-weight:700}'+
+      '.npcc-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.npcc-kpi div{padding:10px;border-radius:14px;background:rgba(255,255,255,.05);text-align:center}.npcc-kpi b{display:block;font-size:20px;color:#E9B949}.npcc-kpi small{font-size:11px;opacity:.8}';
+    document.head.appendChild(s);
+  }
+  var BELL='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>';
+  function bell(){
+    var b=document.getElementById("npBell");
+    if(!b){b=document.createElement("button");b.id="npBell";b.type="button";b.innerHTML=BELL+'<b hidden></b>';b.onclick=openCC;document.body.appendChild(b)}
+    b.classList.toggle("show",isAdm);b.setAttribute("aria-label","Control Center, "+unseen+" new bookings");
+    var n=b.querySelector("b");n.hidden=!unseen;n.textContent=unseen>99?"99+":unseen;
+  }
+
+  /* ---------- Control Center ---------- */
+  var tab="inbox";
+  function openCC(){if(!isAdm)return;open=true;
+    panel.innerHTML='<div class="pbody" id="npCC"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="sheetTitle" style="font-size:20px">Control Center</h2><button class="theme" id="ccX" aria-label="Close">'+X()+'</button></div>'+
+      '<div class="npcc-tabs" role="tablist"><button role="tab" data-t="inbox">Inbox'+(unseen?' ('+unseen+')':'')+'</button><button role="tab" data-t="dash">All dashboards</button><button role="tab" data-t="alerts">Alerts</button></div><div id="ccBody"></div></div>';
+    sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
+    panel.querySelector("#ccX").onclick=function(){open=false;closeSheet()};
+    panel.querySelectorAll("[data-t]").forEach(function(b){b.onclick=function(){tab=b.dataset.t;draw()}});
+    if(!loaded)load().then(draw);draw();
+  }
+  window.npControlCenter=openCC;
+  function draw(){
+    var box=panel.querySelector("#ccBody");if(!box)return;
+    panel.querySelectorAll("[data-t]").forEach(function(b){b.setAttribute("aria-selected",b.dataset.t===tab)});
+    var ib=panel.querySelector('[data-t="inbox"]');if(ib)ib.textContent="Inbox"+(unseen?" ("+unseen+")":"");
+    if(tab==="inbox")drawInbox(box);else if(tab==="dash")drawDash(box);else drawAlerts(box);
+  }
+  function drawInbox(box){
+    if(!loaded){box.innerHTML='<p class="small">Loading…</p>';return}
+    var today=ymd(new Date());
+    var F={new:["New",function(x){return !x.seen&&x.status!=="cancelled"}],today:["Tonight / today",function(x){return x.night===today}],up:["Upcoming",function(x){return x.night>=today&&x.status!=="cancelled"}],
+      food:["Restaurant orders",function(x){return x.t==="o"||!!x.order}],guest:["Guests (no account)",function(x){return !!x.guest}],all:["All (60 days)",function(){return true}]};
+    var tn=items.filter(function(x){return x.night===today&&x.status!=="cancelled"});
+    var l=items.filter(F[filter][1]).filter(function(x){if(!q)return true;var t=[x.code,x.name,x.phone,x.vname,x.cat,x.pkg].join(" ").toLowerCase();return t.indexOf(q.toLowerCase())>-1});
+    box.innerHTML='<div class="npcc-kpi"><div><b>'+unseen+'</b><small>New</small></div><div><b>'+tn.length+'</b><small>Today</small></div><div><b>'+M(tn.reduce(function(s,x){return s+x.total},0))+'</b><small>Today value</small></div></div>'+
+      '<div class="npcc-chips">'+Object.keys(F).map(function(k){return '<button data-f="'+k+'" class="'+(k===filter?'on':'')+'">'+F[k][0]+'</button>'}).join("")+'</div>'+
+      '<div class="fields" style="margin:6px 0 10px"><label class="full">Search<input id="ccQ" type="search" value="'+esc(q)+'" placeholder="Name, phone, code, venue"></label></div>'+
+      (unseen&&filter==="new"?'<button class="cta ghost" id="ccAll" style="margin:0 0 10px">Mark all as handled</button>':'')+
+      (l.length?l.map(card).join(""):'<p class="small">'+(filter==="new"?"All caught up. No new bookings. 🎉":"Nothing here.")+'</p>');
+    box.querySelectorAll("[data-f]").forEach(function(b){b.onclick=function(){filter=b.dataset.f;draw()}});
+    box.querySelector("#ccQ").oninput=function(){q=this.value;var p=this.selectionStart;drawInbox(box);var i=box.querySelector("#ccQ");i.focus();try{i.setSelectionRange(p,p)}catch(e){}};
+    if(box.querySelector("#ccAll"))box.querySelector("#ccAll").onclick=async function(){this.disabled=true;
+      var bs=items.filter(function(x){return !x.seen}),bi=bs.filter(function(x){return x.t==="b"}).map(function(x){return x.id}),oi=bs.map(function(x){return x.t==="o"?x.id:(x.order&&x.order.id)}).filter(Boolean);
+      if(bi.length)await sb.from("np_bookings").update({admin_seen:true}).in("id",bi);if(oi.length)await sb.from("np_orders").update({admin_seen:true}).in("id",oi);
+      await load();draw()};
+    box.querySelectorAll("[data-k]").forEach(function(c){var x=items.find(function(i){return (i.code||i.id)+""===c.dataset.k});if(!x)return;
+      c.querySelectorAll("[data-a]").forEach(function(b){b.onclick=function(){act(x,b.dataset.a,b)}})});
+  }
+  function card(x){
+    var st=x.ostatus||x.status,wa=String(x.phone||"").replace(/\D/g,""),food=x.t==="o"||!!x.order;
+    var type=x.order_type==="delivery"?"🛵 Delivery":x.order_type==="takeaway"?"🥡 Takeaway":food?"🍽 Dine-in":x.venue==="vip"?"🎁 Package":"🎟 Booking";
+    return '<div class="npcc-it'+(x.seen?'':' new')+'" data-k="'+esc(x.code||x.id)+'"><div class="top"><div style="min-width:0"><h4>'+(x.seen?'':'<span class="dot"></span>')+esc(x.name||"Guest")+(x.guests?' · '+x.guests+' pax':'')+'</h4>'+
+      '<p>'+type+' · <b>'+esc(x.vname)+'</b>'+(x.cat?' · '+esc(x.cat):'')+'</p>'+
+      '<p>📅 '+(x.night?new Date(x.night+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}):"")+(x.time?' · '+esc(x.time):'')+(x.total?' · '+M(x.total):'')+'</p>'+
+      (x.pkg?'<p>📦 '+esc(x.pkg)+'</p>':'')+(x.address?'<p>🏠 '+esc(x.address)+'</p>':'')+
+      '<p class="small">'+esc(x.code||"")+(x.ref?' · agent '+esc(x.ref):'')+(x.guest?' · no account':'')+'</p></div><span class="status">'+esc(ST[st]||st||"")+'</span></div>'+
+      '<div class="acts">'+(x.phone?'<a href="tel:'+esc(x.phone)+'">Call</a>'+(wa?'<a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WhatsApp</a>':''):'')+
+      (!x.seen?'<button class="pri" data-a="seen">Handled ✓</button>':'<button data-a="unseen">Mark new</button>')+
+      (x.t==="b"&&st==="pending"?'<button data-a="confirm">Confirm</button>':'')+
+      (st!=="cancelled"&&st!=="completed"&&st!=="done"?'<button data-a="cancel">Cancel</button>':'')+
+      (food?'<button data-a="rest">Restaurant dashboard</button>':(x.venue!=="vip"?'<button data-a="club">Open dashboard</button>':''))+'</div></div>';
+  }
+  async function act(x,a,b){
+    b.disabled=true;var r=null;
+    function both(patch,opatch){var p=[];if(x.t==="b")p.push(sb.from("np_bookings").update(patch).eq("id",x.id));var oid=x.t==="o"?x.id:(x.order&&x.order.id);if(oid)p.push(sb.from("np_orders").update(opatch||patch).eq("id",oid));return Promise.all(p)}
+    if(a==="seen")r=await both({admin_seen:true});
+    else if(a==="unseen")r=await both({admin_seen:false});
+    else if(a==="confirm")r=await both({status:"confirmed",admin_seen:true},{status:"confirmed",admin_seen:true});
+    else if(a==="cancel"){if(!confirm("Cancel "+(x.code||"this booking")+" for "+(x.name||"guest")+"? Please also call or WhatsApp the guest.")){b.disabled=false;return}
+      r=await both({status:"cancelled",admin_seen:true},{status:"cancelled",admin_seen:true})}
+    else if(a==="rest"){location.href="restaurant.html";return}
+    else if(a==="club"){open=false;closeSheet();if(typeof go==="function")go("dash");setTimeout(function(){var dv=document.getElementById("dVenue");if(dv&&[].some.call(dv.options,function(o){return o.value===x.venue})){dv.value=x.venue;try{dTab="res"}catch(e){}if(typeof renderDash==="function")renderDash()}},300);return}
+    var err=(r||[]).find&&(r||[]).find(function(y){return y&&y.error});if(err){alert(err.error.message);b.disabled=false;return}
+    await load();draw();
+  }
+  async function cnt(q){try{var r=await q;return r.error?null:(r.count||0)}catch(e){return null}}
+  async function drawDash(box){
+    box.innerHTML='<p class="small">Loading…</p>';
+    var w=await cnt(sb.from("np_meet_profiles").select("user_id",{count:"exact",head:true}).eq("verify_status","pending"));
+    var rp=await cnt(sb.from("np_meet_reports").select("id",{count:"exact",head:true}).eq("status","open"));
+    var pr=await cnt(sb.from("np_partner_requests").select("id",{count:"exact",head:true}).eq("status","pending"));
+    var ag=null;try{var a=await sb.rpc("np_list_agents");if(!a.error)ag=(a.data||[]).filter(function(x){return x.status==="pending"}).length}catch(e){}
+    function n(v,t){return v==null?'<small>'+t+'</small>':'<small><span class="n">'+v+'</span> '+t+'</small>'}
+    var L=[["inbox","📥 Booking inbox",n(unseen,"new bookings")],["club","🎉 Club dashboard","<small>Reservations, CRM, reports</small>"],["rest","🍛 Restaurant dashboard","<small>Orders, deliveries, staff</small>"],
+      ["partners","🏪 Partner sign-ups",n(pr,"waiting")],["women","✅ Verify women",n(w,"selfies waiting")],["reports","🚩 Meet reports",n(rp,"open reports")],
+      ["agents","🤝 Agents",n(ag,"waiting for approval")],["analytics","📊 App analytics","<small>Visitors and bookings funnel</small>"],["users","👥 All users","<small>Supabase (opens browser)</small>"],["alerts","🔔 Alerts","<small>Telegram and phone alerts</small>"]];
+    box.innerHTML='<div class="npcc-grid">'+L.map(function(x){return '<button data-d="'+x[0]+'"><b>'+x[1]+'</b>'+x[2]+'</button>'}).join("")+'</div>';
+    box.querySelectorAll("[data-d]").forEach(function(b){b.onclick=function(){var d=b.dataset.d;
+      if(d==="inbox"||d==="alerts"){tab=d;draw();return}
+      if(d==="club"){open=false;closeSheet();if(typeof go==="function")go("dash");return}
+      if(d==="rest"||d==="partners"){location.href="restaurant.html";return}
+      if(d==="women"||d==="reports"){if(window.npMeetAdmin)window.npMeetAdmin();return}
+      if(d==="agents"){if(window.npAgentsAdmin)window.npAgentsAdmin();return}
+      if(d==="analytics"){if(window.npReport)window.npReport();return}
+      if(d==="users")window.open("https://supabase.com/dashboard/project/mymtgbmcjbwsnetzwgoy/auth/users","_blank");
+    }});
+  }
+  async function drawAlerts(box){
+    var ready=false;try{var r=await sb.rpc("np_alert_ready");ready=!r.error&&r.data===true}catch(e){}
+    var perm=("Notification" in window)?Notification.permission:"unsupported";
+    box.innerHTML='<div class="lcard"><h4>📱 Phone notifications</h4><p class="small">Sound + a phone notification for every new booking while the app is open (also in the background).</p>'+
+      '<p class="small">Status: <b>'+(perm==="granted"?"On ✅":perm==="denied"?"Blocked. Allow notifications for this site in Chrome settings.":perm==="unsupported"?"Not supported on this browser":"Off")+'</b></p>'+
+      (perm==="default"?'<button class="cta" id="alPh">Turn on phone notifications</button>':'')+'<button class="cta ghost" id="alBeep">Test sound</button></div>'+
+      '<div class="lcard" style="margin-top:12px"><h4>✈️ Telegram alerts '+(ready?'<span class="status">On ✅</span>':'')+'</h4><p class="small">Get a Telegram message for every booking, even when the app is closed. Free.</p>'+
+      '<p class="small"><b>Setup (5 min):</b><br>1. In Telegram, open <b>@BotFather</b> → send <b>/newbot</b> → give it a name → copy the <b>token</b>.<br>2. Open your new bot and send it <b>hi</b>.<br>3. Open this link in Chrome (put your token in place of TOKEN):<br><span class="notranslate" translate="no">api.telegram.org/botTOKEN/getUpdates</span><br>Copy the number after <b>"chat":{"id":</b></p>'+
+      '<div class="fields"><label class="full">Bot token<input id="alT" placeholder="123456:ABC-..." autocomplete="off"></label><label class="full">Chat id<input id="alC" inputmode="numeric" placeholder="e.g. 987654321"></label></div>'+
+      '<button class="cta" id="alSave">Save</button>'+(ready?'<button class="cta ghost" id="alTest">Send test message</button>':'')+'<p class="err" id="alM" role="status"></p></div>';
+    var ph=box.querySelector("#alPh");if(ph)ph.onclick=function(){Notification.requestPermission().then(function(){drawAlerts(box);notify("🔔 Notifications are on","You will see new bookings here.")})};
+    box.querySelector("#alBeep").onclick=beep;
+    box.querySelector("#alSave").onclick=async function(){var m=box.querySelector("#alM"),t=box.querySelector("#alT").value.trim(),c=box.querySelector("#alC").value.trim();m.style.color="";
+      if(!/^\d+:[\w-]{20,}$/.test(t)){m.textContent="That doesn't look like a bot token. It looks like 123456:ABC…";return}
+      if(!/^-?\d{4,}$/.test(c)){m.textContent="The chat id is a number, like 987654321.";return}
+      this.disabled=true;var r=await sb.rpc("np_set_alert_settings",{p_token:t,p_chat:c});this.disabled=false;
+      if(r.error){m.textContent=/function|does not exist/i.test(r.error.message)?"Please run np-inbox.sql in Supabase first.":r.error.message;return}
+      await sb.rpc("np_test_alert");m.style.color="var(--ok)";m.textContent="Saved. A test message was sent to your Telegram.";setTimeout(function(){drawAlerts(box)},1500)};
+    var te=box.querySelector("#alTest");if(te)te.onclick=async function(){var r=await sb.rpc("np_test_alert");var m=box.querySelector("#alM");m.style.color=r.error?"":"var(--ok)";m.textContent=r.error?r.error.message:"Test message sent. Check Telegram."};
+  }
+
+  /* ---------- Control Center button in the account menu ---------- */
+  new MutationObserver(function(){
+    if(!isAdm)return;var adm=panel.querySelector(".lcard.adm");
+    if(adm&&!adm.querySelector("#npCCBtn")){var b=document.createElement("button");b.id="npCCBtn";b.className="cta";b.style.margin="8px 0";b.textContent="Control Center"+(unseen?" · "+unseen+" new":"");b.onclick=openCC;
+      var h=adm.querySelector("h4");if(h)h.insertAdjacentElement("beforebegin",b);else adm.insertBefore(b,adm.firstChild)}
+  }).observe(panel,{childList:true,subtree:true});
+  new MutationObserver(function(){if(open&&!sheet.classList.contains("open"))open=false}).observe(sheet,{attributes:true,attributeFilter:["class"]});
+
+  async function onUser(u){
+    var same=(u&&u.id)===(user&&user.id);user=u;if(same)return;
+    isAdm=false;if(chan){sb.removeChannel(chan);chan=null}
+    if(u){try{var a=await sb.rpc("np_is_admin");isAdm=!a.error&&a.data===true}catch(e){}}
+    bell();if(isAdm){await load();subscribe();bell()}
+  }
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden&&isAdm)load().then(function(){if(open)draw()})});
+})();
