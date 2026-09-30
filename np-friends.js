@@ -1809,7 +1809,7 @@
     mine=r.data||null;loaded=true;
   }
   async function loadPeople(){
-    if(!user||!mine){people=[];return}
+    if(!user||(!mine&&!adminOK)){people=[];return}
     var r=await sb.from("np_meet_profiles").select("user_id,name,age,gender,city,languages,intent,when_txt,plan,photo_url,verify_status,updated_at")
       .eq("active",true).neq("user_id",user.id).order("updated_at",{ascending:false}).limit(400);
     people=(r.data||[]).filter(function(p){return !isWoman(p)||p.verify_status==="verified"});
@@ -1848,6 +1848,14 @@
       root.querySelector("#npmLogin").onclick=function(){var b=document.querySelector(".np-hbtn.user")||document.getElementById("acctBtn");if(b)b.click()};return}
     if(!loaded){root.innerHTML='<p class="npm-empty">Loading…</p>';return}
     if(setupErr==="setup"){root.innerHTML='<div class="npm-card"><b>Almost ready</b><p class="npm-plan">Meet new people is being set up. Please check back soon.</p></div>';return}
+    if(adminOK&&!mine&&!editing){
+      root.innerHTML='<div class="npm-card hl"><b>Admin view</b><p class="npm-plan">You see Meet new people exactly like the members do, including women-only areas. To say hi to someone, create your own profile first.</p><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button><button class="npm-btn" id="npmMake">Create my profile</button></div></div>'+
+        '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people"><select id="npmShow" aria-label="Show"><option value="all">Everyone</option><option value="woman">Women</option><option value="man">Men</option></select></div><div id="npmList"></div>';
+      root.querySelector("#npmShow").value=show;
+      root.querySelector("#npmQ").oninput=function(){q.main=this.value;list(root.querySelector("#npmList"),q.main,show)};
+      root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show)};
+      root.querySelector("#npmAdmin").onclick=openAdmin;root.querySelector("#npmMake").onclick=function(){editing=true;paintMain()};
+      list(root.querySelector("#npmList"),q.main,show);return}
     if(!mine||editing){root.innerHTML=formHTML();wireForm(root);return}
     var h=myCard()+(adminOK?'<div class="npm-card"><b>Admin</b><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button></div></div>':'')+
       '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people">'+
@@ -1975,7 +1983,7 @@
   }
   function addMsg(m){var box=panel.querySelector("#chBox");if(!box)return;var d=document.createElement("div");d.className="npm-m"+(m.sender===user.id?" me":"");d.textContent=m.body;box.appendChild(d);box.scrollTop=box.scrollHeight}
   async function openChat(p){
-    if(!mine){paintMain();return}
+    if(!mine){alert("Create your Meet new people profile first, then you can say hi.");closeSheet();if(typeof go==="function")go("buddy");editing=true;paintMain();return}
     chatWith=p;delete unread[p.user_id];
     sheetOpen('<div class="pbody">'+head("Chat with "+esc(p.name),"chX")+'<p class="small">Meet only in public places. Never send money. Report anyone who asks for money or paid services.</p>'+
       '<div class="npm-msgs" id="chBox"><p class="npm-empty">Loading…</p></div><div class="post"><input id="chIn" maxlength="500" placeholder="Say hi…"><button id="chGo">Send</button></div><p class="err" id="chE"></p></div>');
@@ -2075,7 +2083,7 @@
       '<div class="npm-search"><input id="npLQ" type="search" placeholder="Search women by name, city, language, plan…" value="'+esc(q.lounge)+'" aria-label="Search women"></div><div id="npLList"></div></div>';
     v.querySelector("#npLAll").onclick=function(){go("buddy")};
     v.querySelector("#npLQ").oninput=function(){q.lounge=this.value;list(v.querySelector("#npLList"),q.lounge,"woman",true)};
-    if(!mine)v.querySelector("#npLList").innerHTML='<p class="npm-empty">Create your Meet new people profile first.</p>';
+    if(!mine&&!adminOK)v.querySelector("#npLList").innerHTML='<p class="npm-empty">Create your Meet new people profile first.</p>';
     else list(v.querySelector("#npLList"),q.lounge,"woman",true);
   }
   if(typeof renderLadies==="function"){var _rl=renderLadies;renderLadies=function(){paintLounge();_rl();paintLoungeFriend()}}
@@ -2096,7 +2104,8 @@
   async function onUser(u){
     var changed=(u&&u.id)!==(user&&user.id);user=u;if(!changed&&loaded)return;
     loaded=false;mine=null;people=[];unread={};paintMain();
-    if(u){await checkAdmin();subscribe()}else{adminOK=false;if(chan){sb.removeChannel(chan);chan=null}}
+    if(u){await checkAdmin();subscribe()}
+    if(adminOK)try{renderLadies()}catch(e){}else{adminOK=false;if(chan){sb.removeChannel(chan);chan=null}}
     await refresh();
   }
   sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
@@ -2330,6 +2339,122 @@
 
   async function onUser(u){var same=(u&&u.id)===(user&&user.id);user=u;if(same&&u)return;await loadMe();
     var d=document.getElementById("dash");if(d&&!d.hidden)renderDash()}
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+})();
+
+/* ===== Agent dashboard (30 Sep 2026): live referred bookings, commission, payouts, share link.
+   Admin: approve or reject agents, see what each agent is owed, record payouts. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var APP="https://namastepattayareservationsindthai.vercel.app/";
+  var RATE={agent:0.05,traveller:0.03};
+  var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled"};
+  var user=null,isAdm=false,per="month";
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function M(n){n=Math.round(Number(n)||0);return typeof money==="function"?money(n):"฿"+n.toLocaleString("en-US")}
+  function X(){return typeof ico==="function"?ico("close"):"×"}
+  function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+X()+'</button></div>'}
+  function open(h){panel.innerHTML=h;sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function meta(){return (user&&user.user_metadata)||{}}
+  function viewAs(){try{return localStorage.getItem("np_view_as")||""}catch(e){return ""}}
+  function isAgent(){return /^agent/.test(meta().role||"")||(isAdm&&/^agent/.test(viewAs()))}
+  function myCode(){var m=meta(),g="";try{g=(0,eval)("typeof myCode!=='undefined'?myCode:''")}catch(e){}return String(m.ref_code||g||"").toUpperCase()}
+  function venueName(id){var c=(typeof CLUBS!=="undefined"?CLUBS:[]).find(function(x){return x.id===id});return c?c.name:id}
+  function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+
+  /* referral links: ?ref=CODE fills the booking form automatically */
+  try{var rq=new URLSearchParams(location.search).get("ref");if(rq&&/^[A-Z0-9]{4,12}$/i.test(rq))localStorage.setItem("np_ref_in",rq.toUpperCase())}catch(e){}
+  function fillRef(){var f=document.getElementById("fRef");if(!f||f.value)return;var r="";try{r=localStorage.getItem("np_ref_in")||""}catch(e){}if(r&&r!==myCode())f.value=r}
+
+  /* ---------- agent dashboard ---------- */
+  async function openAgent(){
+    if(!user)return;
+    var m=meta(),st=m.agent_status||"pending",code=myCode(),rate=isAgent()?RATE.agent:RATE.traveller;
+    open('<div class="pbody">'+head(isAgent()?"Agent dashboard":"My referrals","agX")+
+      '<div class="lcard hl" style="margin-top:12px"><h4>'+esc(m.agency||m.name||user.email)+'</h4><p class="small">'+(isAgent()?(st==="approved"?"✅ Agent approved · 5% commission":st==="rejected"?"Agent account not approved. Please contact us.":"⏳ Under review. You can already share your code; commission is paid after approval."):"Traveller · 3% referral reward")+'</p></div>'+
+      '<div class="refcode"><strong class="notranslate" translate="no">'+esc(code||"—")+'</strong><span class="small">Your code. Clients type it when booking, or use your link.</span></div>'+
+      '<div class="rsbtns" style="margin:8px 0 14px"><button class="pill on" id="agShare">Share on WhatsApp</button><button class="pill" id="agCopy">Copy my link</button></div>'+
+      '<div class="fields"><label class="full">Period<select id="agP"><option value="month">This month</option><option value="last">Last month</option><option value="all">All time</option></select></label></div>'+
+      '<div id="agBody"><p class="small">Loading…</p></div></div>');
+    panel.querySelector("#agX").onclick=closeSheet;
+    var link=APP+"?ref="+encodeURIComponent(code);
+    panel.querySelector("#agShare").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent("Book clubs, Indian restaurants, tours and more in Pattaya with Namaste Pattaya Reservations: "+link),"_blank")};
+    panel.querySelector("#agCopy").onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(link):Promise.reject()).then(function(){b.textContent="Copied ✓"},function(){prompt("Copy your link:",link)})};
+    var sel=panel.querySelector("#agP");sel.value=per;sel.onchange=function(){per=this.value;draw()};
+    var r=await sb.rpc("np_my_referrals"),pay=await sb.from("np_agent_payouts").select("amount,paid_on,note").eq("agent",user.id).order("paid_on",{ascending:false});
+    var body=panel.querySelector("#agBody");if(!body)return;
+    if(r.error){body.innerHTML='<div class="lcard"><h4>Almost ready</h4><p class="small">'+(/function|does not exist/i.test(r.error.message)?"The agent dashboard is being set up. Please check back soon.":esc(r.error.message))+'</p></div>';return}
+    var rows=r.data||[],pays=pay.data||[];
+    function draw(){
+      var now=new Date(),from=null,to=null;
+      if(per==="month"){from=ymd(new Date(now.getFullYear(),now.getMonth(),1))}
+      if(per==="last"){from=ymd(new Date(now.getFullYear(),now.getMonth()-1,1));to=ymd(new Date(now.getFullYear(),now.getMonth(),0))}
+      var l=rows.filter(function(x){return (!from||x.night>=from)&&(!to||x.night<=to)});
+      var live=l.filter(function(x){return x.status!=="cancelled"}),came=l.filter(function(x){return x.status==="arrived"||x.status==="completed"});
+      var upcoming=l.filter(function(x){return (x.status==="confirmed"||x.status==="pending")&&x.night>=ymd(now)});
+      var sales=came.reduce(function(s,x){return s+Number(x.amount||0)},0);
+      var allEarn=rows.filter(function(x){return x.status==="arrived"||x.status==="completed"}).reduce(function(s,x){return s+Number(x.amount||0)*rate},0);
+      var paid=pays.reduce(function(s,p){return s+Number(p.amount||0)},0);
+      body.innerHTML='<div class="kpis"><div class="kpi"><small>Bookings</small><b>'+live.length+'</b></div><div class="kpi"><small>Guests</small><b>'+live.reduce(function(s,x){return s+(x.guests||0)},0)+'</b></div>'+
+        '<div class="kpi"><small>Came (arrived)</small><b>'+came.length+'</b></div><div class="kpi"><small>Sales</small><b>'+M(sales)+'</b></div>'+
+        '<div class="kpi"><small>Earned ('+Math.round(rate*100)+'%)</small><b>'+M(sales*rate)+'</b></div><div class="kpi"><small>Coming up</small><b>'+upcoming.length+'</b></div></div>'+
+        '<div class="lcard" style="margin-top:12px"><div class="lrow"><div><h4>To be paid to you</h4><p class="small">All time earned '+M(allEarn)+' · paid '+M(paid)+'</p></div><b style="font-size:20px">'+M(Math.max(0,allEarn-paid))+'</b></div></div>'+
+        '<h3 style="font-size:15px;margin:14px 0 8px">Bookings with your code</h3>'+
+        (l.length?l.map(function(x){var c=x.status==="arrived"||x.status==="completed";
+          return '<div class="lcard"><div class="lrow"><div style="min-width:0"><h4>'+esc(x.guest_name)+' · '+x.guests+' pax</h4><p class="small">'+esc(venueName(x.venue_id))+' · '+new Date(x.night+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"})+(Number(x.amount)?' · '+M(x.amount):'')+(c?' · you earn '+M(Number(x.amount||0)*rate):'')+'</p></div><span class="status">'+(ST[x.status]||esc(x.status))+'</span></div></div>'}).join(""):'<p class="small">No bookings with your code in this period yet. Share your link to start earning.</p>')+
+        (pays.length?'<h3 style="font-size:15px;margin:14px 0 8px">Payments received</h3>'+pays.map(function(p){return '<div class="lcard"><div class="lrow"><div><h4>'+M(p.amount)+'</h4><p class="small">'+new Date(p.paid_on+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})+(p.note?' · '+esc(p.note):'')+'</p></div><span class="status">Paid</span></div></div>'}).join(""):'')+
+        '<p class="small" style="margin-top:10px">Commission counts when your client arrives. The venue\'s final bill is used when available.</p>';
+    }
+    draw();
+  }
+  window.npOpenAgent=openAgent;
+
+  /* ---------- admin: agents ---------- */
+  async function openAgentsAdmin(){
+    open('<div class="pbody">'+head("Admin · Agents","aaX")+'<div class="fields"><label class="full">Show<select id="aaF"><option value="pending">Waiting for approval</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="all">All</option></select></label></div><div id="aaL"><p class="small">Loading…</p></div></div>');
+    panel.querySelector("#aaX").onclick=closeSheet;
+    var r=await sb.rpc("np_list_agents"),box=panel.querySelector("#aaL");if(!box)return;
+    if(r.error){box.innerHTML='<p class="err">'+esc(/function|does not exist/i.test(r.error.message)?"Please run np-agents.sql in Supabase first.":r.error.message)+'</p>';return}
+    var rows=r.data||[],f=panel.querySelector("#aaF");f.value=rows.some(function(x){return x.status==="pending"})?"pending":"all";
+    function draw(){var l=rows.filter(function(x){return f.value==="all"||x.status===f.value});
+      box.innerHTML=l.length?l.map(function(a){var owed=Math.max(0,Number(a.sales||0)*RATE.agent-Number(a.paid||0)),wa=String(a.phone||"").replace(/\D/g,"");
+        return '<div class="lcard" data-u="'+a.user_id+'"><div class="lrow"><div style="min-width:0"><h4>'+esc(a.agency||a.name||a.email)+'</h4><p class="small">'+esc([a.name,a.role==="agent_th"?"Thai agent":"Indian agent",a.city].filter(Boolean).join(" · "))+'</p>'+
+          '<p class="small">'+esc(a.email)+(a.phone?' · <a href="tel:'+esc(a.phone)+'">'+esc(a.phone)+'</a>'+(wa?' · <a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WhatsApp</a>':''):'')+'</p>'+
+          (a.reg_no?'<p class="small">Reg. no. '+esc(a.reg_no)+'</p>':'')+'<p class="small">Code <b>'+esc(a.ref_code||"—")+'</b> · '+a.bookings+' bookings · '+a.came+' came · sales '+M(a.sales)+'</p>'+
+          '<p class="small">Owed <b>'+M(owed)+'</b> · paid '+M(a.paid)+'</p></div><span class="status">'+esc(a.status)+'</span></div>'+
+          '<div class="rsbtns">'+(a.status!=="approved"?'<button class="pill on" data-s="approved">Approve</button>':'')+(a.status!=="rejected"?'<button class="pill" data-s="rejected">Reject</button>':'')+(owed>0?'<button class="pill" data-pay="'+Math.round(owed)+'">Record payout</button>':'')+'</div></div>'}).join(""):'<p class="small">No agents here.</p>';
+      box.querySelectorAll("[data-s]").forEach(function(b){b.onclick=async function(){var id=b.closest("[data-u]").dataset.u;
+        if(b.dataset.s==="rejected"&&!confirm("Reject this agent?"))return;b.disabled=true;
+        var x=await sb.rpc("np_set_agent_status",{p_user:id,p_status:b.dataset.s});if(x.error){alert(x.error.message);b.disabled=false;return}
+        rows.forEach(function(a){if(a.user_id===id)a.status=b.dataset.s});draw()}});
+      box.querySelectorAll("[data-pay]").forEach(function(b){b.onclick=async function(){var id=b.closest("[data-u]").dataset.u;
+        var v=prompt("Amount paid to this agent (baht):",b.dataset.pay);if(v===null)return;var n=parseFloat(String(v).replace(/[^0-9.]/g,""));if(!(n>0))return;
+        var note=prompt("Note (optional, e.g. bank transfer ref):","")||null;
+        var x=await sb.from("np_agent_payouts").insert({agent:id,amount:n,note:note});if(x.error){alert(x.error.message);return}
+        rows.forEach(function(a){if(a.user_id===id)a.paid=Number(a.paid||0)+n});draw()}});
+    }
+    f.onchange=draw;draw();
+  }
+  window.npAgentsAdmin=openAgentsAdmin;
+
+  /* ---------- buttons ---------- */
+  function addButtons(){
+    var acc=panel.querySelector("#umAcc");
+    if(acc&&user&&!panel.querySelector("#npAgBtn")){var b=document.createElement("button");b.className="cta";b.id="npAgBtn";b.textContent=isAgent()?"Agent dashboard":"My referrals & earnings";b.onclick=openAgent;acc.insertAdjacentElement("beforebegin",b)}
+    var adm=panel.querySelector(".lcard.adm");
+    if(adm&&isAdm&&!adm.querySelector("#npAgAdm")){var a=document.createElement("button");a.className="pill";a.id="npAgAdm";a.textContent="Agents";a.onclick=openAgentsAdmin;var v=adm.querySelector("#adVip");if(v)v.insertAdjacentElement("afterend",a);else adm.appendChild(a)}
+    var earn=document.getElementById("earn");
+    if(earn&&user&&!document.getElementById("npAgEarn")){var c=document.createElement("div");c.id="npAgEarn";c.className="lcard hl";c.style.margin="10px 0 14px";
+      c.innerHTML='<div class="lrow"><div><h4>'+(isAgent()?"Agent dashboard":"My referrals & earnings")+'</h4><p class="small">Live bookings with your code, what you earned, and payments.</p></div><button class="pill on">Open</button></div>';
+      c.querySelector("button").onclick=openAgent;var t=earn.querySelector(".sectiontitle,h2");if(t)t.insertAdjacentElement("afterend",c);else earn.insertBefore(c,earn.firstChild)}
+    fillRef();
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;addButtons()})}).observe(document.body,{childList:true,subtree:true});
+  async function onUser(u){user=u;isAdm=false;var e=document.getElementById("npAgEarn");if(e)e.remove();
+    if(u){try{var a=await sb.rpc("np_is_admin");isAdm=!a.error&&a.data===true}catch(x){}}addButtons()}
   sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
   sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
 })();
