@@ -2195,7 +2195,7 @@
   var _prev=renderDash;
   renderDash=function(){_prev();try{live()}catch(e){console.error(e)}};
   function live(){
-    var t=(typeof dTab!=="undefined")?dTab:"";if(LIVE.indexOf(t)<0)return;
+    var t=(typeof dTab!=="undefined")?dTab:"";if(LIVE.indexOf(t)<0){token++;return}  /* switching tab cancels any slower screen still loading */
     var view=document.getElementById("dview"),dv=document.getElementById("dVenue");if(!view||!dv)return;
     var v=dv.value,L=lvl(v),my=++token;
     if(!user){view.innerHTML=card('<h4>Staff login</h4><p>Log in with your staff account to see live data for your club.</p><button class="pill on" id="clLog" style="margin-top:10px">Log in</button>');
@@ -2532,7 +2532,7 @@
     var b=await sb.from("np_bookings").select("*").gte("night",ymd(since)).order("night",{ascending:false}).limit(600);
     var o=await sb.from("np_orders").select("*").order("created_at",{ascending:false}).limit(300);
     var map={};
-    (b.data||[]).forEach(function(x){map[x.code||("b"+x.id)]={t:"b",id:x.id,code:x.code,venue:x.venue_id,vname:vname(x.venue_id),cat:catName(x.venue_id),name:x.name,phone:x.phone,night:x.night,time:x.time,guests:x.guests,pkg:x.package,total:Number(x.final_bill!=null?x.final_bill:x.total)||0,status:x.status,source:x.source,ref:x.ref,seen:!!x.admin_seen,created:x.created_at,guest:!x.customer_id}});
+    (b.data||[]).forEach(function(x){map[x.code||("b"+x.id)]={t:"b",id:x.id,code:x.code,venue:x.venue_id,vname:vname(x.venue_id),cat:catName(x.venue_id),name:x.name,phone:x.phone,night:x.night,time:x.time,guests:x.guests,pkg:x.package,total:Number(x.final_bill!=null?x.final_bill:x.total)||0,status:x.status,source:x.source,ref:x.ref,seen:!!x.admin_seen,created:x.created_at,guest:!x.customer_id,advPct:x.advance_pct||0,advAmt:x.advance_amount,advPaid:!!x.advance_paid}});
     (o.data||[]).forEach(function(x){var k=x.code||("o"+x.id),e=map[k];
       var row={t:"o",id:x.id,code:x.code,venue:x.venue_id,vname:x.venue_name||vname(x.venue_id),cat:catName(x.venue_id,x.category),name:x.customer_name,phone:x.customer_phone,night:String(x.booking_date||"").slice(0,10),time:x.booking_time,guests:x.guests,pkg:x.package,total:Number(x.total)||0,status:x.status,source:"app",order_type:x.order_type,address:x.delivery_address,seen:!!x.admin_seen,created:x.created_at};
       if(e){e.order=row;e.order_type=x.order_type;e.address=x.delivery_address;e.seen=e.seen&&row.seen;e.ostatus=x.status}else map[k]=row});
@@ -2599,7 +2599,7 @@
     if(!loaded){box.innerHTML='<p class="small">Loading…</p>';return}
     var today=ymd(new Date());
     var F={new:["New",function(x){return !x.seen&&x.status!=="cancelled"}],today:["Tonight / today",function(x){return x.night===today}],up:["Upcoming",function(x){return x.night>=today&&x.status!=="cancelled"}],
-      food:["Restaurant orders",function(x){return x.t==="o"||!!x.order}],guest:["Guests (no account)",function(x){return !!x.guest}],all:["All (60 days)",function(){return true}]};
+      adv:["Awaiting advance",function(x){return x.advPct&&!x.advPaid&&x.status!=="cancelled"}],food:["Restaurant orders",function(x){return x.t==="o"||!!x.order}],guest:["Guests (no account)",function(x){return !!x.guest}],all:["All (60 days)",function(){return true}]};
     var tn=items.filter(function(x){return x.night===today&&x.status!=="cancelled"});
     var l=items.filter(F[filter][1]).filter(function(x){if(!q)return true;var t=[x.code,x.name,x.phone,x.vname,x.cat,x.pkg].join(" ").toLowerCase();return t.indexOf(q.toLowerCase())>-1});
     box.innerHTML='<div class="npcc-kpi"><div><b>'+unseen+'</b><small>New</small></div><div><b>'+tn.length+'</b><small>Today</small></div><div><b>'+M(tn.reduce(function(s,x){return s+x.total},0))+'</b><small>Today value</small></div></div>'+
@@ -2623,6 +2623,7 @@
       '<p>'+type+' · <b>'+esc(x.vname)+'</b>'+(x.cat?' · '+esc(x.cat):'')+'</p>'+
       '<p>📅 '+(x.night?new Date(x.night+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}):"")+(x.time?' · '+esc(x.time):'')+(x.total?' · '+M(x.total):'')+'</p>'+
       (x.pkg?'<p>📦 '+esc(x.pkg)+'</p>':'')+(x.address?'<p>🏠 '+esc(x.address)+'</p>':'')+
+      (x.advPct?'<p><span class="npadv-chip'+(x.advPaid?' paid':'')+'">'+(x.advPaid?'Advance paid ฿'+Math.round(x.advAmt||0).toLocaleString("en-US"):'Advance '+x.advPct+'% NOT paid · ฿'+Math.round(x.advAmt||0).toLocaleString("en-US"))+'</span></p>':'')+
       '<p class="small">'+esc(x.code||"")+(x.ref?' · agent '+esc(x.ref):'')+(x.guest?' · no account':'')+'</p></div><span class="status">'+esc(ST[st]||st||"")+'</span></div>'+
       '<div class="acts">'+(x.phone?'<a href="tel:'+esc(x.phone)+'">Call</a>'+(wa?'<a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WhatsApp</a>':''):'')+
       (!x.seen?'<button class="pri" data-a="seen">Handled ✓</button>':'<button data-a="unseen">Mark new</button>')+
@@ -2816,4 +2817,145 @@
   function run(){try{reorder()}catch(e){}try{row()}catch(e){}}
   run();window.addEventListener("load",run);setTimeout(run,1500);setTimeout(run,4000);
   var btn=document.getElementById("curBtn");if(btn)btn.addEventListener("click",function(){setTimeout(row,50)});
+})();
+
+/* ===== Booking form: clear help when no spot is chosen yet (the "Choose your spot" list is above, off screen) ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  if(!document.getElementById("npSpotCss")){var s=document.createElement("style");s.id="npSpotCss";
+    s.textContent='#npSpotHint{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:0 0 10px;padding:12px 14px;border-radius:14px;background:rgba(233,185,73,.14);border:1px solid rgba(233,185,73,.6);font-size:14px;line-height:1.35}'+
+      '#npSpotHint button{flex:0 0 auto;padding:9px 14px;border-radius:999px;border:0;font:inherit;font-weight:700;background:#E9B949;color:#1a1026;cursor:pointer}'+
+      '#pkgs.npflash{outline:2px solid #E9B949;outline-offset:6px;border-radius:14px;transition:outline-color .3s}';document.head.appendChild(s)}
+  function sync(){
+    var book=panel.querySelector("#book"),pk=panel.querySelector("#pkgs");if(!book||!pk)return;
+    var chosen=!!pk.querySelector('.pkg[aria-pressed="true"]'),h=panel.querySelector("#npSpotHint");
+    if(chosen||!book.disabled){if(h)h.remove();return}
+    if(!h){h=document.createElement("div");h.id="npSpotHint";h.setAttribute("role","note");
+      h.innerHTML='<span>👆 First tap a <b>spot</b> (table, entry or package) in <b>"Choose your spot"</b> above.</span><button type="button">Show spots</button>';
+      book.insertAdjacentElement("beforebegin",h);
+      h.querySelector("button").onclick=function(){var t=panel.querySelector("#pkgs");if(!t)return;var hd=t.previousElementSibling||t;
+        hd.scrollIntoView({behavior:"smooth",block:"start"});t.classList.add("npflash");setTimeout(function(){t.classList.remove("npflash")},2200)}}
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;sync()})})
+    .observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:["disabled","aria-pressed"]});
+})();
+
+/* ===== Advance to reserve (each venue sets %) + no cancellation after the advance is paid (1 Oct 2026)
+   Online payment is not live yet: bookings that need an advance are saved as "Awaiting advance" (not reserved). ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var ADV={},MINE={},user=null,PAYSOON="Online payment is launching soon. Until the advance is paid, this booking is a request and your table is not reserved. We will let you know as soon as you can pay in the app.";
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function B(n){return "฿"+Math.round(Number(n)||0).toLocaleString("en-US")}
+  function pctOf(id){return ADV[id]||0}
+  function venueInPanel(){var t=panel.querySelector("#sheetTitle");if(!t||typeof CLUBS==="undefined")return null;var n=t.textContent.trim();return CLUBS.find(function(c){return c.name===n})||null}
+  if(!document.getElementById("npAdvCss")){var s=document.createElement("style");s.id="npAdvCss";
+    s.textContent='#npAdv{margin:0 0 10px;padding:12px 14px;border-radius:14px;background:rgba(237,147,177,.12);border:1px solid rgba(237,147,177,.55);font-size:14px;line-height:1.4}#npAdv b{color:#fff}#npAdv label{display:flex;gap:8px;align-items:flex-start;margin-top:8px}#npAdv input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}'+
+      '.npadv-t{display:block;grid-column:1/-1;margin-top:6px;font-size:13px;padding:8px 10px;border-radius:10px;background:rgba(237,147,177,.12);border:1px solid rgba(237,147,177,.4)}.npadv-t.paid{background:rgba(47,191,98,.14);border-color:rgba(47,191,98,.5)}.npadv-t button{margin-top:6px;padding:7px 12px;border-radius:999px;border:0;font:inherit;font-weight:700;background:#E9B949;color:#1a1026}'+
+      '.npadv-chip{display:inline-block;margin:4px 6px 0 0;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(237,147,177,.18);color:#ED93B1}.npadv-chip.paid{background:rgba(47,191,98,.18);color:#7BE3A0}';document.head.appendChild(s)}
+
+  async function loadSettings(){try{var r=await sb.from("np_venue_settings").select("venue_id,advance_pct");if(!r.error)(r.data||[]).forEach(function(x){ADV[x.venue_id]=x.advance_pct||0})}catch(e){}}
+
+  /* ---------- booking form ---------- */
+  function formBox(){
+    var book=panel.querySelector("#book"),c=venueInPanel(),box=panel.querySelector("#npAdv");
+    if(!book||!c){if(box&&!book)box.remove();return}
+    var p=pctOf(c.id);if(!p){if(box)box.remove();return}
+    var tot=(panel.querySelector("#tot")||{}).textContent||"",sym=(tot.match(/[฿₹]/)||["฿"])[0],num=parseFloat(tot.replace(/[^0-9.]/g,""))||0;
+    var amt=num?sym+Math.round(num*p/100).toLocaleString(sym==="₹"?"en-IN":"en-US"):"";
+    var html='💳 <b>Advance needed to reserve: '+p+'%'+(amt?' = '+amt:' of the total')+'</b><br><span class="small">Pay online in the app (launching soon). Until it is paid your booking is a request, not a reservation.</span>'+
+      '<label><input type="checkbox" id="npAdvOk"'+(box&&box.querySelector("#npAdvOk")&&box.querySelector("#npAdvOk").checked?" checked":"")+'> <span>I understand: <b>no cancellation or refund after the advance is paid.</b></span></label><p class="err" id="npAdvE" role="status" style="margin:6px 0 0"></p>';
+    if(!box){box=document.createElement("div");box.id="npAdv";var h=panel.querySelector("#npSpotHint");(h||book).insertAdjacentElement("beforebegin",box)}
+    if(box.dataset.k!==p+"|"+amt){box.dataset.k=p+"|"+amt;box.innerHTML=html}
+  }
+  panel.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("#book");if(!b)return;
+    var box=panel.querySelector("#npAdv");if(!box)return;
+    if(!box.querySelector("#npAdvOk").checked){e.preventDefault();e.stopImmediatePropagation();box.querySelector("#npAdvE").textContent="Please tick the box to accept the advance and no-cancellation rule.";box.scrollIntoView({behavior:"smooth",block:"center"})}
+    else{var c=venueInPanel();window.__npLastAdv=c?{club:c.id,pct:pctOf(c.id)}:null}
+  },true);
+  function doneNote(){
+    var d=panel.querySelector(".done .code");if(!d||panel.querySelector("#npAdvDone")||!window.__npLastAdv||!window.__npLastAdv.pct)return;
+    var n=document.createElement("div");n.id="npAdvDone";n.className="npadv-t";n.style.margin="12px 0";
+    n.innerHTML='⏳ <b>Awaiting advance ('+window.__npLastAdv.pct+'%).</b> '+esc(PAYSOON);
+    d.closest(".done").appendChild(n);
+  }
+
+  /* ---------- My bookings ---------- */
+  async function loadMine(){
+    MINE={};if(!user)return;
+    try{var r=await sb.from("np_bookings").select("code,advance_pct,advance_amount,advance_paid,status").eq("customer_id",user.id);(r.data||[]).forEach(function(x){MINE[x.code]=x})}catch(e){}
+  }
+  function tickets(){
+    if(typeof bookings==="undefined")return;
+    document.querySelectorAll("#bookingList .ticket").forEach(function(t){
+      var code=((t.querySelector(".code")||{}).textContent||"").trim(),bk=bookings.find(function(x){return x.code===code});if(!bk)return;
+      var srv=MINE[code],p=srv?srv.advance_pct:pctOf(bk.club),paid=!!(srv&&srv.advance_paid),amt=srv&&srv.advance_amount!=null?srv.advance_amount:Math.round((bk.total||0)*(p||0)/100);
+      var el=t.querySelector(".npadv-t"),cancel=t.querySelector(".cancel");
+      if(!p&&!paid){if(el)el.remove();return}
+      var key=(paid?"p":"u")+amt;if(el&&el.dataset.k===key)return;if(el)el.remove();
+      el=document.createElement("div");el.className="npadv-t"+(paid?" paid":"");el.dataset.k=key;
+      el.innerHTML=paid?'✅ <b>Advance paid ('+B(amt)+').</b> Your table is reserved. This booking cannot be cancelled.':
+        '⏳ <b>Awaiting advance: '+p+'% = '+B(amt)+'.</b> Not reserved yet.<br><button type="button">Pay advance</button>';
+      var body=t.querySelector(".tbody")||t;body.appendChild(el);
+      var pb=el.querySelector("button");if(pb)pb.onclick=function(){alert(PAYSOON)};
+      if(cancel)cancel.style.display=paid?"none":"";
+    });
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("#bookingList .cancel");if(!b)return;
+    var t=b.closest(".ticket"),code=((t&&t.querySelector(".code"))||{}).textContent;code=(code||"").trim();
+    if(MINE[code]&&MINE[code].advance_paid){e.preventDefault();e.stopImmediatePropagation();alert("This booking cannot be cancelled because the advance is paid.")}
+  },true);
+  if(typeof renderBookings==="function"){var _rb=renderBookings;renderBookings=function(){_rb();try{tickets()}catch(e){}}}
+
+  /* ---------- club dashboard: advance setting + status on each reservation ---------- */
+  var RS={},CAN={};
+  async function dash(){
+    var view=document.getElementById("dview"),dv=document.getElementById("dVenue");
+    if(!view||!dv||typeof dTab==="undefined"||dTab!=="res"||!user)return;
+    var v=dv.value,can=CAN[v];if(can===undefined){can=false;try{var r=await sb.rpc("np_can_manage",{p_venue:v});can=!r.error&&r.data===true}catch(e){}CAN[v]=can}
+    if(can&&!view.querySelector("#npAdvSet")){
+      var c=document.createElement("div");c.className="lcard";c.id="npAdvSet";c.style.marginBottom="12px";
+      c.innerHTML='<div class="lrow"><div><h4>Advance to reserve</h4><p class="small">Guests must pay this % online before the table is reserved. No cancellation after it is paid.</p></div>'+
+        '<select id="npAdvPct" aria-label="Advance percent">'+[0,10,20,25,30,40,50,60,70,80,90,100].map(function(x){return '<option value="'+x+'">'+(x?x+"%":"No advance")+'</option>'}).join("")+'</select></div><p class="small" id="npAdvMsg"></p>';
+      view.insertBefore(c,view.firstChild);c.querySelector("#npAdvPct").value=String(pctOf(v));
+      c.querySelector("#npAdvPct").onchange=async function(){var n=parseInt(this.value,10),m=c.querySelector("#npAdvMsg");
+        var x=await sb.rpc("np_set_advance",{p_venue:v,p_pct:n});if(x.error){m.textContent=/function|does not exist/i.test(x.error.message)?"Please run np-advance.sql in Supabase first.":x.error.message;return}
+        ADV[v]=n;m.textContent=n?"Saved. New bookings need a "+n+"% advance.":"Saved. No advance needed."}
+    }
+    var ids=[].map.call(view.querySelectorAll("#rsList [data-id]"),function(x){return x.dataset.id}).filter(function(id){return !(id in RS)});
+    if(ids.length){var q=await sb.from("np_bookings").select("id,advance_pct,advance_amount,advance_paid").in("id",ids);(q.data||[]).forEach(function(x){RS[x.id]=x})}
+    view.querySelectorAll("#rsList [data-id]").forEach(function(card){
+      var x=RS[card.dataset.id];if(!x||!x.advance_pct||card.querySelector(".npadv-chip"))return;
+      var chip=document.createElement("span");chip.className="npadv-chip"+(x.advance_paid?" paid":"");
+      chip.textContent=x.advance_paid?"Advance paid "+B(x.advance_amount):"Advance "+x.advance_pct+"% not paid · "+B(x.advance_amount);
+      var h=card.querySelector("h4")||card.firstChild;h.insertAdjacentElement("afterend",chip);
+      if(!x.advance_paid&&can){var btns=card.querySelector(".rsbtns");if(btns&&!btns.querySelector("[data-advpaid]")){var b=document.createElement("button");b.className="pill";b.dataset.advpaid="1";b.textContent="Advance paid (at venue)";
+        b.onclick=async function(){if(!confirm("Mark the advance as paid? After this the guest cannot cancel."))return;var u=await sb.from("np_bookings").update({advance_paid:true}).eq("id",card.dataset.id);if(u.error){alert(u.error.message);return}delete RS[card.dataset.id];renderDash()};btns.appendChild(b)}}
+    });
+  }
+  if(typeof renderDash==="function"){var _rd=renderDash;renderDash=function(){_rd();RS={};setTimeout(dash,350)}}
+
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;try{formBox();doneNote()}catch(e){}})})
+    .observe(panel,{childList:true,subtree:true,characterData:true});
+  var bl=document.getElementById("bookingList");
+  if(bl)new MutationObserver(function(){try{tickets()}catch(e){}}).observe(bl,{childList:true});
+  var rsBusy=false,rsT=null;
+  new MutationObserver(function(){var l=document.getElementById("rsList");if(!l||rsBusy||!l.querySelector("[data-id]"))return;
+    clearTimeout(rsT);rsT=setTimeout(function(){rsBusy=true;dash().finally(function(){setTimeout(function(){rsBusy=false},50)})},150)})
+    .observe(document.body,{childList:true,subtree:true});
+
+  /* hide the admin bell while a sheet is open (it was covering buttons) */
+  var sh=document.querySelector(".sheet");
+  if(sh)new MutationObserver(function(){var b=document.getElementById("npBell");if(b)b.style.visibility=sh.classList.contains("open")?"hidden":""}).observe(sh,{attributes:true,attributeFilter:["class"]});
+
+  async function onUser(u){user=u;CAN={};await loadMine();tickets()}
+  loadSettings().then(function(){formBox();tickets()});
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+  window.npAdvanceSettings=ADV;
 })();

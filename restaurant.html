@@ -264,7 +264,15 @@ main{max-width:760px;margin:0 auto;padding:14px 14px 96px}
     var r=await sb.rpc("np_venue_food");
     if(!r.error&&r.data){var x=r.data.find(function(v){return v.venue_id===venue.venue_id});if(x){t=x.food_type;c=x.cuisines||[]}}
     if(!canManage()){w.innerHTML='<div class="form"><b>Your food</b>'+foodBadges(t,c)+'<div class="hint">Only the owner or a manager can change this.</div></div>';return}
-    w.innerHTML=foodForm("fdVenue",t,c,"Save food type");
+    w.innerHTML=foodForm("fdVenue",t,c,"Save food type")+
+      '<div class="form" id="advBox"><b>Advance to reserve</b><div class="hint">Guests pay this % online before the booking is reserved. No cancellation after it is paid. (Online payment is launching soon.)</div>'+
+      '<select id="advPct">'+[0,10,20,25,30,40,50,60,70,80,90,100].map(function(x){return '<option value="'+x+'">'+(x?x+"%":"No advance")+'</option>'}).join("")+'</select><div class="msg" id="advMsg"></div></div>';
+    (async function(){var a=await sb.from("np_venue_settings").select("advance_pct").eq("venue_id",venue.venue_id).maybeSingle();
+      if($("advPct"))$("advPct").value=String((a.data&&a.data.advance_pct)||0)})();
+    $("advPct").onchange=async function(){var n=parseInt(this.value,10),m=$("advMsg");m.className="msg";
+      var x=await sb.rpc("np_set_advance",{p_venue:venue.venue_id,p_pct:n});
+      if(x.error){m.textContent=/function|does not exist/i.test(x.error.message)?"Please run np-advance.sql in Supabase first.":x.error.message;return}
+      m.className="msg ok";m.textContent=n?"Saved. New bookings need a "+n+"% advance.":"Saved. No advance needed."};
     foodWire($("fdVenue"),async function(nt,nc){
       var s=await sb.rpc("np_set_venue_food",{p_venue_id:venue.venue_id,p_food_type:nt,p_cuisines:nc});
       if(s.error)return /function|does not exist/i.test(s.error.message)?"Please run np-restaurant-dashboard-4.sql in Supabase first.":s.error.message;
