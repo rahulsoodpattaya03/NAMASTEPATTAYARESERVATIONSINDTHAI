@@ -2129,7 +2129,7 @@
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
   function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
-  function M(n){n=Number(n)||0;return typeof money==="function"?money(n):"฿"+n.toLocaleString("en-US")}
+  function M(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")} /* dashboards always in baht (bills are in baht) */
   function spend(x){return Number(x.final_bill!=null?x.final_bill:x.total)||0}
   function lvl(v){return isAdm?99:(LV[myStaff[v]]||0)}
   function venueName(id){var c=(typeof CLUBS!=="undefined"?CLUBS:[]).find(function(x){return x.id===id});return c?c.name:id}
@@ -2353,7 +2353,7 @@
   var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled"};
   var user=null,isAdm=false,per="month";
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-  function M(n){n=Math.round(Number(n)||0);return typeof money==="function"?money(n):"฿"+n.toLocaleString("en-US")}
+  function M(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")} /* dashboards always in baht (bills are in baht) */
   function X(){return typeof ico==="function"?ico("close"):"×"}
   function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+X()+'</button></div>'}
   function open(h){panel.innerHTML=h;sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
@@ -2400,7 +2400,7 @@
       body.innerHTML='<div class="kpis"><div class="kpi"><small>Bookings</small><b>'+live.length+'</b></div><div class="kpi"><small>Guests</small><b>'+live.reduce(function(s,x){return s+(x.guests||0)},0)+'</b></div>'+
         '<div class="kpi"><small>Came (arrived)</small><b>'+came.length+'</b></div><div class="kpi"><small>Sales</small><b>'+M(sales)+'</b></div>'+
         '<div class="kpi"><small>Earned ('+Math.round(rate*100)+'%)</small><b>'+M(sales*rate)+'</b></div><div class="kpi"><small>Coming up</small><b>'+upcoming.length+'</b></div></div>'+
-        '<div class="lcard" style="margin-top:12px"><div class="lrow"><div><h4>To be paid to you</h4><p class="small">All time earned '+M(allEarn)+' · paid '+M(paid)+'</p></div><b style="font-size:20px">'+M(Math.max(0,allEarn-paid))+'</b></div></div>'+
+        '<div class="lcard" style="margin-top:12px"><div class="lrow"><div><h4>To be paid to you</h4><p class="small">All time earned '+M(allEarn)+' · paid '+M(paid)+'</p></div><div style="text-align:right"><b style="font-size:20px">'+M(Math.max(0,allEarn-paid))+'</b><br><span class="small">≈ ₹'+Math.round(Math.max(0,allEarn-paid)*((0,eval)("typeof INR_PER_THB!=='undefined'?INR_PER_THB:2.89"))).toLocaleString("en-IN")+'</span></div></div></div>'+
         '<h3 style="font-size:15px;margin:14px 0 8px">Bookings with your code</h3>'+
         (l.length?l.map(function(x){var c=x.status==="arrived"||x.status==="completed";
           return '<div class="lcard"><div class="lrow"><div style="min-width:0"><h4>'+esc(x.guest_name)+' · '+x.guests+' pax</h4><p class="small">'+esc(venueName(x.venue_id))+' · '+new Date(x.night+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"})+(Number(x.amount)?' · '+M(x.amount):'')+(c?' · you earn '+M(Number(x.amount||0)*rate):'')+'</p></div><span class="status">'+(ST[x.status]||esc(x.status))+'</span></div></div>'}).join(""):'<p class="small">No bookings with your code in this period yet. Share your link to start earning.</p>')+
@@ -2468,7 +2468,7 @@
   var user=null,isAdm=false,items=[],filter="new",q="",chan=null,unseen=0,loaded=false,open=false;
   var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled",new:"New",in_progress:"Preparing",done:"Done"};
   function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
-  function M(n){n=Math.round(Number(n)||0);return typeof money==="function"?money(n):"฿"+n.toLocaleString("en-US")}
+  function M(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")} /* dashboards always in baht (bills are in baht) */
   function X(){return typeof ico==="function"?ico("close"):"×"}
   function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
   function club(id){return (typeof CLUBS!=="undefined"?CLUBS:[]).find(function(x){return x.id===id})}
