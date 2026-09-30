@@ -1318,6 +1318,9 @@
 
   /* ---------- open a venue the same way a tap on its card does ---------- */
   function openVenue(c){
+    if(!c)return;
+    /* open the venue's booking page directly (same screen as tapping a club card) */
+    if(typeof openClub==="function"){try{if(typeof window.npTrack==="function")window.npTrack("place_view",c.id)}catch(e){}openClub(c);return}
     var card=document.querySelector('[data-id="'+(window.CSS&&CSS.escape?CSS.escape(c.id):c.id)+'"]');
     if(card){card.click();return}
     if(typeof window.openService==="function"&&SVC.indexOf(c.cat)>-1){window.openService(c.cat);return}
@@ -1344,8 +1347,28 @@
       '<div class="nm">'+esc(c.name)+'</div><div class="sb">'+esc(c.music||c.sub||"")+'</div>'+
       '<span class="go">'+(isNight(c)?"Book a table":"Book now")+'</span></div></button>';
   }
+  /* taps on "Tonight in Pattaya": work even if another layer of the page lies on top of the cards */
+  var lastCards=[];
+  if(!document.getElementById("npTapCss")){var tc=document.createElement("style");tc.id="npTapCss";
+    tc.textContent='#npHomeFill{position:relative;z-index:6}#npHomeFill .nptcard,#npHomeFill [data-qa],#npHomeFill .npall{position:relative;z-index:7;touch-action:pan-x pan-y}';document.head.appendChild(tc)}
+  function tapTarget(e){
+    var els=document.elementsFromPoint?document.elementsFromPoint(e.clientX,e.clientY):[e.target];
+    for(var i=0;i<els.length;i++){var el=els[i];if(!el||!el.closest)continue;
+      if(el.closest("#panel,.sheet,#npMoreSheet,#rajuChat"))return null;
+      var hit=el.closest("#npHomeFill .nptcard,#npHomeFill [data-qa],#npHomeFill .npall");if(hit)return hit;
+      if(el.closest("button,a,input,select,textarea,label"))return null;}
+    return null;
+  }
+  document.addEventListener("click",function(e){
+    if(e.clientX==null)return;var t=tapTarget(e);if(!t)return;
+    e.preventDefault();e.stopPropagation();
+    if(t.classList.contains("nptcard")){openVenue(lastCards[+t.dataset.npi]);return}
+    if(t.classList.contains("npall")){scrollToClubs();return}
+    var q=t.dataset.qa;if(q==="table")scrollToClubs();else svc(q);
+    try{if(window.npTrack)window.npTrack("service_open","quick_"+q)}catch(x){}
+  },true);
   function renderTonight(box){
-    var cards=tonightCards(),row=box.querySelector(".nptrow"),h=box.querySelector(".nph h3");
+    var cards=tonightCards(),row=box.querySelector(".nptrow"),h=box.querySelector(".nph h3");lastCards=cards;
     if(h)h.textContent=(dayLabel==="Tonight"?"Tonight":dayLabel)+" in Pattaya";
     if(!row)return;
     row.innerHTML=cards.length?cards.map(cardHtml).join(""):'<div class="sb" style="opacity:.7;padding:8px">Venues appear here as partners join.</div>';
@@ -2680,4 +2703,70 @@
   sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
   sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
   document.addEventListener("visibilitychange",function(){if(!document.hidden&&isAdm)load().then(function(){if(open)draw()})});
+})();
+
+/* ===== "Tonight" ticker at the top of Home: real venues from the app, and every name opens that venue ===== */
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  var SVC=["grocery","indian","restaurants","hotels","spa","tours","water","golf","yacht","rental","airport","shopping","events","medical","concierge"];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  if(!document.getElementById("npTickCss")){var st=document.createElement("style");st.id="npTickCss";
+    st.textContent='.ticker .track .nptk{background:none;border:0;padding:4px 2px;margin:0;font:inherit;color:inherit;cursor:pointer;white-space:nowrap}.ticker .track .nptk b{color:var(--ink,#fff);font-weight:600;text-decoration:underline;text-decoration-color:rgba(237,147,177,.6);text-underline-offset:3px}'+
+      '.ticker:active .track,.ticker:focus-within .track{animation-play-state:paused}';document.head.appendChild(st)}
+  function pick(){
+    var L=CLUBS.filter(function(c){return c&&c.id!=="np-test-restaurant"&&c.name});
+    var night=L.filter(function(c){return SVC.indexOf(c.cat)<0}).slice(0,6);
+    var food=L.filter(function(c){return c.cat==="indian"||c.cat==="restaurants"}).slice(0,2);
+    var fun=L.filter(function(c){return c.cat==="yacht"||c.cat==="tours"}).slice(0,1);
+    return night.concat(food,fun);
+  }
+  function line(c){var open=String(c.open||"").split(/\s[—–-]\s|–/)[0].trim();
+    return (/\d/.test(open)?"from "+open:(c.music||c.sub||c.area||"tap to book"))+(c.area&&/\d/.test(open)?" · "+c.area:"")}
+  function fill(){
+    var tt=document.getElementById("tickTrack");if(!tt||tt.dataset.np==="1")return;
+    var v=pick();if(!v.length)return;
+    var h=v.map(function(c){return '<button type="button" class="nptk" data-tk="'+esc(c.id)+'"><b>'+esc(c.name)+'</b> · '+esc(line(c))+'</button>'}).join("");
+    tt.innerHTML=h+h;tt.dataset.np="1";
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("#tickTrack [data-tk]");if(!b)return;
+    e.preventDefault();e.stopPropagation();
+    var c=CLUBS.find(function(x){return x.id===b.dataset.tk});if(!c)return;
+    try{if(window.npTrack)window.npTrack("place_view",c.id)}catch(x){}
+    if(typeof openClub==="function")openClub(c);
+  },true);
+  fill();
+  var tt=document.getElementById("tickTrack");
+  if(tt)new MutationObserver(function(){if(tt.dataset.np!=="1"||!tt.querySelector("[data-tk]")){tt.dataset.np="";fill()}}).observe(tt,{childList:true});
+  window.addEventListener("load",function(){var t=document.getElementById("tickTrack");if(t&&!t.querySelector("[data-tk]")){t.dataset.np="";fill()}});
+})();
+
+/* ===== Currency by country: phone in Thailand = baht (฿), phone in India = rupees (₹).
+   Uses the phone's time zone (no location permission needed). If the person taps the ₹/฿ button
+   themselves, their choice is kept until they travel to the other country. ===== */
+(function(){
+  var btn=document.getElementById("curBtn");if(!btn)return;
+  function country(){
+    var tz="";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
+    if(/^Asia\/(Bangkok)$/.test(tz))return "TH";
+    if(/^Asia\/(Kolkata|Calcutta)$/.test(tz))return "IN";
+    return "";
+  }
+  function curNow(){try{return (0,eval)("typeof cur!=='undefined'?cur:''")}catch(e){return ""}}
+  var auto=false;
+  btn.addEventListener("click",function(){
+    if(auto)return;
+    try{localStorage.setItem("np_cur_manual",country()||"?")}catch(e){}
+  },true);
+  function apply(){
+    var c=country();if(!c)return;
+    var manual="";try{manual=localStorage.getItem("np_cur_manual")||""}catch(e){}
+    if(manual&&manual===c)return;            /* they chose themselves in this country */
+    if(manual&&manual!==c){try{localStorage.removeItem("np_cur_manual")}catch(e){}}
+    var want=c==="TH"?"THB":"INR";
+    if(curNow()&&curNow()!==want){auto=true;try{btn.click()}finally{auto=false}}
+  }
+  apply();
+  window.addEventListener("load",function(){setTimeout(apply,300)});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)apply()});
 })();
