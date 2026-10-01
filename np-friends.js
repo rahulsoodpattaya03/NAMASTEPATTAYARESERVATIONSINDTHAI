@@ -3349,3 +3349,131 @@
   window.addEventListener("online",function(){badge("");if(!map&&built){var f=document.getElementById("npMapFallback");if(f)f.remove();start()}else if(map)draw()});
   window.addEventListener("offline",function(){badge("Offline · showing saved map")});
 })();
+
+/* ===== Recent screens (1 Oct 2026): a multitasking / task switcher like the phone's Overview screen.
+   Every important screen you open is kept as a card: swipe between them, tap to jump back,
+   swipe a card up (or ✕) to close it, "Close all". Open it from More → Recent screens,
+   or press and hold any button in the bottom menu. ===== */
+(function(){
+  var KEY="np_recents",MAX=14,busyOpen=false;
+  var SEC={explore:["Home","me","#7F77DD","🏠"],map:["Map","services","#378ADD","🗺️"],bookings:["My bookings","me","#F0997B","🎟️"],earn:["Earn & referrals","agent","#1D9E75","💰"],
+    concierge:["Raju chat","me","#7F77DD","💬"],buddy:["Meet new people","me","#ED93B1","❤️"],ladies:["Empowered Girls","me","#ED93B1","🌸"],mall:["Namaste Mall","services","#F0997B","🛍️"],
+    packages:["Packages","services","#F0997B","🎁"],paybill:["Pay my bill","me","#1D9E75","🧾"],dash:["Partner dashboard","partner","#378ADD","📊"],clubs:["Clubs","services","#F0997B","🪩"]};
+  var GROUPS=[["all","All"],["services","Services"],["me","My app"],["partner","Partners"],["agent","Agents"],["admin","Admin"]];
+  var grp="all";
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}}
+  function save(a){try{localStorage.setItem(KEY,JSON.stringify(a.slice(0,MAX)))}catch(e){}}
+  function add(it){if(busyOpen)return;it.t=Date.now();var a=load().filter(function(x){return x.k!==it.k});a.unshift(it);save(a)}
+  function ago(t){var m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago"}
+  function isAdmin(){var b=document.getElementById("npBell");return !!(b&&b.classList.contains("show"))}
+  function isStaff(){var d=document.getElementById("dVenue");return isAdmin()||!!(d&&[].some.call(d.options,function(o){return o.value&&o.value!=="__none"})&&d.dataset.allow)}
+
+  /* ---------- remember screens ---------- */
+  function wrap(name,fn){if(typeof window[name]!=="function")return;var orig=window[name];window[name]=function(){try{fn.apply(null,arguments)}catch(e){}return orig.apply(this,arguments)}}
+  if(typeof go==="function"){var _go=go;go=function(t){try{if(SEC[t])add({k:"go:"+t,ty:"sec",id:t})}catch(e){}return _go.apply(this,arguments)}}
+  if(typeof openClub==="function"){var _oc=openClub;openClub=function(c){try{if(c&&c.id)add({k:"v:"+c.id,ty:"venue",id:c.id})}catch(e){}return _oc.apply(this,arguments)}}
+  wrap("openService",function(cat){add({k:"s:"+cat,ty:"svc",id:cat})});
+  wrap("npControlCenter",function(){add({k:"f:cc",ty:"fn",id:"npControlCenter",ti:"Control Center",g:"admin",c:"#EF9F27",e:"🔔"})});
+  wrap("npMeetAdmin",function(){add({k:"f:meetadm",ty:"fn",id:"npMeetAdmin",ti:"Verify women & reports",g:"admin",c:"#EF9F27",e:"✅"})});
+  wrap("npAgentsAdmin",function(){add({k:"f:agadm",ty:"fn",id:"npAgentsAdmin",ti:"Agents (admin)",g:"admin",c:"#EF9F27",e:"🤝"})});
+  wrap("npOpenAgent",function(){add({k:"f:agent",ty:"fn",id:"npOpenAgent",ti:"Agent dashboard",g:"agent",c:"#1D9E75",e:"🤝"})});
+
+  /* ---------- what a card shows ---------- */
+  function info(x){
+    var C=typeof CLUBS!=="undefined"?CLUBS:[];
+    if(x.ty==="sec"){var s=SEC[x.id]||[x.id,"me","#7F77DD","•"];return {ti:s[0],sub:"Screen",g:s[1],c:s[2],e:s[3]}}
+    if(x.ty==="venue"){var v=C.find(function(c){return c.id===x.id});if(!v)return null;var ph=null;try{ph=(store.get("np_photos_"+v.id,[])||[])[0]}catch(e){}
+      return {ti:v.name,sub:[v.area,v.music||v.sub].filter(Boolean).join(" · "),g:"services",c:"#F0997B",e:"🪩",ph:ph||v.photo||null}}
+    if(x.ty==="svc"){var n=(typeof CATNAME!=="undefined"&&CATNAME[x.id])||x.id;return {ti:n,sub:"Service",g:"services",c:"#F0997B",e:"✨",ph:"photos/"+x.id+".jpg"}}
+    if(x.ty==="fn")return {ti:x.ti,sub:x.g==="admin"?"Admin":"Earnings",g:x.g,c:x.c,e:x.e};
+    return null;
+  }
+  function reopen(x){
+    busyOpen=true;try{
+      if(x.ty==="sec"&&typeof go==="function")go(x.id);
+      else if(x.ty==="venue"){var v=CLUBS.find(function(c){return c.id===x.id});if(v)openClub(v)}
+      else if(x.ty==="svc"&&window.openService)window.openService(x.id);
+      else if(x.ty==="fn"&&typeof window[x.id]==="function")window[x.id]();
+    }finally{busyOpen=false}
+    add(x);
+  }
+  function shortcuts(){
+    var s=[["Home",function(){go("explore")},"🏠"],["Map",function(){go("map")},"🗺️"],["Bookings",function(){go("bookings")},"🎟️"],["Meet",function(){go("buddy")},"❤️"],["Raju",function(){var r=document.querySelector("#rajuFab,.rajufab,[data-raju-open]");if(r)r.click();else go("concierge")},"💬"],
+      ["Earnings",function(){if(window.npOpenAgent)npOpenAgent();else go("earn")},"💰"]];
+    if(isStaff())s.push(["Club dashboard",function(){go("dash")},"📊"],["Restaurant",function(){location.href="restaurant.html"},"🍛"]);
+    if(isAdmin())s.push(["Control Center",function(){npControlCenter()},"🔔"]);
+    return s;
+  }
+
+  /* ---------- the switcher ---------- */
+  if(!document.getElementById("npRecCss")){var st=document.createElement("style");st.id="npRecCss";
+    st.textContent='#npRec{position:fixed;inset:0;z-index:10050;background:rgba(8,6,16,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:flex;flex-direction:column;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 0 calc(14px + env(safe-area-inset-bottom))}'+
+      '#npRec .hd{display:flex;align-items:center;justify-content:space-between;padding:0 18px}#npRec .hd b{font-size:20px}#npRec .hd button{border:0;background:rgba(255,255,255,.1);color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px}'+
+      '#npRec .gr{display:flex;gap:8px;overflow-x:auto;padding:12px 18px 6px;scrollbar-width:none}#npRec .gr::-webkit-scrollbar{display:none}#npRec .gr button{flex:0 0 auto;padding:8px 14px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}#npRec .gr button.on{background:#fff;color:#111}'+
+      '#npRec .row{flex:1;display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:18px 12%;align-items:center;scrollbar-width:none}#npRec .row::-webkit-scrollbar{display:none}'+
+      '#npRec .cd{position:relative;flex:0 0 76%;max-width:340px;height:min(62vh,520px);scroll-snap-align:center;display:flex;flex-direction:column;transition:transform .25s,opacity .25s}'+
+      '#npRec .cd .tp{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;font-size:14px;font-weight:600}#npRec .cd .tp i{font-style:normal;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}'+
+      '#npRec .cd .bd{flex:1;border-radius:24px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.16);background:#141225;box-shadow:0 18px 40px rgba(0,0,0,.5);cursor:pointer}'+
+      '#npRec .cd .ph{position:absolute;inset:0;background:center/cover no-repeat}#npRec .cd .gl{position:absolute;inset:0}#npRec .cd .tx{position:absolute;left:0;right:0;bottom:0;padding:60px 18px 18px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.85))}'+
+      '#npRec .cd .tx b{display:block;font-size:22px}#npRec .cd .tx small{display:block;opacity:.85;font-size:13px;margin-top:4px}#npRec .cd .big{position:absolute;top:28%;left:0;right:0;text-align:center;font-size:72px;opacity:.9}'+
+      '#npRec .cd .x{position:absolute;top:34px;right:-8px;z-index:3;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:#111;color:#fff;font-size:16px}'+
+      '#npRec .cd.gone{transform:translateY(-120%);opacity:0}#npRec .emp{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 30px;opacity:.85}'+
+      '#npRec .sc{display:flex;gap:8px;overflow-x:auto;padding:4px 18px 10px;scrollbar-width:none}#npRec .sc::-webkit-scrollbar{display:none}#npRec .sc button{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;width:74px;padding:10px 4px;border-radius:16px;font:inherit;font-size:11.5px;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}#npRec .sc button span{font-size:22px}'+
+      '#npRec .ca{align-self:center;margin-top:6px;padding:12px 34px;border-radius:999px;border:0;font:inherit;font-size:16px;font-weight:700;background:rgba(255,255,255,.14);color:#fff}';
+    document.head.appendChild(st)}
+  function open(){
+    var old=document.getElementById("npRec");if(old)old.remove();
+    var o=document.createElement("div");o.id="npRec";o.setAttribute("role","dialog");o.setAttribute("aria-label","Recent screens");
+    document.body.appendChild(o);document.body.style.overflow="hidden";draw();
+    try{if(window.npTrack)npTrack("service_open","recent_screens")}catch(e){}
+  }
+  function closeSw(){var o=document.getElementById("npRec");if(o)o.remove();document.body.style.overflow=""}
+  window.npRecents=open;
+  function draw(){
+    var o=document.getElementById("npRec");if(!o)return;
+    var items=load().map(function(x){var i=info(x);return i?{x:x,i:i}:null}).filter(Boolean).filter(function(r){return r.i.g!=="admin"||isAdmin()});
+    var show=items.filter(function(r){return grp==="all"||r.i.g===grp});
+    var gs=GROUPS.filter(function(g){return g[0]==="all"||items.some(function(r){return r.i.g===g[0]})});
+    o.innerHTML='<div class="hd"><b>Recent screens</b><button type="button" id="rcX" aria-label="Close">×</button></div>'+
+      '<div class="gr">'+gs.map(function(g){return '<button type="button" data-g="'+g[0]+'" class="'+(g[0]===grp?"on":"")+'">'+g[1]+'</button>'}).join("")+'</div>'+
+      (show.length?'<div class="row">'+show.map(function(r,n){var i=r.i;
+        return '<div class="cd" data-n="'+n+'"><div class="tp"><i style="background:'+i.c+'">'+i.e+'</i>'+esc(i.ti)+'</div><div class="bd" data-open="'+n+'">'+
+          (i.ph?'<div class="ph" style="background-image:url(\''+esc(i.ph)+'\')"></div>':'<div class="gl" style="background:radial-gradient(circle at 75% 20%,'+i.c+'88,transparent 55%),radial-gradient(circle at 15% 85%,'+i.c+'44,transparent 50%),#141225"></div><div class="big">'+i.e+'</div>')+
+          '<div class="tx"><b>'+esc(i.ti)+'</b><small>'+esc(i.sub||"")+' · '+ago(r.x.t)+'</small></div></div><button type="button" class="x" data-x="'+n+'" aria-label="Close '+esc(i.ti)+'">✕</button></div>'}).join("")+'</div>'
+        :'<div class="emp">No recent screens yet. Open clubs, services or dashboards and they will appear here.</div>')+
+      '<div class="sc" aria-label="Quick open">'+shortcuts().map(function(s,n){return '<button type="button" data-s="'+n+'"><span>'+s[2]+'</span>'+esc(s[0])+'</button>'}).join("")+'</div>'+
+      (show.length?'<button type="button" class="ca" id="rcAll">Close all</button>':'');
+    o.querySelector("#rcX").onclick=closeSw;
+    o.querySelectorAll("[data-g]").forEach(function(b){b.onclick=function(){grp=b.dataset.g;draw()}});
+    var sc=shortcuts();o.querySelectorAll("[data-s]").forEach(function(b){b.onclick=function(){closeSw();try{sc[+b.dataset.s][1]()}catch(e){}}});
+    var ca=o.querySelector("#rcAll");if(ca)ca.onclick=function(){var keep=load().filter(function(x){var i=info(x);return i&&!(grp==="all"||i.g===grp)});save(keep);draw()};
+    function remove(n){var r=show[n];if(!r)return;var cd=o.querySelector('.cd[data-n="'+n+'"]');if(cd)cd.classList.add("gone");
+      setTimeout(function(){save(load().filter(function(x){return x.k!==r.x.k}));draw()},230)}
+    o.querySelectorAll("[data-x]").forEach(function(b){b.onclick=function(e){e.stopPropagation();remove(+b.dataset.x)}});
+    o.querySelectorAll("[data-open]").forEach(function(b){
+      var n=+b.dataset.open,y0=null,dy=0,cd=b.parentNode;
+      b.addEventListener("touchstart",function(e){y0=e.touches[0].clientY;dy=0;cd.style.transition="none"},{passive:true});
+      b.addEventListener("touchmove",function(e){if(y0===null)return;dy=Math.min(0,e.touches[0].clientY-y0);cd.style.transform="translateY("+dy+"px)";cd.style.opacity=String(1+dy/400)},{passive:true});
+      b.addEventListener("touchend",function(){cd.style.transition="";if(dy<-110){remove(n)}else{cd.style.transform="";cd.style.opacity=""}y0=null});
+      b.onclick=function(){if(dy<-20)return;var r=show[n];closeSw();try{if(typeof closeSheet==="function")closeSheet()}catch(e){}reopen(r.x)};
+    });
+    var row=o.querySelector(".row");if(row)row.scrollLeft=0;
+  }
+
+  /* ---------- ways to open it ---------- */
+  new MutationObserver(function(){
+    var m=document.querySelector("#npMoreSheet .in");if(!m||m.querySelector("#npRecBtn"))return;
+    var b=document.createElement("button");b.type="button";b.className="it";b.id="npRecBtn";
+    b.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="6" width="12" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg>Recent screens';
+    b.onclick=function(){var s=document.getElementById("npMoreSheet");if(s)s.remove();open()};
+    var h=m.querySelector("h4");if(h)h.insertAdjacentElement("afterend",b);else m.insertBefore(b,m.firstChild);
+  }).observe(document.body,{childList:true});
+  /* press and hold any bottom-menu button */
+  var hold=null,held=false;
+  document.addEventListener("touchstart",function(e){var t=e.target.closest&&e.target.closest("nav button,nav a,.tabs button,#npMoreTab");if(!t)return;held=false;clearTimeout(hold);
+    hold=setTimeout(function(){held=true;try{navigator.vibrate&&navigator.vibrate(20)}catch(x){}open()},550)},{passive:true});
+  ["touchend","touchmove","touchcancel"].forEach(function(n){document.addEventListener(n,function(){clearTimeout(hold)},{passive:true})});
+  document.addEventListener("click",function(e){if(held&&e.target.closest&&e.target.closest("nav,.tabs")){e.preventDefault();e.stopPropagation();held=false}},true);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSw()});
+})();
