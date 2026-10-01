@@ -923,7 +923,7 @@
   function scan(){
     /* booking forms: any visible date field, or a visible booking button */
     var anchors=[].slice.call(document.querySelectorAll('input[type="date"],input[type="datetime-local"]')).filter(function(d){return vis(d)&&!d.closest("#dash")});
-    if(!anchors.length)anchors=[].slice.call(document.querySelectorAll("button")).filter(function(b){return vis(b)&&BTN.test(b.textContent)&&!b.closest("#dash,.npdel,nav,header")&&/guest|people|person|pax|table|date|time/i.test((containerOf(b)||{}).textContent||"")});
+    if(!anchors.length)anchors=[].slice.call(document.querySelectorAll("button")).filter(function(b){return vis(b)&&BTN.test(b.textContent)&&!b.closest("#dash,.npdel,nav,header,#pkgs,.pkg")&&/guest|people|person|pax|table|date|time/i.test((containerOf(b)||{}).textContent||"")});
     anchors.forEach(function(el){
       var box=containerOf(el);if(!box)return;
       var c=venueIn(box);if(!isFood(c))return;
@@ -1129,7 +1129,7 @@
     document.head.appendChild(st)}
   function scan(){
     var btns=[].slice.call(document.querySelectorAll("button")).filter(function(b){
-      if(!vis(b)||!BTN.test(b.textContent)||b.closest("#dash,.npdel,nav,header,.nppdpa"))return false;
+      if(!vis(b)||!BTN.test(b.textContent)||b.closest("#dash,.npdel,nav,header,.nppdpa,#pkgs,.pkg"))return false;
       var box=containerOf(b);if(!box)return false;
       /* only real booking forms: never the home page or a list of venue cards */
       var form=box.closest("#panel,.sheet,.pbody")||box.matches("#panel,.sheet,.pbody");
@@ -1145,7 +1145,7 @@
     });
   }
   document.addEventListener("click",function(e){
-    var b=e.target.closest&&e.target.closest("button");if(!b||!BTN.test(b.textContent))return;
+    var b=e.target.closest&&e.target.closest("button");if(!b||!BTN.test(b.textContent)||b.closest("#pkgs,.pkg"))return;
     var box=containerOf(b);var lab=box&&box.querySelector(".nppdpa");if(!lab)return;
     if(!lab.querySelector("input").checked){e.preventDefault();e.stopImmediatePropagation();lab.classList.add("err");lab.scrollIntoView({block:"center",behavior:"smooth"});
       setTimeout(function(){lab.classList.remove("err")},2500)}
@@ -3136,7 +3136,13 @@
     '<path d="M240 120 C270 100 285 80 300 70 S340 40 360 30" fill="none" stroke="#5DCAA5" stroke-opacity=".55" stroke-width="2"/><path d="M350 28 H362 V40" fill="none" stroke="#5DCAA5" stroke-opacity=".55" stroke-width="2"/>'+
     '<g fill="#FAC775" opacity=".6"><circle cx="262" cy="42" r="2.5"/><circle cx="370" cy="80" r="2"/></g>');
   ART.ref=svg("0 0 360 90",'<defs>'+glow("a","#1D9E75",".35")+'</defs><circle cx="330" cy="45" r="70" fill="url(#a)"/>');
-  var MAP=[["#rajuCard","raju"],[".npstrip","sky",'rgba(133,183,235,.4)'],["#npHomeFill [data-qa]","qa",'rgba(240,153,123,.4)'],["#cats .cat:not(#npFLBcat)","cat",'rgba(240,153,123,.35)'],["#npFLBcat","catpink",'rgba(237,147,177,.45)'],
+  ART.sheetbg=svg("0 0 360 1600",'<defs>'+glow("a","#F0997B",".22")+glow("b","#7F77DD",".25")+glow("c","#ED93B1",".2")+glow("d","#EF9F27",".18")+'</defs>'+
+    '<circle cx="330" cy="160" r="170" fill="url(#a)"/><circle cx="20" cy="620" r="190" fill="url(#b)"/><circle cx="350" cy="1020" r="180" fill="url(#c)"/><circle cx="40" cy="1420" r="180" fill="url(#d)"/>');
+  ART.pkg=svg("0 0 360 200",'<defs>'+glow("a","#F0997B",".28")+'</defs><circle cx="345" cy="10" r="90" fill="url(#a)"/>');
+  ART.deal=svg("0 0 360 200",'<defs>'+glow("a","#EF9F27",".3")+'</defs><circle cx="340" cy="35" r="70" fill="url(#a)"/><g fill="#FAC775" opacity=".6"><circle cx="300" cy="18" r="2"/><circle cx="330" cy="52" r="1.6"/></g>');
+  ART.addon=svg("0 0 360 200",'<defs>'+glow("a","#ED93B1",".28")+'</defs><circle cx="345" cy="10" r="75" fill="url(#a)"/><path d="M326 20 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#F4C0D1" opacity=".55"/>');
+  ART.totalbg=svg("0 0 360 200",'<defs>'+glow("a","#1D9E75",".26")+'</defs><circle cx="20" cy="80" r="80" fill="url(#a)"/>');
+  var MAP=[["#rajuCard","raju"],["#panel:has(#pkgs) .pbody","sheetbg"],["#panel .pkg","pkg",'rgba(240,153,123,.35)'],["#panel .deal","deal"],["#panel .addon","addon",'rgba(237,147,177,.35)'],["#panel .total","totalbg"],[".npstrip","sky",'rgba(133,183,235,.4)'],["#npHomeFill [data-qa]","qa",'rgba(240,153,123,.4)'],["#cats .cat:not(#npFLBcat)","cat",'rgba(240,153,123,.35)'],["#npFLBcat","catpink",'rgba(237,147,177,.45)'],
     [".rcard","rmeta"],["#grid .club","rmeta",'rgba(240,153,123,.35)'],[".npreftile","refer"],["#dview .partner","dform",'rgba(133,183,235,.45)'],["#dview .tblw","dform",'rgba(133,183,235,.4)'],
     ["#panel:has(#umAcc) .lcard","me",'rgba(175,169,236,.5)'],["#panel .refcode","ref",'rgba(93,202,165,.6)'],["#panel:has(#ppDash) .lcard","dform",'rgba(133,183,235,.5)'],["#npmDeck .npm-empty-card","welcome"],["#npMeet > .npm-card.hl","me"],["#npMeet > .npm-card:not(.hl)","admin",'rgba(239,159,39,.55)'],
     ["#npmList .npm-card","person",'rgba(237,147,177,.45)'],["#npLList .npm-card","person",'rgba(237,147,177,.45)'],["#npPurpose","rules",'rgba(175,169,236,.5)'],
@@ -3146,7 +3152,8 @@
     ['.hubtile[data-go="mall"]',"mall",'rgba(240,153,123,.45)'],['.hubtile[data-go="paybill"]',"paybill",'rgba(93,202,165,.45)'],['.hubtile[data-go="dash"]',"dash",'rgba(133,183,235,.5)']];
   var css='#bookingList .ticket.npart::before,.rcard.npart::before,#grid .club.npart::before{top:auto;height:55%}.npart{isolation:isolate}.npart::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-repeat:no-repeat;background-size:100% 100%}';
   css+='.goldarea.npart::before{bottom:auto;height:170px;border-bottom-left-radius:0;border-bottom-right-radius:0;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}';
-  var FIXED=["refer","welcome","me","admin","person","rules","ticket","earn","chat","lounge","inbox","dcard","dform","sky","ref"];
+  css+='#panel .pbody.npart::before{background-size:100% auto;background-position:center top}#panel .pkg[aria-pressed="true"].npart{box-shadow:0 0 28px -8px #F0997B}';
+  var FIXED=["pkg","deal","addon","totalbg","refer","welcome","me","admin","person","rules","ticket","earn","chat","lounge","inbox","dcard","dform","sky","ref"];
   MAP.forEach(function(m){css+=m[0]+'.npart::before{background-image:'+ART[m[1]]+(FIXED.indexOf(m[1])>-1?';background-size:360px auto;background-position:right top':'')+'}';if(m[2])css+=m[0]+'.npart{border-color:'+m[2]+'}'});
   var st=document.createElement("style");st.id="npArtCss";st.textContent=css;document.head.appendChild(st);
   function tag(){MAP.forEach(function(m){var list;try{list=document.querySelectorAll(m[0])}catch(e){return}list.forEach(function(el){
