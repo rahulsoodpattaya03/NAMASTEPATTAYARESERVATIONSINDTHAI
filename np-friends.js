@@ -2292,13 +2292,17 @@
   /* ---------- live tabs ---------- */
   var LIVE=["over","orders","att","crm","rep","upd","photos"];
   var _prev=renderDash;
-  renderDash=function(){_prev();try{live()}catch(e){console.error(e)}};
+  renderDash=function(){try{restrict()}catch(e){}
+    var dv=document.getElementById("dVenue");
+    if(dv&&dv.value==="__none"){var view=document.getElementById("dview");if(view)view.innerHTML='<div class="lcard"><h4>No venue linked yet</h4><p>'+(user?'When Namaste Pattaya approves your venue, or your manager adds your email ('+esc(user.email)+') in the Staff tab, your venue appears here.':'Log in with your partner or staff account to see your venue.')+'</p></div>';return}
+    _prev();try{live()}catch(e){console.error(e)}};
   function live(){
     var t=(typeof dTab!=="undefined")?dTab:"";if(LIVE.indexOf(t)<0){token++;return}  /* switching tab cancels any slower screen still loading */
     var view=document.getElementById("dview"),dv=document.getElementById("dVenue");if(!view||!dv)return;
     var v=dv.value,L=lvl(v),my=++token;
     if(!user){view.innerHTML=card('<h4>Staff login</h4><p>Log in with your staff account to see live data for your club.</p><button class="pill on" id="clLog" style="margin-top:10px">Log in</button>');
       view.querySelector("#clLog").onclick=function(){var b=document.querySelector(".np-hbtn.user");if(b)b.click()};return}
+    if(v==="__none"){view.innerHTML=card('<h4>No venue linked yet</h4><p>When Namaste Pattaya approves your venue, or your manager adds your email ('+esc(user.email)+') in the Staff tab, your venue appears here.</p>');return}
     if(!L){view.innerHTML=card('<h4>Not linked to '+esc(venueName(v))+'</h4><p>Ask your manager, general manager or owner to add your email ('+esc(user.email)+') in the Staff tab.</p>');return}
     view.innerHTML='<p class="small">Loading…</p>';
     var ok=function(){return my===token};
@@ -2459,7 +2463,20 @@
   }
   pullUpdates();pullPhotos();
 
-  async function onUser(u){var same=(u&&u.id)===(user&&user.id);user=u;if(same&&u)return;await loadMe();
+  /* venue list: admins see every venue, partners only the venues they work at */
+  var ALLV=null;
+  function restrict(){
+    var dv=document.getElementById("dVenue");if(!dv)return;
+    if(!ALLV||dv.options.length>ALLV.length)ALLV=[].map.call(dv.options,function(o){return [o.value,o.textContent]}).filter(function(x){return x[0]!=="__none"});
+    var allow=isAdm?ALLV:ALLV.filter(function(x){return myStaff[x[0]]});
+    var key=allow.map(function(x){return x[0]}).join(",");if(dv.dataset.allow===key&&dv.options.length)return;
+    var cur=dv.value;dv.innerHTML="";
+    if(!allow.length){var o=document.createElement("option");o.value="__none";o.textContent=user?"No venue linked to your account yet":"Log in to see your venue";dv.appendChild(o)}
+    allow.forEach(function(x){var o=document.createElement("option");o.value=x[0];o.textContent=x[1];dv.appendChild(o)});
+    dv.dataset.allow=key;
+    if(allow.some(function(x){return x[0]===cur}))dv.value=cur;
+  }
+  async function onUser(u){var same=(u&&u.id)===(user&&user.id);user=u;if(same&&u)return;await loadMe();restrict();
     var d=document.getElementById("dash");if(d&&!d.hidden)renderDash()}
   sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
   sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
@@ -3114,18 +3131,22 @@
   ART.catpink=svg("0 0 100 100",'<circle cx="92" cy="8" r="46" fill="#ED93B1" opacity=".2"/>');
   ART.rmeta=svg("0 0 360 100",'<defs>'+glow("a","#F0997B",".3")+'</defs><circle cx="330" cy="80" r="80" fill="url(#a)"/>');
   ART.dform=svg("0 0 360 120",'<defs>'+glow("a","#378ADD",".32")+'</defs><circle cx="330" cy="30" r="80" fill="url(#a)"/>');
+  ART.refer=svg("0 0 380 160",'<defs>'+glow("a","#1D9E75",".5")+glow("b","#EF9F27",".3")+'</defs><circle cx="300" cy="40" r="90" fill="url(#a)"/><circle cx="350" cy="130" r="60" fill="url(#b)"/>'+
+    '<g fill="none" stroke="#9FE1CB" stroke-opacity=".45" stroke-width="1.5"><ellipse cx="320" cy="112" rx="26" ry="7"/><path d="M294 112 V102 M346 112 V102"/><ellipse cx="320" cy="102" rx="26" ry="7"/><path d="M294 102 V92 M346 102 V92"/><ellipse cx="320" cy="92" rx="26" ry="7"/></g>'+
+    '<path d="M240 120 C270 100 285 80 300 70 S340 40 360 30" fill="none" stroke="#5DCAA5" stroke-opacity=".55" stroke-width="2"/><path d="M350 28 H362 V40" fill="none" stroke="#5DCAA5" stroke-opacity=".55" stroke-width="2"/>'+
+    '<g fill="#FAC775" opacity=".6"><circle cx="262" cy="42" r="2.5"/><circle cx="370" cy="80" r="2"/></g>');
   ART.ref=svg("0 0 360 90",'<defs>'+glow("a","#1D9E75",".35")+'</defs><circle cx="330" cy="45" r="70" fill="url(#a)"/>');
   var MAP=[["#rajuCard","raju"],[".npstrip","sky",'rgba(133,183,235,.4)'],["#npHomeFill [data-qa]","qa",'rgba(240,153,123,.4)'],["#cats .cat:not(#npFLBcat)","cat",'rgba(240,153,123,.35)'],["#npFLBcat","catpink",'rgba(237,147,177,.45)'],
-    [".rcard","rmeta"],["#dview .partner","dform",'rgba(133,183,235,.45)'],["#dview .tblw","dform",'rgba(133,183,235,.4)'],
+    [".rcard","rmeta"],["#grid .club","rmeta",'rgba(240,153,123,.35)'],[".npreftile","refer"],["#dview .partner","dform",'rgba(133,183,235,.45)'],["#dview .tblw","dform",'rgba(133,183,235,.4)'],
     ["#panel:has(#umAcc) .lcard","me",'rgba(175,169,236,.5)'],["#panel .refcode","ref",'rgba(93,202,165,.6)'],["#panel:has(#ppDash) .lcard","dform",'rgba(133,183,235,.5)'],["#npmDeck .npm-empty-card","welcome"],["#npMeet > .npm-card.hl","me"],["#npMeet > .npm-card:not(.hl)","admin",'rgba(239,159,39,.55)'],
     ["#npmList .npm-card","person",'rgba(237,147,177,.45)'],["#npLList .npm-card","person",'rgba(237,147,177,.45)'],["#npPurpose","rules",'rgba(175,169,236,.5)'],
     ["#bookingList .ticket","ticket",'rgba(240,153,123,.5)'],["#npAgEarn","earn",'rgba(93,202,165,.55)'],["#ibL .npm-card","chat",'rgba(237,147,177,.45)'],
     ["#lview .lcard","lounge",'rgba(237,147,177,.5)'],[".npcc-kpi > div","kpi"],[".npcc-it","inbox"],["#dview .kpi","dkpi",'rgba(133,183,235,.45)'],["#dview .lcard","dcard",'rgba(133,183,235,.45)'],["#npxLang","lang"],[".npx-tools","conv"],[".hubtile.ladies","girls"],[".goldarea","gold"],
     ['.hubtile[data-go="packages"]',"packages",'rgba(240,153,123,.45)'],['.hubtile[data-go="buddy"]',"buddy",'rgba(237,147,177,.45)'],
     ['.hubtile[data-go="mall"]',"mall",'rgba(240,153,123,.45)'],['.hubtile[data-go="paybill"]',"paybill",'rgba(93,202,165,.45)'],['.hubtile[data-go="dash"]',"dash",'rgba(133,183,235,.5)']];
-  var css='#bookingList .ticket.npart::before,.rcard.npart::before{top:auto;height:55%}.npart{isolation:isolate}.npart::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-repeat:no-repeat;background-size:100% 100%}';
+  var css='#bookingList .ticket.npart::before,.rcard.npart::before,#grid .club.npart::before{top:auto;height:55%}.npart{isolation:isolate}.npart::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-repeat:no-repeat;background-size:100% 100%}';
   css+='.goldarea.npart::before{bottom:auto;height:170px;border-bottom-left-radius:0;border-bottom-right-radius:0;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}';
-  var FIXED=["welcome","me","admin","person","rules","ticket","earn","chat","lounge","inbox","dcard","dform","sky","ref"];
+  var FIXED=["refer","welcome","me","admin","person","rules","ticket","earn","chat","lounge","inbox","dcard","dform","sky","ref"];
   MAP.forEach(function(m){css+=m[0]+'.npart::before{background-image:'+ART[m[1]]+(FIXED.indexOf(m[1])>-1?';background-size:360px auto;background-position:right top':'')+'}';if(m[2])css+=m[0]+'.npart{border-color:'+m[2]+'}'});
   var st=document.createElement("style");st.id="npArtCss";st.textContent=css;document.head.appendChild(st);
   function tag(){MAP.forEach(function(m){var list;try{list=document.querySelectorAll(m[0])}catch(e){return}list.forEach(function(el){
@@ -3139,3 +3160,31 @@
 /* ===== Clearer photos: lighter dark layer on photos (index.html), names keep a soft shadow so they stay readable ===== */
 (function(){if(document.getElementById("npPhotoCss"))return;var s=document.createElement("style");s.id="npPhotoCss";
   s.textContent='.art .name,.art h2.name{text-shadow:0 2px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.6)!important}.art{image-rendering:auto}';document.head.appendChild(s)})();
+
+/* ===== Home: "Refer & earn" card above Empowered Girls (same size), and a compact Namaste Gold card ===== */
+(function(){
+  if(!document.getElementById("npRefCss")){var st=document.createElement("style");st.id="npRefCss";
+    st.textContent='.npreftile{width:100%;background:linear-gradient(135deg,rgba(29,158,117,.32),rgba(8,20,16,.92) 60%);border:1.5px solid rgba(93,202,165,.6);box-shadow:0 0 40px -12px #1D9E75;cursor:pointer}'+
+      '.npreftile>span{background:linear-gradient(135deg,#1D9E75,#5DCAA5);border:0;color:#fff}.npreftile b{font-size:17px}'+
+      '.npreftile .nprates{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.npreftile .nprates{flex-wrap:nowrap}.npreftile .nprates i{white-space:nowrap;font-style:normal;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(93,202,165,.18);border:1px solid rgba(93,202,165,.5);color:#C9F2E2}'+
+      '.goldarea.npcompact{padding-top:14px;padding-bottom:14px}.goldarea.npcompact>*:not(.gtop):not(.gcta):not(.npgtog){display:none!important}.goldarea.npcompact .gtop{margin-bottom:10px}'+
+      '.npgtog{display:block;width:100%;margin:0 0 10px;padding:8px;border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:#E9D8A6;cursor:pointer;text-decoration:underline;text-underline-offset:3px}';
+    document.head.appendChild(st)}
+  function build(){
+    var lt=document.querySelector(".hubtile.ladies");
+    if(lt&&!document.getElementById("npRefTile")){
+      var holder=lt.closest(".homeblk")||lt.parentNode;
+      var w=document.createElement("div");w.className="homeblk";w.id="npRefWrap";w.style.marginBottom="12px";
+      w.innerHTML='<button type="button" class="hubtile npreftile" id="npRefTile"><span>'+(typeof ico==="function"?ico("gift"):"")+'</span><b>Refer &amp; earn</b><small>Earn on every booking made with your code</small>'+
+        '<div class="nprates"><i>Travellers 3%</i><i>Agents 5%</i><i>Promoters 5%</i></div></button>';
+      holder.parentNode.insertBefore(w,holder);
+      w.querySelector("button").onclick=function(){try{if(window.npTrack)window.npTrack("service_open","refer_earn")}catch(e){}if(typeof go==="function")go("earn")};
+    }
+    var g=document.querySelector(".goldarea");
+    if(g&&!g.dataset.npc){g.dataset.npc="1";g.classList.add("npcompact");
+      var t=document.createElement("button");t.type="button";t.className="npgtog";t.textContent="See all Gold benefits ▾";
+      var cta=g.querySelector(".gcta");if(cta)cta.insertAdjacentElement("beforebegin",t);else g.appendChild(t);
+      t.onclick=function(){var c=g.classList.toggle("npcompact");t.textContent=c?"See all Gold benefits ▾":"Show less ▴"}}
+  }
+  build();window.addEventListener("load",build);setTimeout(build,1500);
+})();
