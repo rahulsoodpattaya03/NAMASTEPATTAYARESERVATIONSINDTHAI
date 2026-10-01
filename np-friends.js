@@ -3485,11 +3485,14 @@
   var NIGHT=["nightlife","beach","events"],FOOD=["restaurants","indian","grocery"];
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   if(!document.getElementById("npRulesCss")){var st=document.createElement("style");st.id="npRulesCss";
-    st.textContent='.nprules{margin:14px 0 0;border:1px solid rgba(237,147,177,.5);border-bottom:0;border-radius:14px 14px 0 0;background:rgba(18,14,30,.94);padding:12px 14px 4px;color:#F3EFFF}'+
-      '.nprules h4{margin:0 0 2px;font-size:15px}.nprules p{margin:0 0 8px;font-size:12px;opacity:.75}'+
-      '.nprules table{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.4}.nprules th{width:34%;text-align:left;vertical-align:top;font-weight:600;padding:8px 8px 8px 0;color:#F4C0D1}'+
-      '.nprules td{vertical-align:top;padding:8px 0;color:#E6E1F5}.nprules tr+tr th,.nprules tr+tr td{border-top:1px solid rgba(255,255,255,.08)}'+
-      '.nprules+.nppdpa{margin-top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;border-top:1px dashed rgba(237,147,177,.35)!important}';
+    st.textContent='#npRulesPop{position:fixed;inset:0;z-index:10060;background:rgba(5,4,12,.72);display:flex;align-items:center;justify-content:center;padding:12px}'+
+      '#npRulesPop .bx{width:100%;max-width:520px;max-height:86vh;overflow:auto;background:#141225;border:1px solid rgba(237,147,177,.5);border-radius:22px;padding:16px 16px calc(16px + env(safe-area-inset-bottom));color:#F3EFFF}'+
+      '#npRulesPop .hd{display:flex;justify-content:space-between;align-items:center}#npRulesPop .hd b{font-size:18px}#npRulesPop .x{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:none;color:#fff;font-size:20px}'+
+      '#npRulesPop .vn{margin:2px 0 8px;font-size:13px;color:#F4C0D1}#npRulesPop table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.4}'+
+      '#npRulesPop th{width:36%;text-align:left;vertical-align:top;font-weight:600;padding:8px 8px 8px 0;color:#F4C0D1}#npRulesPop td{vertical-align:top;padding:8px 0;color:#E6E1F5}'+
+      '#npRulesPop tr+tr th,#npRulesPop tr+tr td{border-top:1px solid rgba(255,255,255,.08)}#npRulesPop h5{margin:14px 0 4px;font-size:15px}#npRulesPop .pp{margin:0;font-size:13px;line-height:1.45;color:#E6E1F5}'+
+      '#npRulesPop .full{display:inline-block;margin:10px 0 14px;color:#EF9F27;font-weight:600;font-size:13px}#npRulesPop .ok{display:block;width:100%;padding:13px;border:0;border-radius:14px;background:#E9B949;color:#1a1026;font:inherit;font-weight:700;font-size:15px}'+
+      '.nppdpa .nprulesv{display:inline-block;margin-top:4px;color:#E5861A;font-weight:600}';
     document.head.appendChild(st)}
   function venue(){var t=panel.querySelector("#sheetTitle");if(!t||typeof CLUBS==="undefined")return null;var n=t.textContent.trim();return CLUBS.find(function(c){return c.name===n})||null}
   function rows(c){
@@ -3516,13 +3519,26 @@
       book.insertAdjacentElement("beforebegin",lab)}
     if(!lab)return;
     var c=venue(),key=(c?c.id:"")+"|"+((window.npAdvanceSettings||{})[c&&c.id]||0);
-    var box=lab.previousElementSibling&&lab.previousElementSibling.classList.contains("nprules")?lab.previousElementSibling:null;
-    if(box&&box.dataset.k===key)return;
-    if(!box){box=document.createElement("div");box.className="nprules";box.setAttribute("role","region");box.setAttribute("aria-label","Booking rules");lab.insertAdjacentElement("beforebegin",box)}
-    box.dataset.k=key;
-    box.innerHTML='<h4>Booking rules</h4><p>Please read, then tick the box below.</p><table>'+rows(c).map(function(x){return '<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>'}).join("")+'</table>';
-    var sp=lab.querySelector("span");if(sp&&!sp.querySelector(".nprulesok")){var b=document.createElement("b");b.className="nprulesok";b.textContent="I accept the booking rules above, and ";sp.insertBefore(b,sp.firstChild);
-      var tn=b.nextSibling;if(tn&&tn.nodeType===3)tn.nodeValue=tn.nodeValue.replace(/^I agree/,"agree")}
+    if(lab.dataset.rk===key&&lab.querySelector(".nprulesv"))return;
+    lab.dataset.rk=key;
+    var sp=lab.querySelector("span");if(!sp)return;
+    var del=/address|location/i.test(sp.textContent)||!!panel.querySelector(".npdel");
+    sp.innerHTML='<b>I accept the rules of this booking</b> and the privacy policy'+(del?' (incl. my delivery address)':'')+'. <a href="#" class="nprulesv">View rules &amp; privacy policy</a>';
+    sp.querySelector(".nprulesv").onclick=function(e){e.preventDefault();e.stopPropagation();pop(c)};
+  }
+  function pop(c){
+    var old=document.getElementById("npRulesPop");if(old)old.remove();
+    var o=document.createElement("div");o.id="npRulesPop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Booking rules and privacy policy");
+    o.innerHTML='<div class="bx"><div class="hd"><b>Booking rules</b><button type="button" class="x" aria-label="Close">×</button></div>'+
+      (c?'<p class="vn">'+esc(c.name)+'</p>':'')+
+      '<table>'+rows(c).map(function(x){return '<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>'}).join("")+'</table>'+
+      '<h5>Privacy policy (short)</h5><p class="pp">We use your name and phone number only to handle this booking, and share them only with this venue. We do not sell your data. You can ask us to see or delete your data at any time (Thailand PDPA).</p>'+
+      '<a class="full" href="privacy.html" target="_blank" rel="noopener">Read the full privacy policy</a>'+
+      '<button type="button" class="ok">I understand</button></div>';
+    document.body.appendChild(o);
+    function close(){o.remove()}
+    o.querySelector(".x").onclick=close;o.querySelector(".ok").onclick=close;o.onclick=function(e){if(e.target===o)close()};
+    o.querySelector(".ok").focus();
   }
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;try{sync()}catch(e){}})}).observe(panel,{childList:true,subtree:true});
