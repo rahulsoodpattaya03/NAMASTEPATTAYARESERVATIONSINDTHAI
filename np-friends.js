@@ -1836,7 +1836,16 @@
       '.npm-empty{text-align:center;padding:18px;opacity:.8;font-size:14px}.npm-msgs{display:flex;flex-direction:column;gap:8px;margin:14px 0;max-height:52vh;overflow-y:auto}'+
       '.npm-m{max-width:80%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.35;background:rgba(255,255,255,.08);align-self:flex-start;word-wrap:break-word}.npm-m.me{align-self:flex-end;background:rgba(233,185,73,.22)}'+
       '.npm-unread{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:#ED93B1;color:#1a1026;font-size:12px;font-weight:700;text-align:center;margin-left:6px}'+
-      '#npMeet .fields label,#npmSheet .fields label{display:block}.npm-chk{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px}.npm-chk input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}';
+      '#npMeet .fields label,#npmSheet .fields label{display:block}.npm-chk{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px}.npm-chk input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}'+
+      '.npm-deck{margin:0 0 14px}.npm-photo{position:relative;height:430px;max-height:62vh;border-radius:24px;overflow:hidden;background:#1a1224 center/cover no-repeat;border:1px solid rgba(255,255,255,.14);transition:transform .3s ease,opacity .3s ease;touch-action:pan-y}'+
+      '.npm-photo.go-right{transform:translateX(120%) rotate(18deg);opacity:0}.npm-photo.go-left{transform:translateX(-120%) rotate(-18deg);opacity:0}'+
+      '.npm-big{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:110px;font-weight:800;color:rgba(255,255,255,.85)}'+
+      '.npm-over{position:absolute;left:0;right:0;bottom:0;padding:70px 18px 42px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.82));color:#fff}.npm-over b{display:block;font-size:26px}.npm-over small{display:block;font-size:14px;opacity:.9;margin-top:2px}'+
+      '.npm-stamp{position:absolute;top:26px;padding:6px 14px;border-radius:10px;font-size:26px;font-weight:800;letter-spacing:2px;opacity:0;transition:opacity .15s;border:3px solid}.npm-stamp.like{left:20px;color:#5DCAA5;border-color:#5DCAA5;transform:rotate(-14deg)}.npm-stamp.nope{right:20px;color:#F09595;border-color:#F09595;transform:rotate(14deg)}'+
+      '.npm-photo.show-like .like,.npm-photo.show-nope .nope{opacity:1}'+
+      '.npm-dbtns{display:flex;justify-content:center;gap:22px;margin-top:-30px;position:relative;z-index:2}.npm-round{width:62px;height:62px;border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#16122a;border:2px solid rgba(255,255,255,.2);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.45)}'+
+      '.npm-round i{font-style:normal}.npm-round.no{color:#F09595;border-color:rgba(240,149,149,.7)}.npm-round.yes{color:#ED93B1;border-color:rgba(237,147,177,.8)}.npm-round.hi{width:52px;height:52px;font-size:20px;align-self:center}'+
+      '.npm-count{text-align:center;font-size:13px;opacity:.8;margin:10px 0 0}.npm-teaser .npm-photo{height:220px}';
     document.head.appendChild(st);
   }
 
@@ -1853,6 +1862,7 @@
       .eq("active",true).neq("user_id",user.id).order("updated_at",{ascending:false}).limit(400);
     people=(r.data||[]).filter(function(p){return !isWoman(p)||p.verify_status==="verified"});
     var b=await sb.from("np_meet_blocks").select("blocked").eq("blocker",user.id);blocks=(b.data||[]).map(function(x){return x.blocked});
+    await loadLikes();
   }
   async function checkAdmin(){try{var r=await sb.rpc("np_is_admin");adminOK=!r.error&&r.data===true}catch(e){adminOK=false}}
   async function refresh(){await loadMe();await loadPeople();paintAll()}
@@ -1878,13 +1888,19 @@
     var t=s.querySelector(".sectiontitle");if(t&&t.textContent!=="Meet new people")t.textContent="Meet new people";
     var root=document.getElementById("npMeet");
     if(!root){root=document.createElement("div");root.id="npMeet";
-      var after=document.getElementById("npPurpose")||t;if(after)after.insertAdjacentElement("afterend",root);else s.appendChild(root)}
+      if(t)t.insertAdjacentElement("afterend",root);else s.appendChild(root)}
+    var pp=document.getElementById("npPurpose");
+    if(pp&&root.nextElementSibling!==pp)root.insertAdjacentElement("afterend",pp);   /* rules box goes below the people */
+    var fb=document.getElementById("npFindBtn");if(fb)fb.remove();                     /* Friends Location & Bill Splitter lives in All services */
     return root;
   }
   function paintMain(){
     var root=mount();if(!root)return;
-    if(!user){root.innerHTML='<div class="npm-card hl"><b>Log in to meet people</b><p class="npm-plan">Create a free account, then make your Meet new people profile. Real travellers, 18+, public places only.</p><div class="npm-acts"><button class="npm-btn pri" id="npmLogin">Log in or sign up</button></div></div>';
-      root.querySelector("#npmLogin").onclick=function(){var b=document.querySelector(".np-hbtn.user")||document.getElementById("acctBtn");if(b)b.click()};return}
+    if(!user){root.innerHTML='<div class="npm-deck npm-teaser"><div class="npm-photo" style="background:linear-gradient(160deg,#534AB7,#D4537E)"><div class="npm-over"><b>Travellers are going out tonight</b><small>Club nights, dinners, beach days, sightseeing</small></div></div></div>'+
+      '<div class="npm-card hl"><b>Sign in to meet people</b><p class="npm-plan">See real travellers, like profiles and say hi. Free, 18+, public places only.</p><div class="npm-acts"><button class="npm-btn pri" id="npmIn">Sign in</button><button class="npm-btn" id="npmUp">Sign up free</button></div></div>';
+      function openAcc(up){var b=document.querySelector(".np-hbtn.user")||document.getElementById("acctBtn");if(b)b.click();
+        if(up)setTimeout(function(){var t=[].find.call(panel.querySelectorAll("button,a"),function(x){return /create account|sign up/i.test(x.textContent)&&!/free/i.test(x.textContent)});if(t)t.click()},250)}
+      root.querySelector("#npmIn").onclick=function(){openAcc(false)};root.querySelector("#npmUp").onclick=function(){openAcc(true)};return}
     if(!loaded){root.innerHTML='<p class="npm-empty">Loading…</p>';return}
     if(setupErr==="setup"){root.innerHTML='<div class="npm-card"><b>Almost ready</b><p class="npm-plan">Meet new people is being set up. Please check back soon.</p></div>';return}
     if(adminOK&&!mine&&!editing){
@@ -1892,17 +1908,18 @@
         '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people"><select id="npmShow" aria-label="Show"><option value="all">Everyone</option><option value="woman">Women</option><option value="man">Men</option></select></div><div id="npmList"></div>';
       root.querySelector("#npmShow").value=show;
       root.querySelector("#npmQ").oninput=function(){q.main=this.value;list(root.querySelector("#npmList"),q.main,show)};
-      root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show)};
+      root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show);deck(root.querySelector("#npmDeck"))};
       root.querySelector("#npmAdmin").onclick=openAdmin;root.querySelector("#npmMake").onclick=function(){editing=true;paintMain()};
+      root.insertAdjacentHTML("afterbegin",'<div id="npmDeck"></div>');deck(root.querySelector("#npmDeck"));
       list(root.querySelector("#npmList"),q.main,show);return}
     if(!mine||editing){root.innerHTML=formHTML();wireForm(root);return}
     var h=myCard()+(adminOK?'<div class="npm-card"><b>Admin</b><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button></div></div>':'')+
       '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people">'+
       '<select id="npmShow" aria-label="Show"><option value="all">Everyone</option><option value="woman">Women</option><option value="man">Men</option></select></div><div id="npmList"></div>';
-    root.innerHTML=h;
+    root.innerHTML='<div id="npmDeck"></div>'+h;deck(root.querySelector("#npmDeck"));
     root.querySelector("#npmShow").value=show;
     root.querySelector("#npmQ").oninput=function(){q.main=this.value;list(root.querySelector("#npmList"),q.main,show)};
-    root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show)};
+    root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show);deck(root.querySelector("#npmDeck"))};
     wireMine(root);if(root.querySelector("#npmAdmin"))root.querySelector("#npmAdmin").onclick=openAdmin;
     list(root.querySelector("#npmList"),q.main,show);
   }
@@ -1930,6 +1947,51 @@
     el.innerHTML=l.length?l.map(personCard).join(""):'<p class="npm-empty">'+(txt?'Nobody found for "'+esc(txt)+'".':(womenOnly?'No verified women here yet. Invite your friends!':'No one here yet. Be the first, and invite your friends!'))+'</p>';
     el.querySelectorAll("[data-hi]").forEach(function(b){b.onclick=function(){var p=people.find(function(x){return x.user_id===b.dataset.hi});if(p)openChat(p)}});
     el.querySelectorAll("[data-more]").forEach(function(b){b.onclick=function(){var p=people.find(function(x){return x.user_id===b.dataset.more});if(p)openMore(p)}});
+  }
+
+  /* ---------- like / skip cards (top of the page) ---------- */
+  var LIKED={},LIKEDME=0;
+  function skipped(){try{return JSON.parse(localStorage.getItem("np_meet_skip")||"{}")}catch(e){return {}}}
+  function skip(id){var k=skipped();k[id]=Date.now();try{localStorage.setItem("np_meet_skip",JSON.stringify(k))}catch(e){}}
+  async function loadLikes(){LIKED={};LIKEDME=0;if(!user)return;
+    try{var r=await sb.from("np_meet_likes").select("liker,liked").or("liker.eq."+user.id+",liked.eq."+user.id);
+      (r.data||[]).forEach(function(x){if(x.liker===user.id)LIKED[x.liked]=1;else LIKEDME++})}catch(e){}}
+  function queue(){var k=skipped(),week=Date.now()-7*864e5;
+    return people.filter(function(p){return blocks.indexOf(p.user_id)<0&&!LIKED[p.user_id]&&!(k[p.user_id]>week)&&(show==="all"||p.gender===show)})}
+  function deck(box){
+    if(!box)return;var qd=queue(),p=qd[0];
+    if(!p){box.innerHTML='<div class="npm-card"><b>You have seen everyone for now</b><p class="npm-plan">New travellers join every day. Check again later, or search the full list below.</p>'+(Object.keys(skipped()).length?'<div class="npm-acts"><button class="npm-btn" id="npmReset">Show skipped people again</button></div>':'')+'</div>';
+      var rs=box.querySelector("#npmReset");if(rs)rs.onclick=function(){try{localStorage.removeItem("np_meet_skip")}catch(e){}deck(box)};return}
+    var bits=[p.age,p.city].filter(Boolean).join(" · ");
+    box.innerHTML='<div class="npm-deck"><div class="npm-photo" id="npmCard" style="'+(p.photo_url?"background-image:url('"+esc(p.photo_url)+"')":"background:linear-gradient(160deg,#534AB7,#D4537E)")+'">'+
+      (p.photo_url?'':'<span class="npm-big">'+esc((p.name||"?").charAt(0).toUpperCase())+'</span>')+
+      '<span class="npm-stamp like">LIKE</span><span class="npm-stamp nope">SKIP</span>'+
+      '<div class="npm-over"><b>'+esc(p.name)+(p.age?', '+esc(p.age):'')+'</b><small>'+esc(p.city||"")+(p.languages?' · '+esc(p.languages):'')+'</small>'+badge(p)+
+      ((p.intent||p.when_txt)?'<small style="margin-top:6px"><b style="font-size:14px;display:inline">'+esc(intName(p.intent))+'</b>'+(p.when_txt?' · '+esc(p.when_txt):'')+'</small>':'')+(p.plan?'<small>'+esc(p.plan)+'</small>':'')+'</div></div>'+
+      '<div class="npm-dbtns"><button class="npm-round no" id="npmNo" aria-label="Skip"><i>✕</i></button><button class="npm-round hi" id="npmHi" aria-label="Say hi">💬</button><button class="npm-round yes" id="npmYes" aria-label="Like"><i>♥</i></button></div>'+
+      '<p class="npm-count">'+qd.length+' '+(qd.length===1?"person":"people")+' to see'+(LIKEDME?' · 💗 '+LIKEDME+' liked you':'')+'</p></div>';
+    var card=box.querySelector("#npmCard");
+    async function act(like){
+      card.classList.add(like?"go-right":"go-left");
+      if(like){
+        if(!mine){setTimeout(function(){alert("Create your Meet new people profile first, then you can like people.");editing=true;paintMain()},250);return}
+        LIKED[p.user_id]=1;
+        var r=await sb.from("np_meet_likes").insert({liked:p.user_id});
+        if(!r.error){var m=await sb.from("np_meet_likes").select("liker").eq("liker",p.user_id).eq("liked",user.id).maybeSingle();
+          if(m.data){setTimeout(function(){matchBox(p)},320)}}
+      }else skip(p.user_id);
+      setTimeout(function(){deck(box)},300);
+    }
+    box.querySelector("#npmNo").onclick=function(){act(false)};box.querySelector("#npmYes").onclick=function(){act(true)};
+    box.querySelector("#npmHi").onclick=function(){openChat(p)};
+    var x0=null,dx=0;
+    card.addEventListener("touchstart",function(e){x0=e.touches[0].clientX;dx=0;card.style.transition="none"},{passive:true});
+    card.addEventListener("touchmove",function(e){if(x0===null)return;dx=e.touches[0].clientX-x0;card.style.transform="translateX("+dx+"px) rotate("+(dx/20)+"deg)";card.classList.toggle("show-like",dx>40);card.classList.toggle("show-nope",dx<-40)},{passive:true});
+    card.addEventListener("touchend",function(){card.style.transition="";if(Math.abs(dx)>90){act(dx>0)}else{card.style.transform="";card.classList.remove("show-like","show-nope")}x0=null});
+  }
+  function matchBox(p){
+    sheetOpen('<div class="pbody" style="text-align:center">'+head("It's a match! 🎉","mbX")+'<p class="about">You and '+esc(p.name)+' both liked each other. Say hi and make a plan, in a public place.</p><button class="cta" id="mbHi">Say hi to '+esc(p.name)+'</button></div>');
+    panel.querySelector("#mbX").onclick=closeSheet;panel.querySelector("#mbHi").onclick=function(){openChat(p)};
   }
 
   /* ---------- profile form ---------- */
