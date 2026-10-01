@@ -3108,18 +3108,27 @@
   ART.inbox=svg("0 0 360 110",'<defs>'+glow("a","#EF9F27",".28")+'</defs><circle cx="330" cy="30" r="70" fill="url(#a)"/><g fill="none" stroke="#FAC775" stroke-opacity=".3" stroke-width="1.5" transform="translate(0 56)"><path d="M316 22 a14 14 0 0 1 28 0 c0 16 6 20 6 20 h-40 s6 -4 6 -20"/><path d="M326 48 a4 4 0 0 0 8 0"/></g>');
   ART.dkpi=svg("0 0 100 70",'<circle cx="85" cy="15" r="32" fill="#378ADD" opacity=".18"/>');
   ART.dcard=svg("0 0 360 100",'<defs>'+glow("a","#378ADD",".32")+'</defs><circle cx="320" cy="50" r="70" fill="url(#a)"/><g fill="#85B7EB" fill-opacity=".22"><rect x="290" y="60" width="9" height="26" rx="2"/><rect x="304" y="48" width="9" height="38" rx="2"/><rect x="318" y="36" width="9" height="50" rx="2"/><rect x="332" y="24" width="9" height="62" rx="2"/></g>');
-  var MAP=[["#rajuCard","raju"],["#npmDeck .npm-empty-card","welcome"],["#npMeet > .npm-card.hl","me"],["#npMeet > .npm-card:not(.hl)","admin",'rgba(239,159,39,.55)'],
+  ART.sky=svg("0 0 360 70",'<defs>'+glow("a","#378ADD",".35")+'</defs><circle cx="300" cy="35" r="70" fill="url(#a)"/><circle cx="292" cy="30" r="10" fill="#FAC775" fill-opacity=".35"/><path d="M296 44 h34 a9 9 0 0 0 -3 -17 a12 12 0 0 0 -22 2 a8 8 0 0 0 -9 15z" fill="#B5D4F4" fill-opacity=".22"/>');
+  ART.qa=svg("0 0 100 80",'<circle cx="90" cy="10" r="40" fill="#F0997B" opacity=".16"/>');
+  ART.cat=svg("0 0 100 100",'<circle cx="92" cy="8" r="46" fill="#F0997B" opacity=".14"/><circle cx="10" cy="98" r="30" fill="#7F77DD" opacity=".1"/>');
+  ART.catpink=svg("0 0 100 100",'<circle cx="92" cy="8" r="46" fill="#ED93B1" opacity=".2"/>');
+  ART.rmeta=svg("0 0 360 100",'<defs>'+glow("a","#F0997B",".3")+'</defs><circle cx="330" cy="80" r="80" fill="url(#a)"/>');
+  ART.dform=svg("0 0 360 120",'<defs>'+glow("a","#378ADD",".32")+'</defs><circle cx="330" cy="30" r="80" fill="url(#a)"/>');
+  ART.ref=svg("0 0 360 90",'<defs>'+glow("a","#1D9E75",".35")+'</defs><circle cx="330" cy="45" r="70" fill="url(#a)"/>');
+  var MAP=[["#rajuCard","raju"],[".npstrip","sky",'rgba(133,183,235,.4)'],["#npHomeFill [data-qa]","qa",'rgba(240,153,123,.4)'],["#cats .cat:not(#npFLBcat)","cat",'rgba(240,153,123,.35)'],["#npFLBcat","catpink",'rgba(237,147,177,.45)'],
+    [".rcard","rmeta"],["#dview .partner","dform",'rgba(133,183,235,.45)'],["#dview .tblw","dform",'rgba(133,183,235,.4)'],
+    ["#panel:has(#umAcc) .lcard","me",'rgba(175,169,236,.5)'],["#panel .refcode","ref",'rgba(93,202,165,.6)'],["#panel:has(#ppDash) .lcard","dform",'rgba(133,183,235,.5)'],["#npmDeck .npm-empty-card","welcome"],["#npMeet > .npm-card.hl","me"],["#npMeet > .npm-card:not(.hl)","admin",'rgba(239,159,39,.55)'],
     ["#npmList .npm-card","person",'rgba(237,147,177,.45)'],["#npLList .npm-card","person",'rgba(237,147,177,.45)'],["#npPurpose","rules",'rgba(175,169,236,.5)'],
     ["#bookingList .ticket","ticket",'rgba(240,153,123,.5)'],["#npAgEarn","earn",'rgba(93,202,165,.55)'],["#ibL .npm-card","chat",'rgba(237,147,177,.45)'],
     ["#lview .lcard","lounge",'rgba(237,147,177,.5)'],[".npcc-kpi > div","kpi"],[".npcc-it","inbox"],["#dview .kpi","dkpi",'rgba(133,183,235,.45)'],["#dview .lcard","dcard",'rgba(133,183,235,.45)'],["#npxLang","lang"],[".npx-tools","conv"],[".hubtile.ladies","girls"],[".goldarea","gold"],
     ['.hubtile[data-go="packages"]',"packages",'rgba(240,153,123,.45)'],['.hubtile[data-go="buddy"]',"buddy",'rgba(237,147,177,.45)'],
     ['.hubtile[data-go="mall"]',"mall",'rgba(240,153,123,.45)'],['.hubtile[data-go="paybill"]',"paybill",'rgba(93,202,165,.45)'],['.hubtile[data-go="dash"]',"dash",'rgba(133,183,235,.5)']];
-  var css='#bookingList .ticket.npart::before{top:auto;height:60%}.npart{isolation:isolate}.npart::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-repeat:no-repeat;background-size:100% 100%}';
+  var css='#bookingList .ticket.npart::before,.rcard.npart::before{top:auto;height:55%}.npart{isolation:isolate}.npart::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-repeat:no-repeat;background-size:100% 100%}';
   css+='.goldarea.npart::before{bottom:auto;height:170px;border-bottom-left-radius:0;border-bottom-right-radius:0;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}';
-  var FIXED=["welcome","me","admin","person","rules","ticket","earn","chat","lounge","inbox","dcard"];
+  var FIXED=["welcome","me","admin","person","rules","ticket","earn","chat","lounge","inbox","dcard","dform","sky","ref"];
   MAP.forEach(function(m){css+=m[0]+'.npart::before{background-image:'+ART[m[1]]+(FIXED.indexOf(m[1])>-1?';background-size:360px auto;background-position:right top':'')+'}';if(m[2])css+=m[0]+'.npart{border-color:'+m[2]+'}'});
   var st=document.createElement("style");st.id="npArtCss";st.textContent=css;document.head.appendChild(st);
-  function tag(){MAP.forEach(function(m){document.querySelectorAll(m[0]).forEach(function(el){
+  function tag(){MAP.forEach(function(m){var list;try{list=document.querySelectorAll(m[0])}catch(e){return}list.forEach(function(el){
     if(el.classList.contains("npart"))return;
     if(getComputedStyle(el).position==="static")el.style.position="relative";
     el.classList.add("npart")})})}
