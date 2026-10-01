@@ -1958,8 +1958,28 @@
       (r.data||[]).forEach(function(x){if(x.liker===user.id)LIKED[x.liked]=1;else LIKEDME++})}catch(e){}}
   function queue(){var k=skipped(),week=Date.now()-7*864e5;
     return people.filter(function(p){return blocks.indexOf(p.user_id)<0&&!LIKED[p.user_id]&&!(k[p.user_id]>week)&&(show==="all"||p.gender===show)})}
+  /* free members: 10 profiles a day, then the Namaste Gold offer */
+  var FREE=10;
+  function isPrem(){try{return (typeof isPremium==="function"&&!!isPremium())||(typeof isVIP==="function"&&!!isVIP())}catch(e){return false}}
+  function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+  function seenN(){try{var o=JSON.parse(localStorage.getItem("np_meet_seen")||"{}");return o.d===today()?o.n:0}catch(e){return 0}}
+  function addSeen(){try{localStorage.setItem("np_meet_seen",JSON.stringify({d:today(),n:seenN()+1}))}catch(e){}}
+  function goldOffer(box){
+    box.innerHTML='<div class="npm-deck"><div class="npm-photo" style="background:linear-gradient(160deg,#412402,#BA7517 55%,#FAC775)"><span class="npm-big" style="font-size:80px">👑</span>'+
+      '<div class="npm-over"><b>You have seen your '+FREE+' free profiles today</b><small>Come back tomorrow for '+FREE+' more, or go unlimited now.</small></div></div>'+
+      '<div class="npm-card" style="margin-top:12px;border-color:rgba(239,159,39,.6)"><b>Namaste Gold</b><p class="npm-plan">✓ Unlimited profiles, likes and swipes<br>✓ Your profile shown first<br>✓ See who liked you<br>✓ All Gold perks in the app</p>'+
+      '<div class="npm-acts"><button class="npm-btn pri" id="npmGold">Become a Gold member</button></div></div></div>';
+    box.querySelector("#npmGold").onclick=function(){var b=document.getElementById("premBtn");if(b)b.click();else if(typeof openVipBuddy==="function")openVipBuddy()};
+  }
   function deck(box){
-    if(!box)return;var qd=queue(),p=qd[0];
+    if(!box)return;
+    if(!adminOK&&!isPrem()&&seenN()>=FREE){goldOffer(box);return}
+    var qd=queue(),p=qd[0];
+    if(!p&&!people.length){var link="https://namastepattayareservationsindthai.vercel.app/";
+      box.innerHTML='<div class="npm-deck"><div class="npm-photo npm-empty-card" style="height:240px;background:linear-gradient(160deg,#534AB7,#D4537E)"><span class="npm-big" style="font-size:70px">🎉</span>'+
+        '<div class="npm-over"><b>You are one of the first!</b><small>Meet new people just started. Invite your friends so you can meet in Pattaya.</small></div></div>'+
+        '<div class="npm-acts" style="justify-content:center;margin-top:12px"><button class="npm-btn pri" id="npmInv">Invite friends on WhatsApp</button></div></div>';
+      box.querySelector("#npmInv").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent("Going to Pattaya? Join me on Namaste Pattaya to meet travellers, book clubs and Indian food: "+link),"_blank")};return}
     if(!p){box.innerHTML='<div class="npm-card"><b>You have seen everyone for now</b><p class="npm-plan">New travellers join every day. Check again later, or search the full list below.</p>'+(Object.keys(skipped()).length?'<div class="npm-acts"><button class="npm-btn" id="npmReset">Show skipped people again</button></div>':'')+'</div>';
       var rs=box.querySelector("#npmReset");if(rs)rs.onclick=function(){try{localStorage.removeItem("np_meet_skip")}catch(e){}deck(box)};return}
     var bits=[p.age,p.city].filter(Boolean).join(" · ");
@@ -1969,9 +1989,10 @@
       '<div class="npm-over"><b>'+esc(p.name)+(p.age?', '+esc(p.age):'')+'</b><small>'+esc(p.city||"")+(p.languages?' · '+esc(p.languages):'')+'</small>'+badge(p)+
       ((p.intent||p.when_txt)?'<small style="margin-top:6px"><b style="font-size:14px;display:inline">'+esc(intName(p.intent))+'</b>'+(p.when_txt?' · '+esc(p.when_txt):'')+'</small>':'')+(p.plan?'<small>'+esc(p.plan)+'</small>':'')+'</div></div>'+
       '<div class="npm-dbtns"><button class="npm-round no" id="npmNo" aria-label="Skip"><i>✕</i></button><button class="npm-round hi" id="npmHi" aria-label="Say hi">💬</button><button class="npm-round yes" id="npmYes" aria-label="Like"><i>♥</i></button></div>'+
-      '<p class="npm-count">'+qd.length+' '+(qd.length===1?"person":"people")+' to see'+(LIKEDME?' · 💗 '+LIKEDME+' liked you':'')+'</p></div>';
+      '<p class="npm-count">'+qd.length+' '+(qd.length===1?"person":"people")+' to see'+(LIKEDME?' · 💗 '+LIKEDME+' liked you':'')+(!adminOK&&!isPrem()?' · '+Math.max(0,FREE-seenN())+' free left today':'')+'</p></div>';
     var card=box.querySelector("#npmCard");
     async function act(like){
+      addSeen();
       card.classList.add(like?"go-right":"go-left");
       if(like){
         if(!mine){setTimeout(function(){alert("Create your Meet new people profile first, then you can like people.");editing=true;paintMain()},250);return}
