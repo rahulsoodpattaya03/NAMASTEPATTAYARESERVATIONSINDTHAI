@@ -3477,3 +3477,53 @@
   document.addEventListener("click",function(e){if(held&&e.target.closest&&e.target.closest("nav,.tabs")){e.preventDefault();e.stopPropagation();held=false}},true);
   document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSw()});
 })();
+
+/* ===== Booking rules table above the privacy tick on every service booking page (1 Oct 2026).
+   Rows depend on the type of venue; the tick now also accepts these rules. ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  var NIGHT=["nightlife","beach","events"],FOOD=["restaurants","indian","grocery"];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  if(!document.getElementById("npRulesCss")){var st=document.createElement("style");st.id="npRulesCss";
+    st.textContent='.nprules{margin:14px 0 0;border:1px solid rgba(237,147,177,.5);border-bottom:0;border-radius:14px 14px 0 0;background:rgba(18,14,30,.94);padding:12px 14px 4px;color:#F3EFFF}'+
+      '.nprules h4{margin:0 0 2px;font-size:15px}.nprules p{margin:0 0 8px;font-size:12px;opacity:.75}'+
+      '.nprules table{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.4}.nprules th{width:34%;text-align:left;vertical-align:top;font-weight:600;padding:8px 8px 8px 0;color:#F4C0D1}'+
+      '.nprules td{vertical-align:top;padding:8px 0;color:#E6E1F5}.nprules tr+tr th,.nprules tr+tr td{border-top:1px solid rgba(255,255,255,.08)}'+
+      '.nprules+.nppdpa{margin-top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;border-top:1px dashed rgba(237,147,177,.35)!important}';
+    document.head.appendChild(st)}
+  function venue(){var t=panel.querySelector("#sheetTitle");if(!t||typeof CLUBS==="undefined")return null;var n=t.textContent.trim();return CLUBS.find(function(c){return c.name===n})||null}
+  function rows(c){
+    var cat=c?c.cat:"",pct=0;try{pct=(window.npAdvanceSettings||{})[c&&c.id]||0}catch(e){}
+    var r=[];
+    if(NIGHT.indexOf(cat)>-1)r.push(["👤 Age and ID","20+ only (Thai law). Bring your passport or a copy."]);
+    r.push(["💳 Payment",pct?pct+"% advance to reserve, paid online in the app. The rest is paid at the venue.":"No advance needed. You pay at the venue."]);
+    r.push(["❌ Cancellation",pct?"No cancellation or refund after the advance is paid.":"You can cancel in My bookings before your visit."]);
+    if(FOOD.indexOf(cat)>-1)r.push(["⏰ Time","Arrive on time. For delivery, someone must be at the address."]);
+    else if(NIGHT.indexOf(cat)>-1)r.push(["⏰ Arrival","Arrive on time. Late tables may be given to other guests."]);
+    else r.push(["⏰ Time","Be ready at the booked time. The provider confirms the details with you."]);
+    r.push(["🧾 Bill","Prices come from the venue. Service charge and VAT may be added on the bill."]);
+    if(NIGHT.indexOf(cat)>-1)r.push(["🚭 House rules","Dress code and venue rules apply. Illegal drugs are strictly not allowed (Thai law)."]);
+    else r.push(["📋 Venue rules","The venue's or provider's own rules apply."]);
+    r.push(["🔒 Your data","Your name and phone go only to this venue for this booking (PDPA). You can ask us to delete them."]);
+    return r;
+  }
+  function sync(){
+    if(!panel.querySelector("#pkgs"))return;
+    var book=panel.querySelector("#book"),lab=panel.querySelector(".nppdpa");
+    /* every service booking page gets the privacy tick (some pages were missing it) */
+    if(!lab&&book){lab=document.createElement("label");lab.className="nppdpa";
+      lab.innerHTML='<input type="checkbox"><span>I agree that Namaste Pattaya and this venue use my name, phone number only to handle this booking. <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a></span>';
+      book.insertAdjacentElement("beforebegin",lab)}
+    if(!lab)return;
+    var c=venue(),key=(c?c.id:"")+"|"+((window.npAdvanceSettings||{})[c&&c.id]||0);
+    var box=lab.previousElementSibling&&lab.previousElementSibling.classList.contains("nprules")?lab.previousElementSibling:null;
+    if(box&&box.dataset.k===key)return;
+    if(!box){box=document.createElement("div");box.className="nprules";box.setAttribute("role","region");box.setAttribute("aria-label","Booking rules");lab.insertAdjacentElement("beforebegin",box)}
+    box.dataset.k=key;
+    box.innerHTML='<h4>Booking rules</h4><p>Please read, then tick the box below.</p><table>'+rows(c).map(function(x){return '<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>'}).join("")+'</table>';
+    var sp=lab.querySelector("span");if(sp&&!sp.querySelector(".nprulesok")){var b=document.createElement("b");b.className="nprulesok";b.textContent="I accept the booking rules above, and ";sp.insertBefore(b,sp.firstChild);
+      var tn=b.nextSibling;if(tn&&tn.nodeType===3)tn.nodeValue=tn.nodeValue.replace(/^I agree/,"agree")}
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;try{sync()}catch(e){}})}).observe(panel,{childList:true,subtree:true});
+})();
