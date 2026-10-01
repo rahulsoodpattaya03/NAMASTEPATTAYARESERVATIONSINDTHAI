@@ -3195,3 +3195,157 @@
   }
   build();window.addEventListener("load",build);setTimeout(build,1500);
 })();
+
+/* ===== Map (1 Oct 2026): dark live map with photo pins, search, filters and "my location".
+   Works offline: the map library and every map area you have looked at are saved on the phone;
+   with no saved map it falls back to the simple Pattaya map. Pins show the venue's area. ===== */
+(function(){
+  var sec=document.getElementById("map");if(!sec||typeof CLUBS==="undefined")return;
+  var LIBJS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",LIBCSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+  var TILES="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  var TCACHE="np-map-tiles-v1",LCACHE="np-map-lib-v1",MAXT=900;
+  var AREA={"Naklua":[12.9645,100.8915],"North Pattaya":[12.9505,100.8875],"Pattaya Central":[12.9360,100.8830],"Central Pattaya":[12.9360,100.8830],"Soi Buakhao":[12.9330,100.8935],
+    "Walking Street":[12.9272,100.8718],"Bali Hai Pier":[12.9215,100.8690],"Pratumnak":[12.9150,100.8660],"Jomtien":[12.8865,100.8705],"Koh Larn":[12.9200,100.7820],
+    "East Pattaya":[12.9330,100.9150],"Thepprasit":[12.9105,100.8880],"U-Tapao Airport":[12.6800,101.0050],"Suvarnabhumi / U-Tapao":[12.9450,100.9300],"Pattaya":[12.9310,100.8820]};
+  var CHIPS=[["all","All"],["book","⚡ Book now"],["night","Night clubs",["nightlife"]],["beach","Beach clubs",["beach"]],["food","Indian food",["indian","restaurants","grocery"]],
+    ["hotel","Hotels",["hotels"]],["spa","Spa",["spa"]],["sea","Tours & sea",["tours","water","yacht","golf"]]];
+  var chip="all",q="",map=null,layer=null,me=null,LF=null,built=false;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function hash(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)}
+  function ll(c){if(c.lat&&c.lng)return [c.lat,c.lng];var a=AREA[c.area]||AREA.Pattaya,h=hash(c.id||c.name);return [a[0]+((h%41)-20)*0.00012,a[1]+(((h>>6)%41)-20)*0.00012]}
+  function photo(c){var p=null;try{p=(store.get("np_photos_"+c.id,[])||[])[0]}catch(e){}return p||c.photo||null}
+  function bookable(c){return (c.pkgs||[]).some(function(p){return p.p>0})}
+  function colour(c){var k=c.cat;return /nightlife|beach|events/.test(k)?"#ED93B1":/indian|restaurants|grocery/.test(k)?"#F0997B":/hotels/.test(k)?"#378ADD":/spa/.test(k)?"#AFA9EC":"#5DCAA5"}
+  function list(){var ch=CHIPS.find(function(x){return x[0]===chip}),t=q.trim().toLowerCase();
+    return CLUBS.filter(function(c){if(!c||c.id==="np-test-restaurant")return false;
+      if(chip==="book"&&!bookable(c))return false;if(ch&&ch[2]&&ch[2].indexOf(c.cat)<0)return false;
+      return !t||[c.name,c.area,c.music,c.sub,c.type,(c.tags||[]).join(" "),(typeof CATNAME!=="undefined"?CATNAME[c.cat]:"")].join(" ").toLowerCase().indexOf(t)>-1})}
+
+  /* ---------- styles + layout ---------- */
+  if(!document.getElementById("npMapCss")){var st=document.createElement("style");st.id="npMapCss";
+    st.textContent='#npMapWrap{position:relative;height:calc(100dvh - 210px);min-height:440px;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:#0e0e12;margin:0 0 12px}'+
+      '#npMapEl{position:absolute;inset:0;background:#0e0e12}#npMapEl .leaflet-control-attribution{background:rgba(0,0,0,.55);color:#aaa;font-size:9px}#npMapEl .leaflet-control-attribution a{color:#ccc}'+
+      '.npmtop{position:absolute;left:10px;right:10px;top:10px;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}.npmtop>*{pointer-events:auto}'+
+      '.npmsearch{display:flex;align-items:center;gap:8px;padding:0 14px;height:48px;border-radius:999px;background:rgba(10,10,14,.92);border:1px solid rgba(255,255,255,.14);box-shadow:0 6px 20px rgba(0,0,0,.4)}'+
+      '.npmsearch input{flex:1;min-width:0;border:0;background:none;color:#fff;font:inherit;font-size:15px;outline:none}.npmsearch button{border:0;background:none;color:#B4B2A9;font:inherit;font-size:14px}'+
+      '.npmchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.npmchips::-webkit-scrollbar{display:none}.npmchips button{flex:0 0 auto;padding:9px 14px;border-radius:999px;font:inherit;font-size:13.5px;font-weight:600;color:#fff;background:rgba(10,10,14,.92);border:1px solid rgba(255,255,255,.16)}'+
+      '.npmchips button.on{background:#fff;color:#111;border-color:#fff}'+
+      '.npmloc{position:absolute;right:12px;bottom:16px;z-index:500;width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(10,10,14,.92);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.45)}'+
+      '.npmbadge{position:absolute;left:12px;bottom:18px;z-index:500;padding:7px 12px;border-radius:999px;background:rgba(10,10,14,.92);border:1px solid rgba(255,255,255,.16);color:#D3D1C7;font-size:12px}'+
+      '.npmpin{display:flex;align-items:center;gap:6px;white-space:nowrap}.npmpin .ph{position:relative;width:46px;height:46px;border-radius:12px;border:2px solid rgba(255,255,255,.85);background:#222 center/cover;box-shadow:0 4px 14px rgba(0,0,0,.6)}'+
+      '.npmpin .ph i{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:#EF9F27;color:#1a1026;font-style:normal;font-size:11px;display:flex;align-items:center;justify-content:center;border:2px solid #111}'+
+      '.npmpin b{font-size:12.5px;font-weight:600;color:#fff;text-shadow:0 1px 4px #000,0 0 2px #000}.npmzoomout .npmpin b{display:none}.npmpin.sel .ph{border-color:#EF9F27;transform:scale(1.15)}'+
+      '.npmdot{width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.6)}.npmdot.sel{transform:scale(1.5)}'+
+      '.npmme{width:18px;height:18px;border-radius:50%;background:#3d8bfd;border:3px solid #fff;box-shadow:0 0 0 8px rgba(61,139,253,.25)}'+
+      '#npMapCard{position:absolute;left:10px;right:70px;bottom:12px;z-index:600}#npMapCard .club{margin:0}#npMapCard .x{position:absolute;top:-10px;right:-10px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:#111;color:#fff}'+
+      '#npMapFallback{position:absolute;inset:0;overflow:auto;padding:110px 10px 10px;background:#0e0e12}#npMapFallback svg{width:100%;height:auto}';
+    document.head.appendChild(st)}
+  function build(){
+    if(built)return;built=true;
+    [].forEach.call(sec.children,function(ch){if(!/sectiontitle/.test(ch.className))ch.style.display="none"});
+    var w=document.createElement("div");w.id="npMapWrap";
+    w.innerHTML='<div id="npMapEl" role="application" aria-label="Map of Pattaya venues"></div>'+
+      '<div class="npmtop"><div class="npmsearch"><span aria-hidden="true">🔍</span><input id="npmQ" type="search" placeholder="Search venue, area, music, vibe..." aria-label="Search the map"><button id="npmClr" type="button">Clear</button></div>'+
+      '<div class="npmchips" role="tablist">'+CHIPS.map(function(c){return '<button type="button" data-c="'+c[0]+'"'+(c[0]===chip?' class="on"':'')+'>'+esc(c[1])+'</button>'}).join("")+'</div></div>'+
+      '<button class="npmloc" id="npmLoc" type="button" aria-label="Show my location">◎</button><div class="npmbadge" id="npmBadge" hidden></div><div id="npMapCard"></div>';
+    var t=sec.querySelector(".sectiontitle");if(t)t.insertAdjacentElement("afterend",w);else sec.insertBefore(w,sec.firstChild);
+    w.querySelector("#npmQ").oninput=function(){q=this.value;draw()};
+    w.querySelector("#npmClr").onclick=function(){q="";w.querySelector("#npmQ").value="";chip="all";chips();draw()};
+    w.querySelectorAll("[data-c]").forEach(function(b){b.onclick=function(){chip=b.dataset.c;chips();draw();fit()}});
+    w.querySelector("#npmLoc").onclick=locate;
+    start();
+  }
+  function chips(){document.querySelectorAll("#npMapWrap [data-c]").forEach(function(b){b.classList.toggle("on",b.dataset.c===chip)})}
+  function badge(t){var b=document.getElementById("npmBadge");if(!b)return;b.hidden=!t;b.textContent=t||""}
+
+  /* ---------- load the map library (saved on the phone for offline use) ---------- */
+  async function getText(url){
+    try{var r=await fetch(url,{mode:"cors"});if(r.ok){var c=r.clone();try{(await caches.open(LCACHE)).put(url,c)}catch(e){}return await r.text()}}catch(e){}
+    try{var m=await (await caches.open(LCACHE)).match(url);if(m)return await m.text()}catch(e){}
+    return null;
+  }
+  async function loadLib(){
+    if(window.L&&window.L.map)return true;
+    var css=await getText(LIBCSS),js=await getText(LIBJS);if(!js)return false;
+    if(css){var s=document.createElement("style");s.textContent=css;document.head.appendChild(s)}
+    try{var sc=document.createElement("script");sc.text=js;document.head.appendChild(sc)}catch(e){return false}
+    return !!(window.L&&window.L.map);
+  }
+
+  /* ---------- tiles: from the internet, saved for offline; offline uses the saved ones ---------- */
+  function tileLayer(){
+    var TL=L.TileLayer.extend({createTile:function(coords,done){
+      var img=document.createElement("img");img.alt="";img.setAttribute("role","presentation");
+      var url=this.getTileUrl(coords);
+      (async function(){
+        var cache=null;try{cache=await caches.open(TCACHE)}catch(e){}
+        async function fromCache(){if(!cache)return null;var m=await cache.match(url);return m?URL.createObjectURL(await m.blob()):null}
+        var src=null;
+        if(navigator.onLine!==false){try{var r=await fetch(url,{mode:"cors"});if(r.ok){var b=await r.clone().blob();src=URL.createObjectURL(b);if(cache){cache.put(url,r);trim(cache)}}}catch(e){}}
+        if(!src)src=await fromCache();
+        if(!src&&navigator.onLine!==false)src=url;   /* online but the tile server blocks saving: show it normally */
+        if(src){img.onload=function(){done(null,img)};img.onerror=function(){done(null,img)};img.src=src}
+        else{img.src="data:image/gif;base64,R0lGODlhAQABAAAAACw=";done(null,img)}
+      })();
+      return img;
+    }});
+    return new TL(TILES,{subdomains:"abcd",maxZoom:19,minZoom:10,attribution:ATTR});
+  }
+  var trimT=null;function trim(cache){clearTimeout(trimT);trimT=setTimeout(async function(){try{var k=await cache.keys();for(var i=0;i<k.length-MAXT;i++)await cache.delete(k[i])}catch(e){}},4000)}
+
+  async function start(){
+    var ok=await loadLib();
+    if(!ok){fallback();return}
+    LF=window.L;
+    map=LF.map("npMapEl",{zoomControl:false,attributionControl:true,preferCanvas:false}).setView([12.9272,100.8740],14);
+    tileLayer().addTo(map);
+    layer=LF.layerGroup().addTo(map);
+    map.on("zoomend",function(){document.getElementById("npMapWrap").classList.toggle("npmzoomout",map.getZoom()<14)});
+    map.on("click",function(){card(null)});
+    draw();
+    if(navigator.onLine===false)badge("Offline · showing saved map");
+    setTimeout(function(){map.invalidateSize()},300);
+  }
+  function fit(){if(!map)return;var l=list();if(!l.length)return;var b=LF.latLngBounds(l.map(ll));map.fitBounds(b.pad(0.15),{maxZoom:16})}
+  var sel=null;
+  function draw(){
+    if(!map){if(document.getElementById("npMapFallback"))fallbackDraw();return}
+    layer.clearLayers();var l=list();
+    l.forEach(function(c){
+      var p=photo(c),html,size,anchor;
+      if(p){html='<div class="npmpin'+(sel===c.id?' sel':'')+'"><div class="ph" style="background-image:url(\''+esc(p)+'\')">'+(bookable(c)?'<i>⚡</i>':'')+'</div><b>'+esc(c.name)+'</b></div>';size=[180,50];anchor=[23,25]}
+      else{html='<div class="npmdot'+(sel===c.id?' sel':'')+'" style="background:'+colour(c)+'"></div>';size=[14,14];anchor=[7,7]}
+      var m=LF.marker(ll(c),{icon:LF.divIcon({html:html,className:"",iconSize:size,iconAnchor:anchor}),title:c.name,keyboard:true,riseOnHover:true,zIndexOffset:p?500:0});
+      m.on("click",function(){sel=c.id;card(c);draw()});layer.addLayer(m);
+    });
+    badge(l.length?(navigator.onLine===false?"Offline · ":"")+l.length+" places":"Nothing found here");
+  }
+  function card(c){
+    var box=document.getElementById("npMapCard");if(!box)return;box.innerHTML="";if(!c){sel=null;return}
+    try{mapSel=c.id;var mc=document.getElementById("mapcard");if(typeof renderMapCard==="function"){renderMapCard();if(mc&&mc.firstChild){box.appendChild(mc.firstChild)}}}catch(e){}
+    if(!box.firstChild){var b=document.createElement("button");b.className="cta";b.textContent="Open "+c.name;b.onclick=function(){openClub(c)};box.appendChild(b)}
+    var x=document.createElement("button");x.className="x";x.setAttribute("aria-label","Close");x.textContent="×";x.onclick=function(e){e.stopPropagation();card(null);draw()};box.appendChild(x);
+  }
+  function locate(){
+    if(!navigator.geolocation){alert("Location is not available on this phone.");return}
+    navigator.geolocation.getCurrentPosition(function(p){
+      var at=[p.coords.latitude,p.coords.longitude];
+      if(map){if(me)me.remove();me=LF.marker(at,{icon:LF.divIcon({html:'<div class="npmme"></div>',className:"",iconSize:[18,18],iconAnchor:[9,9]}),zIndexOffset:1000}).addTo(map);map.setView(at,16)}
+      else alert("Your location: "+at[0].toFixed(4)+", "+at[1].toFixed(4));
+    },function(){alert("Please allow location for this site to see where you are.")},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+  }
+
+  /* ---------- no map library and no saved copy: simple Pattaya map (always works offline) ---------- */
+  function fallback(){
+    var w=document.getElementById("npMapWrap");if(!w)return;
+    var f=document.createElement("div");f.id="npMapFallback";var mb=document.getElementById("mapbox");
+    if(mb){mb.style.display="";f.appendChild(mb)}var mc=document.getElementById("mapcard");if(mc){mc.style.display="";f.appendChild(mc)}w.insertBefore(f,w.firstChild);
+    badge("Offline · simple map");fallbackDraw();
+  }
+  function fallbackDraw(){try{if(typeof renderMap==="function")renderMap()}catch(e){}}
+
+  if(typeof go==="function"){var _go=go;go=function(t){_go(t);if(t==="map"){build();if(map)setTimeout(function(){map.invalidateSize()},200)}}}
+  if(!sec.hidden)build();
+  window.addEventListener("online",function(){badge("");if(!map&&built){var f=document.getElementById("npMapFallback");if(f)f.remove();start()}else if(map)draw()});
+  window.addEventListener("offline",function(){badge("Offline · showing saved map")});
+})();
