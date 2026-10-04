@@ -3485,14 +3485,11 @@
   var NIGHT=["nightlife","beach","events"],FOOD=["restaurants","indian","grocery"];
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   if(!document.getElementById("npRulesCss")){var st=document.createElement("style");st.id="npRulesCss";
-    st.textContent='#npRulesPop{position:fixed;inset:0;z-index:10060;background:rgba(5,4,12,.72);display:flex;align-items:center;justify-content:center;padding:12px}'+
-      '#npRulesPop .bx{width:100%;max-width:520px;max-height:86vh;overflow:auto;background:#141225;border:1px solid rgba(237,147,177,.5);border-radius:22px;padding:16px 16px calc(16px + env(safe-area-inset-bottom));color:#F3EFFF}'+
-      '#npRulesPop .hd{display:flex;justify-content:space-between;align-items:center}#npRulesPop .hd b{font-size:18px}#npRulesPop .x{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:none;color:#fff;font-size:20px}'+
-      '#npRulesPop .vn{margin:2px 0 8px;font-size:13px;color:#F4C0D1}#npRulesPop table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.4}'+
-      '#npRulesPop th{width:36%;text-align:left;vertical-align:top;font-weight:600;padding:8px 8px 8px 0;color:#F4C0D1}#npRulesPop td{vertical-align:top;padding:8px 0;color:#E6E1F5}'+
-      '#npRulesPop tr+tr th,#npRulesPop tr+tr td{border-top:1px solid rgba(255,255,255,.08)}#npRulesPop h5{margin:14px 0 4px;font-size:15px}#npRulesPop .pp{margin:0;font-size:13px;line-height:1.45;color:#E6E1F5}'+
-      '#npRulesPop .full{display:inline-block;margin:10px 0 14px;color:#EF9F27;font-weight:600;font-size:13px}#npRulesPop .ok{display:block;width:100%;padding:13px;border:0;border-radius:14px;background:#E9B949;color:#1a1026;font:inherit;font-weight:700;font-size:15px}'+
-      '.nppdpa .nprulesv{display:inline-block;margin-top:4px;color:#E5861A;font-weight:600}';
+    st.textContent='.nprules{margin:14px 0 0;border:1px solid rgba(237,147,177,.5);border-bottom:0;border-radius:14px 14px 0 0;background:rgba(18,14,30,.94);padding:12px 14px 4px;color:#F3EFFF}'+
+      '.nprules h4{margin:0 0 2px;font-size:15px}.nprules p{margin:0 0 8px;font-size:12px;opacity:.75}'+
+      '.nprules table{width:100%;border-collapse:collapse;font-size:12.5px;line-height:1.4}.nprules th{width:34%;text-align:left;vertical-align:top;font-weight:600;padding:8px 8px 8px 0;color:#F4C0D1}'+
+      '.nprules td{vertical-align:top;padding:8px 0;color:#E6E1F5}.nprules tr+tr th,.nprules tr+tr td{border-top:1px solid rgba(255,255,255,.08)}'+
+      '.nprules+.nppdpa{margin-top:0!important;border-top-left-radius:0!important;border-top-right-radius:0!important;border-top:1px dashed rgba(237,147,177,.35)!important}';
     document.head.appendChild(st)}
   function venue(){var t=panel.querySelector("#sheetTitle");if(!t||typeof CLUBS==="undefined")return null;var n=t.textContent.trim();return CLUBS.find(function(c){return c.name===n})||null}
   function rows(c){
@@ -3519,27 +3516,58 @@
       book.insertAdjacentElement("beforebegin",lab)}
     if(!lab)return;
     var c=venue(),key=(c?c.id:"")+"|"+((window.npAdvanceSettings||{})[c&&c.id]||0);
-    if(lab.dataset.rk===key&&lab.querySelector(".nprulesv"))return;
-    lab.dataset.rk=key;
-    var sp=lab.querySelector("span");if(!sp)return;
-    var del=/address|location/i.test(sp.textContent)||!!panel.querySelector(".npdel");
-    sp.innerHTML='<b>I accept the rules of this booking</b> and the privacy policy'+(del?' (incl. my delivery address)':'')+'. <a href="#" class="nprulesv">View rules &amp; privacy policy</a>';
-    sp.querySelector(".nprulesv").onclick=function(e){e.preventDefault();e.stopPropagation();pop(c)};
-  }
-  function pop(c){
-    var old=document.getElementById("npRulesPop");if(old)old.remove();
-    var o=document.createElement("div");o.id="npRulesPop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Booking rules and privacy policy");
-    o.innerHTML='<div class="bx"><div class="hd"><b>Booking rules</b><button type="button" class="x" aria-label="Close">×</button></div>'+
-      (c?'<p class="vn">'+esc(c.name)+'</p>':'')+
-      '<table>'+rows(c).map(function(x){return '<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>'}).join("")+'</table>'+
-      '<h5>Privacy policy (short)</h5><p class="pp">We use your name and phone number only to handle this booking, and share them only with this venue. We do not sell your data. You can ask us to see or delete your data at any time (Thailand PDPA).</p>'+
-      '<a class="full" href="privacy.html" target="_blank" rel="noopener">Read the full privacy policy</a>'+
-      '<button type="button" class="ok">I understand</button></div>';
-    document.body.appendChild(o);
-    function close(){o.remove()}
-    o.querySelector(".x").onclick=close;o.querySelector(".ok").onclick=close;o.onclick=function(e){if(e.target===o)close()};
-    o.querySelector(".ok").focus();
+    var box=lab.previousElementSibling&&lab.previousElementSibling.classList.contains("nprules")?lab.previousElementSibling:null;
+    if(box&&box.dataset.k===key)return;
+    if(!box){box=document.createElement("div");box.className="nprules";box.setAttribute("role","region");box.setAttribute("aria-label","Booking rules");lab.insertAdjacentElement("beforebegin",box)}
+    box.dataset.k=key;
+    box.innerHTML='<h4>Booking rules</h4><p>Please read, then tick the box below.</p><table>'+rows(c).map(function(x){return '<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>'}).join("")+'</table>';
+    var sp=lab.querySelector("span");if(sp&&!sp.querySelector(".nprulesok")){var b=document.createElement("b");b.className="nprulesok";b.textContent="I accept the booking rules above, and ";sp.insertBefore(b,sp.firstChild);
+      var tn=b.nextSibling;if(tn&&tn.nodeType===3)tn.nodeValue=tn.nodeValue.replace(/^I agree/,"agree")}
   }
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;try{sync()}catch(e){}})}).observe(panel,{childList:true,subtree:true});
+})();
+
+/* ===== Raju speaks every app language + customer support & sales helper (4 Oct 2026).
+   Raju now replies in the language the customer picked on "Choose language"
+   (English, Hindi, Punjabi, Gujarati, Tamil, Marathi, Thai), or in the language the customer writes in.
+   Added on top of the existing Raju; nothing removed. ===== */
+(function(){
+  if(!window.supabase)return;
+  var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi",th:"Thai"};
+  var SCRIPT={hi:"Devanagari script",pa:"Gurmukhi script",gu:"Gujarati script",ta:"Tamil script",mr:"Devanagari script",th:"Thai script"};
+  function code(){var l="en";try{l=String(localStorage.getItem("np_lang")||"en").toLowerCase().slice(0,2)}catch(e){}return l}
+  function rule(){
+    var c=code(),n=NAMES[c];
+    var r="LANGUAGE RULE (most important, follow it before Raju's character rules): ";
+    if(!n||c==="en"){
+      r+="The customer's app language is English. Match how the customer writes: English gets simple, clear English (a few warm words like 'ji' or 'bhai' are fine); Hinglish gets Hinglish; any other language gets a reply fully in that language. ";
+    }else{
+      r+="The customer chose "+n+" in the app. Reply fully in "+n+", written in "+SCRIPT[c]+". Only if the customer clearly writes in a different language, reply in that language instead. ";
+      if(c==="hi")r+="If the customer writes Hindi in English letters (Hinglish), reply in Hinglish. ";
+      if(c==="th")r+="Use polite Thai and end sentences with ครับ. ";
+    }
+    r+="Raju's filmi one-liners and 'Raju ki salah' tips must also be in the reply language (translate them naturally; in Hindi or Hinglish keep them as they are). "+
+      "Keep venue names, order numbers, phone numbers and prices exactly as given. All Thai-law rules apply in every language.";
+    return r;
+  }
+  var HELP="CUSTOMER SUPPORT AND SALES (in every language): You are also Namaste Pattaya's customer support and sales helper. "+
+    "Support: explain how to book in the app, the booking rules (an advance payment reserves the booking, the % is set by each venue, and there is no cancellation after the advance is paid), 'where is my order', and how to use the app. "+
+    "For refunds, payment problems, complaints, lost items or anything you cannot solve, say kindly that our team will help on WhatsApp. Never promise refunds, discounts, times or availability you are not sure of. "+
+    "Sales: when it fits, suggest ONE matching venue, table or experience package from the venue list, or Namaste Gold, and invite the customer to book in the app. "+
+    "Never be pushy, never invent prices, offers or partners, and never sell or mention alcohol, bottles or drink deals (tables and experiences only).";
+  var proto=null;
+  try{var FC=window.supabase.FunctionsClient;if(FC&&FC.prototype&&typeof FC.prototype.invoke==="function")proto=FC.prototype}catch(e){}
+  if(!proto){try{var c=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");proto=Object.getPrototypeOf(c.functions)}catch(e){}}
+  if(!proto||typeof proto.invoke!=="function"||proto.__npLang)return;
+  proto.__npLang=1;
+  var orig=proto.invoke;
+  proto.invoke=function(name,opts){
+    try{
+      if(name==="bright-responder"&&opts&&opts.body&&typeof opts.body.venues==="string"&&opts.body.venues.indexOf("LANGUAGE RULE")<0){
+        opts=Object.assign({},opts,{body:Object.assign({},opts.body,{venues:rule()+"\n\n"+HELP+"\n\n"+opts.body.venues})});
+      }
+    }catch(e){}
+    return orig.call(this,name,opts);
+  };
 })();
