@@ -3604,7 +3604,9 @@
     if(cache[text]){play(cache[text]);return}
     if(!canUse()){return origSpeak(u)}
     var ctl=window.AbortController?new AbortController():null,timer=setTimeout(function(){if(ctl)ctl.abort()},12000);
-    fetch(URL_FN,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify({text:text}),signal:ctl?ctl.signal:undefined})
+    var opts={method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify({text:text}),signal:ctl?ctl.signal:undefined};
+    fetch(URL_FN,opts)
+      .then(function(r){if(r.status===404)return fetch(URL_FN.replace("raju-voice","quick-api"),opts);return r}) /* the function was deployed as "quick-api" */
       .then(function(r){clearTimeout(timer);if(!r.ok)throw new Error("voice "+r.status);return r.blob()})
       .then(function(b){if(!b||b.size<500)throw new Error("empty");var src=URL.createObjectURL(b);cache[text]=src;play(src)})
       .catch(function(){clearTimeout(timer);if(my===seq)origSpeak(u)});
