@@ -3581,6 +3581,7 @@
   TTS.__npEleven=1;
   var URL_FN="https://mymtgbmcjbwsnetzwgoy.supabase.co/functions/v1/quick-api"; /* Raju voice function (deployed as "quick-api") */
   var KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
+  var STYLE="[friendly, cheerful] [speaking a little faster] "; /* Raju's tone for ElevenLabs v3 (edit the words in brackets to change his mood) */
   var DAILY=60; /* ElevenLabs answers per phone per day; after that the phone voice is used (saves credits) */
   var origSpeak=TTS.speak.bind(TTS),origCancel=TTS.cancel.bind(TTS);
   var audio=null,seq=0,cache={};
@@ -3604,7 +3605,7 @@
     if(cache[text]){play(cache[text]);return}
     if(!canUse()){return origSpeak(u)}
     var ctl=window.AbortController?new AbortController():null,timer=setTimeout(function(){if(ctl)ctl.abort()},12000);
-    var opts={method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify({text:text}),signal:ctl?ctl.signal:undefined};
+    var opts={method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify({text:STYLE+text}),signal:ctl?ctl.signal:undefined};
     fetch(URL_FN,opts)
       .then(function(r){clearTimeout(timer);if(!r.ok)throw new Error("voice "+r.status);return r.blob()})
       .then(function(b){if(!b||b.size<500)throw new Error("empty");var src=URL.createObjectURL(b);cache[text]=src;play(src)})
