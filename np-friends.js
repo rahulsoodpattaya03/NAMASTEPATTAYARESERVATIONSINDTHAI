@@ -3571,3 +3571,42 @@
     return orig.call(this,name,opts);
   };
 })();
+
+/* ===== Raju ElevenLabs voice (5 Oct 2026): when Raju speaks (🔊 or 🎤), use the ElevenLabs voice
+   from the Supabase function "raju-voice". If it fails, is slow, or the daily limit is reached,
+   the phone's own voice is used as before. Added on top; nothing removed. ===== */
+(function(){
+  var TTS=window.speechSynthesis;
+  if(!TTS||TTS.__npEleven||!window.fetch||!window.Audio)return;
+  TTS.__npEleven=1;
+  var URL_FN="https://mymtgbmcjbwsnetzwgoy.supabase.co/functions/v1/raju-voice";
+  var KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
+  var DAILY=60; /* ElevenLabs answers per phone per day; after that the phone voice is used (saves credits) */
+  var origSpeak=TTS.speak.bind(TTS),origCancel=TTS.cancel.bind(TTS);
+  var audio=null,seq=0,cache={};
+  function stopAudio(){seq++;if(audio){try{audio.pause()}catch(e){}audio=null}}
+  function canUse(){
+    try{var d=new Date().toISOString().slice(0,10),o=JSON.parse(localStorage.getItem("np_raju_el")||"{}");
+      if(o.d!==d)o={d:d,n:0};if(o.n>=DAILY)return false;o.n++;localStorage.setItem("np_raju_el",JSON.stringify(o));return true}catch(e){return true}
+  }
+  function trim(t){t=String(t||"").trim();if(t.length<=600)return t;var c=t.slice(0,600),i=Math.max(c.lastIndexOf(". "),c.lastIndexOf("! "),c.lastIndexOf("? "),c.lastIndexOf("। "));return i>200?c.slice(0,i+1):c}
+  TTS.cancel=function(){stopAudio();return origCancel()};
+  TTS.speak=function(u){
+    var text=trim(u&&u.text);
+    if(!text){return origSpeak(u)}
+    stopAudio();var my=seq;
+    var play=function(src){
+      if(my!==seq)return;
+      audio=new Audio(src);
+      audio.onerror=function(){if(my===seq){audio=null;origSpeak(u)}};
+      var p=audio.play();if(p&&p.catch)p.catch(function(){if(my===seq){audio=null;origSpeak(u)}});
+    };
+    if(cache[text]){play(cache[text]);return}
+    if(!canUse()){return origSpeak(u)}
+    var ctl=window.AbortController?new AbortController():null,timer=setTimeout(function(){if(ctl)ctl.abort()},12000);
+    fetch(URL_FN,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify({text:text}),signal:ctl?ctl.signal:undefined})
+      .then(function(r){clearTimeout(timer);if(!r.ok)throw new Error("voice "+r.status);return r.blob()})
+      .then(function(b){if(!b||b.size<500)throw new Error("empty");var src=URL.createObjectURL(b);cache[text]=src;play(src)})
+      .catch(function(){clearTimeout(timer);if(my===seq)origSpeak(u)});
+  };
+})();
