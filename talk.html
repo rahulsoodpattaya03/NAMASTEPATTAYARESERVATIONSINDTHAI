@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0C1E">
+<title>Talk to Raju – Namaste Pattaya</title>
+<style>
+:root{--bg:#0E0C1E;--bg2:#1B1838;--gold:#E3BE63;--ink:#F5EFE3;--muted:#A9A3C4;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*{box-sizing:inherit}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(120% 80% at 50% 30%,#2A2550 0%,var(--bg) 70%);color:var(--ink);
+  font:16px/1.4 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;overflow:hidden;-webkit-tap-highlight-color:transparent}
+.app{height:100%;display:flex;flex-direction:column;align-items:center}
+.top{width:100%;max-width:560px;display:flex;justify-content:space-between;align-items:center;padding:12px 16px 0}
+.name{font-weight:700;font-size:18px;letter-spacing:.02em}
+.name small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:var(--ink);border-radius:999px;padding:8px 12px;font-size:14px;min-height:40px}
+.stage{flex:1;width:100%;display:flex;align-items:flex-end;justify-content:center;position:relative;min-height:0}
+.sway{position:relative;width:min(92vw,520px);aspect-ratio:600/510;max-height:62vh;animation:sway 7s ease-in-out infinite;transform-origin:50% 100%}
+.char{position:absolute;inset:0;animation:breathe 4.2s ease-in-out infinite;transform-origin:50% 100%}
+.char img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;transition:opacity .28s ease}
+.char img.off{opacity:0}
+.glow{position:absolute;left:50%;bottom:-6%;width:70%;height:22%;transform:translateX(-50%);background:radial-gradient(closest-side,rgba(227,190,99,.28),transparent);filter:blur(6px)}
+@keyframes breathe{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-4px) scale(1.012)}}
+@keyframes sway{0%,100%{transform:rotate(-.8deg)}50%{transform:rotate(.8deg)}}
+.talking .char{animation:talk .34s ease-in-out infinite alternate}
+@keyframes talk{from{transform:translateY(0) rotate(-.4deg)}to{transform:translateY(-3px) rotate(.5deg) scale(1.006)}}
+.m-excited .sway{animation:hop .5s ease-out 2}
+@keyframes hop{0%,100%{transform:translateY(0)}40%{transform:translateY(-18px)}}
+.m-shocked .sway{animation:jolt .35s ease-out 1}
+@keyframes jolt{0%{transform:scale(1)}30%{transform:scale(1.05) translateY(-6px)}100%{transform:scale(1)}}
+.m-sorry .sway{transform:translateY(6px) rotate(-1.5deg);transition:transform .5s}
+.m-thinking .sway{transform:rotate(2deg);transition:transform .6s}
+.m-laughing .char{animation:laugh .22s ease-in-out 6 alternate}
+@keyframes laugh{from{transform:translateY(0)}to{transform:translateY(-5px) rotate(1deg)}}
+.status{min-height:22px;color:var(--gold);font-size:14px;margin:6px 0 2px;text-align:center}
+.sub{width:100%;max-width:560px;min-height:72px;max-height:22vh;overflow:auto;padding:4px 20px;text-align:center;font-size:17px;color:var(--ink)}
+.sub .you{display:block;color:var(--muted);font-size:14px;margin-bottom:4px}
+.controls{display:flex;gap:16px;align-items:center;justify-content:center;padding:10px 16px 18px}
+.mic{width:84px;height:84px;border-radius:50%;border:3px solid var(--gold);background:linear-gradient(#2E2858,#1B1838);color:var(--gold);font-size:34px;display:flex;align-items:center;justify-content:center;position:relative}
+.mic.on::after{content:"";position:absolute;inset:-10px;border-radius:50%;border:2px solid var(--gold);animation:ring 1.2s ease-out infinite}
+@keyframes ring{from{transform:scale(.9);opacity:.9}to{transform:scale(1.35);opacity:0}}
+.small{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:var(--ink);font-size:20px}
+.typebar{display:none;width:100%;max-width:560px;padding:0 16px 10px;gap:8px}
+.typebar.show{display:flex}
+.typebar input{flex:1;border-radius:14px;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.06);color:var(--ink);padding:12px;font:inherit}
+.typebar button{border-radius:14px;border:0;background:var(--gold);color:#1B1838;font-weight:700;padding:0 16px}
+.note{font-size:11px;color:var(--muted);text-align:center;padding:0 16px 8px}
+button{cursor:pointer;font:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){.sway,.char,.mic.on::after{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <div class="top">
+    <div class="name"><span id="botName">Raju</span><small>AI assistant · Namaste Pattaya</small></div>
+    <button class="chip" id="langBtn" aria-label="Change language">हिं / EN</button>
+  </div>
+  <div class="stage">
+    <div class="sway"><div class="glow"></div><div class="char" id="char"><img id="imgA" alt="Raju"><img id="imgB" class="off" alt=""></div></div>
+  </div>
+  <div class="status" id="status" role="status" aria-live="polite">Tap the mic and talk to me</div>
+  <div class="sub" id="sub"></div>
+  <div class="typebar" id="typebar"><input id="typeIn" placeholder="Type your question…" enterkeyhint="send"><button id="typeGo">Send</button></div>
+  <div class="controls">
+    <button class="small" id="keyBtn" aria-label="Type instead">⌨️</button>
+    <button class="mic" id="mic" aria-label="Talk">🎤</button>
+    <button class="small" id="muteBtn" aria-label="Sound on or off">🔊</button>
+  </div>
+  <div class="note">An AI, not a real person. Emergencies: Tourist Police 1155 · Ambulance 1669</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+(function(){
+  var P="photos/";
+  var qs=new URLSearchParams(location.search);
+  var NAME=(qs.get("name")||"Raju").replace(/[^\w\s-]/g,"").slice(0,20)||"Raju";
+  document.getElementById("botName").textContent=NAME;document.title="Talk to "+NAME+" – Namaste Pattaya";
+  var FACES=["happy","excited","laughing","sorry","thinking","shocked","wink","serious","namaste"],MOUTHS=["neutral","a","e","o","m"];
+  FACES.forEach(function(f){new Image().src=P+"face-"+f+".webp"});MOUTHS.forEach(function(m){new Image().src=P+"mouth-"+m+".webp"});
+  var $=function(id){return document.getElementById(id)},app=$("app"),A=$("imgA"),B=$("imgB"),front=A,back=B;
+  var lang="hi-IN";try{lang=localStorage.getItem("np_talk_lang")||"hi-IN"}catch(e){}
+  var muted=false,busy=false,hist=[];
+  function updLang(){$("langBtn").textContent=lang==="hi-IN"?"हिंदी":"English"}updLang();
+
+  /* ---------- faces ---------- */
+  function show(src,fade){
+    if(!fade){front.src=src;return}
+    var b=back,done=false;
+    function swap(){if(done)return;done=true;b.onload=null;b.classList.remove("off");front.classList.add("off");back=front;front=b}
+    b.onload=swap;b.src=src;if(b.complete&&b.naturalWidth)swap();
+  }
+  function face(name,fade){show(P+"face-"+name+".webp",fade!==false)}
+  var moodClasses=["m-excited","m-shocked","m-sorry","m-thinking","m-laughing"];
+  function mood(m){moodClasses.forEach(function(c){app.classList.remove(c)});void app.offsetWidth;if(m)app.classList.add("m-"+m)}
+  face("namaste",false);
+
+  /* idle life: small wink or smile now and then */
+  var idleT=null;
+  function idle(){clearTimeout(idleT);idleT=setTimeout(function(){
+    if(!busy){var r=Math.random();if(r<.35){face("wink");setTimeout(function(){if(!busy)face("happy")},650)}else if(r<.55){face("laughing");setTimeout(function(){if(!busy)face("happy")},900)}}
+    idle()},6000+Math.random()*5000)}
+  idle();
+
+  /* ---------- mood from text ---------- */
+  function moodOf(t){
+    t=String(t||"");
+    if(/(1669|1155|emergency|police|hospital|danger|khatra|आपात|पुलिस)/i.test(t))return "serious";
+    if(/(sorry|maaf|afsos|unfortunately|not possible|nahi ho sakta|माफ़)/i.test(t))return "sorry";
+    if(/(scam|careful|dhyan|savdhan|cheat|सावधान)/i.test(t))return "shocked";
+    if(/(haha|😂|🤣|lol|mazaa|funny|joke)/i.test(t))return "laughing";
+    if(/(wow|amazing|awesome|great|badhiya|zabardast|congrat|done|confirmed|booked|mubarak|🎉|बढ़िया|शानदार)/i.test(t))return "excited";
+    return "happy";
+  }
+
+  /* ---------- audio + lip-sync ---------- */
+  var actx=null;
+  function unlock(){try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();if(actx.state==="suspended")actx.resume()}catch(e){}}
+  var lastMouth=0,curMouth="";
+  function mouth(m){var now=performance.now();if(m===curMouth||now-lastMouth<70)return;lastMouth=now;curMouth=m;front.src=P+"mouth-"+m+".webp"}
+  function playB64(b64,mime){
+    return new Promise(function(done){
+      var el=new Audio("data:"+(mime||"audio/mpeg")+";base64,"+b64),an=null,raf=0;
+      try{if(actx){var s=actx.createMediaElementSource(el);an=actx.createAnalyser();an.fftSize=512;s.connect(an);an.connect(actx.destination)}}catch(e){an=null}
+      var buf=an?new Uint8Array(an.fftSize):null;
+      function loop(){
+        if(an){an.getByteTimeDomainData(buf);var sum=0;for(var i=0;i<buf.length;i++){var v=(buf[i]-128)/128;sum+=v*v}var rms=Math.sqrt(sum/buf.length);
+          mouth(rms<.02?(Math.random()<.5?"m":"neutral"):rms<.06?"e":rms<.11?"o":"a")}
+        else mouth(MOUTHS[Math.floor(Math.random()*4)]);
+        raf=requestAnimationFrame(loop)}
+      el.onplay=function(){app.classList.add("talking");loop()};
+      el.onended=el.onerror=function(){cancelAnimationFrame(raf);app.classList.remove("talking");curMouth="";done(true)};
+      el.play().catch(function(){done(false)});
+    });
+  }
+  function phoneSpeak(text){
+    return new Promise(function(done){
+      var S=window.speechSynthesis;if(!S){done();return}
+      S.cancel();var u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=.97;u.pitch=.9;
+      var vs=S.getVoices().filter(function(v){return v.lang&&v.lang.replace("_","-").indexOf(lang.slice(0,2))===0});
+      var male=vs.filter(function(v){return /male|man|rahul|hemant|madhur|prabhat|ravi/i.test(v.name)&&!/female/i.test(v.name)});if(male[0]||vs[0])u.voice=male[0]||vs[0];
+      var t=null;u.onstart=function(){app.classList.add("talking");t=setInterval(function(){mouth(MOUTHS[Math.floor(Math.random()*4)])},110)};
+      u.onend=u.onerror=function(){clearInterval(t);app.classList.remove("talking");curMouth="";done()};
+      S.speak(u);
+    });
+  }
+  var sb=null;try{sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0")}catch(e){}
+  function race(p,ms){return Promise.race([p,new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},ms)})])}
+  async function speak(text){
+    if(muted)return;
+    var clean=String(text).replace(/[*_#>`]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"").slice(0,900);
+    if(sb){try{var r=await race(sb.functions.invoke("raju-voice",{body:{text:clean,lang:lang,speaker:"shubh"}}),9000);
+      if(r&&r.data&&r.data.audio){var ok=await playB64(r.data.audio,r.data.mime);if(ok)return}}catch(e){}}
+    await phoneSpeak(clean);
+  }
+
+  /* ---------- brain ---------- */
+  var RULES="EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails or drink deals. 2) Never give prices for hospitals, clinics, treatments or medicines; emergencies: 1669, Tourist Police 1155. 3) Keep answers short (2-4 sentences) because they are spoken aloud."+(NAME!=="Raju"?" 4) In this chat your name is "+NAME+".":"");
+  async function think(q){
+    if(!sb)return "Sorry bhai, network problem. Please try again in a moment.";
+    var r=await race(sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:q}]),venues:RULES,lang:lang==="hi-IN"?"hi":"en"}}),15000);
+    if(r&&r.data&&r.data.reply){hist.push({role:"user",text:q},{role:"model",text:r.data.reply});if(hist.length>12)hist=hist.slice(-12);return r.data.reply}
+    return lang==="hi-IN"?"Sorry bhai, abhi network slow hai. Ek minute baad phir poochho.":"Sorry, my network is slow right now. Please ask again in a minute.";
+  }
+
+  async function handle(q){
+    q=String(q||"").trim();if(!q||busy)return;busy=true;
+    $("sub").innerHTML='<span class="you"></span>';$("sub").firstChild.textContent=q;
+    var um=moodOf(q);if(um==="serious"||um==="shocked"){face(um);mood(um)}else{face("thinking");mood("thinking")}
+    $("status").textContent=NAME+" is thinking…";
+    var reply=await think(q);
+    var m=moodOf(reply);mood(m);face(m);$("status").textContent="";
+    var s=document.createElement("div");s.textContent=reply;$("sub").appendChild(s);
+    await new Promise(function(ok){setTimeout(ok,700)});
+    await speak(reply);
+    face(m);setTimeout(function(){mood("");face("happy");busy=false;$("status").textContent="Tap the mic to ask more"},1400);
+  }
+
+  /* ---------- mic ---------- */
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null,listening=false;
+  $("mic").onclick=function(){
+    unlock();
+    if(busy)return;
+    if(!SR){$("typebar").classList.add("show");$("typeIn").focus();return}
+    if(listening){try{rec.stop()}catch(e){}return}
+    try{speechSynthesis.cancel()}catch(e){}
+    rec=new SR();rec.lang=lang;rec.interimResults=true;rec.maxAlternatives=1;
+    var finalText="";
+    rec.onstart=function(){listening=true;$("mic").classList.add("on");face("happy");$("status").textContent="Listening… bolo";};
+    rec.onresult=function(e){var t="";for(var i=e.resultIndex;i<e.results.length;i++){t+=e.results[i][0].transcript;if(e.results[i].isFinal)finalText+=e.results[i][0].transcript}
+      $("sub").innerHTML='<span class="you"></span>';$("sub").firstChild.textContent=finalText||t};
+    rec.onerror=function(){$("status").textContent="Didn't catch that. Tap and try again."};
+    rec.onend=function(){listening=false;$("mic").classList.remove("on");if(finalText.trim())handle(finalText);else if(!busy)$("status").textContent="Tap the mic and talk to me"};
+    rec.start();
+  };
+  $("keyBtn").onclick=function(){unlock();$("typebar").classList.toggle("show");if($("typebar").classList.contains("show"))$("typeIn").focus()};
+  function sendTyped(){unlock();var v=$("typeIn").value;$("typeIn").value="";handle(v)}
+  $("typeGo").onclick=sendTyped;$("typeIn").onkeydown=function(e){if(e.key==="Enter")sendTyped()};
+  $("muteBtn").onclick=function(){muted=!muted;$("muteBtn").textContent=muted?"🔇":"🔊";if(muted){try{speechSynthesis.cancel()}catch(e){}}};
+  $("langBtn").onclick=function(){lang=lang==="hi-IN"?"en-IN":"hi-IN";try{localStorage.setItem("np_talk_lang",lang)}catch(e){}updLang()};
+  setTimeout(function(){face("happy")},2500);
+})();
+</script>
+</body>
+</html>
