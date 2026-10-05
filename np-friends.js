@@ -3612,3 +3612,34 @@
       .catch(function(){clearTimeout(timer);if(my===seq)origSpeak(u)});
   };
 })();
+
+/* ===== Raju mic language button (5 Oct 2026): a small button next to the 🎤 lets the customer choose
+   the language they SPEAK (EN, हिं, ਪੰ, ગુ, த, म, ไทย). Default = app language. Added on top; nothing removed. ===== */
+(function(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR||!SR.prototype||SR.prototype.__npMicLang)return;
+  SR.prototype.__npMicLang=1;
+  var LIST=[["en","en-IN","EN"],["hi","hi-IN","हिं"],["pa","pa-IN","ਪੰ"],["gu","gu-IN","ગુ"],["ta","ta-IN","த"],["mr","mr-IN","म"],["th","th-TH","ไทย"]];
+  function cur(){var c="";try{c=localStorage.getItem("np_mic_lang")||localStorage.getItem("np_lang")||"en"}catch(e){c="en"}
+    for(var i=0;i<LIST.length;i++)if(LIST[i][0]===c)return i;return 0}
+  var origStart=SR.prototype.start;
+  SR.prototype.start=function(){try{this.lang=LIST[cur()][1]}catch(e){}return origStart.apply(this,arguments)};
+  if(!document.getElementById("npMicLangCss")){
+    var st=document.createElement("style");st.id="npMicLangCss";
+    st.textContent='.npmiclang{flex:0 0 auto;min-width:40px;height:40px;padding:0 6px;border-radius:20px;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.06));color:var(--ink,#fff);font-size:13px;font-weight:600;margin:0 2px;cursor:pointer;align-self:center}';
+    document.head.appendChild(st);
+  }
+  function attach(){
+    var mics=document.querySelectorAll('button[aria-label="Talk to Raju"]');
+    for(var k=0;k<mics.length;k++){
+      var mic=mics[k];if(mic.dataset.npMicLang)continue;mic.dataset.npMicLang="1";
+      var b=document.createElement("button");b.type="button";b.className="npmiclang";
+      b.setAttribute("aria-label","Language you speak to Raju");b.title="Language you speak (tap to change)";
+      b.textContent=LIST[cur()][2];
+      b.onclick=function(ev){var i=(cur()+1)%LIST.length;try{localStorage.setItem("np_mic_lang",LIST[i][0])}catch(e){}
+        var all=document.querySelectorAll(".npmiclang");for(var j=0;j<all.length;j++)all[j].textContent=LIST[i][2]};
+      mic.insertAdjacentElement("beforebegin",b);
+    }
+  }
+  attach();setInterval(attach,1500);
+})();
