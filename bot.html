@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14122B">
+<title>Raju – Namaste Pattaya</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--night:#14122B;--deep:#1E1B3A;--line:#353058;--ivory:#F5EEDC;--muted:#A49DBB;--accent:#E8B44C;--saffron:#FF8A2A;
+  font-family:"Baloo 2",system-ui,"Noto Sans",sans-serif}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:var(--night);color:var(--ivory)}
+body{display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+header{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--line)}
+.seal{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-size:26px;background:var(--deep);
+  box-shadow:0 0 0 2px var(--accent),0 0 0 6px var(--night),0 0 0 7px var(--accent)}
+.who{flex:1;min-width:0}
+.who h1{margin:0;font-size:22px;line-height:1.1;font-weight:700}
+.who p{margin:2px 0 0;font-size:13px;color:var(--muted)}
+.icon{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--deep);display:grid;place-items:center;font-size:18px}
+.icon.on{border-color:var(--accent);color:var(--accent)}
+#chat{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px}
+.m{max-width:85%;padding:10px 14px;border-radius:18px;font-size:16px;line-height:1.45;white-space:pre-wrap;word-wrap:break-word}
+.m.bot{align-self:flex-start;background:var(--deep);border:1px solid var(--line);border-bottom-left-radius:6px}
+.m.me{align-self:flex-end;background:var(--accent);color:#1b1630;border-bottom-right-radius:6px}
+.m.typing{color:var(--muted)}
+.bar{display:flex;gap:6px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);background:var(--night)}
+.bar input{flex:1;min-width:0;height:46px;border-radius:23px;border:1px solid var(--line);background:var(--deep);padding:0 16px;font-size:16px}
+.chip{height:40px;min-width:40px;padding:0 8px;border-radius:20px;border:1px solid var(--line);background:var(--deep);font-size:13px;font-weight:600}
+.send{width:46px;height:46px;border-radius:50%;border:0;background:var(--accent);color:#1b1630;font-size:20px;font-weight:700}
+.rec{background:#E5484D!important;border-color:#E5484D!important;color:#fff!important}
+.note{font-size:12px;color:var(--muted);text-align:center;padding:0 16px 6px}
+/* editor */
+#sheet{position:fixed;inset:0;background:rgba(10,8,25,.7);display:none;align-items:flex-end;z-index:9}
+#sheet.open{display:flex}
+.panel{width:100%;max-height:92%;overflow-y:auto;background:var(--deep);border-top:2px solid var(--accent);border-radius:20px 20px 0 0;
+  padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}
+.panel h2{margin:0 0 4px;font-size:22px}
+.panel .sub{margin:0 0 14px;color:var(--muted);font-size:14px}
+.panel label{display:block;font-size:14px;color:var(--muted);margin:12px 0 4px}
+.panel input,.panel textarea,.panel select{width:100%;border:1px solid var(--line);background:var(--night);border-radius:12px;padding:10px 12px;font-size:16px}
+.panel textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:8px}
+.row>*{flex:1}
+.btn{height:46px;border-radius:23px;border:1px solid var(--line);background:var(--night);padding:0 16px;font-weight:600}
+.btn.main{background:var(--accent);border-color:var(--accent);color:#1b1630}
+.check{display:flex;gap:10px;align-items:center;margin-top:14px;color:var(--ivory)}
+.check input{width:22px;height:22px}
+#msg{min-height:20px;margin-top:10px;font-size:14px;color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="seal" id="ava" aria-hidden="true">🙏</div>
+  <div class="who"><h1 id="bname">Raju</h1><p>AI assistant · Namaste Pattaya</p></div>
+  <button class="icon" id="spk" aria-label="Read answers aloud">🔇</button>
+  <button class="icon" id="edit" aria-label="Edit chatbot" hidden>⚙️</button>
+</header>
+<main id="chat" aria-live="polite"></main>
+<p class="note"><span id="nname">Raju</span> is an AI. Emergencies: Tourist Police 1155, ambulance 1669.</p>
+<div class="bar">
+  <button class="chip" id="mlang" aria-label="Language you speak">EN</button>
+  <button class="icon" id="mic" aria-label="Speak to Raju">🎤</button>
+  <input id="inp" placeholder="Ask anything…" autocomplete="off" enterkeyhint="send">
+  <button class="send" id="send" aria-label="Send">➤</button>
+</div>
+
+<div id="sheet" role="dialog" aria-modal="true" aria-labelledby="edTitle">
+  <div class="panel">
+    <div class="row" style="align-items:center"><h2 id="edTitle">Edit chatbot</h2><button class="icon" id="edX" aria-label="Close" style="flex:0 0 44px">✕</button></div>
+    <p class="sub">Changes show for customers right after you save.</p>
+    <label for="edPick">Chatbot</label>
+    <div class="row"><select id="edPick"></select><button class="btn" id="edNew" style="flex:0 0 auto">+ New</button></div>
+    <label for="edId">Link name (letters, numbers, dash)</label><input id="edId" placeholder="raju">
+    <div class="row">
+      <div><label for="edName">Name</label><input id="edName" placeholder="Raju"></div>
+      <div style="flex:0 0 90px"><label for="edAva">Icon</label><input id="edAva" placeholder="🙏"></div>
+    </div>
+    <label for="edWel">First message</label><input id="edWel">
+    <label for="edIns">Personality and rules (how the bot talks and behaves)</label><textarea id="edIns"></textarea>
+    <label for="edKno">Knowledge (prices, timings, addresses, FAQ)</label><textarea id="edKno"></textarea>
+    <div class="row">
+      <div><label for="edLang">Main language</label><select id="edLang">
+        <option value="en">English</option><option value="hi">Hindi</option><option value="pa">Punjabi</option><option value="gu">Gujarati</option>
+        <option value="ta">Tamil</option><option value="mr">Marathi</option><option value="th">Thai</option></select></div>
+      <div style="flex:0 0 90px"><label for="edCol">Colour</label><input id="edCol" type="color" value="#E8B44C" style="height:46px;padding:4px"></div>
+    </div>
+    <label for="edVoice">Voice tone</label><input id="edVoice" placeholder="[friendly, cheerful] [speaking a little faster]">
+    <label class="check"><input type="checkbox" id="edAct" checked> Show this chatbot to customers</label>
+    <div class="row" style="margin-top:16px"><button class="btn" id="edLink">Copy link</button><button class="btn main" id="edSave">Save chatbot</button></div>
+    <div id="msg" role="status"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+var URL_SB="https://mymtgbmcjbwsnetzwgoy.supabase.co",KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
+var ADMINS=["rahulsood30071990@gmail.com","jaishreeradhey@yahoo.com"];
+var sb=window.supabase.createClient(URL_SB,KEY);
+var $=function(id){return document.getElementById(id)};
+var BID=(new URLSearchParams(location.search).get("b")||"raju").toLowerCase().replace(/[^a-z0-9-]/g,"")||"raju";
+var DEF={id:BID,name:"Raju",avatar:"🙏",welcome:"Namaste ji! Main Raju hoon, aapka Pattaya guide. Kaise madad karun?",instructions:"You are Raju, Namaste Pattaya's friendly guide. Warm, simple Hinglish, short answers (2 to 5 lines).",knowledge:"",lang:"en",color:"#E8B44C",voice_style:"[friendly, cheerful] [speaking a little faster]",active:true};
+var bot=Object.assign({},DEF),hist=[],isAdmin=false,all=[];
+var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi",th:"Thai"};
+/* Always applied, cannot be removed in the editor (Thai law + safety) */
+var RULES="RULES YOU MUST ALWAYS FOLLOW: 1) Thai alcohol law (2025): never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines; for emergencies say: ambulance 1669, Tourist Police 1155. 3) If asked, say clearly you are an AI assistant. 4) No tobacco, vape, hookah or shisha. 5) Never invent prices, offers or partners; if unsure, say the team will confirm on WhatsApp. 6) Keep answers short for a phone.";
+function langRule(){return "LANGUAGE RULE: Reply in the language the customer writes in. If unclear, use "+(NAMES[bot.lang]||"English")+"."}
+
+function add(who,text){var d=document.createElement("div");d.className="m "+who;d.textContent=text;$("chat").appendChild(d);d.scrollIntoView({block:"end"});return d}
+function paint(){
+  $("bname").textContent=bot.name||"Raju";$("nname").textContent=bot.name||"Raju";$("ava").textContent=bot.avatar||"🙏";document.title=(bot.name||"Raju")+" – Namaste Pattaya";
+  if(/^#[0-9a-f]{6}$/i.test(bot.color||""))document.documentElement.style.setProperty("--accent",bot.color);
+}
+function restart(){$("chat").innerHTML="";hist=[];add("bot",bot.welcome||DEF.welcome)}
+
+async function load(){
+  try{var r=await sb.from("np_bots").select("*").eq("id",BID).maybeSingle();if(r.data)bot=Object.assign({},DEF,r.data)}catch(e){}
+  paint();restart();
+  try{var s=await sb.auth.getSession(),em=(s.data&&s.data.session&&s.data.session.user&&s.data.session.user.email||"").toLowerCase();
+    isAdmin=ADMINS.indexOf(em)>=0;$("edit").hidden=!isAdmin}catch(e){}
+}
+
+/* ---- chat ---- */
+async function ask(q){
+  q=String(q||"").trim();if(!q)return;
+  add("me",q);var t=add("bot typing",(bot.name||"Raju")+" is typing…");
+  var reply=null;
+  try{
+    var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:q}]),
+      venues:RULES+"\n\n"+langRule()+"\n\nBOT CHARACTER AND INSTRUCTIONS:\n"+(bot.instructions||"")+"\n\nBOT KNOWLEDGE:\n"+(bot.knowledge||""),lang:bot.lang||"en"}});
+    var to=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},20000)});
+    var r=await Promise.race([call,to]);if(r&&!r.error&&r.data&&r.data.reply)reply=String(r.data.reply);
+  }catch(e){}
+  t.remove();
+  if(!reply){add("bot","Network is slow right now. Please ask again in a moment.");return}
+  hist.push({role:"user",text:q},{role:"model",text:reply});if(hist.length>12)hist=hist.slice(-12);
+  add("bot",reply);if(voiceOn)speak(reply);
+}
+$("send").onclick=function(){var v=$("inp").value;$("inp").value="";ask(v)};
+$("inp").addEventListener("keydown",function(e){if(e.key==="Enter"){e.preventDefault();$("send").click()}});
+
+/* ---- voice out: ElevenLabs (quick-api), phone voice as backup ---- */
+var voiceOn=false,audio=null;try{voiceOn=localStorage.getItem("np_bot_voice")==="1"}catch(e){}
+function spkPaint(){$("spk").textContent=voiceOn?"🔊":"🔇";$("spk").classList.toggle("on",voiceOn)}spkPaint();
+$("spk").onclick=function(){voiceOn=!voiceOn;try{localStorage.setItem("np_bot_voice",voiceOn?"1":"0")}catch(e){}spkPaint();if(!voiceOn)stopVoice()};
+function stopVoice(){if(audio){try{audio.pause()}catch(e){}audio=null}try{speechSynthesis.cancel()}catch(e){}}
+function canUse(){try{var d=new Date().toISOString().slice(0,10),o=JSON.parse(localStorage.getItem("np_raju_el")||"{}");if(o.d!==d)o={d:d,n:0};if(o.n>=60)return false;o.n++;localStorage.setItem("np_raju_el",JSON.stringify(o));return true}catch(e){return true}}
+function phone(t){try{var u=new SpeechSynthesisUtterance(t);u.lang=MIC[micIdx()][1];speechSynthesis.speak(u)}catch(e){}}
+function speak(t){
+  stopVoice();t=t.slice(0,560);
+  if(!canUse())return phone(t);
+  fetch(URL_SB+"/functions/v1/quick-api",{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY},body:JSON.stringify({text:(bot.voice_style?bot.voice_style+" ":"")+t})})
+    .then(function(r){if(!r.ok)throw 0;return r.blob()})
+    .then(function(b){if(b.size<500)throw 0;audio=new Audio(URL.createObjectURL(b));return audio.play()})
+    .catch(function(){phone(t)});
+}
+
+/* ---- voice in: mic with language chip ---- */
+var SR=window.SpeechRecognition||window.webkitSpeechRecognition,rec=null;
+var MIC=[["en","en-IN","EN"],["hi","hi-IN","हिं"],["pa","pa-IN","ਪੰ"],["gu","gu-IN","ગુ"],["ta","ta-IN","த"],["mr","mr-IN","म"],["th","th-TH","ไทย"]];
+function micIdx(){var c="en";try{c=localStorage.getItem("np_mic_lang")||localStorage.getItem("np_lang")||"en"}catch(e){}for(var i=0;i<MIC.length;i++)if(MIC[i][0]===c)return i;return 0}
+$("mlang").textContent=MIC[micIdx()][2];
+$("mlang").onclick=function(){var i=(micIdx()+1)%MIC.length;try{localStorage.setItem("np_mic_lang",MIC[i][0])}catch(e){}$("mlang").textContent=MIC[i][2]};
+$("mic").onclick=function(){
+  if(!SR){alert("Voice typing works in Chrome.");return}
+  if(rec){rec.stop();return}
+  stopVoice();var fin="";rec=new SR();rec.lang=MIC[micIdx()][1];rec.interimResults=true;
+  $("mic").classList.add("rec");$("inp").placeholder="Listening… speak now";
+  rec.onresult=function(e){var t="";for(var i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;$("inp").value=t;if(e.results[e.results.length-1].isFinal)fin=t};
+  rec.onerror=function(e){if(e.error==="not-allowed")alert("Please allow the microphone to talk to "+(bot.name||"Raju")+".")};
+  rec.onend=function(){$("mic").classList.remove("rec");$("inp").placeholder="Ask anything…";rec=null;var t=(fin||$("inp").value).trim();$("inp").value="";if(t){var was=voiceOn;voiceOn=true;ask(t).then(function(){voiceOn=was})}};
+  try{rec.start()}catch(e){$("mic").classList.remove("rec");rec=null}
+};
+
+/* ---- editor (admins only; the database also checks np_is_admin) ---- */
+function fill(b){$("edId").value=b.id||"";$("edName").value=b.name||"";$("edAva").value=b.avatar||"";$("edWel").value=b.welcome||"";
+  $("edIns").value=b.instructions||"";$("edKno").value=b.knowledge||"";$("edLang").value=b.lang||"en";$("edCol").value=/^#[0-9a-f]{6}$/i.test(b.color||"")?b.color:"#E8B44C";
+  $("edVoice").value=b.voice_style||"";$("edAct").checked=b.active!==false;$("msg").textContent=""}
+async function list(){
+  try{var r=await sb.from("np_bots").select("*").order("id");all=r.data||[];if(r.error)$("msg").textContent="Run np-bots.sql in Supabase first."}catch(e){all=[]}
+  if(!all.some(function(b){return b.id===bot.id}))all.push(bot);
+  $("edPick").innerHTML=all.map(function(b){return '<option value="'+b.id+'">'+(b.avatar||"")+" "+(b.name||b.id)+" ("+b.id+")</option>"}).join("");
+  $("edPick").value=bot.id;
+}
+$("edit").onclick=async function(){$("sheet").classList.add("open");await list();fill(bot)};
+$("edX").onclick=function(){$("sheet").classList.remove("open")};
+$("edPick").onchange=function(){var b=all.filter(function(x){return x.id===$("edPick").value})[0];if(b)fill(b)};
+$("edNew").onclick=function(){fill({id:"",name:"",avatar:"🤖",welcome:"Namaste! How can I help you?",instructions:"",knowledge:"",lang:"en",color:"#E8B44C",voice_style:DEF.voice_style,active:true});$("edId").focus()};
+$("edLink").onclick=function(){var id=$("edId").value.trim().toLowerCase();var l=location.origin+location.pathname+"?b="+encodeURIComponent(id||bot.id);
+  (navigator.clipboard?navigator.clipboard.writeText(l):Promise.reject()).then(function(){$("msg").textContent="Link copied: "+l},function(){$("msg").textContent=l})};
+$("edSave").onclick=async function(){
+  var id=$("edId").value.trim().toLowerCase().replace(/\s+/g,"-").replace(/[^a-z0-9-]/g,"");
+  if(!id){$("msg").textContent="Add a link name first, for example raju-club.";return}
+  var row={id:id,name:$("edName").value.trim()||"Raju",avatar:$("edAva").value.trim()||"🙏",welcome:$("edWel").value.trim(),instructions:$("edIns").value,
+    knowledge:$("edKno").value,lang:$("edLang").value,color:$("edCol").value,voice_style:$("edVoice").value.trim(),active:$("edAct").checked,updated_at:new Date().toISOString()};
+  $("msg").textContent="Saving…";
+  var r=await sb.from("np_bots").upsert(row);
+  if(r.error){$("msg").textContent="Not saved: "+r.error.message+". Check you are logged in as admin and np-bots.sql was run.";return}
+  $("msg").textContent="Saved ✓";
+  if(id===bot.id){bot=Object.assign({},DEF,row);paint();restart()}
+  await list();$("edPick").value=id;
+};
+load();
+})();
+</script>
+</body>
+</html>
