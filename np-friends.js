@@ -481,7 +481,7 @@
       var a=r&&r.data&&r.data.audio;
       if(!a){svOK=false;svFailAt=Date.now();return false}
       svOK=true;stopAll();
-      svAudio=new Audio("data:"+((r.data&&r.data.mime)||"audio/wav")+";base64,"+a);window.__npRajuAudio=svAudio;
+      svAudio=new Audio("data:"+((r.data&&r.data.mime)||"audio/wav")+";base64,"+a);
       return svAudio.play().then(function(){return true},function(){return false});
     },function(){svOK=false;svFailAt=Date.now();return false});
   }
@@ -1251,91 +1251,5 @@
   function run(){try{buildTag();compactRaju();tightenGap()}catch(e){}}
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true});
-  run();
-})();
-
-/* ===== Raju character: face in the Home box, talking head in chat, wardrobe on service pages, booking celebration ===== */
-(function(){
-  var IMG="photos/";
-  function img(name,cls,alt){var i=document.createElement("img");i.src=IMG+name+".webp";i.alt=alt||"";i.className=cls;i.loading="lazy";i.onerror=function(){i.remove()};return i}
-  if(!document.getElementById("npRajuCss")){
-    var st=document.createElement("style");st.id="npRajuCss";
-    st.textContent=
-      '.nprj-home{float:left;height:84px;width:auto;margin:-4px 10px 0 -4px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}'+
-      '.nprj-head{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--line,rgba(255,255,255,.12))}'+
-      '.nprj-face{width:52px;height:52px;border-radius:50%;overflow:hidden;flex:0 0 52px;background:#1d2340;border:2px solid #CDA64E}'+
-      '.nprj-face img{width:100%;height:100%;object-fit:cover;object-position:center 18%}'+
-      '.nprj-head b{display:block;font-size:14px}.nprj-head small{opacity:.7;font-size:12px}'+
-      '.nprj-head.talking .nprj-face{box-shadow:0 0 0 3px rgba(205,166,78,.45)}'+
-      '.nprj-hero{position:absolute;right:6px;bottom:0;height:92%;max-height:220px;width:auto;pointer-events:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.4))}'+
-      '.nprj-pop{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;display:flex;align-items:flex-end;gap:8px;background:#17120D;color:#F5EFE3;border:1px solid #CDA64E;border-radius:18px;padding:8px 16px 8px 8px;box-shadow:0 10px 30px rgba(0,0,0,.45);max-width:92vw;animation:nprjIn .35s ease-out}'+
-      '.nprj-pop img{height:96px;width:auto;margin-top:-40px}.nprj-pop b{display:block;color:#E3BE63;font-size:15px}.nprj-pop span{font-size:13px}'+
-      '@keyframes nprjIn{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}'+
-      '@media (prefers-reduced-motion:reduce){.nprj-pop{animation:none}}';
-    document.head.appendChild(st);
-  }
-  /* 1. Raju's face in the main Raju box on Home */
-  function homeBox(){
-    var hits=[].slice.call(document.querySelectorAll("section *")).filter(function(el){
-      return el.children.length<12&&/Raju/.test(el.textContent||"")&&/(Hindi bhi|ask me anything|हिंदी)/i.test(el.textContent||"")&&!el.closest("#panel,.sheet")});
-    hits.sort(function(a,b){return a.textContent.length-b.textContent.length});
-    var card=hits[0];if(!card||card.querySelector(".nprj-home"))return;
-    card.insertBefore(img("raju-namaste","nprj-home","Raju, your Pattaya guide"),card.firstChild);
-  }
-  /* 2. Talking head at the top of the bottom-right Raju chat, mouth moves while he speaks */
-  var MOUTH=["mouth-a","mouth-e","mouth-o","mouth-m","mouth-neutral"],face=null,head=null;
-  MOUTH.forEach(function(m){var i=new Image();i.src=IMG+m+".webp"});
-  function chatHead(){
-    if(typeof chatEl==="undefined"||!chatEl||!chatEl.parentNode)return;
-    if(chatEl.parentNode.querySelector(".nprj-head"))return;
-    head=document.createElement("div");head.className="nprj-head";
-    var f=document.createElement("div");f.className="nprj-face";
-    face=img("mouth-neutral","","Raju");f.appendChild(face);
-    var t=document.createElement("div");t.innerHTML='<b>Raju</b><small>Your Pattaya guide · AI assistant</small>';
-    head.appendChild(f);head.appendChild(t);
-    chatEl.parentNode.insertBefore(head,chatEl);
-  }
-  var last="";
-  setInterval(function(){
-    if(!face||!face.isConnected)return;
-    var au=window.__npRajuAudio,talking=(au&&!au.paused&&!au.ended)||(window.speechSynthesis&&speechSynthesis.speaking);
-    var want=talking?MOUTH[Math.floor(Math.random()*MOUTH.length)]:"mouth-neutral";
-    if(want!==last){face.src=IMG+want+".webp";last=want}
-    if(head)head.classList.toggle("talking",!!talking);
-  },120);
-  /* 3. Wardrobe: Raju dressed for each service page */
-  var WARDROBE={indian:"raju-sherwani",grocery:"raju-sherwani",restaurants:"raju-burgundy-suit",hotels:"raju-three-piece",
-    spa:"raju-tshirt-happy",tours:"raju-hoodie",water:"raju-beach",yacht:"raju-beach",golf:"raju-tracksuit",rental:"raju-hoodie",
-    airport:"raju-black-suit",shopping:"raju-hoodie",events:"raju-burgundy-suit",concierge:"raju-black-suit",nightlife:"raju-leather",
-    afterparty:"raju-leather",elite:"raju-gold-pinstripe",gold:"raju-gold-pinstripe",dating:"raju-velvet-blazer",buddy:"raju-velvet-blazer"};
-  function catNow(){var s=history.state;if(s&&s.np==="s"&&s.cat)return s.cat;var h=location.hash;return h.indexOf("#s/")===0?decodeURIComponent(h.slice(3)):null}
-  function wardrobe(){
-    var svc=document.getElementById("svcPage");if(!svc||svc.hidden)return;
-    var hero=svc.querySelector(".svchero");if(!hero)return;
-    var cat=catNow(),look=cat&&WARDROBE[cat];
-    var old=hero.querySelector(".nprj-hero");
-    if(old&&old.dataset.cat===cat)return;
-    if(old)old.remove();
-    if(!look)return;
-    if(getComputedStyle(hero).position==="static")hero.style.position="relative";
-    var i=img(look,"nprj-hero","");i.dataset.cat=cat;hero.appendChild(i);
-  }
-  /* 4. Booking sent: Raju celebrates */
-  function celebrate(){
-    var old=document.querySelector(".nprj-pop");if(old)old.remove();
-    var hi=false;try{hi=(localStorage.getItem("np_lang")||"en")==="hi"}catch(e){}
-    var d=document.createElement("div");d.className="nprj-pop";d.setAttribute("role","status");
-    d.appendChild(img("raju-excited","","Raju celebrating"));
-    var t=document.createElement("div");t.innerHTML=hi?'<b>बुकिंग भेज दी!</b><span>Raju पर छोड़ दो, भाई।</span>':'<b>Booking sent!</b><span>Raju is on it, bhai.</span>';
-    d.appendChild(t);document.body.appendChild(d);setTimeout(function(){d.remove()},3200);
-  }
-  if(typeof store!=="undefined"&&store.set){
-    var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
-    store.set=function(k,v){try{if(k==="np_bookings"&&Array.isArray(v)){if(v.length>prev)setTimeout(celebrate,150);prev=v.length}}catch(e){}return _set.apply(this,arguments)};
-  }
-  var busy=false;
-  function run(){try{homeBox();wardrobe()}catch(e){}}
-  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
-  window.addEventListener("hashchange",run);window.addEventListener("popstate",run);
   run();
 })();
