@@ -381,7 +381,7 @@
   ask=async function(q){
     var t=String(q||"").trim();
     if(!t||CRISIS.test(t)||typeof localAnswer!=="function")return _ask(q);
-    var typing=document.createElement("div");typing.className="msg bot";typing.innerHTML='<img src="photos/raju-thinking.webp" alt="" onerror="this.remove()" style="height:34px;vertical-align:middle;margin-right:6px">Raju is typing…';
+    var typing=document.createElement("div");typing.className="msg bot";typing.textContent="Raju is typing…";
     if(typeof chatEl!=="undefined"){chatEl.appendChild(typing);typing.scrollIntoView({block:"end"})}
     var res=null;
     try{
@@ -1334,7 +1334,7 @@
     store.set=function(k,v){try{if(k==="np_bookings"&&Array.isArray(v)){if(v.length>prev)setTimeout(celebrate,150);prev=v.length}}catch(e){}return _set.apply(this,arguments)};
   }
   var busy=false;
-  function run(){try{homeBox();chatHead();wardrobe()}catch(e){}}
+  function run(){try{homeBox();wardrobe()}catch(e){}}
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
   window.addEventListener("hashchange",run);window.addEventListener("popstate",run);
   run();
