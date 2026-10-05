@@ -201,8 +201,10 @@ $("edSave").onclick=async function(){
   var row={id:id,name:$("edName").value.trim()||"Raju",avatar:$("edAva").value.trim()||"🙏",welcome:$("edWel").value.trim(),instructions:$("edIns").value,
     knowledge:$("edKno").value,lang:$("edLang").value,color:$("edCol").value,voice_style:$("edVoice").value.trim(),active:$("edAct").checked,updated_at:new Date().toISOString()};
   $("msg").textContent="Saving…";
+  var who="";try{var u=await sb.auth.getUser();if(!u.data||!u.data.user){await sb.auth.refreshSession();u=await sb.auth.getUser()}who=(u.data&&u.data.user&&u.data.user.email)||""}catch(e){}
+  if(!who){$("msg").textContent="Your login has expired. Open the main app, log out, log in again, then come back here.";return}
   var r=await sb.from("np_bots").upsert(row);
-  if(r.error){$("msg").textContent="Not saved: "+r.error.message+". Check you are logged in as admin and np-bots.sql was run.";return}
+  if(r.error){$("msg").textContent="Not saved for "+who+": "+r.error.message+". Please run the fix SQL in Supabase.";return}
   $("msg").textContent="Saved ✓";
   if(id===bot.id){bot=Object.assign({},DEF,row);paint();restart()}
   await list();$("edPick").value=id;
