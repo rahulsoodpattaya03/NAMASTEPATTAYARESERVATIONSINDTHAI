@@ -3001,6 +3001,7 @@
     var ft=panel.querySelector("#fTime");if(ft)setLead(ft.closest("label"),w.time);
     var go=panel.querySelector("#gOut");if(go)setLead(go.closest("label"),w.people);
     var fd=panel.querySelector("#fDay");if(fd&&w.today&&fd.options[0]&&fd.options[0].text==="Tonight")fd.options[0].text=w.today;
+    var bk=panel.querySelector("#book");if(bk&&bk.textContent.trim()==="Choose a spot to continue")bk.textContent="Choose your "+w.item+" to continue";
   }
   if(!document.getElementById("npSpotCss")){var s=document.createElement("style");s.id="npSpotCss";
     s.textContent='#npSpotHint{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:0 0 10px;padding:12px 14px;border-radius:14px;background:rgba(233,185,73,.14);border:1px solid rgba(233,185,73,.6);font-size:14px;line-height:1.35}'+
@@ -3915,4 +3916,100 @@
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{run()}catch(e){}},200)}).observe(document.body,{childList:true,subtree:true});
   run();
+})();
+
+/* ===== One language switch for the whole app (8 Oct 2026): the Raju 🌐 button uses the same fast switch as the menu. ===== */
+(function(){if(typeof window.npLiveLang==="function")window.npFastLang=window.npLiveLang})();
+
+/* ===== Raju's human voice (8 Oct 2026, on Rahul's OK): a "🔊 Listen" button under each Raju answer in the Raju chat.
+   Uses the ElevenLabs voice function "quick-api" in Supabase (key stays secret there). One Raju voice per language.
+   Raju only speaks when the guest taps. The old phone voice stays switched off. Nothing removed. ===== */
+(function(){
+  if(typeof chatEl==="undefined"||!chatEl)return;
+  var FN="https://mymtgbmcjbwsnetzwgoy.supabase.co/functions/v1/quick-api";
+  var KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
+  var VOICES={en:"nwj0s2LU9bDWRKND5yzA",hi:"3tEYR9ZLqHBQ9RrfcL1W",pa:"3BviNsioLYpM7Wt1hbN0",gu:"UHwU6ReRgTsCs68KHc6C",mr:"Xy2k22lbbOX8fqfkkHWb",ta:"oJtqFwbHKS0pFD03MNRd",th:"MeUerI8vM5Ce2GSTXsRT"};
+  var LABEL={en:"🔊 Listen",hi:"🔊 सुनें",pa:"🔊 ਸੁਣੋ",gu:"🔊 સાંભળો",mr:"🔊 ऐका",ta:"🔊 கேளுங்கள்",th:"🔊 ฟัง"};
+  var DAILY=40,cache={},player=null,playingBtn=null;
+  function appLang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
+  function langOf(t){
+    if(/[\u0A00-\u0A7F]/.test(t))return "pa";
+    if(/[\u0A80-\u0AFF]/.test(t))return "gu";
+    if(/[\u0B80-\u0BFF]/.test(t))return "ta";
+    if(/[\u0E00-\u0E7F]/.test(t))return "th";
+    if(/[\u0900-\u097F]/.test(t))return appLang()==="mr"?"mr":"hi";
+    return "en";
+  }
+  function clean(t){
+    return String(t||"").replace(/\[[^\]]*\]/g," ").replace(/[*_#>`]/g," ")
+      .replace(/https?:\/\/\S+/g," ").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{FE0F}]/gu," ")
+      .replace(/\s+/g," ").trim().slice(0,900);
+  }
+  function usedToday(add){
+    var k="np_voice_"+new Date().toISOString().slice(0,10),n=0;
+    try{n=+localStorage.getItem(k)||0;if(add){n++;localStorage.setItem(k,String(n))}}catch(e){}
+    return n;
+  }
+  if(!document.getElementById("npVoiceCss")){
+    var st=document.createElement("style");st.id="npVoiceCss";
+    st.textContent='.npvoice{display:inline-flex;align-items:center;gap:6px;margin:4px 0 2px;border:1px solid #7F77DD;background:#26215C;color:#CECBF6;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;min-height:32px}'+
+      '.npvoice[disabled]{opacity:.6}.npvoice .b{display:inline-flex;gap:2px;align-items:flex-end;height:12px}.npvoice .b i{width:3px;height:4px;background:#CECBF6;border-radius:2px}'+
+      '.npvoice.on .b i{animation:npvb .6s infinite alternate}.npvoice.on .b i:nth-child(2){animation-delay:.2s}.npvoice.on .b i:nth-child(3){animation-delay:.4s}'+
+      '@keyframes npvb{to{height:12px}}.npvwrap{margin:-2px 0 6px}';
+    document.head.appendChild(st);
+  }
+  function stop(){try{if(player){player.pause();player=null}}catch(e){}if(playingBtn){playingBtn.classList.remove("on");setLabel(playingBtn);playingBtn=null}}
+  function setLabel(btn,txt){var s=btn.querySelector(".t");if(s)s.textContent=txt||LABEL[appLang()]||LABEL.en}
+  async function getAudio(text,l){
+    var ck=l+"|"+text;if(cache[ck])return cache[ck];
+    var r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+KEY},
+      body:JSON.stringify({text:text,voice:VOICES[l],voice_id:VOICES[l],voiceId:VOICES[l],lang:l})});
+    if(!r.ok)throw new Error("voice "+r.status);
+    var ct=(r.headers.get("content-type")||"").toLowerCase(),url;
+    if(ct.indexOf("json")>-1){
+      var j=await r.json(),b64=j&&(j.audio||j.audioContent||j.audio_base64||j.data);
+      if(!b64)throw new Error("no audio");
+      url=String(b64).indexOf("data:")===0?b64:"data:audio/mpeg;base64,"+b64;
+    }else{
+      var blob=await r.blob();if(!blob.size)throw new Error("empty");
+      url=URL.createObjectURL(blob.type?blob:new Blob([blob],{type:"audio/mpeg"}));
+    }
+    cache[ck]=url;return url;
+  }
+  async function play(btn,msg){
+    if(playingBtn===btn){stop();return}
+    stop();
+    var text=clean(msg.textContent),l=btn.dataset.l;if(!text)return;
+    var ck=l+"|"+text;
+    if(!cache[ck]&&usedToday()>=DAILY){setLabel(btn,"🔇 Voice limit for today");return}
+    btn.disabled=true;setLabel(btn,"⏳ …");
+    try{
+      var url=await getAudio(text,l);if(!cache.__counted||cache.__counted.indexOf(ck)<0){(cache.__counted=cache.__counted||[]).push(ck);usedToday(true)}
+      player=new Audio(url);playingBtn=btn;btn.classList.add("on");setLabel(btn);
+      player.onended=player.onerror=function(){stop()};
+      await player.play();
+    }catch(e){stop();setLabel(btn,"🔇 Voice not available right now");setTimeout(function(){setLabel(btn)},4000)}
+    btn.disabled=false;
+  }
+  function isAnswer(el){
+    if(!el.classList||!el.classList.contains("bot"))return false;
+    var t=(el.textContent||"").trim();
+    if(t.length<8||/typing…|लिख रहा|soch raha|ลังพิมพ์|ਲਿਖ ਰਿਹਾ|லிகிறார|એ છે…/i.test(t))return false;
+    return true;
+  }
+  function scan(){
+    [].forEach.call(chatEl.children,function(el){
+      if(!isAnswer(el))return;
+      var nx=el.nextElementSibling;if(nx&&nx.classList&&nx.classList.contains("npvwrap"))return;
+      var w=document.createElement("div");w.className="npvwrap notranslate";w.setAttribute("translate","no");
+      var l=langOf(el.textContent||"");
+      w.innerHTML='<button type="button" class="npvoice" data-l="'+l+'" aria-label="Listen to Raju"><span class="b"><i></i><i></i><i></i></span><span class="t"></span></button>';
+      var btn=w.querySelector("button");setLabel(btn);
+      btn.onclick=function(e){e.preventDefault();e.stopPropagation();btn.dataset.l=langOf(el.textContent||"");play(btn,el)};
+      el.insertAdjacentElement("afterend",w);
+    });
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{scan()}catch(e){}},300)}).observe(chatEl,{childList:true,subtree:true,characterData:true});
+  try{scan()}catch(e){}
 })();
