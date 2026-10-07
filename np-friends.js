@@ -1253,3 +1253,28 @@
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true});
   run();
 })();
+
+/* ===== Small language button inside the Raju Guide box (opens the same language menu as the main language button) ===== */
+(function(){
+  var NATIVE={en:"English",hi:"हिंदी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
+  if(!document.getElementById("npRajuLangCss")){
+    var st=document.createElement("style");st.id="npRajuLangCss";
+    st.textContent='.np-rlang{display:inline-flex;align-items:center;gap:6px;margin:8px 0 0;padding:6px 12px;border-radius:999px;border:1px solid var(--line,rgba(255,255,255,.2));background:var(--surface,rgba(255,255,255,.06));color:var(--ink,#fff);font:inherit;font-size:14px;font-weight:600;min-height:36px}';
+    document.head.appendChild(st);
+  }
+  function cur(){var l="en";try{l=localStorage.getItem("np_lang")||"en"}catch(e){}return NATIVE[l]||"English"}
+  function add(){
+    if(typeof window.openLang!=="function"||document.querySelector(".np-rlang"))return;
+    var hits=[].slice.call(document.querySelectorAll("section *")).filter(function(el){
+      return el.children.length===0&&/Aapka apna Pattaya guide/i.test(el.textContent||"")&&!el.closest("#panel,.sheet")});
+    var anchor=hits[0];if(!anchor)return;
+    var b=document.createElement("button");b.type="button";b.className="np-rlang notranslate";b.setAttribute("translate","no");
+    b.setAttribute("aria-label","Change language");b.textContent="🌐 "+cur()+" ▾";
+    b.onclick=function(e){e.preventDefault();e.stopPropagation();window.openLang()};
+    var wrap=document.createElement("div");wrap.appendChild(b);
+    anchor.insertAdjacentElement("afterend",wrap);
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{add()}catch(e){}},250)}).observe(document.body,{childList:true,subtree:true});
+  setTimeout(add,300);
+})();
