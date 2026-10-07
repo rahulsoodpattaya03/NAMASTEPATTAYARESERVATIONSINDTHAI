@@ -387,7 +387,7 @@
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
       var extra=window.__npOrderInfo||"";window.__npOrderInfo=null;
-      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+venues(),lang:lang}});
+      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669. 3) If the customer wants a taxi, ride or airport transfer, tell them to book it in the Namaste Pattaya app (Airport Transfers or Cars & Bikes Rental): fixed price, driver details shared, no bargaining. 4) If the customer wants food, recommend ordering in the Namaste Pattaya app with delivery to their hotel or room, and say delivery is quick and the restaurant confirms the delivery time. Never promise an exact delivery time. 5) Never say Namaste Pattaya is partnered with Grab or any other company unless the customer is told so officially.\n\n"+venues(),lang:lang}});
       var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
       var r=await Promise.race([call,timeout]);
       if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
@@ -485,8 +485,9 @@
       return svAudio.play().then(function(){return true},function(){return false});
     },function(){svOK=false;svFailAt=Date.now();return false});
   }
+  var VOICE_OFF=true; /* Raju's voice removed for now: he listens and answers by typing only */
   function speak(t,forceLang){
-    if(!t)return;
+    if(VOICE_OFF||!t)return;
     var clean0=String(t).replace(/[*_#>`]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"");
     var lang0=forceLang||detect(clean0);
     sarvamSpeak(clean0,lang0).then(function(done){if(!done)phoneSpeak(t,forceLang)});
@@ -551,7 +552,7 @@
     var spk=document.createElement("button");spk.type="button";spk.className="npvbtn"+(voiceOn?" on":"");spk.setAttribute("aria-label","Raju reads answers aloud");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
     var vb=document.createElement("button");vb.type="button";vb.className="npvbtn";vb.setAttribute("aria-label","Change Raju's voice");vb.innerHTML='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="4"/><path d="M3 21c0-4 3-6 6-6s6 2 6 6M17 7a4 4 0 0 1 0 6M20 5a7 7 0 0 1 0 10"/></svg>';
     vb.onclick=function(){nextVoice(vb)};
-    inp.insertAdjacentElement("afterend",vb);inp.insertAdjacentElement("afterend",spk);inp.insertAdjacentElement("afterend",mic);
+    inp.insertAdjacentElement("afterend",mic);
     spk.onclick=function(){
       voiceOn=!voiceOn;try{localStorage.setItem("np_raju_voice",voiceOn?"1":"0")}catch(e){}
       spk.className="npvbtn"+(voiceOn?" on":"");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
