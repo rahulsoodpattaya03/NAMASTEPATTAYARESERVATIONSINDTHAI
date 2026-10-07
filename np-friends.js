@@ -3841,3 +3841,12 @@
     return _a.call(this,q);
   };
 })();
+
+/* ===== Removed on Rahul's order (7 Oct 2026): Lumen and Pulse Arena. This also hides them if they come back from clubs.json or old saved data. ===== */
+(function(){
+  var GONE=/^(lumen|pulse arena)$/i,GONEID={lumen:1,pulse:1};
+  function clean(){
+    try{if(typeof CLUBS!=="undefined"&&Array.isArray(CLUBS))for(var i=CLUBS.length-1;i>=0;i--){var c=CLUBS[i];if(c&&(GONEID[c.id]||GONE.test(String(c.name||"").trim())))CLUBS.splice(i,1)}}catch(e){}
+  }
+  clean();window.addEventListener("load",clean);setTimeout(clean,1500);setTimeout(clean,4000);
+})();

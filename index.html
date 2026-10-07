@@ -1270,18 +1270,12 @@ const CLUBS = [
   {id:"skyline", cat:"nightlife", name:"Skyline", area:"Walking Street", type:"Club", music:"EDM · House", open:"22:00–04:00",
    art:["#FF3DA8","#6A2BFF"], about:"Rooftop club with a 360° city view and resident DJs every night.",
    pkgs:[{n:"Guest list entry",d:"Entry + 1 drink",p:500,per:true,left:40},{n:"Standard table",d:"Up to 6 guests, 1 bottle",p:6000,left:8},{n:"VIP booth",d:"Up to 10 guests, 2 bottles, host",p:15000,left:2}]},
-  {id:"lumen", cat:"beach", name:"Lumen", area:"Jomtien", type:"Beach club", music:"Deep house", open:"14:00–02:00",
-   art:["#FFB547","#FF4D6D"], about:"Day-to-night beach club with daybeds, pool and sunset sessions.",
-   pkgs:[{n:"Day pass",d:"Pool + sunbed",p:800,per:true,left:60},{n:"Daybed",d:"Up to 4 guests, 1 bottle",p:4500,left:6},{n:"Cabana",d:"Up to 8 guests, 2 bottles",p:12000,left:3}]},
   {id:"basement", cat:"nightlife", name:"Basement 9", area:"Soi Buakhao", type:"Club", music:"Hip-hop · R&B", open:"21:00–03:00",
    art:["#2DE1C2","#3A2B8C"], about:"Underground hip-hop room with live acts on weekends.",
    pkgs:[{n:"Guest list entry",d:"Entry only",p:300,per:true,left:80},{n:"Standing table",d:"Up to 5 guests, 1 bottle",p:4000,left:10},{n:"VIP stage booth",d:"Up to 8 guests, 2 bottles",p:10000,left:2}]},
   {id:"velvet", cat:"nightlife", name:"Velvet Room", area:"Pattaya Central", type:"Lounge", music:"Jazz · Live band", open:"19:00–01:00",
    art:["#B5179E","#3F0D5A"], about:"Cocktail lounge with a live band and table service.",
    pkgs:[{n:"Table for 2",d:"2 cocktails included",p:1200,left:12},{n:"Group table",d:"Up to 6 guests, sharing platter",p:3500,left:5}]},
-  {id:"pulse", cat:"events", name:"Pulse Arena", area:"Walking Street", type:"Event", music:"Guest DJs", open:"Sat only",
-   art:["#4CC9F0","#F72585"], about:"Big-room events with international DJs. Tickets sell out fast.",
-   pkgs:[{n:"General ticket",d:"Entry",p:1500,per:true,left:120},{n:"VIP ticket",d:"Fast lane + VIP area",p:3500,per:true,left:25},{n:"Stage table",d:"Up to 10 guests, 3 bottles",p:30000,left:1}]},
   {id:"noon", cat:"nightlife", name:"Noon Rooftop", area:"Naklua", type:"Rooftop", music:"Chill · Afro", open:"17:00–00:00",
    art:["#F9C74F","#F3722C"], about:"Sunset rooftop bar with small plates and views over the bay.",
    pkgs:[{n:"Sunset table",d:"Up to 4 guests",p:1000,left:9},{n:"Private corner",d:"Up to 10 guests, bottle",p:7000,left:2}]}
@@ -1645,7 +1639,7 @@ function renderMapCard(){
 const chatEl=document.getElementById("chat"),chatIn=document.getElementById("chatIn");
 const chatHist=[];let busy=false;
 // sample venues from the early preview: kept in the app, but Raju never recommends them
-const SAMPLE_IDS=["skyline","lumen","basement","velvet","pulse","noon","bollybar"];
+const SAMPLE_IDS=["skyline","basement","velvet","noon","bollybar"];
 const RAJU_OK=c=>!SAMPLE_IDS.includes(c.id);
 function richText(el,t){el.textContent="";String(t).split(/(\*\*[^*]+\*\*)/g).forEach(part=>{if(/^\*\*[^*]+\*\*$/.test(part)){const b=document.createElement("b");b.textContent=part.slice(2,-2);el.appendChild(b)}else el.appendChild(document.createTextNode(part.replace(/\*\*/g,"")))})}
 const CATALOG=CLUBS.filter(RAJU_OK).map(c=>{const paid=c.pkgs.map(p=>p.p).filter(Boolean);return `${c.id} | ${c.name} | ${CATNAME[c.cat]} | ${c.area} | ${c.open} | ${(c.tags||[]).join(", ")} | ${c.pkgs.map(p=>p.n+" "+(p.p?"THB "+p.p+(p.per?"/person":""):"on request")).join("; ")}`}).join("\n");
@@ -2041,10 +2035,8 @@ renderPackages();
 let lady=store.get("np_lady",null);
 const LUPD=[
  ["Skyline","Ladies night","Free welcome drinks for women 21:00–23:00, every Wednesday and Friday."],
- ["Lumen","Promotion","Sunset session: women get 30% off daybeds before 18:00."],
  ["Bolly Bar","Table prices","Tonight: normal table ฿5,000, ladies table ฿2,500 for 4 women."],
- ["Basement 9","Free tables","2 standing tables still free tonight. Book before 22:00."],
- ["Pulse Arena","Event","Guest DJ Saturday: first 50 women enter free with a Namaste Pattaya Reservations booking."]];
+ ["Basement 9","Free tables","2 standing tables still free tonight. Book before 22:00."]];
 const INFL=["Aisha K","Riya S","Nok P","Tanya M","Sana R","Ploy T","Mehak J","Fern W","Kiara D","Ishita V"].map((n,i)=>({n,f:(98-i*7.3).toFixed(1)+"K",c:PAL[i%PAL.length]}));
 const LNAV=[["updates","Club updates"],["table","Ladies table"],["friend","Find a friend"],["gossip","Gossip board"],["spicy","Spicy corner"],["contests","Contests & prizes"],["top","Top 10 influencers"],["profile","My profile"],["desk","Ladies desk"],["earn","Earn 5%"],["shop","Girls stuff"],["help","Safety & helplines"]];
 let lTab="updates";
@@ -2081,7 +2073,7 @@ function renderLadies(){
     v.querySelectorAll("[data-j]").forEach(b=>b.onclick=()=>{const p=posts[+b.dataset.j];if(!p.j.includes(lady.name))p.j.push(lady.name);store.set("np_lady_friend",posts);renderLadies()});
   }
   if(lTab==="gossip"){
-    const topics=lposts("np_lady_gossip",[{who:"Tanya M",t:"Which club has the best DJ this week?",r:["Pulse Arena, no doubt!"]},{who:"Sana R",t:"Best place for a girls' brunch in Jomtien?",r:[]}]);
+    const topics=lposts("np_lady_gossip",[{who:"Tanya M",t:"Which club has the best DJ this week?",r:[]},{who:"Sana R",t:"Best place for a girls' brunch in Jomtien?",r:[]}]);
     H(`<p class="small">Only verified women can see this board. Start a topic, anyone can join in.</p><div class="post"><input id="gT" placeholder="Start a topic…"><button id="gP">Post</button></div>`);
     topics.forEach((p,i)=>H(`<div class="lcard"><span class="k"></span><h4></h4>${p.r.map(()=>`<p class="rep"></p>`).join("")}<div class="post" style="margin:8px 0 0"><input data-ri="${i}" placeholder="Reply…"><button data-rb="${i}">Reply</button></div></div>`));
     [...v.querySelectorAll(".lcard")].forEach((c,i)=>{c.querySelector(".k").textContent=topics[i].who.toUpperCase();c.querySelector("h4").textContent=topics[i].t;[...c.querySelectorAll(".rep")].forEach((r,j)=>r.textContent="— "+topics[i].r[j])});
@@ -2578,8 +2570,8 @@ curBtn.addEventListener("click",()=>{try{renderVipBar()}catch(e){}});
 
 /* ===== v7: tonight ticker ===== */
 (function(){
-  const items=[["Bolly Bar","Bollywood night from 21:00"],["Pulse Arena","guest DJs this Saturday"],["Coral Island","day trips "+"from "+money(1200)],
-    ["Skyline","rooftop, 360° views"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"],["Lumen","sunset session at the beach club"]];
+  const items=[["Bolly Bar","Bollywood night from 21:00"],["Coral Island","day trips "+"from "+money(1200)],
+    ["Skyline","rooftop, 360° views"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
   const html=items.map(([a,b])=>`<span><b>${a}</b> · ${b}</span>`).join("");
   document.getElementById("tickTrack").innerHTML=html+html;
 })();
@@ -3098,7 +3090,7 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
   if(typeof NIGHT!=="undefined")opts("bClub",NIGHT,'<option value="">Not decided</option>');
   if(typeof PARTNERS!=="undefined"){opts("dVenue",PARTNERS);opts("billVenue",PARTNERS)}
   var tt=document.getElementById("tickTrack");
-  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Pulse Arena","guest DJs this Saturday"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
+  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
     var h=it.map(function(x){return "<span><b>"+x[0]+"</b> · "+x[1]+"</span>"}).join("");tt.innerHTML=h+h}
   ["renderCats","renderChips","renderGrid","renderRail","renderMap","renderLadies","renderDash","renderPeople"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
@@ -3242,7 +3234,7 @@ html,body{overflow-x:hidden}
   if(typeof NIGHT!=="undefined")opts("bClub",NIGHT,'<option value="">Not decided</option>');
   if(typeof PARTNERS!=="undefined"){opts("dVenue",PARTNERS);opts("billVenue",PARTNERS)}
   var tt=document.getElementById("tickTrack");
-  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Pulse Arena","guest DJs this Saturday"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
+  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
     var hh=it.map(function(x){return "<span><b>"+x[0]+"</b> · "+x[1]+"</span>"}).join("");tt.innerHTML=hh+hh}
   ["renderCats","renderChips","renderGrid","renderRail","renderMap","renderLadies","renderDash","renderPeople"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
@@ -3836,7 +3828,7 @@ html,body{overflow-x:hidden}
   if(typeof NIGHT!=="undefined")opts("bClub",NIGHT,'<option value="">Not decided</option>');
   if(typeof PARTNERS!=="undefined"){opts("dVenue",PARTNERS);opts("billVenue",PARTNERS)}
   var tt=document.getElementById("tickTrack");
-  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Pulse Arena","guest DJs this Saturday"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
+  if(tt){var it=[["The Nashaa Club","free entry, Bollywood all night"],["Myst & Republic","after-party till sunrise"],["Coral Island","day trips"],["Tandoor House","Jain thali available"],["Blue Pearl Yacht","sunset cruise"]];
     var hh=it.map(function(x){return "<span><b>"+x[0]+"</b> · "+x[1]+"</span>"}).join("");tt.innerHTML=hh+hh}
   ["renderCats","renderChips","renderGrid","renderRail","renderMap","renderLadies","renderDash","renderPeople"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
 })();
