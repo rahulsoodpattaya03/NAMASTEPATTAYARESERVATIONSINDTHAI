@@ -131,7 +131,7 @@
 
   var tab="find",bills=[],bchan=null,bchanCode="";
   function B(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")}
-  function inr(n){var r=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.6;return "₹"+Math.round((Number(n)||0)*r).toLocaleString("en-IN")}
+  function inr(n){var r=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.89;return "₹"+Math.round((Number(n)||0)*r).toLocaleString("en-IN")}
   async function loadBills(){
     if(!user||!code){renderBills();return}
     var m=await sb.from("np_finder").select("user_id,name").eq("code",code);members=m.data||members;
@@ -270,13 +270,8 @@
       }
       paintShoot();
     }
-    /* Friends Location & Bill Splitter: for everyone, its own tile under the gold area */
-    if(ga&&!document.getElementById("npFLB")){
-      var w=document.createElement("div");w.className="npflb";w.id="npFLB";
-      w.innerHTML='<button class="hubtile">'+(typeof ico==="function"?'<span>'+ico("map")+'</span>':'')+'<b>Friends Location &amp; Bill Splitter</b><small>Free for everyone · find your group and share costs</small></button>';
-      ga.insertAdjacentElement("afterend",w);
-      w.querySelector("button").onclick=function(){if(typeof window.openFinder==="function")openFinder()};
-    }
+    /* Friends Location & Bill Splitter: moved to the All services grid (29 Sep 2026) */
+    var oldFLB=document.getElementById("npFLB");if(oldFLB)oldFLB.remove();
     var ht=document.querySelector('.hubtile[data-go="buddy"]');
     if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Meet new people";if(hs)hs.textContent="Social meetups, safely"}
     var stt=document.querySelector("#buddy .sectiontitle");if(stt)stt.textContent="Meet new people";
@@ -371,6 +366,22 @@
   if(typeof ask!=="function"||!window.supabase)return;
   var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
   var CRISIS=/suicid|kill myself|end my life|want to die|self.?harm|hopeless|unsafe|follow(ing|ed)? me|harass|attack|spiked|drugged|rape|assault|kidnap|emergency|accident|injur|bleed|unconscious|chest pain|overdose|passport|stolen|robbed/i;
+  /* Raju's own original character (1 Oct 2026). Not based on any real actor or film character. */
+  var PERSONA="RAJU'S CHARACTER (always stay in this character): You are Raju, Namaste Pattaya's own friendly local guide, an original character. "+
+    "You are a warm Indian 'bhai' who has lived in Pattaya for many years and knows every street, club, Indian restaurant, beach and shortcut. "+
+    "Speak warm, simple Hinglish (mix easy Hindi and English) unless the guest writes in another language; then answer in their language. "+
+    "Be a little filmy and cheerful, but always respectful. Greet with 'Namaste ji' at the start of a new chat. Call guests 'sir', 'madam' or 'bhai' naturally. "+
+    "Keep answers short and useful (2 to 5 short lines on a phone). "+
+    "FILMI STYLE: you love Bollywood and talk with filmi flair. In about half of your replies (never in emergencies or serious problems), add ONE short filmi one-liner of your own. "+
+    "Use Raju's own signature lines, or write new original ones in the same style: 'Tension mat lo, Raju hai na!' / 'Pattaya aaye ho, toh yaadein le kar hi jaoge!' / "+
+    "'Raju ke hote hue, aapka plan kabhi flop nahi hoga.' / 'Table book karo, baaki picture Raju sambhal lega.' / 'Yeh Pattaya hai bhai, yahan raatein bhi Bollywood jitni lambi hoti hain.' / "+
+    "'Dost ka saath aur Raju ki planning, hit hi hit!' / 'Khana veg ho ya non-veg, swaad full-on filmi hoga!' / 'Sunset dekhna hai? 6 baje beach pe aaiye, scene ready hai.' / "+
+    "'Safety pehle, masti baad mein. Yeh Raju ka usool hai.' / 'Aap mehmaan ho, aur Pattaya aapka stage!' / 'Kal ka episode bhi plan kar dein?'. "+
+    "Only use these or new original lines: never copy or slightly change real dialogues from films, and never quote song lyrics. "+
+    "When it really helps, end with one short tip starting with 'Raju ki salah:' (for example safety, timing, Grab taxi, dress code, carrying passport copy). "+
+    "Values: safety first, honest advice, never pushy, never flirt, always respectful to women, never help with anything illegal. "+
+    "Never say you are a real person, a film character or any actor, and never quote film dialogues or song lyrics. If asked who you are: 'Main Raju hoon, Namaste Pattaya ka apna guide.' "+
+    "In any emergency, drop the jokes: be calm and clear, and give Tourist Police 1155 and ambulance 1669.";
   var hist=[];
   function venues(){
     if(typeof CLUBS==="undefined")return "";
@@ -387,7 +398,7 @@
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
       var extra=window.__npOrderInfo||"";window.__npOrderInfo=null;
-      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+venues(),lang:lang}});
+      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+PERSONA+"\n\n"+venues(),lang:lang}});
       var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
       var r=await Promise.race([call,timeout]);
       if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
@@ -442,6 +453,9 @@
 
 /* ===== Raju voice mode: speak to Raju (mic) and hear his answers (speaker). Uses the phone's own voice, free. ===== */
 (function(){
+  /* Talking option switched OFF on Rahul's order (7 Oct 2026). Code kept, not deleted. To turn it back on, change false to true. */
+  var NP_RAJU_TALK=false;
+  if(!NP_RAJU_TALK){try{if(window.speechSynthesis)window.speechSynthesis.cancel()}catch(e){}return}
   if(typeof ask!=="function")return;
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition,TTS=window.speechSynthesis;
   var LANGS={en:"en-IN",hi:"hi-IN",pa:"pa-IN",gu:"gu-IN",ta:"ta-IN",mr:"mr-IN",th:"th-TH"};
@@ -746,7 +760,7 @@
   function fmt(n){return n.toLocaleString("en-US")}
   function render(){
     var svc=document.getElementById("svcPage");if(!svc||svc.hidden)return;
-    var cat=catNow(),list=cat&&P[cat];
+    var cat=catNow(),list=cat&&P[cat];if(cat==="restaurants")list=(P.indian||[]).filter(function(it){return /pure veg|vegetarian/i.test(it[0]+" "+it[3])});
     var old=svc.querySelector(".npprod");
     if(old&&old.dataset.cat===cat)return;
     if(old)old.remove();
@@ -912,7 +926,7 @@
   function scan(){
     /* booking forms: any visible date field, or a visible booking button */
     var anchors=[].slice.call(document.querySelectorAll('input[type="date"],input[type="datetime-local"]')).filter(function(d){return vis(d)&&!d.closest("#dash")});
-    if(!anchors.length)anchors=[].slice.call(document.querySelectorAll("button")).filter(function(b){return vis(b)&&BTN.test(b.textContent)&&!b.closest("#dash,.npdel,nav,header")&&/guest|people|person|pax|table|date|time/i.test((containerOf(b)||{}).textContent||"")});
+    if(!anchors.length)anchors=[].slice.call(document.querySelectorAll("button")).filter(function(b){return vis(b)&&BTN.test(b.textContent)&&!b.closest("#dash,.npdel,nav,header,#pkgs,.pkg")&&/guest|people|person|pax|table|date|time/i.test((containerOf(b)||{}).textContent||"")});
     anchors.forEach(function(el){
       var box=containerOf(el);if(!box)return;
       var c=venueIn(box);if(!isFood(c))return;
@@ -1053,6 +1067,7 @@
       var md=user.user_metadata||{};
       var ins=await client.from("np_partner_requests").insert({email:user.email,venue_name:md.venue||null,venue_type:md.venue_type||null,contact_name:md.name||null,phone:md.phone||null,photo_url:url});
       if(ins.error)await client.from("np_partner_requests").update({photo_url:url}).eq("user_id",user.id);
+      if(md.food_type){try{await client.from("np_partner_requests").update({food_type:md.food_type,cuisines:md.cuisines||null}).eq("user_id",user.id)}catch(e){}}
       localStorage.removeItem(KEY);return url;
     }catch(e){return null}
   };
@@ -1117,7 +1132,7 @@
     document.head.appendChild(st)}
   function scan(){
     var btns=[].slice.call(document.querySelectorAll("button")).filter(function(b){
-      if(!vis(b)||!BTN.test(b.textContent)||b.closest("#dash,.npdel,nav,header,.nppdpa"))return false;
+      if(!vis(b)||!BTN.test(b.textContent)||b.closest("#dash,.npdel,nav,header,.nppdpa,#pkgs,.pkg"))return false;
       var box=containerOf(b);if(!box)return false;
       /* only real booking forms: never the home page or a list of venue cards */
       var form=box.closest("#panel,.sheet,.pbody")||box.matches("#panel,.sheet,.pbody");
@@ -1133,7 +1148,7 @@
     });
   }
   document.addEventListener("click",function(e){
-    var b=e.target.closest&&e.target.closest("button");if(!b||!BTN.test(b.textContent))return;
+    var b=e.target.closest&&e.target.closest("button");if(!b||!BTN.test(b.textContent)||b.closest("#pkgs,.pkg"))return;
     var box=containerOf(b);var lab=box&&box.querySelector(".nppdpa");if(!lab)return;
     if(!lab.querySelector("input").checked){e.preventDefault();e.stopImmediatePropagation();lab.classList.add("err");lab.scrollIntoView({block:"center",behavior:"smooth"});
       setTimeout(function(){lab.classList.remove("err")},2500)}
@@ -1322,6 +1337,9 @@
 
   /* ---------- open a venue the same way a tap on its card does ---------- */
   function openVenue(c){
+    if(!c)return;
+    /* open the venue's booking page directly (same screen as tapping a club card) */
+    if(typeof openClub==="function"){try{if(typeof window.npTrack==="function")window.npTrack("place_view",c.id)}catch(e){}openClub(c);return}
     var card=document.querySelector('[data-id="'+(window.CSS&&CSS.escape?CSS.escape(c.id):c.id)+'"]');
     if(card){card.click();return}
     if(typeof window.openService==="function"&&SVC.indexOf(c.cat)>-1){window.openService(c.cat);return}
@@ -1348,8 +1366,28 @@
       '<div class="nm">'+esc(c.name)+'</div><div class="sb">'+esc(c.music||c.sub||"")+'</div>'+
       '<span class="go">'+(isNight(c)?"Book a table":"Book now")+'</span></div></button>';
   }
+  /* taps on "Tonight in Pattaya": work even if another layer of the page lies on top of the cards */
+  var lastCards=[];
+  if(!document.getElementById("npTapCss")){var tc=document.createElement("style");tc.id="npTapCss";
+    tc.textContent='#npHomeFill{position:relative;z-index:6}#npHomeFill .nptcard,#npHomeFill [data-qa],#npHomeFill .npall{position:relative;z-index:7;touch-action:pan-x pan-y}';document.head.appendChild(tc)}
+  function tapTarget(e){
+    var els=document.elementsFromPoint?document.elementsFromPoint(e.clientX,e.clientY):[e.target];
+    for(var i=0;i<els.length;i++){var el=els[i];if(!el||!el.closest)continue;
+      if(el.closest("#panel,.sheet,#npMoreSheet,#rajuChat"))return null;
+      var hit=el.closest("#npHomeFill .nptcard,#npHomeFill [data-qa],#npHomeFill .npall");if(hit)return hit;
+      if(el.closest("button,a,input,select,textarea,label"))return null;}
+    return null;
+  }
+  document.addEventListener("click",function(e){
+    if(e.clientX==null)return;var t=tapTarget(e);if(!t)return;
+    e.preventDefault();e.stopPropagation();
+    if(t.classList.contains("nptcard")){openVenue(lastCards[+t.dataset.npi]);return}
+    if(t.classList.contains("npall")){scrollToClubs();return}
+    var q=t.dataset.qa;if(q==="table")scrollToClubs();else svc(q);
+    try{if(window.npTrack)window.npTrack("service_open","quick_"+q)}catch(x){}
+  },true);
   function renderTonight(box){
-    var cards=tonightCards(),row=box.querySelector(".nptrow"),h=box.querySelector(".nph h3");
+    var cards=tonightCards(),row=box.querySelector(".nptrow"),h=box.querySelector(".nph h3");lastCards=cards;
     if(h)h.textContent=(dayLabel==="Tonight"?"Tonight":dayLabel)+" in Pattaya";
     if(!row)return;
     row.innerHTML=cards.length?cards.map(cardHtml).join(""):'<div class="sb" style="opacity:.7;padding:8px">Venues appear here as partners join.</div>';
@@ -1555,4 +1593,1956 @@
   window.addEventListener("resize",function(){setTimeout(function(){placeRaju();closeGap()},100)});
   window.addEventListener("load",function(){setTimeout(closeGap,300)});
   run();setTimeout(run,800);setTimeout(run,2500);
+})();
+
+/* ===== Indian food services (29 Sep 2026):
+   "Restaurants" is now "Indian Restaurants – Only Veg" (Shudh Shakahari)
+   "Indian Restaurants" is now "Indian Restaurants – Veg & Non-Veg"
+   10 food categories inside both. Nothing deleted: places not confirmed pure veg move to Veg & Non-Veg. ===== */
+(function(){
+  var VEG="restaurants",MIX="indian";
+  var VEG_NAME="Indian Restaurants – Only Veg",MIX_NAME="Indian Restaurants – Veg & Non-Veg";
+  /* Restaurant ids whose OWNER confirmed 100% pure veg (no meat, no fish, no egg). Add an id only after confirmation. */
+  var VEG_IDS=[];
+  var COMMON=[
+    ["punjabi","Punjabi",/punjab|amritsar|kulcha|tandoor|north indian/i],
+    ["gujarati","Gujarati",/gujarat|dhokla|thepla|khakhra/i],
+    ["rajasthani","Rajasthani",/rajasthan|marwar|dal baati|baati/i],
+    ["south","South Indian",/south indian|dosa|idli|madras|chettinad|kerala|udupi/i],
+    ["maharashtrian","Maharashtrian",/maharash|mumbai|vada pav|pav bhaji|misal/i],
+    ["bengali","Bengali",/bengal|kolkata|calcutta/i]
+  ];
+  var TAIL=[
+    ["street","Street Food & Chaat",/street food|chaat|pani ?puri|golgappa/i],
+    ["indochinese","Indo-Chinese",/indo.?chinese|hakka|manchurian/i],
+    ["thali","Thali & Mithai",/thali|mithai|sweets|halwai/i]
+  ];
+  var CUIS={};
+  CUIS[VEG]=COMMON.concat([["jain","Jain food",/\bjain\b/i]],TAIL);
+  CUIS[MIX]=COMMON.concat([["mughlai","Mughlai",/mughlai|biryani|kebab|awadhi|hyderabad/i]],TAIL);
+  var sel={};sel[VEG]="all";sel[MIX]="all";
+
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function list(){return (typeof CLUBS!=="undefined"&&CLUBS)||[]}
+  function isVeg(c){return !!(c&&(c.veg===true||c.pureVeg===true||VEG_IDS.indexOf(c.id)>-1))}
+  function catNow(){var s=history.state;if(s&&s.np==="s"&&s.cat)return s.cat;var h=location.hash;return h.indexOf("#s/")===0?decodeURIComponent(h.slice(3)):null}
+  function rerender(){["renderGrid","renderRail","renderCats","renderMap"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
+
+  /* 1. new names in the app's data */
+  function names(){
+    try{
+      if(typeof CATS!=="undefined")CATS.forEach(function(c){if(!Array.isArray(c))return;
+        for(var i=1;i<c.length;i++){if(c[0]===VEG&&c[i]==="Restaurants")c[i]=VEG_NAME;if(c[0]===MIX&&/^Indian restaurants$/i.test(String(c[i])))c[i]=MIX_NAME}});
+      if(typeof CATNAME!=="undefined"){CATNAME[VEG]=VEG_NAME;CATNAME[MIX]=MIX_NAME}
+    }catch(e){}
+  }
+  /* 2. only confirmed pure-veg places stay in Only Veg; the rest move to Veg & Non-Veg */
+  function move(){
+    var n=0;list().forEach(function(c){if(c&&c.cat===VEG&&!isVeg(c)){c.cat=MIX;c.npMovedFromRestaurants=true;n++}});
+    if(n)rerender();return n;
+  }
+  /* 3. new names on screen */
+  var TXT={"Restaurants":VEG_NAME,"Indian Restaurants":MIX_NAME,"Indian restaurants":MIX_NAME};
+  function fixText(){
+    var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,null),n,todo=[];
+    while((n=w.nextNode())){var t=(n.nodeValue||"").trim();if(TXT[t])todo.push(n)}
+    todo.forEach(function(n){var t=n.nodeValue.trim();n.nodeValue=n.nodeValue.replace(t,TXT[t])});
+  }
+
+  /* 4. the 10 food categories inside both services */
+  if(!document.getElementById("npCuisCss")){
+    var st=document.createElement("style");st.id="npCuisCss";
+    st.textContent='#npCuis{margin:10px 0 14px}'+
+      '#npCuis .vegnote{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;margin:0 0 10px;border-radius:14px;font-size:13px;line-height:1.4;color:var(--ink,#fff);background:rgba(20,120,60,.18);border:1px solid rgba(60,200,110,.55)}'+
+      '#npCuis .vegdot{flex:0 0 18px;height:18px;margin-top:1px;border:2px solid #2FBF62;border-radius:3px;display:flex;align-items:center;justify-content:center}'+
+      '#npCuis .vegdot:after{content:"";width:8px;height:8px;border-radius:50%;background:#2FBF62}'+
+      '#npCuis .row{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}'+
+      '#npCuis .row::-webkit-scrollbar{display:none}'+
+      '#npCuis button{flex:0 0 auto;padding:9px 14px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;white-space:nowrap;cursor:pointer;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18)}'+
+      '#npCuis button.on{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '#npCuisEmpty{margin:10px 0;padding:14px;border-radius:14px;font-size:14px;line-height:1.45;text-align:center;color:var(--ink,#fff);background:rgba(255,255,255,.05);border:1px dashed rgba(255,255,255,.25)}';
+    document.head.appendChild(st);
+  }
+  function venueOf(card){
+    var id=card.getAttribute&&(card.getAttribute("data-id")||card.getAttribute("data-club"));
+    var L=list(),c=id?L.find(function(x){return x.id===id}):null;if(c)return c;
+    var nm=card.querySelector&&card.querySelector(".name");
+    if(nm){var t=nm.textContent.trim();c=L.find(function(x){return x.name===t});if(c)return c}
+    var txt=card.textContent||"",best=null;
+    L.forEach(function(x){if(x.name&&txt.indexOf(x.name)>-1&&(!best||x.name.length>best.name.length))best=x});
+    return best;
+  }
+  function matches(c,key,re){
+    if(!c)return false;
+    if(c.cuisine===key||(Array.isArray(c.cuisine)&&c.cuisine.indexOf(key)>-1))return true;
+    return re.test([c.name,c.sub,c.music,c.about,c.type,(c.tags||[]).join(" ")].join(" "));
+  }
+  function render(){
+    var svc=document.getElementById("svcPage");if(!svc)return;
+    var cat=catNow(),bar=svc.querySelector("#npCuis"),emp=svc.querySelector("#npCuisEmpty");
+    if(svc.hidden||!CUIS[cat]){if(bar)bar.remove();if(emp)emp.remove();return}
+    var grid=svc.querySelector("#svcGrid");
+    if(!bar||bar.dataset.cat!==cat){
+      if(bar)bar.remove();sel[cat]="all";
+      bar=document.createElement("div");bar.id="npCuis";bar.dataset.cat=cat;
+      bar.innerHTML=(cat===VEG?'<div class="vegnote"><span class="vegdot" aria-hidden="true"></span><span><b>Shudh Shakahari · 100% pure veg.</b> No meat, no fish, no egg. We list a restaurant here only after the owner confirms it.</span></div>':'')+
+        '<div class="row" role="tablist"><button type="button" class="on" data-k="all">All</button>'+
+        CUIS[cat].map(function(x){return '<button type="button" data-k="'+x[0]+'">'+esc(x[1])+'</button>'}).join("")+'</div>';
+      if(grid&&grid.parentNode)grid.parentNode.insertBefore(bar,grid);
+      else{var h=svc.querySelector("h2");if(h)h.insertAdjacentElement("afterend",bar);else svc.insertBefore(bar,svc.firstChild)}
+      bar.querySelectorAll("[data-k]").forEach(function(b){b.onclick=function(){
+        sel[cat]=b.dataset.k;bar.querySelectorAll("[data-k]").forEach(function(x){x.classList.toggle("on",x===b)});filter();
+        try{if(typeof window.npTrack==="function")window.npTrack("food_category",cat+":"+b.dataset.k)}catch(e){}
+      }});
+    }
+    filter();
+  }
+  function filter(){
+    var svc=document.getElementById("svcPage");if(!svc)return;
+    var cat=catNow();if(!CUIS[cat])return;
+    var grid=svc.querySelector("#svcGrid"),k=sel[cat]||"all";
+    var item=CUIS[cat].find(function(x){return x[0]===k}),shown=0;
+    if(grid)[].forEach.call(grid.children,function(card){
+      if(card.id==="npCuisEmpty")return;
+      var c=venueOf(card);if(!c){if(card.offsetParent!==null)shown++;return}
+      var ok=(cat!==VEG||isVeg(c))&&(k==="all"||matches(c,k,item[2]));
+      var want=ok?"":"none";if(card.style.display!==want)card.style.display=want;
+      if(ok)shown++;
+    });
+    var emp=svc.querySelector("#npCuisEmpty");
+    var msg=shown?"":(k!=="all"?"No "+item[1]+" restaurants here yet. Coming soon.":
+      (cat===VEG?"Pure-veg restaurants are joining soon. Own a pure-veg Indian restaurant? Register as a partner from your account.":"Indian restaurants are joining soon."));
+    if(!msg){if(emp)emp.remove();return}
+    if(!emp){emp=document.createElement("div");emp.id="npCuisEmpty";
+      if(grid&&grid.parentNode)grid.insertAdjacentElement("afterend",emp);else svc.appendChild(emp)}
+    if(emp.textContent!==msg)emp.textContent=msg;
+  }
+
+  /* 5. food type and food categories chosen by restaurant owners (restaurant dashboard) */
+  var FOODROWS=[];
+  function applyFood(){
+    var n=0;FOODROWS.forEach(function(r){
+      var c=list().find(function(x){return x.id===r.venue_id});
+      if(!c||(c.cat!==VEG&&c.cat!==MIX))return;
+      if(Array.isArray(r.cuisines)&&r.cuisines.length)c.cuisine=r.cuisines;
+      c.foodType=r.food_type;
+      var want=r.food_type==="veg"?VEG:MIX;c.veg=r.food_type==="veg";
+      if(c.cat!==want){c.cat=want;n++}
+    });
+    if(n)rerender();
+  }
+  function loadFood(){
+    try{if(!window.supabase)return;
+      var cl=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+      cl.rpc("np_venue_food").then(function(r){if(r&&!r.error&&Array.isArray(r.data)){FOODROWS=r.data;applyFood();render()}},function(){});
+    }catch(e){}
+  }
+  loadFood();
+
+  function all(){names();applyFood();move();fixText();render()}
+  all();window.addEventListener("load",all);setTimeout(all,1500);setTimeout(all,4000);
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;fixText();render()})})
+    .observe(document.body,{childList:true,subtree:true});
+  window.addEventListener("hashchange",function(){setTimeout(render,50)});
+  window.addEventListener("popstate",function(){setTimeout(render,50)});
+})();
+
+/* ===== Partner sign-up: restaurants choose Pure Veg / Non-Veg / Veg & Non-Veg and the food they serve ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  var TYPES=[["veg","🟢 Pure Veg (Shudh Shakahari)"],["nonveg","🔴 Non-Veg"],["both","🟢🔴 Veg & Non-Veg"]];
+  var FOODS=[["punjabi","Punjabi"],["gujarati","Gujarati"],["rajasthani","Rajasthani"],["south","South Indian"],["maharashtrian","Maharashtrian"],["bengali","Bengali"],["jain","Jain food"],["mughlai","Mughlai"],["street","Street Food & Chaat"],["indochinese","Indo-Chinese"],["thali","Thali & Mithai"]];
+  function isRest(v){return /restaurant|food|cafe/i.test(String(v||""))}
+  if(!document.getElementById("npFoodCss")){
+    var st=document.createElement("style");st.id="npFoodCss";
+    st.textContent='#npFoodWrap{grid-column:1/-1;margin-top:6px}#npFoodWrap .fl{display:block;font-size:13px;font-weight:600;margin:10px 0 6px}'+
+      '#npFoodWrap .opts{display:flex;flex-wrap:wrap;gap:8px}'+
+      '#npFoodWrap .opt{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:999px;font-size:13px;cursor:pointer;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2)}'+
+      '#npFoodWrap .opt input{width:18px;height:18px;margin:0;flex:0 0 auto}'+
+      '#npFoodWrap .opt:has(input:checked){border-color:#E9B949;background:rgba(233,185,73,.16)}'+
+      '#npFoodWrap .vegok{display:none;gap:8px;align-items:flex-start;margin-top:10px;font-size:13px;padding:10px 12px;border-radius:12px;background:rgba(20,120,60,.18);border:1px solid rgba(60,200,110,.55)}'+
+      '#npFoodWrap .vegok input{width:20px;height:20px;margin:0;flex:0 0 auto}#npFoodWrap.isveg .vegok{display:flex}';
+    document.head.appendChild(st);
+  }
+  function build(){
+    [["#ppT","#ppGo","#ppM"],["#pvT","#pvGo","#pvM"]].forEach(function(ids){
+      var t=panel.querySelector(ids[0]),go=panel.querySelector(ids[1]);
+      if(!t||!go||panel.querySelector("#npFoodWrap"))return;
+      window.npFood=null;
+      var w=document.createElement("div");w.id="npFoodWrap";w.className="full";
+      w.innerHTML='<span class="fl">Food type (choose one)</span><div class="opts">'+
+        TYPES.map(function(x){return '<label class="opt"><input type="radio" name="npFT" value="'+x[0]+'"> '+x[1]+'</label>'}).join("")+'</div>'+
+        '<label class="vegok"><input type="checkbox" id="npVegOk"> I confirm we serve 100% pure veg food: no meat, no fish, no egg.</label>'+
+        '<span class="fl">Food you serve (choose one or more)</span><div class="opts">'+
+        FOODS.map(function(x){return '<label class="opt"><input type="checkbox" class="npCu" value="'+x[0]+'"> '+x[1]+'</label>'}).join("")+'</div>';
+      var anchor=panel.querySelector("#npVPhotoWrap")||t.closest("label")||t;
+      anchor.insertAdjacentElement("afterend",w);
+      function show(){w.style.display=isRest(t.value)?"":"none"}
+      t.addEventListener("change",show);show();
+      w.querySelectorAll('input[name="npFT"]').forEach(function(r){r.onchange=function(){w.classList.toggle("isveg",r.value==="veg"&&r.checked)}});
+    });
+  }
+  panel.addEventListener("click",function(e){
+    var go=e.target.closest&&e.target.closest("#ppGo,#pvGo");if(!go)return;
+    var w=panel.querySelector("#npFoodWrap"),t=panel.querySelector("#ppT")||panel.querySelector("#pvT");
+    if(!w||!t||!isRest(t.value)){window.npFood=null;return}
+    var M=panel.querySelector("#ppM")||panel.querySelector("#pvM");
+    function stop(msg){e.preventDefault();e.stopImmediatePropagation();if(M){M.style.color="";M.textContent=msg}}
+    var ft=(w.querySelector('input[name="npFT"]:checked')||{}).value;
+    var cu=[].map.call(w.querySelectorAll(".npCu:checked"),function(x){return x.value});
+    if(!ft)return stop("Choose your food type: Pure Veg, Non-Veg or Veg & Non-Veg.");
+    if(ft==="veg"&&!w.querySelector("#npVegOk").checked)return stop("Please tick the box to confirm 100% pure veg.");
+    if(!cu.length)return stop("Choose at least one type of food you serve (Punjabi, Gujarati…).");
+    window.npFood={food_type:ft,cuisines:cu};
+  },true);
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;build()})}).observe(panel,{childList:true,subtree:true});
+  build();
+})();
+
+/* ===== Meet new people (REAL, 29 Sep 2026): one meeting feature for the whole app.
+   Real profiles on Supabase, selfie check for women (admin approves), search, messages,
+   block & report. The Empowered Girls lounge shows the same people (verified women only).
+   Old demo screens (sample profiles saved only on one phone) are hidden, not deleted. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var BAD=/(money|cash|\bpay\b|\bpaid\b|payment|price|\brate\b|baht|฿|\btip\b|short ?time|long ?time|happy ending|escort|\bsex|sponsor|sugar ?daddy)/i;
+  var INT=[["party","Club night"],["food","Food & dinner"],["beach","Beach & sea"],["sight","Sightseeing"],["sports","Sports"],["shop","Shopping"],["coffee","Coffee & chat"]];
+  var WHEN=["Now","Tonight","Tomorrow","This weekend","Any day"];
+  var user=null,mine=null,loaded=false,setupErr="",people=[],blocks=[],adminOK=false;
+  var q={main:"",lounge:""},show="all",chatWith=null,chan=null,unread={},editing=false;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function X(){return typeof ico==="function"?ico("close"):"×"}
+  function intName(k){var x=INT.find(function(i){return i[0]===k});return x?x[1]:""}
+  function isWoman(p){return p&&p.gender==="woman"}
+  function womanOK(){return adminOK||(mine&&mine.gender==="woman"&&mine.verify_status==="verified")}
+  function shrink(file,max,cb){var img=new Image(),url=URL.createObjectURL(file);
+    img.onload=function(){var k=Math.min(1,max/Math.max(img.width,img.height)),cv=document.createElement("canvas");cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);
+      cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(url);cv.toBlob(function(b){cb(b)},"image/jpeg",0.82)};
+    img.onerror=function(){URL.revokeObjectURL(url);cb(null)};img.src=url}
+  function sheetOpen(html){panel.innerHTML=html;sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+X()+'</button></div>'}
+
+  if(!document.getElementById("npMeetCss")){
+    var st=document.createElement("style");st.id="npMeetCss";
+    st.textContent='#npMeet{margin:12px 0 24px}.npm-card{border-radius:18px;padding:14px;margin:0 0 12px;background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.12);color:var(--ink,#fff)}'+
+      '.npm-card.hl{border-color:rgba(199,160,255,.45);box-shadow:0 0 16px rgba(170,110,255,.14)}'+
+      '.npm-row{display:flex;gap:12px;align-items:center}.npm-av{flex:0 0 56px;height:56px;border-radius:50%;background:linear-gradient(145deg,#8B5CFF,#ED93B1) center/cover;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:22px;color:#fff}'+
+      '.npm-who{flex:1;min-width:0}.npm-who b{display:block;font-size:16px}.npm-who small{display:block;opacity:.75;font-size:13px}'+
+      '.npm-bdg{display:inline-block;font-size:11px;font-weight:700;border-radius:999px;padding:2px 8px;margin:4px 4px 0 0}.npm-bdg.ver{background:rgba(47,191,98,.2);color:#7BE3A0;border:1px solid rgba(47,191,98,.5)}.npm-bdg.nov{background:rgba(255,255,255,.08);color:#ccc}.npm-bdg.pen{background:rgba(233,185,73,.18);color:#E9B949}'+
+      '.npm-plan{margin:10px 0 0;font-size:14px;line-height:1.4}.npm-acts{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}'+
+      '.npm-btn{border-radius:999px;padding:9px 16px;font:inherit;font-size:14px;font-weight:600;cursor:pointer;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2)}.npm-btn.pri{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '.npm-search{display:flex;gap:8px;margin:0 0 12px}.npm-search input{flex:1;min-width:0;padding:12px 14px;border-radius:14px;font:inherit;font-size:15px;color:var(--ink,#fff);background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.2)}'+
+      '.npm-search select{padding:10px;border-radius:14px;font:inherit;color:var(--ink,#fff);background:rgba(20,16,34,.95);border:1px solid rgba(255,255,255,.2)}'+
+      '.npm-empty{text-align:center;padding:18px;opacity:.8;font-size:14px}.npm-msgs{display:flex;flex-direction:column;gap:8px;margin:14px 0;max-height:52vh;overflow-y:auto}'+
+      '.npm-m{max-width:80%;padding:9px 12px;border-radius:14px;font-size:14px;line-height:1.35;background:rgba(255,255,255,.08);align-self:flex-start;word-wrap:break-word}.npm-m.me{align-self:flex-end;background:rgba(233,185,73,.22)}'+
+      '.npm-unread{display:inline-block;min-width:20px;padding:0 6px;border-radius:10px;background:#ED93B1;color:#1a1026;font-size:12px;font-weight:700;text-align:center;margin-left:6px}'+
+      '#npMeet .fields label,#npmSheet .fields label{display:block}.npm-chk{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px}.npm-chk input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}'+
+      '.npm-deck{margin:0 0 14px}.npm-photo{position:relative;height:430px;max-height:62vh;border-radius:24px;overflow:hidden;background:#1a1224 center/cover no-repeat;border:1px solid rgba(255,255,255,.14);transition:transform .3s ease,opacity .3s ease;touch-action:pan-y}'+
+      '.npm-photo.go-right{transform:translateX(120%) rotate(18deg);opacity:0}.npm-photo.go-left{transform:translateX(-120%) rotate(-18deg);opacity:0}'+
+      '.npm-big{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:110px;font-weight:800;color:rgba(255,255,255,.85)}'+
+      '.npm-over{position:absolute;left:0;right:0;bottom:0;padding:70px 18px 42px;background:linear-gradient(180deg,rgba(0,0,0,0),rgba(0,0,0,.82));color:#fff}.npm-over b{display:block;font-size:26px}.npm-over small{display:block;font-size:14px;opacity:.9;margin-top:2px}'+
+      '.npm-stamp{position:absolute;top:26px;padding:6px 14px;border-radius:10px;font-size:26px;font-weight:800;letter-spacing:2px;opacity:0;transition:opacity .15s;border:3px solid}.npm-stamp.like{left:20px;color:#5DCAA5;border-color:#5DCAA5;transform:rotate(-14deg)}.npm-stamp.nope{right:20px;color:#F09595;border-color:#F09595;transform:rotate(14deg)}'+
+      '.npm-photo.show-like .like,.npm-photo.show-nope .nope{opacity:1}'+
+      '.npm-dbtns{display:flex;justify-content:center;gap:22px;margin-top:-30px;position:relative;z-index:2}.npm-round{width:62px;height:62px;border-radius:50%;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#16122a;border:2px solid rgba(255,255,255,.2);color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.45)}'+
+      '.npm-round i{font-style:normal}.npm-round.no{color:#F09595;border-color:rgba(240,149,149,.7)}.npm-round.yes{color:#ED93B1;border-color:rgba(237,147,177,.8)}.npm-round.hi{width:52px;height:52px;font-size:20px;align-self:center}'+
+      '.npm-count{text-align:center;font-size:13px;opacity:.8;margin:10px 0 0}.npm-teaser .npm-photo{height:220px}';
+    document.head.appendChild(st);
+  }
+
+  /* ---------- data ---------- */
+  async function loadMe(){
+    if(!user){mine=null;loaded=true;return}
+    var r=await sb.from("np_meet_profiles").select("*").eq("user_id",user.id).maybeSingle();
+    setupErr=r.error?(/relation|does not exist|schema/i.test(r.error.message)?"setup":r.error.message):"";
+    mine=r.data||null;loaded=true;
+  }
+  async function loadPeople(){
+    if(!user||(!mine&&!adminOK)){people=[];return}
+    var r=await sb.from("np_meet_profiles").select("user_id,name,age,gender,city,languages,intent,when_txt,plan,photo_url,verify_status,updated_at")
+      .eq("active",true).neq("user_id",user.id).order("updated_at",{ascending:false}).limit(400);
+    people=(r.data||[]).filter(function(p){return !isWoman(p)||p.verify_status==="verified"});
+    var b=await sb.from("np_meet_blocks").select("blocked").eq("blocker",user.id);blocks=(b.data||[]).map(function(x){return x.blocked});
+    await loadLikes();
+  }
+  async function checkAdmin(){try{var r=await sb.rpc("np_is_admin");adminOK=!r.error&&r.data===true}catch(e){adminOK=false}}
+  async function refresh(){await loadMe();await loadPeople();paintAll()}
+
+  /* ---------- cards ---------- */
+  function badge(p){return p.verify_status==="verified"?'<span class="npm-bdg ver">✓ Verified</span>':(p.verify_status==="pending"?'<span class="npm-bdg pen">Check pending</span>':'<span class="npm-bdg nov">Not verified</span>')}
+  function av(p){return p.photo_url?'<span class="npm-av" style="background-image:url(\''+esc(p.photo_url)+'\')"></span>':'<span class="npm-av">'+esc((p.name||"?").charAt(0).toUpperCase())+'</span>'}
+  function personCard(p){
+    var bits=[p.age,p.city].filter(Boolean).join(" · ");
+    return '<div class="npm-card"><div class="npm-row">'+av(p)+'<div class="npm-who"><b>'+esc(p.name)+'</b><small>'+esc(bits)+(p.languages?' · '+esc(p.languages):'')+'</small>'+badge(p)+'</div></div>'+
+      ((p.intent||p.when_txt)?'<p class="npm-plan"><b>'+esc(intName(p.intent))+'</b>'+(p.when_txt?' · '+esc(p.when_txt):'')+'</p>':'')+
+      (p.plan?'<p class="npm-plan" style="margin-top:4px;opacity:.9">'+esc(p.plan)+'</p>':'')+
+      '<div class="npm-acts"><button class="npm-btn pri" data-hi="'+p.user_id+'">Say hi'+(unread[p.user_id]?'<span class="npm-unread">'+unread[p.user_id]+'</span>':'')+'</button><button class="npm-btn" data-more="'+p.user_id+'">Report or block</button></div></div>';
+  }
+  function match(p,txt){if(!txt)return true;txt=txt.toLowerCase();
+    return [p.name,p.city,p.languages,p.plan,intName(p.intent),p.when_txt].join(" ").toLowerCase().indexOf(txt)>-1}
+
+  /* ---------- main screen (Buddy / Meet new people) ---------- */
+  function mount(){
+    var s=document.getElementById("buddy");if(!s)return null;
+    ["buddyGate","buddyMain","lob"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.setProperty("display","none","important")});
+    s.querySelectorAll(".howto").forEach(function(e){e.style.setProperty("display","none","important")});
+    var t=s.querySelector(".sectiontitle");if(t&&t.textContent!=="Meet new people")t.textContent="Meet new people";
+    var root=document.getElementById("npMeet");
+    if(!root){root=document.createElement("div");root.id="npMeet";
+      if(t)t.insertAdjacentElement("afterend",root);else s.appendChild(root)}
+    var pp=document.getElementById("npPurpose");
+    if(pp&&root.nextElementSibling!==pp)root.insertAdjacentElement("afterend",pp);   /* rules box goes below the people */
+    var fb=document.getElementById("npFindBtn");if(fb)fb.remove();                     /* Friends Location & Bill Splitter lives in All services */
+    return root;
+  }
+  function paintMain(){
+    var root=mount();if(!root)return;
+    if(!user){root.innerHTML='<div class="npm-deck npm-teaser"><div class="npm-photo" style="background:linear-gradient(160deg,#534AB7,#D4537E)"><div class="npm-over"><b>Travellers are going out tonight</b><small>Club nights, dinners, beach days, sightseeing</small></div></div></div>'+
+      '<div class="npm-card hl"><b>Sign in to meet people</b><p class="npm-plan">See real travellers, like profiles and say hi. Free, 18+, public places only.</p><div class="npm-acts"><button class="npm-btn pri" id="npmIn">Sign in</button><button class="npm-btn" id="npmUp">Sign up free</button></div></div>';
+      function openAcc(up){var b=document.querySelector(".np-hbtn.user")||document.getElementById("acctBtn");if(b)b.click();
+        if(up)setTimeout(function(){var t=[].find.call(panel.querySelectorAll("button,a"),function(x){return /create account|sign up/i.test(x.textContent)&&!/free/i.test(x.textContent)});if(t)t.click()},250)}
+      root.querySelector("#npmIn").onclick=function(){openAcc(false)};root.querySelector("#npmUp").onclick=function(){openAcc(true)};return}
+    if(!loaded){root.innerHTML='<p class="npm-empty">Loading…</p>';return}
+    if(setupErr==="setup"){root.innerHTML='<div class="npm-card"><b>Almost ready</b><p class="npm-plan">Meet new people is being set up. Please check back soon.</p></div>';return}
+    if(adminOK&&!mine&&!editing){
+      root.innerHTML='<div class="npm-card hl"><b>Admin view</b><p class="npm-plan">You see Meet new people exactly like the members do, including women-only areas. To say hi to someone, create your own profile first.</p><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button><button class="npm-btn" id="npmMake">Create my profile</button></div></div>'+
+        '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people"><select id="npmShow" aria-label="Show"><option value="all">Everyone</option><option value="woman">Women</option><option value="man">Men</option></select></div><div id="npmList"></div>';
+      root.querySelector("#npmShow").value=show;
+      root.querySelector("#npmQ").oninput=function(){q.main=this.value;list(root.querySelector("#npmList"),q.main,show)};
+      root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show);deck(root.querySelector("#npmDeck"))};
+      root.querySelector("#npmAdmin").onclick=openAdmin;root.querySelector("#npmMake").onclick=function(){editing=true;paintMain()};
+      root.insertAdjacentHTML("afterbegin",'<div id="npmDeck"></div>');deck(root.querySelector("#npmDeck"));
+      list(root.querySelector("#npmList"),q.main,show);return}
+    if(!mine||editing){root.innerHTML=formHTML();wireForm(root);return}
+    var h=myCard()+(adminOK?'<div class="npm-card"><b>Admin</b><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button></div></div>':'')+
+      '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people">'+
+      '<select id="npmShow" aria-label="Show"><option value="all">Everyone</option><option value="woman">Women</option><option value="man">Men</option></select></div><div id="npmList"></div>';
+    root.innerHTML='<div id="npmDeck"></div>'+h;deck(root.querySelector("#npmDeck"));
+    root.querySelector("#npmShow").value=show;
+    root.querySelector("#npmQ").oninput=function(){q.main=this.value;list(root.querySelector("#npmList"),q.main,show)};
+    root.querySelector("#npmShow").onchange=function(){show=this.value;list(root.querySelector("#npmList"),q.main,show);deck(root.querySelector("#npmDeck"))};
+    wireMine(root);if(root.querySelector("#npmAdmin"))root.querySelector("#npmAdmin").onclick=openAdmin;
+    list(root.querySelector("#npmList"),q.main,show);
+  }
+  function myCard(){
+    var s=mine.verify_status,msg="";
+    if(isWoman(mine)){
+      msg=s==="verified"?'You are verified. Other people can see you.':
+        s==="pending"?'Selfie sent. We are checking it and you will get the Verified badge soon. Until then, other people cannot see your profile.':
+        s==="rejected"?'Your selfie was not approved. Please send a clear new selfie.':'Women need a quick selfie check before others can see them. It keeps everyone safe.';
+    }else msg=s==="verified"?'You are verified.':s==="pending"?'Selfie sent. We are checking it.':'Optional: verify with a selfie to get the Verified badge.';
+    var tot=Object.keys(unread).reduce(function(a,k){return a+unread[k]},0);
+    return '<div class="npm-card hl"><div class="npm-row">'+av(mine)+'<div class="npm-who"><b>'+esc(mine.name)+' (you)</b><small>'+esc(intName(mine.intent))+(mine.when_txt?' · '+esc(mine.when_txt):'')+'</small>'+badge(mine)+'</div></div>'+
+      '<p class="npm-plan">'+esc(msg)+'</p><div class="npm-acts">'+
+      ((s==="none"||s==="rejected")?'<button class="npm-btn pri" id="npmSelfie">Verify with a selfie</button>':'')+
+      '<button class="npm-btn" id="npmInbox">Messages'+(tot?'<span class="npm-unread">'+tot+'</span>':'')+'</button><button class="npm-btn" id="npmEdit">Edit profile</button></div></div>';
+  }
+  function wireMine(root){
+    if(root.querySelector("#npmSelfie"))root.querySelector("#npmSelfie").onclick=openSelfie;
+    if(root.querySelector("#npmInbox"))root.querySelector("#npmInbox").onclick=openInbox;
+    if(root.querySelector("#npmEdit"))root.querySelector("#npmEdit").onclick=function(){editing=true;paintMain()};
+  }
+  function list(el,txt,sh,womenOnly){
+    if(!el)return;
+    var l=people.filter(function(p){return blocks.indexOf(p.user_id)<0&&(womenOnly?isWoman(p):(sh==="all"||p.gender===sh))&&match(p,txt)});
+    el.innerHTML=l.length?l.map(personCard).join(""):'<p class="npm-empty">'+(txt?'Nobody found for "'+esc(txt)+'".':(womenOnly?'No verified women here yet. Invite your friends!':'No one here yet. Be the first, and invite your friends!'))+'</p>';
+    el.querySelectorAll("[data-hi]").forEach(function(b){b.onclick=function(){var p=people.find(function(x){return x.user_id===b.dataset.hi});if(p)openChat(p)}});
+    el.querySelectorAll("[data-more]").forEach(function(b){b.onclick=function(){var p=people.find(function(x){return x.user_id===b.dataset.more});if(p)openMore(p)}});
+  }
+
+  /* ---------- like / skip cards (top of the page) ---------- */
+  var LIKED={},LIKEDME=0;
+  function skipped(){try{return JSON.parse(localStorage.getItem("np_meet_skip")||"{}")}catch(e){return {}}}
+  function skip(id){var k=skipped();k[id]=Date.now();try{localStorage.setItem("np_meet_skip",JSON.stringify(k))}catch(e){}}
+  async function loadLikes(){LIKED={};LIKEDME=0;if(!user)return;
+    try{var r=await sb.from("np_meet_likes").select("liker,liked").or("liker.eq."+user.id+",liked.eq."+user.id);
+      (r.data||[]).forEach(function(x){if(x.liker===user.id)LIKED[x.liked]=1;else LIKEDME++})}catch(e){}}
+  function queue(){var k=skipped(),week=Date.now()-7*864e5;
+    return people.filter(function(p){return blocks.indexOf(p.user_id)<0&&!LIKED[p.user_id]&&!(k[p.user_id]>week)&&(show==="all"||p.gender===show)})}
+  /* free members: 10 profiles a day, then the Namaste Gold offer */
+  var FREE=10;
+  function isPrem(){try{return (typeof isPremium==="function"&&!!isPremium())||(typeof isVIP==="function"&&!!isVIP())}catch(e){return false}}
+  function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+  function seenN(){try{var o=JSON.parse(localStorage.getItem("np_meet_seen")||"{}");return o.d===today()?o.n:0}catch(e){return 0}}
+  function addSeen(){try{localStorage.setItem("np_meet_seen",JSON.stringify({d:today(),n:seenN()+1}))}catch(e){}}
+  function goldOffer(box){
+    box.innerHTML='<div class="npm-deck"><div class="npm-photo" style="background:linear-gradient(160deg,#412402,#BA7517 55%,#FAC775)"><span class="npm-big" style="font-size:80px">👑</span>'+
+      '<div class="npm-over"><b>You have seen your '+FREE+' free profiles today</b><small>Come back tomorrow for '+FREE+' more, or go unlimited now.</small></div></div>'+
+      '<div class="npm-card" style="margin-top:12px;border-color:rgba(239,159,39,.6)"><b>Namaste Gold</b><p class="npm-plan">✓ Unlimited profiles, likes and swipes<br>✓ Your profile shown first<br>✓ See who liked you<br>✓ All Gold perks in the app</p>'+
+      '<div class="npm-acts"><button class="npm-btn pri" id="npmGold">Become a Gold member</button></div></div></div>';
+    box.querySelector("#npmGold").onclick=function(){var b=document.getElementById("premBtn");if(b)b.click();else if(typeof openVipBuddy==="function")openVipBuddy()};
+  }
+  function deck(box){
+    if(!box)return;
+    if(!adminOK&&!isPrem()&&seenN()>=FREE){goldOffer(box);return}
+    var qd=queue(),p=qd[0];
+    if(!p&&!people.length){var link="https://namastepattayareservationsindthai.vercel.app/";
+      box.innerHTML='<div class="npm-deck"><div class="npm-photo npm-empty-card" style="height:240px;background:linear-gradient(160deg,#534AB7,#D4537E)"><span class="npm-big" style="font-size:70px">🎉</span>'+
+        '<div class="npm-over"><b>You are one of the first!</b><small>Meet new people just started. Invite your friends so you can meet in Pattaya.</small></div></div>'+
+        '<div class="npm-acts" style="justify-content:center;margin-top:12px"><button class="npm-btn pri" id="npmInv">Invite friends on WhatsApp</button></div></div>';
+      box.querySelector("#npmInv").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent("Going to Pattaya? Join me on Namaste Pattaya to meet travellers, book clubs and Indian food: "+link),"_blank")};return}
+    if(!p){box.innerHTML='<div class="npm-card"><b>You have seen everyone for now</b><p class="npm-plan">New travellers join every day. Check again later, or search the full list below.</p>'+(Object.keys(skipped()).length?'<div class="npm-acts"><button class="npm-btn" id="npmReset">Show skipped people again</button></div>':'')+'</div>';
+      var rs=box.querySelector("#npmReset");if(rs)rs.onclick=function(){try{localStorage.removeItem("np_meet_skip")}catch(e){}deck(box)};return}
+    var bits=[p.age,p.city].filter(Boolean).join(" · ");
+    box.innerHTML='<div class="npm-deck"><div class="npm-photo" id="npmCard" style="'+(p.photo_url?"background-image:url('"+esc(p.photo_url)+"')":"background:linear-gradient(160deg,#534AB7,#D4537E)")+'">'+
+      (p.photo_url?'':'<span class="npm-big">'+esc((p.name||"?").charAt(0).toUpperCase())+'</span>')+
+      '<span class="npm-stamp like">LIKE</span><span class="npm-stamp nope">SKIP</span>'+
+      '<div class="npm-over"><b>'+esc(p.name)+(p.age?', '+esc(p.age):'')+'</b><small>'+esc(p.city||"")+(p.languages?' · '+esc(p.languages):'')+'</small>'+badge(p)+
+      ((p.intent||p.when_txt)?'<small style="margin-top:6px"><b style="font-size:14px;display:inline">'+esc(intName(p.intent))+'</b>'+(p.when_txt?' · '+esc(p.when_txt):'')+'</small>':'')+(p.plan?'<small>'+esc(p.plan)+'</small>':'')+'</div></div>'+
+      '<div class="npm-dbtns"><button class="npm-round no" id="npmNo" aria-label="Skip"><i>✕</i></button><button class="npm-round hi" id="npmHi" aria-label="Say hi">💬</button><button class="npm-round yes" id="npmYes" aria-label="Like"><i>♥</i></button></div>'+
+      '<p class="npm-count">'+qd.length+' '+(qd.length===1?"person":"people")+' to see'+(LIKEDME?' · 💗 '+LIKEDME+' liked you':'')+(!adminOK&&!isPrem()?' · '+Math.max(0,FREE-seenN())+' free left today':'')+'</p></div>';
+    var card=box.querySelector("#npmCard");
+    async function act(like){
+      addSeen();
+      card.classList.add(like?"go-right":"go-left");
+      if(like){
+        if(!mine){setTimeout(function(){alert("Create your Meet new people profile first, then you can like people.");editing=true;paintMain()},250);return}
+        LIKED[p.user_id]=1;
+        var r=await sb.from("np_meet_likes").insert({liked:p.user_id});
+        if(!r.error){var m=await sb.from("np_meet_likes").select("liker").eq("liker",p.user_id).eq("liked",user.id).maybeSingle();
+          if(m.data){setTimeout(function(){matchBox(p)},320)}}
+      }else skip(p.user_id);
+      setTimeout(function(){deck(box)},300);
+    }
+    box.querySelector("#npmNo").onclick=function(){act(false)};box.querySelector("#npmYes").onclick=function(){act(true)};
+    box.querySelector("#npmHi").onclick=function(){openChat(p)};
+    var x0=null,dx=0;
+    card.addEventListener("touchstart",function(e){x0=e.touches[0].clientX;dx=0;card.style.transition="none"},{passive:true});
+    card.addEventListener("touchmove",function(e){if(x0===null)return;dx=e.touches[0].clientX-x0;card.style.transform="translateX("+dx+"px) rotate("+(dx/20)+"deg)";card.classList.toggle("show-like",dx>40);card.classList.toggle("show-nope",dx<-40)},{passive:true});
+    card.addEventListener("touchend",function(){card.style.transition="";if(Math.abs(dx)>90){act(dx>0)}else{card.style.transform="";card.classList.remove("show-like","show-nope")}x0=null});
+  }
+  function matchBox(p){
+    sheetOpen('<div class="pbody" style="text-align:center">'+head("It's a match! 🎉","mbX")+'<p class="about">You and '+esc(p.name)+' both liked each other. Say hi and make a plan, in a public place.</p><button class="cta" id="mbHi">Say hi to '+esc(p.name)+'</button></div>');
+    panel.querySelector("#mbX").onclick=closeSheet;panel.querySelector("#mbHi").onclick=function(){openChat(p)};
+  }
+
+  /* ---------- profile form ---------- */
+  function formHTML(){
+    var m=mine||{};
+    return '<div class="npm-card hl"><b>'+(mine?"Edit your profile":"Create your profile")+'</b><p class="npm-plan">Meet travellers for a club night, a meal, sports or sightseeing. Social meetings only, in public places.</p>'+
+      '<div class="fields"><label>First name<input id="mfN" maxlength="40" value="'+esc(m.name||"")+'"></label>'+
+      '<label>Age<input id="mfA" inputmode="numeric" maxlength="2" value="'+esc(m.age||"")+'"></label>'+
+      '<label>I am<select id="mfG"><option value="man">Man</option><option value="woman">Woman</option><option value="other">Other</option></select></label>'+
+      '<label>From (city)<input id="mfC" maxlength="60" placeholder="e.g. Mumbai" value="'+esc(m.city||"")+'"></label>'+
+      '<label class="full">Languages<input id="mfL" maxlength="80" placeholder="Hindi, English" value="'+esc(m.languages||"")+'"></label>'+
+      '<label>Up for<select id="mfI">'+INT.map(function(i){return '<option value="'+i[0]+'">'+i[1]+'</option>'}).join("")+'</select></label>'+
+      '<label>When<select id="mfW">'+WHEN.map(function(w){return '<option>'+w+'</option>'}).join("")+'</select></label>'+
+      '<label class="full">Your plan (optional)<input id="mfP" maxlength="140" placeholder="e.g. Walking Street tonight, want a group" value="'+esc(m.plan||"")+'"></label>'+
+      '<label class="full">Profile photo (optional)<input id="mfF" type="file" accept="image/*"></label></div>'+
+      '<label class="npm-chk"><input type="checkbox" id="mfPh"> This is my own photo.</label>'+
+      '<label class="npm-chk"><input type="checkbox" id="mf18"'+(mine?" checked":"")+'> I am 18 or older.</label>'+
+      '<label class="npm-chk"><input type="checkbox" id="mfR"'+(mine?" checked":"")+'> I agree to the rules: social meetings in public places only, no money, gifts or paid services of any kind.</label>'+
+      '<div class="npm-acts"><button class="npm-btn pri" id="mfSave">Save profile</button>'+(mine?'<button class="npm-btn" id="mfCancel">Cancel</button><button class="npm-btn" id="mfHide">'+(mine.active?"Hide my profile":"Show my profile")+'</button>':'')+'</div><p class="err" id="mfE"></p></div>';
+  }
+  function wireForm(root){
+    var $=function(s){return root.querySelector(s)},m=mine||{};
+    $("#mfG").value=m.gender||"man";$("#mfI").value=m.intent||"party";$("#mfW").value=m.when_txt||"Tonight";
+    if($("#mfCancel"))$("#mfCancel").onclick=function(){editing=false;paintMain()};
+    if($("#mfHide"))$("#mfHide").onclick=async function(){await sb.from("np_meet_profiles").update({active:!mine.active}).eq("user_id",user.id);editing=false;refresh()};
+    $("#mfSave").onclick=async function(){
+      var E=$("#mfE"),n=$("#mfN").value.trim(),a=parseInt($("#mfA").value,10),p=$("#mfP").value.trim(),f=$("#mfF").files&&$("#mfF").files[0];
+      if(!n){E.textContent="Add your first name.";return}
+      if(!(a>=18&&a<=99)){E.textContent="You must be 18 or older.";return}
+      if(!$("#mf18").checked){E.textContent="Please confirm you are 18 or older.";return}
+      if(!$("#mfR").checked){E.textContent="Please agree to the rules.";return}
+      if(BAD.test(n+" "+p)){E.textContent="Money, prices or paid services are not allowed. Please keep it social.";return}
+      if(f&&!$("#mfPh").checked){E.textContent="Please confirm it is your own photo.";return}
+      this.disabled=true;E.textContent="Saving…";
+      var row={name:n,age:a,gender:$("#mfG").value,city:$("#mfC").value.trim()||null,languages:$("#mfL").value.trim()||null,intent:$("#mfI").value,when_txt:$("#mfW").value,plan:p||null,active:true};
+      if(f){var blob=await new Promise(function(ok){shrink(f,900,ok)});
+        if(blob){var path=user.id+"/photo.jpg",up=await sb.storage.from("meet-photos").upload(path,blob,{upsert:true,contentType:"image/jpeg"});
+          if(!up.error)row.photo_url=sb.storage.from("meet-photos").getPublicUrl(path).data.publicUrl+"?v="+Date.now()}}
+      var r=mine?await sb.from("np_meet_profiles").update(row).eq("user_id",user.id):await sb.from("np_meet_profiles").insert(row);
+      this.disabled=false;
+      if(r.error){E.textContent=r.error.message;return}
+      var wasNew=!mine;editing=false;await refresh();
+      if(isWoman(mine)&&(mine.verify_status==="none"||mine.verify_status==="rejected")&&wasNew)openSelfie();
+    };
+  }
+
+  /* ---------- selfie check ---------- */
+  function openSelfie(){
+    sheetOpen('<div class="pbody" id="npmSheet">'+head("Selfie check","smX")+
+      '<p class="about">Take a clear selfie of your face. Only the Namaste Pattaya team sees it, just to check you are real. It is never shown on your profile and is deleted after the check.</p>'+
+      '<div class="fields"><label class="full">Selfie<input id="sfF" type="file" accept="image/*" capture="user"></label></div>'+
+      '<label class="npm-chk"><input type="checkbox" id="sfOk"> I agree my selfie is used only to verify my profile.</label>'+
+      '<button class="cta" id="sfGo">Send for checking</button><p class="err" id="sfE"></p></div>');
+    panel.querySelector("#smX").onclick=closeSheet;
+    panel.querySelector("#sfGo").onclick=async function(){
+      var f=panel.querySelector("#sfF").files&&panel.querySelector("#sfF").files[0],E=panel.querySelector("#sfE");
+      if(!f){E.textContent="Take or choose a selfie first.";return}
+      if(!panel.querySelector("#sfOk").checked){E.textContent="Please tick the box to agree.";return}
+      this.disabled=true;E.textContent="Sending…";
+      var blob=await new Promise(function(ok){shrink(f,1000,ok)});
+      if(!blob){this.disabled=false;E.textContent="Could not read this photo. Try again.";return}
+      var up=await sb.storage.from("meet-selfies").upload(user.id+"/selfie.jpg",blob,{upsert:true,contentType:"image/jpeg"});
+      if(up.error){this.disabled=false;E.textContent=up.error.message;return}
+      var r=await sb.from("np_meet_profiles").update({verify_status:"pending"}).eq("user_id",user.id);
+      if(r.error){this.disabled=false;E.textContent=r.error.message;return}
+      sheetOpen('<div class="pbody">'+head("Selfie sent","smX")+'<p class="about">Thank you! We are checking it. You will get the Verified badge soon.</p></div>');
+      panel.querySelector("#smX").onclick=closeSheet;refresh();
+    };
+  }
+
+  /* ---------- report / block ---------- */
+  function openMore(p){
+    sheetOpen('<div class="pbody">'+head(esc(p.name),"moX")+
+      '<div class="fields"><label class="full">What happened? (for a report)<input id="moR" maxlength="300" placeholder="e.g. asked for money"></label></div>'+
+      '<button class="cta" id="moRep">Report to Namaste Pattaya</button><button class="cta ghost" id="moBlk">Block '+esc(p.name)+'</button><p class="err" id="moE"></p></div>');
+    panel.querySelector("#moX").onclick=closeSheet;
+    panel.querySelector("#moRep").onclick=async function(){var r=await sb.from("np_meet_reports").insert({reported:p.user_id,reason:panel.querySelector("#moR").value.trim()||null});
+      panel.querySelector("#moE").style.color=r.error?"":"var(--ok)";panel.querySelector("#moE").textContent=r.error?r.error.message:"Thank you. We review every report."};
+    panel.querySelector("#moBlk").onclick=async function(){if(!confirm("Block "+p.name+"? You will not see each other or be able to message."))return;
+      await sb.from("np_meet_blocks").insert({blocked:p.user_id});closeSheet();refresh()};
+  }
+
+  /* ---------- messages ---------- */
+  function subscribe(){
+    if(chan){sb.removeChannel(chan);chan=null}if(!user)return;
+    chan=sb.channel("meet-"+user.id).on("postgres_changes",{event:"INSERT",schema:"public",table:"np_meet_messages",filter:"recipient=eq."+user.id},function(ev){
+      var m=ev.new;if(chatWith&&m.sender===chatWith.user_id&&panel.querySelector("#chBox")){addMsg(m);return}
+      unread[m.sender]=(unread[m.sender]||0)+1;paintAll();
+    }).subscribe();
+  }
+  function addMsg(m){var box=panel.querySelector("#chBox");if(!box)return;var d=document.createElement("div");d.className="npm-m"+(m.sender===user.id?" me":"");d.textContent=m.body;box.appendChild(d);box.scrollTop=box.scrollHeight}
+  async function openChat(p){
+    if(!mine){alert("Create your Meet new people profile first, then you can say hi.");closeSheet();if(typeof go==="function")go("buddy");editing=true;paintMain();return}
+    chatWith=p;delete unread[p.user_id];
+    sheetOpen('<div class="pbody">'+head("Chat with "+esc(p.name),"chX")+'<p class="small">Meet only in public places. Never send money. Report anyone who asks for money or paid services.</p>'+
+      '<div class="npm-msgs" id="chBox"><p class="npm-empty">Loading…</p></div><div class="post"><input id="chIn" maxlength="500" placeholder="Say hi…"><button id="chGo">Send</button></div><p class="err" id="chE"></p></div>');
+    panel.querySelector("#chX").onclick=function(){chatWith=null;closeSheet();paintAll()};
+    var me=user.id,them=p.user_id;
+    var r=await sb.from("np_meet_messages").select("*").or("and(sender.eq."+me+",recipient.eq."+them+"),and(sender.eq."+them+",recipient.eq."+me+")").order("created_at").limit(200);
+    var box=panel.querySelector("#chBox");if(!box)return;box.innerHTML=(r.data&&r.data.length)?"":'<p class="npm-empty">Say hi and tell '+esc(p.name)+' your plan.</p>';
+    (r.data||[]).forEach(addMsg);
+    async function send(){
+      var inp=panel.querySelector("#chIn"),E=panel.querySelector("#chE"),t=inp.value.trim();if(!t)return;
+      if(BAD.test(t)){E.textContent="Messages about money, payment or paid services are not allowed. Please keep it social.";return}
+      E.textContent="";inp.value="";
+      var s=await sb.from("np_meet_messages").insert({recipient:them,body:t}).select().single();
+      if(s.error){E.textContent=/row-level|policy/i.test(s.error.message)?"Message not sent. It may break the rules, or one of you has blocked the other.":s.error.message;inp.value=t;return}
+      var em=box.querySelector(".npm-empty");if(em)em.remove();addMsg(s.data);
+    }
+    panel.querySelector("#chGo").onclick=send;
+    panel.querySelector("#chIn").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();send()}};
+  }
+  async function openInbox(){
+    sheetOpen('<div class="pbody">'+head("Messages","ibX")+'<div id="ibL"><p class="npm-empty">Loading…</p></div></div>');
+    panel.querySelector("#ibX").onclick=closeSheet;
+    var r=await sb.from("np_meet_messages").select("*").or("sender.eq."+user.id+",recipient.eq."+user.id).order("created_at",{ascending:false}).limit(300);
+    var seen={},convs=[];(r.data||[]).forEach(function(m){var o=m.sender===user.id?m.recipient:m.sender;if(!seen[o]){seen[o]=1;convs.push({o:o,m:m})}});
+    var need=convs.map(function(c){return c.o}).filter(function(id){return !people.find(function(p){return p.user_id===id})});
+    if(need.length){var pr=await sb.from("np_meet_profiles").select("user_id,name,age,gender,city,languages,intent,when_txt,plan,photo_url,verify_status").in("user_id",need);(pr.data||[]).forEach(function(p){people.push(p)})}
+    var el=panel.querySelector("#ibL");if(!el)return;
+    el.innerHTML=convs.length?convs.map(function(c){var p=people.find(function(x){return x.user_id===c.o})||{user_id:c.o,name:"Member"};
+      return '<div class="npm-card" data-c="'+c.o+'" style="cursor:pointer"><div class="npm-row">'+av(p)+'<div class="npm-who"><b>'+esc(p.name)+(unread[c.o]?'<span class="npm-unread">'+unread[c.o]+'</span>':'')+'</b><small>'+esc((c.m.sender===user.id?"You: ":"")+c.m.body)+'</small></div></div></div>'}).join(""):'<p class="npm-empty">No messages yet. Tap "Say hi" on someone\'s profile.</p>';
+    el.querySelectorAll("[data-c]").forEach(function(d){d.onclick=function(){var p=people.find(function(x){return x.user_id===d.dataset.c});if(p)openChat(p)}});
+  }
+
+  /* ---------- admin: verify women, see reports ---------- */
+  async function openAdmin(){
+    if(!adminOK){await checkAdmin();if(!adminOK)return}
+    sheetOpen('<div class="pbody">'+head("Admin · Meet new people","adX")+'<div id="adBody"><p class="npm-empty">Loading…</p></div></div>');
+    panel.querySelector("#adX").onclick=closeSheet;
+    var r=await sb.from("np_meet_profiles").select("*").eq("verify_status","pending").order("updated_at");
+    var rep=await sb.from("np_meet_reports").select("*").eq("status","open").order("created_at",{ascending:false}).limit(50);
+    var pend=r.data||[],reps=rep.data||[],names={};
+    if(reps.length){var ids=reps.map(function(x){return x.reported});var nm=await sb.from("np_meet_profiles").select("user_id,name,age,city").in("user_id",ids);(nm.data||[]).forEach(function(p){names[p.user_id]=p.name+", "+p.age+(p.city?" · "+p.city:"")})}
+    var h='<h3 style="font-size:16px;margin:10px 0">Waiting for selfie check ('+pend.length+')</h3>';
+    for(var i=0;i<pend.length;i++){var p=pend[i],u=await sb.storage.from("meet-selfies").createSignedUrl(p.user_id+"/selfie.jpg",600);
+      h+='<div class="npm-card" data-u="'+p.user_id+'"><div class="npm-row">'+av(p)+'<div class="npm-who"><b>'+esc(p.name)+', '+esc(p.age)+'</b><small>'+esc(p.gender)+' · '+esc(p.city||"")+'</small></div></div>'+
+        (u.data&&u.data.signedUrl?'<img src="'+esc(u.data.signedUrl)+'" alt="Selfie of '+esc(p.name)+'" style="display:block;width:100%;max-height:320px;object-fit:contain;border-radius:12px;margin-top:10px;background:#000">':'<p class="npm-plan">No selfie found.</p>')+
+        '<p class="small" style="margin-top:8px">Check: real face, looks 18+, matches the profile photo, gender matches.</p>'+
+        '<div class="npm-acts"><button class="npm-btn pri" data-ok>Approve</button><button class="npm-btn" data-no>Reject</button></div></div>'}
+    if(!pend.length)h+='<p class="npm-empty">Nobody waiting.</p>';
+    h+='<h3 style="font-size:16px;margin:18px 0 10px">Open reports ('+reps.length+')</h3>'+(reps.length?reps.map(function(x){return '<div class="npm-card" data-r="'+x.id+'"><p class="npm-plan" style="margin:0"><b>Reported:</b> '+esc(names[x.reported]||"Member")+'</p><p class="npm-plan">'+esc(x.reason||"No reason given")+'</p><p class="small">'+new Date(x.created_at).toLocaleString("en-GB")+'</p><div class="npm-acts"><button class="npm-btn" data-hide="'+x.reported+'">Hide this profile</button><button class="npm-btn" data-done>Mark done</button></div></div>'}).join(""):'<p class="npm-empty">No open reports.</p>');
+    var b=panel.querySelector("#adBody");if(!b)return;b.innerHTML=h;
+    b.querySelectorAll("[data-u]").forEach(function(c){var id=c.dataset.u;
+      async function set(v){var x=await sb.from("np_meet_profiles").update({verify_status:v}).eq("user_id",id);if(x.error){alert(x.error.message);return}
+        await sb.storage.from("meet-selfies").remove([id+"/selfie.jpg"]);c.remove()}
+      c.querySelector("[data-ok]").onclick=function(){set("verified")};
+      c.querySelector("[data-no]").onclick=function(){if(confirm("Reject this selfie?"))set("rejected")};
+    });
+    b.querySelectorAll("[data-r]").forEach(function(c){
+      c.querySelector("[data-done]").onclick=async function(){await sb.from("np_meet_reports").update({status:"done"}).eq("id",c.dataset.r);c.remove()};
+      c.querySelector("[data-hide]").onclick=async function(){if(!confirm("Hide this profile from everyone?"))return;var x=await sb.from("np_meet_profiles").update({active:false}).eq("user_id",this.dataset.hide);alert(x.error?x.error.message:"Profile hidden.")};
+    });
+  }
+  window.npMeetAdmin=openAdmin;
+  /* the old "Admin page" button (n8n passcode, no longer working) now opens this admin screen */
+  new MutationObserver(function(){
+    panel.querySelectorAll('a[href="admin.html"]').forEach(function(a){
+      if(a.dataset.npm)return;a.dataset.npm="1";a.textContent="Verify women & reports";a.setAttribute("href","#");
+      a.addEventListener("click",function(e){e.preventDefault();openAdmin()});
+    });
+  }).observe(panel,{childList:true,subtree:true});
+
+  /* ---------- Empowered Girls lounge: verified women only, same people (women), search ---------- */
+  function paintLounge(){
+    var gate=document.getElementById("ladyGate");
+    if(gate){
+      var box=document.getElementById("npLGate");
+      if(!box){box=document.createElement("div");box.id="npLGate";gate.insertBefore(box,gate.firstChild);
+        [].forEach.call(gate.children,function(ch){if(ch!==box)ch.style.setProperty("display","none","important")})}
+      var s=mine&&mine.verify_status;
+      box.innerHTML='<p class="about" style="margin:0 0 10px">This lounge is for verified women only, so the space stays safe and private.</p>'+
+        '<p class="about">'+(!user?"Log in first, then create your Meet new people profile as a woman and send a quick selfie.":
+          !mine?"Create your Meet new people profile (as a woman) and send a quick selfie.":
+          mine.gender!=="woman"?"Only women can enter this lounge.":
+          s==="pending"?"Your selfie is being checked. You will get access soon.":
+          "Send a quick selfie from your Meet new people profile to get access.")+'</p>'+
+        (mine&&mine.gender!=="woman"?'':'<button class="cta" id="npLGo">Go to Meet new people</button>');
+      var g=box.querySelector("#npLGo");if(g)g.onclick=function(){if(typeof go==="function")go("buddy")};
+    }
+    try{
+      if(womanOK()){if(!lady){lady={name:(mine&&mine.name)||"Admin",insta:"",bio:adminOK&&!mine?"Moderator":"",followers:0};store.set("np_lady",lady)}}
+      else if(lady){lady=null}
+    }catch(e){}
+  }
+  function paintLoungeFriend(){
+    try{if(typeof lTab==="undefined"||lTab!=="friend"||!lady)return}catch(e){return}
+    var v=document.getElementById("lview");if(!v||v.querySelector("#npLMeet"))return;
+    v.innerHTML='<div id="npLMeet"><div class="npm-card hl"><b>Meet new people · women</b><p class="npm-plan">The same Meet new people as outside, showing verified women only. Say hi, make a plan, meet in public places.</p><div class="npm-acts"><button class="npm-btn" id="npLAll">Open Meet new people</button></div></div>'+
+      '<div class="npm-search"><input id="npLQ" type="search" placeholder="Search women by name, city, language, plan…" value="'+esc(q.lounge)+'" aria-label="Search women"></div><div id="npLList"></div></div>';
+    v.querySelector("#npLAll").onclick=function(){go("buddy")};
+    v.querySelector("#npLQ").oninput=function(){q.lounge=this.value;list(v.querySelector("#npLList"),q.lounge,"woman",true)};
+    if(!mine&&!adminOK)v.querySelector("#npLList").innerHTML='<p class="npm-empty">Create your Meet new people profile first.</p>';
+    else list(v.querySelector("#npLList"),q.lounge,"woman",true);
+  }
+  if(typeof renderLadies==="function"){var _rl=renderLadies;renderLadies=function(){paintLounge();_rl();paintLoungeFriend()}}
+
+  /* ---------- Friends Location & Bill Splitter: tile in the All services grid ---------- */
+  function flbTile(){
+    var cats=document.getElementById("cats");if(!cats||document.getElementById("npFLBcat"))return;
+    var b=document.createElement("button");b.className="cat";b.id="npFLBcat";b.type="button";
+    b.innerHTML='<span>'+(typeof ico==="function"?ico("map"):"")+'</span>';b.append("Friends Location & Bill Splitter");
+    b.onclick=function(e){e.stopPropagation();if(typeof window.openFinder==="function")openFinder()};
+    cats.appendChild(b);
+  }
+
+  function paintAll(){paintMain();try{if(typeof renderLadies==="function")renderLadies()}catch(e){}}
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;flbTile();mount()})}).observe(document.body,{childList:true,subtree:true});
+  flbTile();
+  async function onUser(u){
+    var changed=(u&&u.id)!==(user&&user.id);user=u;if(!changed&&loaded)return;
+    loaded=false;mine=null;people=[];unread={};paintMain();
+    if(u){await checkAdmin();subscribe()}
+    if(adminOK)try{renderLadies()}catch(e){}else{adminOK=false;if(chan){sb.removeChannel(chan);chan=null}}
+    await refresh();
+  }
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+  if(typeof go==="function"){var _go=go;go=function(t){_go(t);if(t==="buddy"){paintMain();if(user&&mine)loadPeople().then(paintMain)}}}
+})();
+
+/* ===== Club dashboard: every tab LIVE (30 Sep 2026)
+   Reservations: Confirmed → Arrived → Completed (final bill) or No-show.
+   Overview, Orders (upcoming app bookings), Attendance, CRM, Reports, Post updates and Photos
+   now read and save real data in Supabase instead of sample numbers. ===== */
+(function(){
+  if(!window.supabase||typeof renderDash!=="function")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var COMMISSION=0.20; /* Namaste Pattaya commission on app bookings (per partner agreement) */
+  var LV={waiter:1,captain:2,asst_manager:3,manager:4,general_manager:5,owner:6};
+  var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled"};
+  var SRC={app:"App",phone:"Phone",walkin:"Walk-in",whatsapp:"WhatsApp"};
+  var LEGAL=/(drink|beer|whisk|vodka|champagne|cocktail|\bshots?\b|bottle|alcohol|\bwine|\brum\b|tequila|\bgin\b|liquor|hookah|shisha|vape|cigar|smok)/i;
+  var user=null,isAdm=false,myStaff={},token=0,rep="7d";
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+  function addDays(d,n){var x=new Date(d);x.setDate(x.getDate()+n);return x}
+  function M(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")} /* dashboards always in baht (bills are in baht) */
+  function spend(x){return Number(x.final_bill!=null?x.final_bill:x.total)||0}
+  function lvl(v){return isAdm?99:(LV[myStaff[v]]||0)}
+  function venueName(id){var c=(typeof CLUBS!=="undefined"?CLUBS:[]).find(function(x){return x.id===id});return c?c.name:id}
+  function card(h){return '<div class="lcard">'+h+'</div>'}
+  function note(t){return '<p class="small" style="margin:0 0 10px">'+t+'</p>'}
+
+  async function loadMe(){
+    isAdm=false;myStaff={};if(!user)return;
+    try{var a=await sb.rpc("np_is_admin");isAdm=!a.error&&a.data===true}catch(e){}
+    var s=await sb.from("np_venue_staff").select("venue_id,role").eq("user_id",user.id);
+    (s.data||[]).forEach(function(x){myStaff[x.venue_id]=x.role});
+  }
+
+  /* ---------- Reservations: "Completed" step after "Arrived" ---------- */
+  function patchRes(){
+    var box=document.getElementById("rsList");if(!box)return;
+    var f=document.getElementById("rsF");
+    if(f&&!f.querySelector('option[value="completed"]')){var o=document.createElement("option");o.value="completed";o.textContent="Completed";f.insertBefore(o,f.querySelector('option[value="no_show"]'))}
+    box.querySelectorAll("[data-id]").forEach(function(c){
+      var s=c.querySelector(".status"),btns=c.querySelector(".rsbtns");if(!s||!btns||btns.querySelector("[data-done]"))return;
+      if(s.textContent.trim()!=="Arrived")return;
+      var b=document.createElement("button");b.className="pill on";b.dataset.done="1";b.textContent="Completed (guest left)";
+      btns.insertBefore(b,btns.firstChild);
+      b.onclick=async function(){
+        var v=prompt("Final bill for this table in baht (numbers only). Leave empty if the same as the booking.","");
+        if(v===null)return;
+        var d={status:"completed"},n=parseFloat(String(v).replace(/[^0-9.]/g,""));if(n>=0&&String(v).trim()!=="")d.final_bill=n;
+        b.disabled=true;
+        var r=await sb.from("np_bookings").update(d).eq("id",c.dataset.id);
+        if(r.error&&d.final_bill!=null){delete d.final_bill;r=await sb.from("np_bookings").update(d).eq("id",c.dataset.id)}
+        if(r.error){alert(r.error.message);b.disabled=false;return}
+        renderDash();
+      };
+    });
+  }
+  new MutationObserver(function(){patchRes()}).observe(document.body,{childList:true,subtree:true});
+
+  /* ---------- live tabs ---------- */
+  var LIVE=["over","orders","att","crm","rep","upd","photos"];
+  var _prev=renderDash;
+  renderDash=function(){try{restrict()}catch(e){}
+    var dv=document.getElementById("dVenue");
+    if(dv&&dv.value==="__none"){var view=document.getElementById("dview");if(view)view.innerHTML='<div class="lcard"><h4>No venue linked yet</h4><p>'+(user?'When Namaste Pattaya approves your venue, or your manager adds your email ('+esc(user.email)+') in the Staff tab, your venue appears here.':'Log in with your partner or staff account to see your venue.')+'</p></div>';return}
+    _prev();try{live()}catch(e){console.error(e)}};
+  function live(){
+    var t=(typeof dTab!=="undefined")?dTab:"";if(LIVE.indexOf(t)<0){token++;return}  /* switching tab cancels any slower screen still loading */
+    var view=document.getElementById("dview"),dv=document.getElementById("dVenue");if(!view||!dv)return;
+    var v=dv.value,L=lvl(v),my=++token;
+    if(!user){view.innerHTML=card('<h4>Staff login</h4><p>Log in with your staff account to see live data for your club.</p><button class="pill on" id="clLog" style="margin-top:10px">Log in</button>');
+      view.querySelector("#clLog").onclick=function(){var b=document.querySelector(".np-hbtn.user");if(b)b.click()};return}
+    if(v==="__none"){view.innerHTML=card('<h4>No venue linked yet</h4><p>When Namaste Pattaya approves your venue, or your manager adds your email ('+esc(user.email)+') in the Staff tab, your venue appears here.</p>');return}
+    if(!L){view.innerHTML=card('<h4>Not linked to '+esc(venueName(v))+'</h4><p>Ask your manager, general manager or owner to add your email ('+esc(user.email)+') in the Staff tab.</p>');return}
+    view.innerHTML='<p class="small">Loading…</p>';
+    var ok=function(){return my===token};
+    ({over:over,orders:orders,att:att,crm:crm,rep:report,upd:updates,photos:photos})[t](view,v,L,ok);
+  }
+  async function bookings(v,from,to){
+    var q=sb.from("np_bookings").select("*").eq("venue_id",v);
+    if(from)q=q.gte("night",from);if(to)q=q.lte("night",to);
+    var r=await q.order("night",{ascending:false}).limit(5000);
+    if(r.error)throw r.error;return r.data||[];
+  }
+  function fail(view,e){view.innerHTML=card('<h4>Could not load</h4><p class="small">'+esc(e&&e.message||e)+'</p>')}
+
+  /* Overview */
+  async function over(view,v,L,ok){
+    try{
+      var today=ymd(new Date()),rows=await bookings(v,ymd(addDays(new Date(),-6)),today),att=await sb.from("np_attendance").select("id").eq("venue_id",v).eq("night",today).is("check_out",null);
+      if(!ok())return;
+      var tn=rows.filter(function(x){return x.night===today&&x.status!=="cancelled"});
+      var g=tn.reduce(function(s,x){return s+(x.guests||0)},0),rev=tn.reduce(function(s,x){return s+spend(x)},0);
+      var arr=tn.filter(function(x){return x.status==="arrived"||x.status==="completed"}).length;
+      var days=[],mx=1;for(var i=6;i>=0;i--){var d=ymd(addDays(new Date(),-i)),n=rows.filter(function(x){return x.night===d&&x.status!=="cancelled"}).length;days.push([d,n]);mx=Math.max(mx,n)}
+      view.innerHTML='<div class="kpis"><div class="kpi"><small>Reservations tonight</small><b>'+tn.length+'</b></div><div class="kpi"><small>Guests expected</small><b>'+g+'</b></div>'+
+        '<div class="kpi"><small>Arrived so far</small><b>'+arr+'</b></div>'+(L>=4?'<div class="kpi"><small>Revenue tonight</small><b>'+M(rev)+'</b></div>':'')+
+        '<div class="kpi"><small>Staff on shift</small><b>'+((att.data||[]).length)+'</b></div></div>'+
+        '<div class="bars">'+days.map(function(x){var wd=new Date(x[0]+"T12:00").toLocaleDateString("en-GB",{weekday:"short"});return '<div style="height:'+Math.max(4,Math.round(x[1]/mx*100))+'%" title="'+x[1]+' bookings"><span>'+wd+'</span></div>'}).join("")+'</div>'+
+        '<p class="small" style="margin-top:26px">Bookings, last 7 nights (live)</p>';
+    }catch(e){fail(view,e)}
+  }
+
+  /* Orders = upcoming bookings from the app, next 30 nights */
+  async function orders(view,v,L,ok){
+    try{
+      var today=ymd(new Date()),rows=(await bookings(v,today,ymd(addDays(new Date(),30)))).filter(function(x){return x.source==="app"&&x.status!=="cancelled"});
+      if(!ok())return;
+      rows.sort(function(a,b){return (a.night+(a.time||"")).localeCompare(b.night+(b.time||""))});
+      var tot=rows.reduce(function(s,x){return s+spend(x)},0);
+      view.innerHTML=note('Upcoming bookings from the Namaste Pattaya app (next 30 nights). Mark Arrived and Completed in <b>Reservations</b> on the night.')+
+        '<p class="small" style="margin:0 0 10px"><b>'+rows.length+'</b> bookings · <b>'+rows.reduce(function(s,x){return s+(x.guests||0)},0)+'</b> guests'+(L>=4?' · '+M(tot):'')+'</p>'+
+        (rows.length?rows.map(function(x){return card('<div class="lrow"><div style="min-width:0"><h4>'+esc(x.name)+' · '+x.guests+' pax</h4><p>'+new Date(x.night+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"})+(x.time?' · '+esc(x.time):'')+(x.package?' · '+esc(x.package):'')+'</p><p class="small">'+esc(x.code)+(x.phone?' · <a href="tel:'+esc(x.phone)+'">'+esc(x.phone)+'</a>':'')+(L>=4&&spend(x)?' · '+M(spend(x)):'')+'</p></div><span class="status">'+(ST[x.status]||esc(x.status))+'</span></div>')}).join(""):'<p class="small">No upcoming app bookings yet.</p>');
+    }catch(e){fail(view,e)}
+  }
+
+  /* Attendance: each staff member checks in and out; managers see everyone */
+  async function att(view,v,L,ok){
+    var today=ymd(new Date());
+    var r=await sb.from("np_attendance").select("*").eq("venue_id",v).eq("night",today).order("check_in");
+    if(!ok())return;
+    if(r.error){view.innerHTML=card('<h4>Almost ready</h4><p class="small">Please run np-club-dashboard.sql in Supabase.</p>');return}
+    var rows=r.data||[],mine=rows.find(function(x){return x.user_id===user.id&&!x.check_out});
+    function tm(t){return t?new Date(t).toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"}):""}
+    view.innerHTML=card('<div class="lrow"><div><h4>You</h4><p>'+(mine?'Checked in at '+tm(mine.check_in):'Not checked in')+'</p></div><button class="pill '+(mine?'':'on')+'" id="atMe">'+(mine?'Check out':'Check in')+'</button></div>')+
+      '<h3 style="font-size:15px;margin:14px 0 8px">Tonight</h3>'+
+      (rows.length?rows.map(function(x){return card('<div class="lrow"><div style="min-width:0"><h4>'+esc(x.name||"Staff")+'</h4><p class="small">In '+tm(x.check_in)+(x.check_out?' · Out '+tm(x.check_out):' · on shift')+'</p></div>'+
+        (L>=4&&!x.check_out&&x.user_id!==user.id?'<button class="pill" data-out="'+x.id+'">Check out</button>':'<span class="status">'+(x.check_out?'Off':'Working')+'</span>')+'</div>')}).join(""):'<p class="small">Nobody checked in yet tonight.</p>');
+    view.querySelector("#atMe").onclick=async function(){this.disabled=true;var x;
+      if(mine)x=await sb.from("np_attendance").update({check_out:new Date().toISOString()}).eq("id",mine.id);
+      else x=await sb.from("np_attendance").insert({venue_id:v,night:today,name:(user.user_metadata&&user.user_metadata.name)||user.email});
+      if(x.error)alert(x.error.message);renderDash()};
+    view.querySelectorAll("[data-out]").forEach(function(b){b.onclick=async function(){var x=await sb.from("np_attendance").update({check_out:new Date().toISOString()}).eq("id",b.dataset.out);if(x.error)alert(x.error.message);renderDash()}});
+  }
+
+  /* CRM: real customers of this club (manager and up) */
+  async function crm(view,v,L,ok){
+    if(L<4){view.innerHTML=card('<h4>Managers only</h4><p class="small">Customer details are for managers, general managers and owners.</p>');return}
+    try{
+      var rows=await bookings(v,ymd(addDays(new Date(),-365)),null);if(!ok())return;
+      var map={};rows.forEach(function(x){if(x.status==="cancelled")return;var k=x.customer_id||(x.phone||"").replace(/\D/g,"")||(x.name||"").toLowerCase();if(!k)return;
+        var c=map[k]||(map[k]={name:x.name,phone:x.phone,visits:0,books:0,noshow:0,spend:0,last:""});
+        c.books++;if(x.status==="arrived"||x.status==="completed"){c.visits++;c.spend+=spend(x);if(x.night>c.last)c.last=x.night}
+        if(x.status==="no_show")c.noshow++;if(!c.phone&&x.phone)c.phone=x.phone});
+      var list=Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return b.spend-a.spend||b.visits-a.visits});
+      function tag(c){return c.spend>=50000||c.visits>=5?"VIP":c.visits>=2?"Regular":c.visits===1?"New":"Booked"}
+      view.innerHTML=note('Customers from the last 12 months, built from real bookings. Use it only to serve your guests (PDPA).')+
+        '<div class="fields" style="margin-bottom:10px"><label class="full">Search<input id="crQ" type="search" placeholder="Name or phone"></label></div><div id="crL"></div>';
+      function draw(){var q=view.querySelector("#crQ").value.trim().toLowerCase(),l=list.filter(function(c){return !q||String(c.name).toLowerCase().indexOf(q)>-1||String(c.phone||"").indexOf(q)>-1});
+        view.querySelector("#crL").innerHTML=l.length?'<div class="tblw"><table class="tbl"><tr><th>Customer</th><th>Visits</th><th>Spend</th><th>Last visit</th><th>Tag</th></tr>'+
+          l.map(function(c){var wa=String(c.phone||"").replace(/\D/g,"");return '<tr><td>'+esc(c.name)+(c.phone?'<br><a class="small" href="tel:'+esc(c.phone)+'">'+esc(c.phone)+'</a>'+(wa?' · <a class="small" href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WhatsApp</a>':''):'')+(c.noshow?'<br><span class="small">No-shows: '+c.noshow+'</span>':'')+'</td><td>'+c.visits+'</td><td>'+M(c.spend)+'</td><td>'+(c.last?new Date(c.last+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"}):"–")+'</td><td><span class="status">'+tag(c)+'</span></td></tr>'}).join("")+'</table></div>':'<p class="small">No customers yet. They appear after their first booking.</p>'}
+      view.querySelector("#crQ").oninput=draw;draw();
+    }catch(e){fail(view,e)}
+  }
+
+  /* Reports (manager and up) */
+  async function report(view,v,L,ok){
+    if(L<4){view.innerHTML=card('<h4>Managers only</h4><p class="small">Reports are for managers, general managers and owners.</p>');return}
+    var now=new Date(),P={tonight:[ymd(now),ymd(now),"Tonight"],"7d":[ymd(addDays(now,-6)),ymd(now),"Last 7 nights"],month:[ymd(new Date(now.getFullYear(),now.getMonth(),1)),ymd(now),"This month"],last:[ymd(new Date(now.getFullYear(),now.getMonth()-1,1)),ymd(new Date(now.getFullYear(),now.getMonth(),0)),"Last month"]};
+    try{
+      var p=P[rep]||P["7d"],rows=await bookings(v,p[0],p[1]);if(!ok())return;
+      function c(f){return rows.filter(f)}
+      var live=c(function(x){return x.status!=="cancelled"}),came=c(function(x){return x.status==="arrived"||x.status==="completed"});
+      var rev=came.reduce(function(s,x){return s+spend(x)},0),appRev=came.filter(function(x){return x.source==="app"}).reduce(function(s,x){return s+spend(x)},0);
+      var bySrc={};live.forEach(function(x){var k=SRC[x.source]||x.source||"Other";bySrc[k]=(bySrc[k]||0)+1});
+      function tr(a,b){return '<tr><td>'+a+'</td><td>'+b+'</td></tr>'}
+      view.innerHTML='<div class="fields" style="margin-bottom:10px"><label class="full">Period<select id="rpP">'+Object.keys(P).map(function(k){return '<option value="'+k+'"'+(k===rep?" selected":"")+'>'+P[k][2]+'</option>'}).join("")+'</select></label></div>'+
+        '<div class="tblw"><table class="tbl"><tr><th>'+p[2]+'</th><th>Live</th></tr>'+
+        tr("Reservations",live.length)+tr("Guests booked",live.reduce(function(s,x){return s+(x.guests||0)},0))+
+        tr("Arrived / completed",came.length)+tr("No-shows",c(function(x){return x.status==="no_show"}).length)+tr("Cancelled",c(function(x){return x.status==="cancelled"}).length)+
+        tr("Revenue (guests who came)",M(rev))+tr("From app bookings",M(appRev))+
+        tr("Commission to Namaste Pattaya ("+Math.round(COMMISSION*100)+"% of app bookings)",M(appRev*COMMISSION))+
+        '</table></div><p class="small" style="margin-top:10px">Bookings by source: '+(Object.keys(bySrc).map(function(k){return esc(k)+' '+bySrc[k]}).join(" · ")||"none")+'</p>'+
+        '<p class="small">Revenue uses the final bill when staff tap "Completed", otherwise the booking amount.</p>';
+      view.querySelector("#rpP").onchange=function(){rep=this.value;renderDash()};
+    }catch(e){fail(view,e)}
+  }
+
+  /* Post updates (captain and up) – saved online, shown in the app */
+  async function updates(view,v,L,ok){
+    var r=await sb.from("np_venue_updates").select("*").eq("venue_id",v).order("created_at",{ascending:false}).limit(20);if(!ok())return;
+    var rows=r.data||[];
+    view.innerHTML=(L>=2?'<div class="partner"><div class="fields"><label>Type<select id="uT"><option>Ladies night</option><option>Event</option><option>Live music / DJ</option><option>Table offer</option><option>Free tables tonight</option></select></label>'+
+      '<label>Show to<select id="uA"><option value="ladies">Empowered Girls lounge</option><option value="all">All users</option></select></label>'+
+      '<label class="full">Update<input id="uX" maxlength="300" placeholder="e.g. Bollywood night with DJ from 22:00, free entry for ladies"></label></div>'+
+      '<p class="small">Thai law: no alcohol, drink deals, tobacco or shisha in updates.</p><button class="cta" id="uGo">Post update</button><p class="err" id="uM" role="status"></p></div>':note('Captains and above can post updates.'))+
+      '<h3 style="font-size:15px;margin:14px 0 8px">Posted</h3>'+(rows.length?rows.map(function(x){return card('<div class="lrow"><div style="min-width:0"><h4>'+esc(x.kind||"Update")+'</h4><p>'+esc(x.body)+'</p><p class="small">'+(x.audience==="ladies"?"Empowered Girls lounge":"All users")+' · '+new Date(x.created_at).toLocaleString("en-GB",{day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})+'</p></div>'+(L>=4?'<button class="pill" data-del="'+x.id+'">Delete</button>':'')+'</div>')}).join(""):'<p class="small">No updates yet.</p>');
+    if(L>=2)view.querySelector("#uGo").onclick=async function(){
+      var t=view.querySelector("#uX").value.trim(),m=view.querySelector("#uM");m.style.color="";
+      if(!t){m.textContent="Write your update.";return}
+      if(LEGAL.test(t)){m.textContent="Please remove alcohol, drink, tobacco or shisha words (Thai law).";return}
+      this.disabled=true;var x=await sb.from("np_venue_updates").insert({venue_id:v,venue_name:venueName(v),kind:view.querySelector("#uT").value,body:t,audience:view.querySelector("#uA").value});this.disabled=false;
+      if(x.error){m.textContent=/check|legal/i.test(x.error.message)?"Please remove alcohol, drink, tobacco or shisha words (Thai law).":x.error.message;return}
+      pullUpdates();renderDash()};
+    view.querySelectorAll("[data-del]").forEach(function(b){b.onclick=async function(){if(!confirm("Delete this update?"))return;await sb.from("np_venue_updates").delete().eq("id",b.dataset.del);pullUpdates();renderDash()}});
+  }
+
+  /* Photos (captain and up) – uploaded online so every user sees them */
+  function shrinkBlob(file){return new Promise(function(ok){var img=new Image(),u=URL.createObjectURL(file);img.onload=function(){var k=Math.min(1,1400/Math.max(img.width,img.height)),cv=document.createElement("canvas");cv.width=Math.round(img.width*k);cv.height=Math.round(img.height*k);cv.getContext("2d").drawImage(img,0,0,cv.width,cv.height);URL.revokeObjectURL(u);cv.toBlob(ok,"image/jpeg",.82)};img.onerror=function(){URL.revokeObjectURL(u);ok(null)};img.src=u})}
+  async function photos(view,v,L,ok){
+    var r=await sb.from("np_venue_photos").select("*").eq("venue_id",v).order("created_at");if(!ok())return;
+    var rows=r.data||[];
+    view.innerHTML='<div class="partner"><h3 style="font-size:16px;margin:0 0 6px">Club photos</h3><p class="small">Your own photos only. The first one is your cover in the app. Up to 6. No bottles, drink brands or smoking in photos (Thai law).</p>'+
+      '<div class="gal" style="margin:12px 0">'+rows.map(function(x,i){return '<div class="gi"><img src="'+esc(x.url)+'" alt="Photo '+(i+1)+'">'+(L>=2?'<button data-del="'+x.id+'" aria-label="Remove photo">'+(typeof ico==="function"?ico("close"):"×")+'</button>':'')+'</div>'}).join("")+'</div>'+
+      (L>=2&&rows.length<6?'<label class="cta" style="display:block;text-align:center;cursor:pointer">Upload photos<input type="file" id="phIn2" accept="image/*" multiple hidden></label><label class="npm-chk" style="display:flex;gap:8px;margin-top:10px;font-size:14px"><input type="checkbox" id="phOk"> These are our own photos and we have the right to use them.</label>':'')+'<p class="err" id="phM" role="status"></p></div>';
+    var inp=view.querySelector("#phIn2");
+    if(inp)inp.onchange=async function(e){var m=view.querySelector("#phM");
+      if(!view.querySelector("#phOk").checked){m.textContent="Please tick the box first.";inp.value="";return}
+      var files=[].slice.call(e.target.files,0,6-rows.length);m.style.color="";m.textContent="Uploading…";
+      for(var i=0;i<files.length;i++){var b=await shrinkBlob(files[i]);if(!b)continue;var path=v+"/"+Date.now()+"-"+i+".jpg";
+        var up=await sb.storage.from("venue-photos").upload(path,b,{contentType:"image/jpeg"});if(up.error){m.textContent=up.error.message;return}
+        var url=sb.storage.from("venue-photos").getPublicUrl(path).data.publicUrl;
+        var x=await sb.from("np_venue_photos").insert({venue_id:v,url:url,path:path});if(x.error){m.textContent=x.error.message;return}}
+      await pullPhotos();renderDash()};
+    view.querySelectorAll("[data-del]").forEach(function(b){b.onclick=async function(){if(!confirm("Remove this photo?"))return;
+      var x=rows.find(function(r){return String(r.id)===b.dataset.del});await sb.from("np_venue_photos").delete().eq("id",b.dataset.del);if(x)await sb.storage.from("venue-photos").remove([x.path]);
+      await pullPhotos();renderDash()}});
+  }
+
+  /* ---------- show updates and photos to every app user ---------- */
+  async function pullUpdates(){
+    try{var r=await sb.from("np_venue_updates").select("venue_name,kind,body,created_at").gte("created_at",addDays(new Date(),-14).toISOString()).order("created_at",{ascending:false}).limit(50);
+      if(!r.error&&r.data&&r.data.length&&typeof store!=="undefined"){store.set("np_lady_updates",r.data.map(function(x){return [x.venue_name||"",x.kind||"Update",x.body]}))}}catch(e){}
+  }
+  async function pullPhotos(){
+    try{var r=await sb.from("np_venue_photos").select("venue_id,url,created_at").order("created_at");
+      if(r.error||!r.data||typeof store==="undefined")return;var by={};r.data.forEach(function(x){(by[x.venue_id]=by[x.venue_id]||[]).push(x.url)});
+      Object.keys(by).forEach(function(k){store.set("np_photos_"+k,by[k].slice(0,6))});
+      ["renderGrid","renderRail"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}});
+    }catch(e){}
+  }
+  pullUpdates();pullPhotos();
+
+  /* venue list: admins see every venue, partners only the venues they work at */
+  var ALLV=null;
+  function restrict(){
+    var dv=document.getElementById("dVenue");if(!dv)return;
+    if(!ALLV||dv.options.length>ALLV.length)ALLV=[].map.call(dv.options,function(o){return [o.value,o.textContent]}).filter(function(x){return x[0]!=="__none"});
+    var allow=isAdm?ALLV:ALLV.filter(function(x){return myStaff[x[0]]});
+    var key=allow.map(function(x){return x[0]}).join(",");if(dv.dataset.allow===key&&dv.options.length)return;
+    var cur=dv.value;dv.innerHTML="";
+    if(!allow.length){var o=document.createElement("option");o.value="__none";o.textContent=user?"No venue linked to your account yet":"Log in to see your venue";dv.appendChild(o)}
+    allow.forEach(function(x){var o=document.createElement("option");o.value=x[0];o.textContent=x[1];dv.appendChild(o)});
+    dv.dataset.allow=key;
+    if(allow.some(function(x){return x[0]===cur}))dv.value=cur;
+  }
+  async function onUser(u){var same=(u&&u.id)===(user&&user.id);user=u;if(same&&u)return;await loadMe();restrict();
+    var d=document.getElementById("dash");if(d&&!d.hidden)renderDash()}
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+})();
+
+/* ===== Agent dashboard (30 Sep 2026): live referred bookings, commission, payouts, share link.
+   Admin: approve or reject agents, see what each agent is owed, record payouts. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var APP="https://namastepattayareservationsindthai.vercel.app/";
+  var RATE={agent:0.05,traveller:0.03};
+  var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled"};
+  var user=null,isAdm=false,per="month";
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function M(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")} /* dashboards always in baht (bills are in baht) */
+  function X(){return typeof ico==="function"?ico("close"):"×"}
+  function head(t,id){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="'+id+'" aria-label="Close">'+X()+'</button></div>'}
+  function open(h){panel.innerHTML=h;sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function meta(){return (user&&user.user_metadata)||{}}
+  function viewAs(){try{return localStorage.getItem("np_view_as")||""}catch(e){return ""}}
+  function isAgent(){return /^agent/.test(meta().role||"")||(isAdm&&/^agent/.test(viewAs()))}
+  function myCode(){var m=meta(),g="";try{g=(0,eval)("typeof myCode!=='undefined'?myCode:''")}catch(e){}return String(m.ref_code||g||"").toUpperCase()}
+  function venueName(id){var c=(typeof CLUBS!=="undefined"?CLUBS:[]).find(function(x){return x.id===id});return c?c.name:id}
+  function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+
+  /* referral links: ?ref=CODE fills the booking form automatically */
+  try{var rq=new URLSearchParams(location.search).get("ref");if(rq&&/^[A-Z0-9]{4,12}$/i.test(rq))localStorage.setItem("np_ref_in",rq.toUpperCase())}catch(e){}
+  function fillRef(){var f=document.getElementById("fRef");if(!f||f.value)return;var r="";try{r=localStorage.getItem("np_ref_in")||""}catch(e){}if(r&&r!==myCode())f.value=r}
+
+  /* ---------- agent dashboard ---------- */
+  async function openAgent(){
+    if(!user)return;
+    var m=meta(),st=m.agent_status||"pending",code=myCode(),rate=isAgent()?RATE.agent:RATE.traveller;
+    open('<div class="pbody">'+head(isAgent()?"Agent dashboard":"My referrals","agX")+
+      '<div class="lcard hl" style="margin-top:12px"><h4>'+esc(m.agency||m.name||user.email)+'</h4><p class="small">'+(isAgent()?(st==="approved"?"✅ Agent approved · 5% commission":st==="rejected"?"Agent account not approved. Please contact us.":"⏳ Under review. You can already share your code; commission is paid after approval."):"Traveller · 3% referral reward")+'</p></div>'+
+      '<div class="refcode"><strong class="notranslate" translate="no">'+esc(code||"—")+'</strong><span class="small">Your code. Clients type it when booking, or use your link.</span></div>'+
+      '<div class="rsbtns" style="margin:8px 0 14px"><button class="pill on" id="agShare">Share on WhatsApp</button><button class="pill" id="agCopy">Copy my link</button></div>'+
+      '<div class="fields"><label class="full">Period<select id="agP"><option value="month">This month</option><option value="last">Last month</option><option value="all">All time</option></select></label></div>'+
+      '<div id="agBody"><p class="small">Loading…</p></div></div>');
+    panel.querySelector("#agX").onclick=closeSheet;
+    var link=APP+"?ref="+encodeURIComponent(code);
+    panel.querySelector("#agShare").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent("Book clubs, Indian restaurants, tours and more in Pattaya with Namaste Pattaya Reservations: "+link),"_blank")};
+    panel.querySelector("#agCopy").onclick=function(){var b=this;(navigator.clipboard?navigator.clipboard.writeText(link):Promise.reject()).then(function(){b.textContent="Copied ✓"},function(){prompt("Copy your link:",link)})};
+    var sel=panel.querySelector("#agP");sel.value=per;sel.onchange=function(){per=this.value;draw()};
+    var r=await sb.rpc("np_my_referrals"),pay=await sb.from("np_agent_payouts").select("amount,paid_on,note").eq("agent",user.id).order("paid_on",{ascending:false});
+    var body=panel.querySelector("#agBody");if(!body)return;
+    if(r.error){body.innerHTML='<div class="lcard"><h4>Almost ready</h4><p class="small">'+(/function|does not exist/i.test(r.error.message)?"The agent dashboard is being set up. Please check back soon.":esc(r.error.message))+'</p></div>';return}
+    var rows=r.data||[],pays=pay.data||[];
+    function draw(){
+      var now=new Date(),from=null,to=null;
+      if(per==="month"){from=ymd(new Date(now.getFullYear(),now.getMonth(),1))}
+      if(per==="last"){from=ymd(new Date(now.getFullYear(),now.getMonth()-1,1));to=ymd(new Date(now.getFullYear(),now.getMonth(),0))}
+      var l=rows.filter(function(x){return (!from||x.night>=from)&&(!to||x.night<=to)});
+      var live=l.filter(function(x){return x.status!=="cancelled"}),came=l.filter(function(x){return x.status==="arrived"||x.status==="completed"});
+      var upcoming=l.filter(function(x){return (x.status==="confirmed"||x.status==="pending")&&x.night>=ymd(now)});
+      var sales=came.reduce(function(s,x){return s+Number(x.amount||0)},0);
+      var allEarn=rows.filter(function(x){return x.status==="arrived"||x.status==="completed"}).reduce(function(s,x){return s+Number(x.amount||0)*rate},0);
+      var paid=pays.reduce(function(s,p){return s+Number(p.amount||0)},0);
+      body.innerHTML='<div class="kpis"><div class="kpi"><small>Bookings</small><b>'+live.length+'</b></div><div class="kpi"><small>Guests</small><b>'+live.reduce(function(s,x){return s+(x.guests||0)},0)+'</b></div>'+
+        '<div class="kpi"><small>Came (arrived)</small><b>'+came.length+'</b></div><div class="kpi"><small>Sales</small><b>'+M(sales)+'</b></div>'+
+        '<div class="kpi"><small>Earned ('+Math.round(rate*100)+'%)</small><b>'+M(sales*rate)+'</b></div><div class="kpi"><small>Coming up</small><b>'+upcoming.length+'</b></div></div>'+
+        '<div class="lcard" style="margin-top:12px"><div class="lrow"><div><h4>To be paid to you</h4><p class="small">All time earned '+M(allEarn)+' · paid '+M(paid)+'</p></div><div style="text-align:right"><b style="font-size:20px">'+M(Math.max(0,allEarn-paid))+'</b><br><span class="small">≈ ₹'+Math.round(Math.max(0,allEarn-paid)*((0,eval)("typeof INR_PER_THB!=='undefined'?INR_PER_THB:2.89"))).toLocaleString("en-IN")+'</span></div></div></div>'+
+        '<h3 style="font-size:15px;margin:14px 0 8px">Bookings with your code</h3>'+
+        (l.length?l.map(function(x){var c=x.status==="arrived"||x.status==="completed";
+          return '<div class="lcard"><div class="lrow"><div style="min-width:0"><h4>'+esc(x.guest_name)+' · '+x.guests+' pax</h4><p class="small">'+esc(venueName(x.venue_id))+' · '+new Date(x.night+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"short"})+(Number(x.amount)?' · '+M(x.amount):'')+(c?' · you earn '+M(Number(x.amount||0)*rate):'')+'</p></div><span class="status">'+(ST[x.status]||esc(x.status))+'</span></div></div>'}).join(""):'<p class="small">No bookings with your code in this period yet. Share your link to start earning.</p>')+
+        (pays.length?'<h3 style="font-size:15px;margin:14px 0 8px">Payments received</h3>'+pays.map(function(p){return '<div class="lcard"><div class="lrow"><div><h4>'+M(p.amount)+'</h4><p class="small">'+new Date(p.paid_on+"T12:00").toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})+(p.note?' · '+esc(p.note):'')+'</p></div><span class="status">Paid</span></div></div>'}).join(""):'')+
+        '<p class="small" style="margin-top:10px">Commission counts when your client arrives. The venue\'s final bill is used when available.</p>';
+    }
+    draw();
+  }
+  window.npOpenAgent=openAgent;
+
+  /* ---------- admin: agents ---------- */
+  async function openAgentsAdmin(){
+    open('<div class="pbody">'+head("Admin · Agents","aaX")+'<div class="fields"><label class="full">Show<select id="aaF"><option value="pending">Waiting for approval</option><option value="approved">Approved</option><option value="rejected">Rejected</option><option value="all">All</option></select></label></div><div id="aaL"><p class="small">Loading…</p></div></div>');
+    panel.querySelector("#aaX").onclick=closeSheet;
+    var r=await sb.rpc("np_list_agents"),box=panel.querySelector("#aaL");if(!box)return;
+    if(r.error){box.innerHTML='<p class="err">'+esc(/function|does not exist/i.test(r.error.message)?"Please run np-agents.sql in Supabase first.":r.error.message)+'</p>';return}
+    var rows=r.data||[],f=panel.querySelector("#aaF");f.value=rows.some(function(x){return x.status==="pending"})?"pending":"all";
+    function draw(){var l=rows.filter(function(x){return f.value==="all"||x.status===f.value});
+      box.innerHTML=l.length?l.map(function(a){var owed=Math.max(0,Number(a.sales||0)*RATE.agent-Number(a.paid||0)),wa=String(a.phone||"").replace(/\D/g,"");
+        return '<div class="lcard" data-u="'+a.user_id+'"><div class="lrow"><div style="min-width:0"><h4>'+esc(a.agency||a.name||a.email)+'</h4><p class="small">'+esc([a.name,a.role==="agent_th"?"Thai agent":"Indian agent",a.city].filter(Boolean).join(" · "))+'</p>'+
+          '<p class="small">'+esc(a.email)+(a.phone?' · <a href="tel:'+esc(a.phone)+'">'+esc(a.phone)+'</a>'+(wa?' · <a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WhatsApp</a>':''):'')+'</p>'+
+          (a.reg_no?'<p class="small">Reg. no. '+esc(a.reg_no)+'</p>':'')+'<p class="small">Code <b>'+esc(a.ref_code||"—")+'</b> · '+a.bookings+' bookings · '+a.came+' came · sales '+M(a.sales)+'</p>'+
+          '<p class="small">Owed <b>'+M(owed)+'</b> · paid '+M(a.paid)+'</p></div><span class="status">'+esc(a.status)+'</span></div>'+
+          '<div class="rsbtns">'+(a.status!=="approved"?'<button class="pill on" data-s="approved">Approve</button>':'')+(a.status!=="rejected"?'<button class="pill" data-s="rejected">Reject</button>':'')+(owed>0?'<button class="pill" data-pay="'+Math.round(owed)+'">Record payout</button>':'')+'</div></div>'}).join(""):'<p class="small">No agents here.</p>';
+      box.querySelectorAll("[data-s]").forEach(function(b){b.onclick=async function(){var id=b.closest("[data-u]").dataset.u;
+        if(b.dataset.s==="rejected"&&!confirm("Reject this agent?"))return;b.disabled=true;
+        var x=await sb.rpc("np_set_agent_status",{p_user:id,p_status:b.dataset.s});if(x.error){alert(x.error.message);b.disabled=false;return}
+        rows.forEach(function(a){if(a.user_id===id)a.status=b.dataset.s});draw()}});
+      box.querySelectorAll("[data-pay]").forEach(function(b){b.onclick=async function(){var id=b.closest("[data-u]").dataset.u;
+        var v=prompt("Amount paid to this agent (baht):",b.dataset.pay);if(v===null)return;var n=parseFloat(String(v).replace(/[^0-9.]/g,""));if(!(n>0))return;
+        var note=prompt("Note (optional, e.g. bank transfer ref):","")||null;
+        var x=await sb.from("np_agent_payouts").insert({agent:id,amount:n,note:note});if(x.error){alert(x.error.message);return}
+        rows.forEach(function(a){if(a.user_id===id)a.paid=Number(a.paid||0)+n});draw()}});
+    }
+    f.onchange=draw;draw();
+  }
+  window.npAgentsAdmin=openAgentsAdmin;
+
+  /* ---------- buttons ---------- */
+  function addButtons(){
+    var acc=panel.querySelector("#umAcc");
+    if(acc&&user&&!panel.querySelector("#npAgBtn")){var b=document.createElement("button");b.className="cta";b.id="npAgBtn";b.textContent=isAgent()?"Agent dashboard":"My referrals & earnings";b.onclick=openAgent;acc.insertAdjacentElement("beforebegin",b)}
+    var adm=panel.querySelector(".lcard.adm");
+    if(adm&&isAdm&&!adm.querySelector("#npAgAdm")){var a=document.createElement("button");a.className="pill";a.id="npAgAdm";a.textContent="Agents";a.onclick=openAgentsAdmin;var v=adm.querySelector("#adVip");if(v)v.insertAdjacentElement("afterend",a);else adm.appendChild(a)}
+    var earn=document.getElementById("earn");
+    if(earn&&user&&!document.getElementById("npAgEarn")){var c=document.createElement("div");c.id="npAgEarn";c.className="lcard hl";c.style.margin="10px 0 14px";
+      c.innerHTML='<div class="lrow"><div><h4>'+(isAgent()?"Agent dashboard":"My referrals & earnings")+'</h4><p class="small">Live bookings with your code, what you earned, and payments.</p></div><button class="pill on">Open</button></div>';
+      c.querySelector("button").onclick=openAgent;var t=earn.querySelector(".sectiontitle,h2");if(t)t.insertAdjacentElement("afterend",c);else earn.insertBefore(c,earn.firstChild)}
+    fillRef();
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;addButtons()})}).observe(document.body,{childList:true,subtree:true});
+  async function onUser(u){user=u;isAdm=false;var e=document.getElementById("npAgEarn");if(e)e.remove();
+    if(u){try{var a=await sb.rpc("np_is_admin");isAdm=!a.error&&a.data===true}catch(x){}}addButtons()}
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+})();
+
+/* ===== Admin Control Center (30 Sep 2026): one place for every dashboard + booking inbox
+   with live notifications (bell, sound, phone notification) and Telegram alerts.
+   Also saves bookings from guests who are not logged in, so no booking is lost. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var user=null,isAdm=false,items=[],filter="new",q="",chan=null,unseen=0,loaded=false,open=false;
+  var ST={pending:"Pending",confirmed:"Confirmed",arrived:"Arrived",completed:"Completed",no_show:"No-show",cancelled:"Cancelled",new:"New",in_progress:"Preparing",done:"Done"};
+  function esc(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function M(n){n=Math.round(Number(n)||0);return "฿"+n.toLocaleString("en-US")} /* dashboards always in baht (bills are in baht) */
+  function X(){return typeof ico==="function"?ico("close"):"×"}
+  function ymd(d){var x=new Date(d);return x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0")}
+  function club(id){return (typeof CLUBS!=="undefined"?CLUBS:[]).find(function(x){return x.id===id})}
+  function vname(id,fb){var c=club(id);return c?c.name:(fb||(id==="vip"?"Package / VIP request":String(id||"").replace(/-/g," ")))}
+  function catName(id,fb){var c=club(id),k=(c&&c.cat)||fb||"";return (typeof CATNAME!=="undefined"&&CATNAME[k])||k}
+
+  /* ---------- guests without an account: save their booking online too ---------- */
+  if(typeof store!=="undefined"&&typeof store.set==="function"){
+    var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
+    store.set=function(key,val){
+      try{if(key==="np_bookings"&&Array.isArray(val)){if(val.length>prev&&val[0])guestSave(val[0]);prev=val.length}}catch(e){}
+      return _set.apply(this,arguments);
+    };
+  }
+  function guestSave(bk){
+    if(!bk||!/^NP/.test(bk.code||"")||!bk.club)return;
+    sb.auth.getSession().then(function(r){
+      if(r.data&&r.data.session)return; /* logged-in bookings are saved by the club dashboard sync */
+      sb.from("np_bookings").insert({code:bk.code,venue_id:bk.club,customer_id:null,name:bk.name||"Guest",phone:bk.phone||null,night:ymd(bk.date||new Date()),
+        time:bk.time||null,guests:parseInt(bk.guests,10)||1,package:bk.pkg||null,total:Number(bk.total)||0,ref:bk.ref||null,source:"app",status:"confirmed"}).then(function(){},function(){});
+    });
+  }
+
+  /* ---------- sound + phone notification ---------- */
+  function beep(){try{var C=window.AudioContext||window.webkitAudioContext;if(!C)return;var c=new C(),t=c.currentTime;
+    [0,0.18].forEach(function(d,i){var o=c.createOscillator(),g=c.createGain();o.type="sine";o.frequency.value=i?1175:880;g.gain.setValueAtTime(0.0001,t+d);g.gain.exponentialRampToValueAtTime(0.3,t+d+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+d+0.25);o.connect(g);g.connect(c.destination);o.start(t+d);o.stop(t+d+0.3)})}catch(e){}}
+  function notify(title,body){
+    try{if(!("Notification" in window)||Notification.permission!=="granted")return;
+      var opt={body:body,tag:"np-"+Date.now(),icon:"photos/icon-192.png"};
+      if(navigator.serviceWorker&&navigator.serviceWorker.getRegistration)navigator.serviceWorker.getRegistration().then(function(reg){if(reg&&reg.showNotification)reg.showNotification(title,opt);else new Notification(title,opt)},function(){new Notification(title,opt)});
+      else new Notification(title,opt);
+    }catch(e){}
+  }
+
+  /* ---------- data ---------- */
+  async function load(){
+    var since=new Date();since.setDate(since.getDate()-60);
+    var b=await sb.from("np_bookings").select("*").gte("night",ymd(since)).order("night",{ascending:false}).limit(600);
+    var o=await sb.from("np_orders").select("*").order("created_at",{ascending:false}).limit(300);
+    var map={};
+    (b.data||[]).forEach(function(x){map[x.code||("b"+x.id)]={t:"b",id:x.id,code:x.code,venue:x.venue_id,vname:vname(x.venue_id),cat:catName(x.venue_id),name:x.name,phone:x.phone,night:x.night,time:x.time,guests:x.guests,pkg:x.package,total:Number(x.final_bill!=null?x.final_bill:x.total)||0,status:x.status,source:x.source,ref:x.ref,seen:!!x.admin_seen,created:x.created_at,guest:!x.customer_id,advPct:x.advance_pct||0,advAmt:x.advance_amount,advPaid:!!x.advance_paid}});
+    (o.data||[]).forEach(function(x){var k=x.code||("o"+x.id),e=map[k];
+      var row={t:"o",id:x.id,code:x.code,venue:x.venue_id,vname:x.venue_name||vname(x.venue_id),cat:catName(x.venue_id,x.category),name:x.customer_name,phone:x.customer_phone,night:String(x.booking_date||"").slice(0,10),time:x.booking_time,guests:x.guests,pkg:x.package,total:Number(x.total)||0,status:x.status,source:"app",order_type:x.order_type,address:x.delivery_address,seen:!!x.admin_seen,created:x.created_at};
+      if(e){e.order=row;e.order_type=x.order_type;e.address=x.delivery_address;e.seen=e.seen&&row.seen;e.ostatus=x.status}else map[k]=row});
+    items=Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return String(b.created||b.night).localeCompare(String(a.created||a.night))});
+    unseen=items.filter(function(x){return !x.seen&&x.status!=="cancelled"}).length;loaded=true;bell();
+  }
+  function subscribe(){
+    if(chan){sb.removeChannel(chan);chan=null}
+    chan=sb.channel("np-admin-inbox")
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"np_bookings"},function(ev){fresh("New booking",ev.new.name,ev.new.venue_id,ev.new.night,ev.new.guests)})
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"np_orders"},function(ev){fresh("New restaurant order",ev.new.customer_name,ev.new.venue_id,ev.new.booking_date,ev.new.guests,ev.new.venue_name)})
+      .on("postgres_changes",{event:"UPDATE",schema:"public",table:"np_bookings"},function(){soft()})
+      .on("postgres_changes",{event:"UPDATE",schema:"public",table:"np_orders"},function(){soft()})
+      .subscribe();
+  }
+  var st=null;function soft(){clearTimeout(st);st=setTimeout(function(){load().then(function(){if(open)draw()})},600)}
+  function fresh(kind,name,venue,night,guests,vn){
+    beep();notify("🔔 "+kind,(name||"Guest")+" · "+vname(venue,vn)+(night?" · "+String(night).slice(0,10):"")+(guests?" · "+guests+" pax":""));
+    toast("🔔 "+kind+": "+(name||"Guest")+" · "+vname(venue,vn));soft();
+  }
+  function toast(t){var d=document.createElement("div");d.className="npcc-toast";d.textContent=t;d.onclick=function(){d.remove();openCC()};document.body.appendChild(d);setTimeout(function(){d.remove()},7000)}
+
+  /* ---------- styles ---------- */
+  if(!document.getElementById("npccCss")){
+    var s=document.createElement("style");s.id="npccCss";
+    s.textContent='#npBell{position:fixed;left:14px;bottom:calc(96px + env(safe-area-inset-bottom));z-index:60;width:52px;height:52px;border-radius:50%;border:1px solid rgba(233,185,73,.7);background:rgba(18,14,30,.95);color:#E9B949;display:none;align-items:center;justify-content:center;box-shadow:0 0 16px rgba(233,185,73,.25);cursor:pointer}'+
+      '#npBell.show{display:flex}#npBell b{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 6px;border-radius:11px;background:#E5484D;color:#fff;font-size:12px;line-height:22px;text-align:center}'+
+      '.npcc-toast{position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top));z-index:10000;padding:14px 16px;border-radius:16px;background:rgba(18,14,30,.97);border:1px solid #E9B949;color:#fff;font-weight:600;box-shadow:0 8px 24px rgba(0,0,0,.4);cursor:pointer}'+
+      '.npcc-tabs{display:flex;gap:6px;margin:12px 0}.npcc-tabs button{flex:1;padding:10px 6px;border-radius:12px;font:inherit;font-weight:600;font-size:14px;color:var(--ink,#fff);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.14)}.npcc-tabs button[aria-selected="true"]{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '.npcc-chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}.npcc-chips::-webkit-scrollbar{display:none}.npcc-chips button{flex:0 0 auto;padding:7px 12px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;color:var(--ink,#fff);background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.18)}.npcc-chips button.on{border-color:#ED93B1;background:rgba(237,147,177,.18)}'+
+      '.npcc-it{border-radius:16px;padding:12px 14px;margin:0 0 10px;background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.12)}.npcc-it.new{border-color:#E9B949;box-shadow:0 0 12px rgba(233,185,73,.18)}'+
+      '.npcc-it .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.npcc-it h4{margin:0;font-size:15px}.npcc-it p{margin:3px 0 0;font-size:13px;opacity:.85}.npcc-it .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#E9B949;margin-right:6px}'+
+      '.npcc-it .acts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.npcc-it .acts a,.npcc-it .acts button{padding:7px 12px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;text-decoration:none;color:var(--ink,#fff);background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.2)}.npcc-it .acts .pri{background:#E9B949;border-color:#E9B949;color:#1a1026}'+
+      '.npcc-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.npcc-grid button{text-align:left;padding:14px;border-radius:16px;font:inherit;color:var(--ink,#fff);background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.12);cursor:pointer}.npcc-grid b{display:block;font-size:15px}.npcc-grid small{display:block;opacity:.75;margin-top:4px;font-size:12px}.npcc-grid .n{color:#E9B949;font-weight:700}'+
+      '.npcc-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 12px}.npcc-kpi div{padding:10px;border-radius:14px;background:rgba(255,255,255,.05);text-align:center}.npcc-kpi b{display:block;font-size:20px;color:#E9B949}.npcc-kpi small{font-size:11px;opacity:.8}';
+    document.head.appendChild(s);
+  }
+  var BELL='<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.9 1.9 0 0 0 3.4 0"/></svg>';
+  function bell(){
+    var b=document.getElementById("npBell");
+    if(!b){b=document.createElement("button");b.id="npBell";b.type="button";b.innerHTML=BELL+'<b hidden></b>';b.onclick=openCC;document.body.appendChild(b)}
+    b.classList.toggle("show",isAdm);b.setAttribute("aria-label","Control Center, "+unseen+" new bookings");
+    var n=b.querySelector("b");n.hidden=!unseen;n.textContent=unseen>99?"99+":unseen;
+  }
+
+  /* ---------- Control Center ---------- */
+  var tab="inbox";
+  function openCC(){if(!isAdm)return;open=true;
+    panel.innerHTML='<div class="pbody" id="npCC"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 id="sheetTitle" style="font-size:20px">Control Center</h2><button class="theme" id="ccX" aria-label="Close">'+X()+'</button></div>'+
+      '<div class="npcc-tabs" role="tablist"><button role="tab" data-t="inbox">Inbox'+(unseen?' ('+unseen+')':'')+'</button><button role="tab" data-t="dash">All dashboards</button><button role="tab" data-t="alerts">Alerts</button></div><div id="ccBody"></div></div>';
+    sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
+    panel.querySelector("#ccX").onclick=function(){open=false;closeSheet()};
+    panel.querySelectorAll("[data-t]").forEach(function(b){b.onclick=function(){tab=b.dataset.t;draw()}});
+    if(!loaded)load().then(draw);draw();
+  }
+  window.npControlCenter=openCC;
+  function draw(){
+    var box=panel.querySelector("#ccBody");if(!box)return;
+    panel.querySelectorAll("[data-t]").forEach(function(b){b.setAttribute("aria-selected",b.dataset.t===tab)});
+    var ib=panel.querySelector('[data-t="inbox"]');if(ib)ib.textContent="Inbox"+(unseen?" ("+unseen+")":"");
+    if(tab==="inbox")drawInbox(box);else if(tab==="dash")drawDash(box);else drawAlerts(box);
+  }
+  function drawInbox(box){
+    if(!loaded){box.innerHTML='<p class="small">Loading…</p>';return}
+    var today=ymd(new Date());
+    var F={new:["New",function(x){return !x.seen&&x.status!=="cancelled"}],today:["Tonight / today",function(x){return x.night===today}],up:["Upcoming",function(x){return x.night>=today&&x.status!=="cancelled"}],
+      adv:["Awaiting advance",function(x){return x.advPct&&!x.advPaid&&x.status!=="cancelled"}],food:["Restaurant orders",function(x){return x.t==="o"||!!x.order}],guest:["Guests (no account)",function(x){return !!x.guest}],all:["All (60 days)",function(){return true}]};
+    var tn=items.filter(function(x){return x.night===today&&x.status!=="cancelled"});
+    var l=items.filter(F[filter][1]).filter(function(x){if(!q)return true;var t=[x.code,x.name,x.phone,x.vname,x.cat,x.pkg].join(" ").toLowerCase();return t.indexOf(q.toLowerCase())>-1});
+    box.innerHTML='<div class="npcc-kpi"><div><b>'+unseen+'</b><small>New</small></div><div><b>'+tn.length+'</b><small>Today</small></div><div><b>'+M(tn.reduce(function(s,x){return s+x.total},0))+'</b><small>Today value</small></div></div>'+
+      '<div class="npcc-chips">'+Object.keys(F).map(function(k){return '<button data-f="'+k+'" class="'+(k===filter?'on':'')+'">'+F[k][0]+'</button>'}).join("")+'</div>'+
+      '<div class="fields" style="margin:6px 0 10px"><label class="full">Search<input id="ccQ" type="search" value="'+esc(q)+'" placeholder="Name, phone, code, venue"></label></div>'+
+      (unseen&&filter==="new"?'<button class="cta ghost" id="ccAll" style="margin:0 0 10px">Mark all as handled</button>':'')+
+      (l.length?l.map(card).join(""):'<p class="small">'+(filter==="new"?"All caught up. No new bookings. 🎉":"Nothing here.")+'</p>');
+    box.querySelectorAll("[data-f]").forEach(function(b){b.onclick=function(){filter=b.dataset.f;draw()}});
+    box.querySelector("#ccQ").oninput=function(){q=this.value;var p=this.selectionStart;drawInbox(box);var i=box.querySelector("#ccQ");i.focus();try{i.setSelectionRange(p,p)}catch(e){}};
+    if(box.querySelector("#ccAll"))box.querySelector("#ccAll").onclick=async function(){this.disabled=true;
+      var bs=items.filter(function(x){return !x.seen}),bi=bs.filter(function(x){return x.t==="b"}).map(function(x){return x.id}),oi=bs.map(function(x){return x.t==="o"?x.id:(x.order&&x.order.id)}).filter(Boolean);
+      if(bi.length)await sb.from("np_bookings").update({admin_seen:true}).in("id",bi);if(oi.length)await sb.from("np_orders").update({admin_seen:true}).in("id",oi);
+      await load();draw()};
+    box.querySelectorAll("[data-k]").forEach(function(c){var x=items.find(function(i){return (i.code||i.id)+""===c.dataset.k});if(!x)return;
+      c.querySelectorAll("[data-a]").forEach(function(b){b.onclick=function(){act(x,b.dataset.a,b)}})});
+  }
+  function card(x){
+    var st=x.ostatus||x.status,wa=String(x.phone||"").replace(/\D/g,""),food=x.t==="o"||!!x.order;
+    var type=x.order_type==="delivery"?"🛵 Delivery":x.order_type==="takeaway"?"🥡 Takeaway":food?"🍽 Dine-in":x.venue==="vip"?"🎁 Package":"🎟 Booking";
+    return '<div class="npcc-it'+(x.seen?'':' new')+'" data-k="'+esc(x.code||x.id)+'"><div class="top"><div style="min-width:0"><h4>'+(x.seen?'':'<span class="dot"></span>')+esc(x.name||"Guest")+(x.guests?' · '+x.guests+' pax':'')+'</h4>'+
+      '<p>'+type+' · <b>'+esc(x.vname)+'</b>'+(x.cat?' · '+esc(x.cat):'')+'</p>'+
+      '<p>📅 '+(x.night?new Date(x.night+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}):"")+(x.time?' · '+esc(x.time):'')+(x.total?' · '+M(x.total):'')+'</p>'+
+      (x.pkg?'<p>📦 '+esc(x.pkg)+'</p>':'')+(x.address?'<p>🏠 '+esc(x.address)+'</p>':'')+
+      (x.advPct?'<p><span class="npadv-chip'+(x.advPaid?' paid':'')+'">'+(x.advPaid?'Advance paid ฿'+Math.round(x.advAmt||0).toLocaleString("en-US"):'Advance '+x.advPct+'% NOT paid · ฿'+Math.round(x.advAmt||0).toLocaleString("en-US"))+'</span></p>':'')+
+      '<p class="small">'+esc(x.code||"")+(x.ref?' · agent '+esc(x.ref):'')+(x.guest?' · no account':'')+'</p></div><span class="status">'+esc(ST[st]||st||"")+'</span></div>'+
+      '<div class="acts">'+(x.phone?'<a href="tel:'+esc(x.phone)+'">Call</a>'+(wa?'<a href="https://wa.me/'+wa+'" target="_blank" rel="noopener">WhatsApp</a>':''):'')+
+      (!x.seen?'<button class="pri" data-a="seen">Handled ✓</button>':'<button data-a="unseen">Mark new</button>')+
+      (x.t==="b"&&st==="pending"?'<button data-a="confirm">Confirm</button>':'')+
+      (st!=="cancelled"&&st!=="completed"&&st!=="done"?'<button data-a="cancel">Cancel</button>':'')+
+      (food?'<button data-a="rest">Restaurant dashboard</button>':(x.venue!=="vip"?'<button data-a="club">Open dashboard</button>':''))+'</div></div>';
+  }
+  async function act(x,a,b){
+    b.disabled=true;var r=null;
+    function both(patch,opatch){var p=[];if(x.t==="b")p.push(sb.from("np_bookings").update(patch).eq("id",x.id));var oid=x.t==="o"?x.id:(x.order&&x.order.id);if(oid)p.push(sb.from("np_orders").update(opatch||patch).eq("id",oid));return Promise.all(p)}
+    if(a==="seen")r=await both({admin_seen:true});
+    else if(a==="unseen")r=await both({admin_seen:false});
+    else if(a==="confirm")r=await both({status:"confirmed",admin_seen:true},{status:"confirmed",admin_seen:true});
+    else if(a==="cancel"){if(!confirm("Cancel "+(x.code||"this booking")+" for "+(x.name||"guest")+"? Please also call or WhatsApp the guest.")){b.disabled=false;return}
+      r=await both({status:"cancelled",admin_seen:true},{status:"cancelled",admin_seen:true})}
+    else if(a==="rest"){location.href="restaurant.html";return}
+    else if(a==="club"){open=false;closeSheet();if(typeof go==="function")go("dash");setTimeout(function(){var dv=document.getElementById("dVenue");if(dv&&[].some.call(dv.options,function(o){return o.value===x.venue})){dv.value=x.venue;try{dTab="res"}catch(e){}if(typeof renderDash==="function")renderDash()}},300);return}
+    var err=(r||[]).find&&(r||[]).find(function(y){return y&&y.error});if(err){alert(err.error.message);b.disabled=false;return}
+    await load();draw();
+  }
+  async function cnt(q){try{var r=await q;return r.error?null:(r.count||0)}catch(e){return null}}
+  async function drawDash(box){
+    box.innerHTML='<p class="small">Loading…</p>';
+    var w=await cnt(sb.from("np_meet_profiles").select("user_id",{count:"exact",head:true}).eq("verify_status","pending"));
+    var rp=await cnt(sb.from("np_meet_reports").select("id",{count:"exact",head:true}).eq("status","open"));
+    var pr=await cnt(sb.from("np_partner_requests").select("id",{count:"exact",head:true}).eq("status","pending"));
+    var ag=null;try{var a=await sb.rpc("np_list_agents");if(!a.error)ag=(a.data||[]).filter(function(x){return x.status==="pending"}).length}catch(e){}
+    function n(v,t){return v==null?'<small>'+t+'</small>':'<small><span class="n">'+v+'</span> '+t+'</small>'}
+    var L=[["inbox","📥 Booking inbox",n(unseen,"new bookings")],["club","🎉 Club dashboard","<small>Reservations, CRM, reports</small>"],["rest","🍛 Restaurant dashboard","<small>Orders, deliveries, staff</small>"],
+      ["partners","🏪 Partner sign-ups",n(pr,"waiting")],["women","✅ Verify women",n(w,"selfies waiting")],["reports","🚩 Meet reports",n(rp,"open reports")],
+      ["agents","🤝 Agents",n(ag,"waiting for approval")],["analytics","📊 App analytics","<small>Visitors and bookings funnel</small>"],["users","👥 All users","<small>Supabase (opens browser)</small>"],["alerts","🔔 Alerts","<small>Telegram and phone alerts</small>"]];
+    box.innerHTML='<div class="npcc-grid">'+L.map(function(x){return '<button data-d="'+x[0]+'"><b>'+x[1]+'</b>'+x[2]+'</button>'}).join("")+'</div>';
+    box.querySelectorAll("[data-d]").forEach(function(b){b.onclick=function(){var d=b.dataset.d;
+      if(d==="inbox"||d==="alerts"){tab=d;draw();return}
+      if(d==="club"){open=false;closeSheet();if(typeof go==="function")go("dash");return}
+      if(d==="rest"||d==="partners"){location.href="restaurant.html";return}
+      if(d==="women"||d==="reports"){if(window.npMeetAdmin)window.npMeetAdmin();return}
+      if(d==="agents"){if(window.npAgentsAdmin)window.npAgentsAdmin();return}
+      if(d==="analytics"){if(window.npReport)window.npReport();return}
+      if(d==="users")window.open("https://supabase.com/dashboard/project/mymtgbmcjbwsnetzwgoy/auth/users","_blank");
+    }});
+  }
+  async function drawAlerts(box){
+    var ready=false;try{var r=await sb.rpc("np_alert_ready");ready=!r.error&&r.data===true}catch(e){}
+    var perm=("Notification" in window)?Notification.permission:"unsupported";
+    box.innerHTML='<div class="lcard"><h4>📱 Phone notifications</h4><p class="small">Sound + a phone notification for every new booking while the app is open (also in the background).</p>'+
+      '<p class="small">Status: <b>'+(perm==="granted"?"On ✅":perm==="denied"?"Blocked. Allow notifications for this site in Chrome settings.":perm==="unsupported"?"Not supported on this browser":"Off")+'</b></p>'+
+      (perm==="default"?'<button class="cta" id="alPh">Turn on phone notifications</button>':'')+'<button class="cta ghost" id="alBeep">Test sound</button></div>'+
+      '<div class="lcard" style="margin-top:12px"><h4>✈️ Telegram alerts '+(ready?'<span class="status">On ✅</span>':'')+'</h4><p class="small">Get a Telegram message for every booking, even when the app is closed. Free.</p>'+
+      '<p class="small"><b>Setup (5 min):</b><br>1. In Telegram, open <b>@BotFather</b> → send <b>/newbot</b> → give it a name → copy the <b>token</b>.<br>2. Open your new bot and send it <b>hi</b>.<br>3. Open this link in Chrome (put your token in place of TOKEN):<br><span class="notranslate" translate="no">api.telegram.org/botTOKEN/getUpdates</span><br>Copy the number after <b>"chat":{"id":</b></p>'+
+      '<div class="fields"><label class="full">Bot token<input id="alT" placeholder="123456:ABC-..." autocomplete="off"></label><label class="full">Chat id<input id="alC" inputmode="numeric" placeholder="e.g. 987654321"></label></div>'+
+      '<button class="cta" id="alSave">Save</button>'+(ready?'<button class="cta ghost" id="alTest">Send test message</button>':'')+'<p class="err" id="alM" role="status"></p></div>';
+    var ph=box.querySelector("#alPh");if(ph)ph.onclick=function(){Notification.requestPermission().then(function(){drawAlerts(box);notify("🔔 Notifications are on","You will see new bookings here.")})};
+    box.querySelector("#alBeep").onclick=beep;
+    box.querySelector("#alSave").onclick=async function(){var m=box.querySelector("#alM"),t=box.querySelector("#alT").value.trim(),c=box.querySelector("#alC").value.trim();m.style.color="";
+      if(!/^\d+:[\w-]{20,}$/.test(t)){m.textContent="That doesn't look like a bot token. It looks like 123456:ABC…";return}
+      if(!/^-?\d{4,}$/.test(c)){m.textContent="The chat id is a number, like 987654321.";return}
+      this.disabled=true;var r=await sb.rpc("np_set_alert_settings",{p_token:t,p_chat:c});this.disabled=false;
+      if(r.error){m.textContent=/function|does not exist/i.test(r.error.message)?"Please run np-inbox.sql in Supabase first.":r.error.message;return}
+      await sb.rpc("np_test_alert");m.style.color="var(--ok)";m.textContent="Saved. A test message was sent to your Telegram.";setTimeout(function(){drawAlerts(box)},1500)};
+    var te=box.querySelector("#alTest");if(te)te.onclick=async function(){var r=await sb.rpc("np_test_alert");var m=box.querySelector("#alM");m.style.color=r.error?"":"var(--ok)";m.textContent=r.error?r.error.message:"Test message sent. Check Telegram."};
+  }
+
+  /* ---------- Control Center button in the account menu ---------- */
+  new MutationObserver(function(){
+    if(!isAdm)return;var adm=panel.querySelector(".lcard.adm");
+    if(adm&&!adm.querySelector("#npCCBtn")){var b=document.createElement("button");b.id="npCCBtn";b.className="cta";b.style.margin="8px 0";b.textContent="Control Center"+(unseen?" · "+unseen+" new":"");b.onclick=openCC;
+      var h=adm.querySelector("h4");if(h)h.insertAdjacentElement("beforebegin",b);else adm.insertBefore(b,adm.firstChild)}
+  }).observe(panel,{childList:true,subtree:true});
+  new MutationObserver(function(){if(open&&!sheet.classList.contains("open"))open=false}).observe(sheet,{attributes:true,attributeFilter:["class"]});
+
+  async function onUser(u){
+    var same=(u&&u.id)===(user&&user.id);user=u;if(same)return;
+    isAdm=false;if(chan){sb.removeChannel(chan);chan=null}
+    if(u){try{var a=await sb.rpc("np_is_admin");isAdm=!a.error&&a.data===true}catch(e){}}
+    bell();if(isAdm){await load();subscribe();bell()}
+  }
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden&&isAdm)load().then(function(){if(open)draw()})});
+})();
+
+/* ===== "Tonight" ticker at the top of Home: real venues from the app, and every name opens that venue ===== */
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  var SVC=["grocery","indian","restaurants","hotels","spa","tours","water","golf","yacht","rental","airport","shopping","events","medical","concierge"];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  if(!document.getElementById("npTickCss")){var st=document.createElement("style");st.id="npTickCss";
+    st.textContent='.ticker .track .nptk{background:none;border:0;padding:4px 2px;margin:0;font:inherit;color:inherit;cursor:pointer;white-space:nowrap}.ticker .track .nptk b{color:var(--ink,#fff);font-weight:600;text-decoration:underline;text-decoration-color:rgba(237,147,177,.6);text-underline-offset:3px}'+
+      '.ticker:active .track,.ticker:focus-within .track{animation-play-state:paused}';document.head.appendChild(st)}
+  function pick(){
+    var L=CLUBS.filter(function(c){return c&&c.id!=="np-test-restaurant"&&c.name});
+    var night=L.filter(function(c){return SVC.indexOf(c.cat)<0}).slice(0,6);
+    var food=L.filter(function(c){return c.cat==="indian"||c.cat==="restaurants"}).slice(0,2);
+    var fun=L.filter(function(c){return c.cat==="yacht"||c.cat==="tours"}).slice(0,1);
+    return night.concat(food,fun);
+  }
+  function line(c){var open=String(c.open||"").split(/\s[—–-]\s|–/)[0].trim();
+    return (/\d/.test(open)?"from "+open:(c.music||c.sub||c.area||"tap to book"))+(c.area&&/\d/.test(open)?" · "+c.area:"")}
+  function fill(){
+    var tt=document.getElementById("tickTrack");if(!tt||tt.dataset.np==="1")return;
+    var v=pick();if(!v.length)return;
+    var h=v.map(function(c){return '<button type="button" class="nptk" data-tk="'+esc(c.id)+'"><b>'+esc(c.name)+'</b> · '+esc(line(c))+'</button>'}).join("");
+    tt.innerHTML=h+h;tt.dataset.np="1";
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("#tickTrack [data-tk]");if(!b)return;
+    e.preventDefault();e.stopPropagation();
+    var c=CLUBS.find(function(x){return x.id===b.dataset.tk});if(!c)return;
+    try{if(window.npTrack)window.npTrack("place_view",c.id)}catch(x){}
+    if(typeof openClub==="function")openClub(c);
+  },true);
+  fill();
+  var tt=document.getElementById("tickTrack");
+  if(tt)new MutationObserver(function(){if(tt.dataset.np!=="1"||!tt.querySelector("[data-tk]")){tt.dataset.np="";fill()}}).observe(tt,{childList:true});
+  window.addEventListener("load",function(){var t=document.getElementById("tickTrack");if(t&&!t.querySelector("[data-tk]")){t.dataset.np="";fill()}});
+})();
+
+/* ===== Currency by country: phone in Thailand = baht (฿), phone in India = rupees (₹).
+   Uses the phone's time zone (no location permission needed). If the person taps the ₹/฿ button
+   themselves, their choice is kept until they travel to the other country. ===== */
+(function(){
+  var btn=document.getElementById("curBtn");if(!btn)return;
+  function country(){
+    var tz="";try{tz=Intl.DateTimeFormat().resolvedOptions().timeZone||""}catch(e){}
+    if(/^Asia\/(Bangkok)$/.test(tz))return "TH";
+    if(/^Asia\/(Kolkata|Calcutta)$/.test(tz))return "IN";
+    return "";
+  }
+  function curNow(){try{return (0,eval)("typeof cur!=='undefined'?cur:''")}catch(e){return ""}}
+  var auto=false;
+  btn.addEventListener("click",function(){
+    if(auto)return;
+    try{localStorage.setItem("np_cur_manual",country()||"?")}catch(e){}
+  },true);
+  function apply(){
+    var c=country();if(!c)return;
+    var manual="";try{manual=localStorage.getItem("np_cur_manual")||""}catch(e){}
+    if(manual&&manual===c)return;            /* they chose themselves in this country */
+    if(manual&&manual!==c){try{localStorage.removeItem("np_cur_manual")}catch(e){}}
+    var want=c==="TH"?"THB":"INR";
+    if(curNow()&&curNow()!==want){auto=true;try{btn.click()}finally{auto=false}}
+  }
+  apply();
+  window.addEventListener("load",function(){setTimeout(apply,300)});
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)apply()});
+})();
+
+/* ===== VIP Beach Clubs right after the night clubs: own row on Home (after the club rows),
+   and in the full list they now come straight after the night clubs instead of at the bottom ===== */
+(function(){
+  if(typeof CLUBS==="undefined")return;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function beach(){return CLUBS.filter(function(c){return c&&c.cat==="beach"})}
+  /* 1. order: beach clubs directly after the last night club */
+  function reorder(){
+    var b=beach();if(!b.length)return false;
+    var rest=CLUBS.filter(function(c){return !(c&&c.cat==="beach")}),last=-1;
+    rest.forEach(function(c,i){if(c&&c.cat==="nightlife")last=i});
+    if(last<0)return false;
+    var want=rest.slice(0,last+1).concat(b,rest.slice(last+1));
+    if(want.every(function(c,i){return CLUBS[i]===c}))return false;
+    Array.prototype.splice.apply(CLUBS,[0,CLUBS.length].concat(want));
+    try{if(typeof renderGrid==="function")renderGrid()}catch(e){}
+    return true;
+  }
+  /* 2. Home row "VIP Beach Clubs" after the club rows */
+  function row(){
+    var after=document.getElementById("afterRail")||document.getElementById("indRail");if(!after)return;
+    var list=beach();var r=document.getElementById("npBeachRail");
+    if(!list.length){if(r){r.remove();var h=document.getElementById("npBeachHead");if(h)h.remove()}return}
+    if(!r){
+      var head=document.createElement("div");head.className="lrow";head.id="npBeachHead";head.style.margin="0 0 10px";
+      head.innerHTML='<h2 class="sectiontitle" style="font-size:20px;margin:0">VIP Beach Clubs · sunset to late</h2><span class="off30">Daybeds &amp; cabanas</span>';
+      r=document.createElement("div");r.className="rail";r.id="npBeachRail";
+      after.insertAdjacentElement("afterend",head);head.insertAdjacentElement("afterend",r);
+    }
+    var key=list.map(function(c){return c.id}).join(",")+"|"+(typeof cur!=="undefined"?cur:"");
+    if(r.dataset.k===key)return;r.dataset.k=key;r.innerHTML="";
+    list.forEach(function(c){
+      var paid=(c.pkgs||[]).map(function(p){return p.p}).filter(Boolean),from=paid.length?Math.min.apply(null,paid):0;
+      var b=document.createElement("button");b.className="rcard";b.type="button";
+      b.innerHTML='<div class="art" style="'+(typeof artStyle==="function"?artStyle(c):"")+'"><span class="live">Beach club</span><span class="name"></span></div>'+
+        '<div class="meta"><div class="row"><span class="mu"></span></div><div class="row"><span class="hr"></span><span class="from">'+(from&&typeof money==="function"?"from "+money(from):"Book")+'</span></div></div>';
+      b.querySelector(".name").textContent=c.name;b.querySelector(".mu").textContent=c.music||c.sub||"Beach club";
+      b.querySelector(".hr").textContent=/\d/.test(c.open||"")?c.open:(c.area||"Pattaya");
+      b.onclick=function(){try{if(window.npTrack)window.npTrack("place_view",c.id)}catch(e){}if(typeof openClub==="function")openClub(c)};
+      r.appendChild(b);
+    });
+  }
+  function run(){try{reorder()}catch(e){}try{row()}catch(e){}}
+  run();window.addEventListener("load",run);setTimeout(run,1500);setTimeout(run,4000);
+  var btn=document.getElementById("curBtn");if(btn)btn.addEventListener("click",function(){setTimeout(row,50)});
+})();
+
+/* ===== Booking form: clear help when no spot is chosen yet (the "Choose your spot" list is above, off screen) ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  if(!document.getElementById("npSpotCss")){var s=document.createElement("style");s.id="npSpotCss";
+    s.textContent='#npSpotHint{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:0 0 10px;padding:12px 14px;border-radius:14px;background:rgba(233,185,73,.14);border:1px solid rgba(233,185,73,.6);font-size:14px;line-height:1.35}'+
+      '#npSpotHint button{flex:0 0 auto;padding:9px 14px;border-radius:999px;border:0;font:inherit;font-weight:700;background:#E9B949;color:#1a1026;cursor:pointer}'+
+      '#pkgs.npflash{outline:2px solid #E9B949;outline-offset:6px;border-radius:14px;transition:outline-color .3s}';document.head.appendChild(s)}
+  function sync(){
+    var book=panel.querySelector("#book"),pk=panel.querySelector("#pkgs");if(!book||!pk)return;
+    var chosen=!!pk.querySelector('.pkg[aria-pressed="true"]'),h=panel.querySelector("#npSpotHint");
+    if(chosen||!book.disabled){if(h)h.remove();return}
+    if(!h){h=document.createElement("div");h.id="npSpotHint";h.setAttribute("role","note");
+      h.innerHTML='<span>👆 First tap a <b>spot</b> (table, entry or package) in <b>"Choose your spot"</b> above.</span><button type="button">Show spots</button>';
+      book.insertAdjacentElement("beforebegin",h);
+      h.querySelector("button").onclick=function(){var t=panel.querySelector("#pkgs");if(!t)return;var hd=t.previousElementSibling||t;
+        hd.scrollIntoView({behavior:"smooth",block:"start"});t.classList.add("npflash");setTimeout(function(){t.classList.remove("npflash")},2200)}}
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;sync()})})
+    .observe(panel,{childList:true,subtree:true,attributes:true,attributeFilter:["disabled","aria-pressed"]});
+})();
+
+/* ===== Advance to reserve (each venue sets %) + no cancellation after the advance is paid (1 Oct 2026)
+   Online payment is not live yet: bookings that need an advance are saved as "Awaiting advance" (not reserved). ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var ADV={},MINE={},user=null,PAYSOON="Online payment is launching soon. Until the advance is paid, this booking is a request and your table is not reserved. We will let you know as soon as you can pay in the app.";
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function B(n){return "฿"+Math.round(Number(n)||0).toLocaleString("en-US")}
+  function pctOf(id){return ADV[id]||0}
+  function venueInPanel(){var t=panel.querySelector("#sheetTitle");if(!t||typeof CLUBS==="undefined")return null;var n=t.textContent.trim();return CLUBS.find(function(c){return c.name===n})||null}
+  if(!document.getElementById("npAdvCss")){var s=document.createElement("style");s.id="npAdvCss";
+    s.textContent='#npAdv{margin:0 0 10px;padding:12px 14px;border-radius:14px;background:rgba(237,147,177,.12);border:1px solid rgba(237,147,177,.55);font-size:14px;line-height:1.4}#npAdv b{color:#fff}#npAdv label{display:flex;gap:8px;align-items:flex-start;margin-top:8px}#npAdv input{width:20px;height:20px;flex:0 0 auto;margin-top:1px}'+
+      '.npadv-t{display:block;grid-column:1/-1;margin-top:6px;font-size:13px;padding:8px 10px;border-radius:10px;background:rgba(237,147,177,.12);border:1px solid rgba(237,147,177,.4)}.npadv-t.paid{background:rgba(47,191,98,.14);border-color:rgba(47,191,98,.5)}.npadv-t button{margin-top:6px;padding:7px 12px;border-radius:999px;border:0;font:inherit;font-weight:700;background:#E9B949;color:#1a1026}'+
+      '.npadv-chip{display:inline-block;margin:4px 6px 0 0;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:700;background:rgba(237,147,177,.18);color:#ED93B1}.npadv-chip.paid{background:rgba(47,191,98,.18);color:#7BE3A0}';document.head.appendChild(s)}
+
+  async function loadSettings(){try{var r=await sb.from("np_venue_settings").select("venue_id,advance_pct");if(!r.error)(r.data||[]).forEach(function(x){ADV[x.venue_id]=x.advance_pct||0})}catch(e){}}
+
+  /* ---------- booking form ---------- */
+  function formBox(){
+    var book=panel.querySelector("#book"),c=venueInPanel(),box=panel.querySelector("#npAdv");
+    if(!book||!c){if(box&&!book)box.remove();return}
+    var p=pctOf(c.id);if(!p){if(box)box.remove();return}
+    var tot=(panel.querySelector("#tot")||{}).textContent||"",sym=(tot.match(/[฿₹]/)||["฿"])[0],num=parseFloat(tot.replace(/[^0-9.]/g,""))||0;
+    var amt=num?sym+Math.round(num*p/100).toLocaleString(sym==="₹"?"en-IN":"en-US"):"";
+    var html='💳 <b>Advance needed to reserve: '+p+'%'+(amt?' = '+amt:' of the total')+'</b><br><span class="small">Pay online in the app (launching soon). Until it is paid your booking is a request, not a reservation.</span>'+
+      '<label><input type="checkbox" id="npAdvOk"'+(box&&box.querySelector("#npAdvOk")&&box.querySelector("#npAdvOk").checked?" checked":"")+'> <span>I understand: <b>no cancellation or refund after the advance is paid.</b></span></label><p class="err" id="npAdvE" role="status" style="margin:6px 0 0"></p>';
+    if(!box){box=document.createElement("div");box.id="npAdv";var h=panel.querySelector("#npSpotHint");(h||book).insertAdjacentElement("beforebegin",box)}
+    if(box.dataset.k!==p+"|"+amt){box.dataset.k=p+"|"+amt;box.innerHTML=html}
+  }
+  panel.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("#book");if(!b)return;
+    var box=panel.querySelector("#npAdv");if(!box)return;
+    if(!box.querySelector("#npAdvOk").checked){e.preventDefault();e.stopImmediatePropagation();box.querySelector("#npAdvE").textContent="Please tick the box to accept the advance and no-cancellation rule.";box.scrollIntoView({behavior:"smooth",block:"center"})}
+    else{var c=venueInPanel();window.__npLastAdv=c?{club:c.id,pct:pctOf(c.id)}:null}
+  },true);
+  function doneNote(){
+    var d=panel.querySelector(".done .code");if(!d||panel.querySelector("#npAdvDone")||!window.__npLastAdv||!window.__npLastAdv.pct)return;
+    var n=document.createElement("div");n.id="npAdvDone";n.className="npadv-t";n.style.margin="12px 0";
+    n.innerHTML='⏳ <b>Awaiting advance ('+window.__npLastAdv.pct+'%).</b> '+esc(PAYSOON);
+    d.closest(".done").appendChild(n);
+  }
+
+  /* ---------- My bookings ---------- */
+  async function loadMine(){
+    MINE={};if(!user)return;
+    try{var r=await sb.from("np_bookings").select("code,advance_pct,advance_amount,advance_paid,status").eq("customer_id",user.id);(r.data||[]).forEach(function(x){MINE[x.code]=x})}catch(e){}
+  }
+  function tickets(){
+    if(typeof bookings==="undefined")return;
+    document.querySelectorAll("#bookingList .ticket").forEach(function(t){
+      var code=((t.querySelector(".code")||{}).textContent||"").trim(),bk=bookings.find(function(x){return x.code===code});if(!bk)return;
+      var srv=MINE[code],p=srv?srv.advance_pct:pctOf(bk.club),paid=!!(srv&&srv.advance_paid),amt=srv&&srv.advance_amount!=null?srv.advance_amount:Math.round((bk.total||0)*(p||0)/100);
+      var el=t.querySelector(".npadv-t"),cancel=t.querySelector(".cancel");
+      if(!p&&!paid){if(el)el.remove();return}
+      var key=(paid?"p":"u")+amt;if(el&&el.dataset.k===key)return;if(el)el.remove();
+      el=document.createElement("div");el.className="npadv-t"+(paid?" paid":"");el.dataset.k=key;
+      el.innerHTML=paid?'✅ <b>Advance paid ('+B(amt)+').</b> Your table is reserved. This booking cannot be cancelled.':
+        '⏳ <b>Awaiting advance: '+p+'% = '+B(amt)+'.</b> Not reserved yet.<br><button type="button">Pay advance</button>';
+      var body=t.querySelector(".tbody")||t;body.appendChild(el);
+      var pb=el.querySelector("button");if(pb)pb.onclick=function(){alert(PAYSOON)};
+      if(cancel)cancel.style.display=paid?"none":"";
+    });
+  }
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("#bookingList .cancel");if(!b)return;
+    var t=b.closest(".ticket"),code=((t&&t.querySelector(".code"))||{}).textContent;code=(code||"").trim();
+    if(MINE[code]&&MINE[code].advance_paid){e.preventDefault();e.stopImmediatePropagation();alert("This booking cannot be cancelled because the advance is paid.")}
+  },true);
+  if(typeof renderBookings==="function"){var _rb=renderBookings;renderBookings=function(){_rb();try{tickets()}catch(e){}}}
+
+  /* ---------- club dashboard: advance setting + status on each reservation ---------- */
+  var RS={},CAN={};
+  async function dash(){
+    var view=document.getElementById("dview"),dv=document.getElementById("dVenue");
+    if(!view||!dv||typeof dTab==="undefined"||dTab!=="res"||!user)return;
+    var v=dv.value,can=CAN[v];if(can===undefined){can=false;try{var r=await sb.rpc("np_can_manage",{p_venue:v});can=!r.error&&r.data===true}catch(e){}CAN[v]=can}
+    if(can&&!view.querySelector("#npAdvSet")){
+      var c=document.createElement("div");c.className="lcard";c.id="npAdvSet";c.style.marginBottom="12px";
+      c.innerHTML='<div class="lrow"><div><h4>Advance to reserve</h4><p class="small">Guests must pay this % online before the table is reserved. No cancellation after it is paid.</p></div>'+
+        '<select id="npAdvPct" aria-label="Advance percent">'+[0,10,20,25,30,40,50,60,70,80,90,100].map(function(x){return '<option value="'+x+'">'+(x?x+"%":"No advance")+'</option>'}).join("")+'</select></div><p class="small" id="npAdvMsg"></p>';
+      view.insertBefore(c,view.firstChild);c.querySelector("#npAdvPct").value=String(pctOf(v));
+      c.querySelector("#npAdvPct").onchange=async function(){var n=parseInt(this.value,10),m=c.querySelector("#npAdvMsg");
+        var x=await sb.rpc("np_set_advance",{p_venue:v,p_pct:n});if(x.error){m.textContent=/function|does not exist/i.test(x.error.message)?"Please run np-advance.sql in Supabase first.":x.error.message;return}
+        ADV[v]=n;m.textContent=n?"Saved. New bookings need a "+n+"% advance.":"Saved. No advance needed."}
+    }
+    var ids=[].map.call(view.querySelectorAll("#rsList [data-id]"),function(x){return x.dataset.id}).filter(function(id){return !(id in RS)});
+    if(ids.length){var q=await sb.from("np_bookings").select("id,advance_pct,advance_amount,advance_paid").in("id",ids);(q.data||[]).forEach(function(x){RS[x.id]=x})}
+    view.querySelectorAll("#rsList [data-id]").forEach(function(card){
+      var x=RS[card.dataset.id];if(!x||!x.advance_pct||card.querySelector(".npadv-chip"))return;
+      var chip=document.createElement("span");chip.className="npadv-chip"+(x.advance_paid?" paid":"");
+      chip.textContent=x.advance_paid?"Advance paid "+B(x.advance_amount):"Advance "+x.advance_pct+"% not paid · "+B(x.advance_amount);
+      var h=card.querySelector("h4")||card.firstChild;h.insertAdjacentElement("afterend",chip);
+      if(!x.advance_paid&&can){var btns=card.querySelector(".rsbtns");if(btns&&!btns.querySelector("[data-advpaid]")){var b=document.createElement("button");b.className="pill";b.dataset.advpaid="1";b.textContent="Advance paid (at venue)";
+        b.onclick=async function(){if(!confirm("Mark the advance as paid? After this the guest cannot cancel."))return;var u=await sb.from("np_bookings").update({advance_paid:true}).eq("id",card.dataset.id);if(u.error){alert(u.error.message);return}delete RS[card.dataset.id];renderDash()};btns.appendChild(b)}}
+    });
+  }
+  if(typeof renderDash==="function"){var _rd=renderDash;renderDash=function(){_rd();RS={};setTimeout(dash,350)}}
+
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;try{formBox();doneNote()}catch(e){}})})
+    .observe(panel,{childList:true,subtree:true,characterData:true});
+  var bl=document.getElementById("bookingList");
+  if(bl)new MutationObserver(function(){try{tickets()}catch(e){}}).observe(bl,{childList:true});
+  var rsBusy=false,rsT=null;
+  new MutationObserver(function(){var l=document.getElementById("rsList");if(!l||rsBusy||!l.querySelector("[data-id]"))return;
+    clearTimeout(rsT);rsT=setTimeout(function(){rsBusy=true;dash().finally(function(){setTimeout(function(){rsBusy=false},50)})},150)})
+    .observe(document.body,{childList:true,subtree:true});
+
+  /* hide the admin bell while a sheet is open (it was covering buttons) */
+  var sh=document.querySelector(".sheet");
+  if(sh)new MutationObserver(function(){var b=document.getElementById("npBell");if(b)b.style.visibility=sh.classList.contains("open")?"hidden":""}).observe(sh,{attributes:true,attributeFilter:["class"]});
+
+  async function onUser(u){user=u;CAN={};await loadMine();tickets()}
+  loadSettings().then(function(){formBox();tickets()});
+  sb.auth.getSession().then(function(r){onUser(r.data.session?r.data.session.user:null)});
+  sb.auth.onAuthStateChange(function(e,s){onUser(s?s.user:null)});
+  window.npAdvanceSettings=ADV;
+})();
+
+/* ===== no-flash: Home is arranged, show the page (index.html hides it for a moment while loading) ===== */
+(function(){
+  function show(){document.documentElement.classList.remove("np-loading")}
+  requestAnimationFrame(function(){requestAnimationFrame(show)});
+  setTimeout(show,800);
+})();
+
+/* ===== Card backgrounds (1 Oct 2026): soft artwork on the right side of 10 Home cards.
+   Drawn with code (no photos), sits behind the text, nothing else changes. ===== */
+(function(){
+  if(document.getElementById("npArtCss"))return;
+  function svg(vb,body){return 'url("data:image/svg+xml,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+vb+'" preserveAspectRatio="xMaxYMid slice">'+body+'</svg>')+'")'}
+  function glow(id,c,o){return '<radialGradient id="'+id+'"><stop offset="0" stop-color="'+c+'" stop-opacity="'+o+'"/><stop offset="1" stop-color="'+c+'" stop-opacity="0"/></radialGradient>'}
+  var ART={
+    raju:svg("0 0 380 330",'<defs>'+glow("a","#7F77DD",".45")+glow("b","#1D9E75",".22")+'</defs><circle cx="70" cy="70" r="90" fill="url(#a)"/><circle cx="340" cy="300" r="90" fill="url(#b)"/>'+
+      '<g fill="#AFA9EC" fill-opacity=".1"><rect x="0" y="306" width="380" height="24"/><rect x="18" y="282" width="16" height="48"/><rect x="38" y="272" width="22" height="58"/><rect x="250" y="278" width="18" height="52"/><rect x="272" y="266" width="24" height="64"/><rect x="352" y="282" width="20" height="48"/></g>'+
+      '<g fill="none" stroke="#AFA9EC" stroke-opacity=".18" stroke-width="1.2"><circle cx="200" cy="296" r="30"/><path d="M200 266 V326 M170 296 H230 M179 275 L221 317 M221 275 L179 317"/></g>'+
+      '<g fill="none" stroke="#5DCAA5" stroke-opacity=".2" stroke-width="1.6"><path d="M335 330 C338 312 336 300 330 288 M330 288 C318 282 308 284 300 292 M330 288 C340 278 352 278 360 284 M330 288 C326 276 318 270 308 270"/></g>'+
+      '<g fill="#fff" opacity=".3"><circle cx="150" cy="16" r="1.2"/><circle cx="30" cy="190" r="1"/><circle cx="365" cy="200" r="1.2"/></g>'),
+    lang:svg("0 0 140 170",'<defs>'+glow("a","#7F77DD",".35")+'</defs><circle cx="125" cy="150" r="60" fill="url(#a)"/><g fill="#CECBF6" font-family="sans-serif"><text x="74" y="22" font-size="13" opacity=".12">नमस्ते</text><text x="92" y="42" font-size="11" opacity=".1">สวัสดี</text><text x="76" y="162" font-size="11" opacity=".1">வணக்கம்</text></g>'),
+    conv:svg("0 0 230 170",'<defs>'+glow("a","#1D9E75",".35")+'</defs><circle cx="200" cy="150" r="80" fill="url(#a)"/><text x="150" y="150" font-size="90" font-family="sans-serif" fill="#9FE1CB" opacity=".08">฿</text><text x="185" y="95" font-size="70" font-family="sans-serif" fill="#FAC775" opacity=".08">₹</text><path d="M120 160 C160 120 190 150 235 105" fill="none" stroke="#5DCAA5" stroke-opacity=".3" stroke-width="1.5"/>'),
+    girls:svg("0 0 380 160",'<defs>'+glow("a","#ED93B1",".55")+glow("b","#AFA9EC",".45")+'</defs><circle cx="300" cy="40" r="90" fill="url(#a)"/><circle cx="350" cy="130" r="70" fill="url(#b)"/><circle cx="220" cy="140" r="50" fill="url(#a)"/>'+
+      '<circle cx="270" cy="70" r="12" fill="#F4C0D1" opacity=".35"/><circle cx="330" cy="95" r="7" fill="#F4C0D1" opacity=".5"/><circle cx="245" cy="30" r="5" fill="#fff" opacity=".4"/><circle cx="360" cy="45" r="9" fill="#CECBF6" opacity=".35"/>'+
+      '<path d="M150 150 C230 90 280 150 380 70" fill="none" stroke="#ED93B1" stroke-opacity=".55" stroke-width="2.5"/><path d="M170 160 C250 110 300 165 390 95" fill="none" stroke="#ED93B1" stroke-opacity=".35" stroke-width="1.2"/>'+
+      '<g transform="translate(318 58)" fill="none" stroke="#F4C0D1" stroke-opacity=".55" stroke-width="1.6"><path d="M0 26 C-12 14 -12 0 0 -10 C12 0 12 14 0 26Z"/><path d="M0 26 C-20 22 -30 10 -28 -2 C-16 0 -6 10 0 26Z"/><path d="M0 26 C20 22 30 10 28 -2 C16 0 6 10 0 26Z"/></g>'),
+    gold:svg("0 0 380 170",'<defs><linearGradient id="w" x1="0" x2="1"><stop offset="0" stop-color="#FAC775" stop-opacity="0"/><stop offset=".45" stop-color="#FAC775" stop-opacity=".9"/><stop offset=".8" stop-color="#EF9F27" stop-opacity=".6"/><stop offset="1" stop-color="#BA7517" stop-opacity=".2"/></linearGradient>'+glow("g","#EF9F27",".35")+'</defs>'+
+      '<circle cx="320" cy="60" r="110" fill="url(#g)"/><path d="M120 170 C200 110 250 150 390 60" fill="none" stroke="url(#w)" stroke-width="3"/><path d="M140 175 C220 125 270 165 400 80" fill="none" stroke="url(#w)" stroke-width="1.5"/><path d="M100 165 C190 100 240 130 390 35" fill="none" stroke="url(#w)" stroke-width="1"/>'+
+      '<circle cx="300" cy="45" r="2.5" fill="#FAEEDA"/><circle cx="345" cy="110" r="2" fill="#FAEEDA" opacity=".8"/>'),
+    packages:svg("0 0 180 150",'<defs>'+glow("a","#F0997B",".4")+'</defs><circle cx="150" cy="40" r="70" fill="url(#a)"/><g fill="none" stroke="#FAC775" stroke-opacity=".35" stroke-width="1.4"><rect x="118" y="30" width="44" height="34" rx="4"/><path d="M140 30 V64 M118 44 H162"/><path d="M140 30 C132 18 122 22 130 30 M140 30 C148 18 158 22 150 30"/></g><g fill="#FAC775" opacity=".5"><circle cx="112" cy="70" r="2"/><circle cx="170" cy="22" r="2.5"/><circle cx="155" cy="100" r="1.8"/></g>'),
+    buddy:svg("0 0 180 150",'<defs>'+glow("a","#ED93B1",".38")+'</defs><circle cx="145" cy="45" r="70" fill="url(#a)"/><g stroke="#ED93B1" stroke-opacity=".35" stroke-width="1.2"><path d="M110 30 L150 50 L130 85 L165 95 M150 50 L172 28 M130 85 L105 70"/></g><g fill="#ED93B1" fill-opacity=".55"><circle cx="110" cy="30" r="5"/><circle cx="150" cy="50" r="7"/><circle cx="130" cy="85" r="6"/><circle cx="165" cy="95" r="4.5"/><circle cx="172" cy="28" r="4"/></g>'),
+    mall:svg("0 0 180 150",'<defs>'+glow("a","#F0997B",".4")+'</defs><circle cx="150" cy="50" r="70" fill="url(#a)"/><g fill="none" stroke="#F5C4B3" stroke-opacity=".4" stroke-width="1.4"><path d="M118 40 H150 L154 80 H114 Z"/><path d="M126 40 C126 28 142 28 142 40"/><path d="M148 58 H172 L175 92 H145 Z"/><path d="M154 58 C154 48 166 48 166 58"/></g>'),
+    paybill:svg("0 0 180 150",'<defs>'+glow("a","#1D9E75",".4")+'</defs><circle cx="150" cy="50" r="70" fill="url(#a)"/><g fill="none" stroke="#9FE1CB" stroke-opacity=".38" stroke-width="1.3"><path d="M120 20 H160 V78 L154 73 L148 78 L142 73 L136 78 L130 73 L124 78 L120 74 Z"/><path d="M128 34 H152 M128 44 H152 M128 54 H144"/><path d="M140 20 V78" stroke-dasharray="3 3"/></g><g fill="none" stroke="#5DCAA5" stroke-opacity=".5" stroke-width="1.8"><circle cx="158" cy="104" r="11"/><path d="M152 104 L156 108 L164 99"/></g>'),
+    dash:svg("0 0 180 150",'<defs>'+glow("a","#378ADD",".38")+'</defs><circle cx="150" cy="60" r="70" fill="url(#a)"/><g fill="#85B7EB" fill-opacity=".25"><rect x="112" y="80" width="12" height="30" rx="2"/><rect x="130" y="64" width="12" height="46" rx="2"/><rect x="148" y="48" width="12" height="62" rx="2"/><rect x="166" y="30" width="12" height="80" rx="2"/></g><path d="M108 76 L128 60 L146 64 L170 26" fill="none" stroke="#B5D4F4" stroke-opacity=".6" stroke-width="1.8"/><circle cx="170" cy="26" r="3.5" fill="#B5D4F4" fill-opacity=".8"/>')
+  };
+  ART.welcome=svg("0 0 360 170",'<defs>'+glow("a","#ED93B1",".5")+glow("b","#7F77DD",".55")+'</defs><circle cx="300" cy="40" r="90" fill="url(#a)"/><circle cx="60" cy="150" r="90" fill="url(#b)"/>'+
+    '<g fill="#F4C0D1" fill-opacity=".4"><circle cx="270" cy="70" r="14"/><circle cx="305" cy="62" r="17"/><circle cx="340" cy="72" r="13"/></g><g fill="#F4C0D1" fill-opacity=".28"><path d="M250 112 C252 90 288 90 290 112Z"/><path d="M283 112 C285 86 325 86 327 112Z"/><path d="M322 112 C324 92 356 92 358 112Z"/></g>'+
+    '<g opacity=".7"><rect x="230" y="20" width="5" height="10" fill="#FAC775" transform="rotate(30 232 25)"/><rect x="350" y="120" width="5" height="10" fill="#5DCAA5" transform="rotate(-25 352 125)"/><circle cx="330" cy="20" r="3" fill="#FAC775"/><circle cx="245" cy="55" r="2.5" fill="#5DCAA5"/></g>');
+  ART.me=svg("0 0 360 190",'<defs>'+glow("a","#7F77DD",".45")+'</defs><circle cx="320" cy="50" r="90" fill="url(#a)"/><g fill="none" stroke="#CECBF6" stroke-opacity=".22" stroke-width="1.3"><circle cx="320" cy="50" r="28"/><circle cx="320" cy="50" r="46"/><circle cx="320" cy="50" r="64" stroke-dasharray="3 6"/></g><g fill="#CECBF6" opacity=".5"><circle cx="276" cy="20" r="2"/><circle cx="352" cy="100" r="2.2"/></g>');
+  ART.admin=svg("0 0 360 110",'<defs>'+glow("a","#EF9F27",".35")+'</defs><circle cx="320" cy="55" r="80" fill="url(#a)"/><g fill="none" stroke="#FAC775" stroke-opacity=".4" stroke-width="1.6"><path d="M318 18 L346 28 V52 C346 72 334 84 318 92 C302 84 290 72 290 52 V28 Z"/><path d="M305 54 L315 64 L333 44"/></g>');
+  ART.person=svg("0 0 360 150",'<defs>'+glow("a","#ED93B1",".35")+'</defs><circle cx="330" cy="30" r="80" fill="url(#a)"/><path d="M320 30 C320 22 332 22 332 30 C332 22 344 22 344 30 C344 40 332 46 332 50 C332 46 320 40 320 30Z" fill="#ED93B1" fill-opacity=".35"/><g fill="#F4C0D1" opacity=".5"><circle cx="300" cy="18" r="2"/><circle cx="352" cy="62" r="1.8"/></g>');
+  ART.rules=svg("0 0 360 170",'<defs>'+glow("a","#7F77DD",".4")+'</defs><circle cx="320" cy="40" r="90" fill="url(#a)"/><g fill="none" stroke="#CECBF6" stroke-opacity=".22" stroke-width="1.5"><path d="M320 14 L350 25 V50 C350 72 337 86 320 94 C303 86 290 72 290 50 V25 Z"/><path d="M320 46 C320 40 329 40 329 46 C329 52 320 57 320 60 C320 57 311 52 311 46 C311 40 320 40 320 46Z"/></g>');
+  ART.ticket=svg("0 0 360 130",'<defs>'+glow("a","#F0997B",".38")+'</defs><circle cx="330" cy="100" r="90" fill="url(#a)"/>');
+  ART.earn=svg("0 0 360 120",'<defs>'+glow("a","#1D9E75",".4")+'</defs><circle cx="320" cy="50" r="80" fill="url(#a)"/><g fill="none" stroke="#9FE1CB" stroke-opacity=".4" stroke-width="1.4"><ellipse cx="320" cy="88" rx="22" ry="6"/><path d="M298 88 V80 M342 88 V80"/><ellipse cx="320" cy="80" rx="22" ry="6"/><path d="M298 80 V72 M342 80 V72"/><ellipse cx="320" cy="72" rx="22" ry="6"/></g><path d="M276 60 L296 44 L312 50 L346 18 M338 18 H346 V26" fill="none" stroke="#5DCAA5" stroke-opacity=".55" stroke-width="1.8"/>');
+  ART.chat=svg("0 0 360 80",'<defs>'+glow("a","#ED93B1",".35")+'</defs><circle cx="330" cy="40" r="60" fill="url(#a)"/><g fill="none" stroke="#F4C0D1" stroke-opacity=".3" stroke-width="1.3"><rect x="300" y="14" width="40" height="22" rx="11"/><rect x="318" y="42" width="34" height="18" rx="9"/></g>');
+  ART.lounge=svg("0 0 360 120",'<defs>'+glow("a","#ED93B1",".45")+'</defs><circle cx="310" cy="40" r="80" fill="url(#a)"/><circle cx="290" cy="70" r="8" fill="#F4C0D1" opacity=".3"/><g transform="translate(322 50)" fill="none" stroke="#F4C0D1" stroke-opacity=".45" stroke-width="1.5"><path d="M0 22 C-10 12 -10 0 0 -8 C10 0 10 12 0 22Z"/><path d="M0 22 C-17 18 -25 8 -23 -2 C-13 0 -5 8 0 22Z"/><path d="M0 22 C17 18 25 8 23 -2 C13 0 5 8 0 22Z"/></g>');
+  ART.kpi=svg("0 0 100 70",'<circle cx="85" cy="15" r="32" fill="#EF9F27" opacity=".14"/>');
+  ART.inbox=svg("0 0 360 110",'<defs>'+glow("a","#EF9F27",".28")+'</defs><circle cx="330" cy="30" r="70" fill="url(#a)"/><g fill="none" stroke="#FAC775" stroke-opacity=".3" stroke-width="1.5" transform="translate(0 56)"><path d="M316 22 a14 14 0 0 1 28 0 c0 16 6 20 6 20 h-40 s6 -4 6 -20"/><path d="M326 48 a4 4 0 0 0 8 0"/></g>');
+  ART.dkpi=svg("0 0 100 70",'<circle cx="85" cy="15" r="32" fill="#378ADD" opacity=".18"/>');
+  ART.dcard=svg("0 0 360 100",'<defs>'+glow("a","#378ADD",".32")+'</defs><circle cx="320" cy="50" r="70" fill="url(#a)"/><g fill="#85B7EB" fill-opacity=".22"><rect x="290" y="60" width="9" height="26" rx="2"/><rect x="304" y="48" width="9" height="38" rx="2"/><rect x="318" y="36" width="9" height="50" rx="2"/><rect x="332" y="24" width="9" height="62" rx="2"/></g>');
+  ART.sky=svg("0 0 360 70",'<defs>'+glow("a","#378ADD",".35")+'</defs><circle cx="300" cy="35" r="70" fill="url(#a)"/><circle cx="292" cy="30" r="10" fill="#FAC775" fill-opacity=".35"/><path d="M296 44 h34 a9 9 0 0 0 -3 -17 a12 12 0 0 0 -22 2 a8 8 0 0 0 -9 15z" fill="#B5D4F4" fill-opacity=".22"/>');
+  ART.qa=svg("0 0 100 80",'<circle cx="90" cy="10" r="40" fill="#F0997B" opacity=".16"/>');
+  ART.cat=svg("0 0 100 100",'<circle cx="92" cy="8" r="46" fill="#F0997B" opacity=".14"/><circle cx="10" cy="98" r="30" fill="#7F77DD" opacity=".1"/>');
+  ART.catpink=svg("0 0 100 100",'<circle cx="92" cy="8" r="46" fill="#ED93B1" opacity=".2"/>');
+  ART.rmeta=svg("0 0 360 100",'<defs>'+glow("a","#F0997B",".3")+'</defs><circle cx="330" cy="80" r="80" fill="url(#a)"/>');
+  ART.dform=svg("0 0 360 120",'<defs>'+glow("a","#378ADD",".32")+'</defs><circle cx="330" cy="30" r="80" fill="url(#a)"/>');
+  ART.refer=svg("0 0 380 160",'<defs>'+glow("a","#1D9E75",".5")+glow("b","#EF9F27",".3")+'</defs><circle cx="300" cy="40" r="90" fill="url(#a)"/><circle cx="350" cy="130" r="60" fill="url(#b)"/>'+
+    '<g fill="none" stroke="#9FE1CB" stroke-opacity=".45" stroke-width="1.5"><ellipse cx="320" cy="112" rx="26" ry="7"/><path d="M294 112 V102 M346 112 V102"/><ellipse cx="320" cy="102" rx="26" ry="7"/><path d="M294 102 V92 M346 102 V92"/><ellipse cx="320" cy="92" rx="26" ry="7"/></g>'+
+    '<path d="M240 120 C270 100 285 80 300 70 S340 40 360 30" fill="none" stroke="#5DCAA5" stroke-opacity=".55" stroke-width="2"/><path d="M350 28 H362 V40" fill="none" stroke="#5DCAA5" stroke-opacity=".55" stroke-width="2"/>'+
+    '<g fill="#FAC775" opacity=".6"><circle cx="262" cy="42" r="2.5"/><circle cx="370" cy="80" r="2"/></g>');
+  ART.ref=svg("0 0 360 90",'<defs>'+glow("a","#1D9E75",".35")+'</defs><circle cx="330" cy="45" r="70" fill="url(#a)"/>');
+  ART.sheetbg=svg("0 0 360 1600",'<defs>'+glow("a","#F0997B",".22")+glow("b","#7F77DD",".25")+glow("c","#ED93B1",".2")+glow("d","#EF9F27",".18")+'</defs>'+
+    '<circle cx="330" cy="160" r="170" fill="url(#a)"/><circle cx="20" cy="620" r="190" fill="url(#b)"/><circle cx="350" cy="1020" r="180" fill="url(#c)"/><circle cx="40" cy="1420" r="180" fill="url(#d)"/>');
+  ART.pkg=svg("0 0 360 200",'<defs>'+glow("a","#F0997B",".28")+'</defs><circle cx="345" cy="10" r="90" fill="url(#a)"/>');
+  ART.deal=svg("0 0 360 200",'<defs>'+glow("a","#EF9F27",".3")+'</defs><circle cx="340" cy="35" r="70" fill="url(#a)"/><g fill="#FAC775" opacity=".6"><circle cx="300" cy="18" r="2"/><circle cx="330" cy="52" r="1.6"/></g>');
+  ART.addon=svg("0 0 360 200",'<defs>'+glow("a","#ED93B1",".28")+'</defs><circle cx="345" cy="10" r="75" fill="url(#a)"/><path d="M326 20 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#F4C0D1" opacity=".55"/>');
+  ART.totalbg=svg("0 0 360 200",'<defs>'+glow("a","#1D9E75",".26")+'</defs><circle cx="20" cy="80" r="80" fill="url(#a)"/>');
+  var MAP=[["#rajuCard","raju"],["#panel:has(#pkgs) .pbody","sheetbg"],["#panel .pkg","pkg",'rgba(240,153,123,.35)'],["#panel .deal","deal"],["#panel .addon","addon",'rgba(237,147,177,.35)'],["#panel .total","totalbg"],[".npstrip","sky",'rgba(133,183,235,.4)'],["#npHomeFill [data-qa]","qa",'rgba(240,153,123,.4)'],["#cats .cat:not(#npFLBcat)","cat",'rgba(240,153,123,.35)'],["#npFLBcat","catpink",'rgba(237,147,177,.45)'],
+    [".rcard","rmeta"],["#grid .club","rmeta",'rgba(240,153,123,.35)'],[".npreftile","refer"],["#dview .partner","dform",'rgba(133,183,235,.45)'],["#dview .tblw","dform",'rgba(133,183,235,.4)'],
+    ["#panel:has(#umAcc) .lcard","me",'rgba(175,169,236,.5)'],["#panel .refcode","ref",'rgba(93,202,165,.6)'],["#panel:has(#ppDash) .lcard","dform",'rgba(133,183,235,.5)'],["#npmDeck .npm-empty-card","welcome"],["#npMeet > .npm-card.hl","me"],["#npMeet > .npm-card:not(.hl)","admin",'rgba(239,159,39,.55)'],
+    ["#npmList .npm-card","person",'rgba(237,147,177,.45)'],["#npLList .npm-card","person",'rgba(237,147,177,.45)'],["#npPurpose","rules",'rgba(175,169,236,.5)'],
+    ["#bookingList .ticket","ticket",'rgba(240,153,123,.5)'],["#npAgEarn","earn",'rgba(93,202,165,.55)'],["#ibL .npm-card","chat",'rgba(237,147,177,.45)'],
+    ["#lview .lcard","lounge",'rgba(237,147,177,.5)'],[".npcc-kpi > div","kpi"],[".npcc-it","inbox"],["#dview .kpi","dkpi",'rgba(133,183,235,.45)'],["#dview .lcard","dcard",'rgba(133,183,235,.45)'],["#npxLang","lang"],[".npx-tools","conv"],[".hubtile.ladies","girls"],[".goldarea","gold"],
+    ['.hubtile[data-go="packages"]',"packages",'rgba(240,153,123,.45)'],['.hubtile[data-go="buddy"]',"buddy",'rgba(237,147,177,.45)'],
+    ['.hubtile[data-go="mall"]',"mall",'rgba(240,153,123,.45)'],['.hubtile[data-go="paybill"]',"paybill",'rgba(93,202,165,.45)'],['.hubtile[data-go="dash"]',"dash",'rgba(133,183,235,.5)']];
+  var css='#bookingList .ticket.npart::before,.rcard.npart::before,#grid .club.npart::before{top:auto;height:55%}.npart{isolation:isolate}.npart::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;z-index:-1;background-repeat:no-repeat;background-size:100% 100%}';
+  css+='.goldarea.npart::before{bottom:auto;height:170px;border-bottom-left-radius:0;border-bottom-right-radius:0;-webkit-mask-image:linear-gradient(#000 60%,transparent);mask-image:linear-gradient(#000 60%,transparent)}';
+  css+='#panel .pbody.npart::before{background-size:100% auto;background-position:center top}#panel .pkg[aria-pressed="true"].npart{box-shadow:0 0 28px -8px #F0997B}';
+  var FIXED=["pkg","deal","addon","totalbg","refer","welcome","me","admin","person","rules","ticket","earn","chat","lounge","inbox","dcard","dform","sky","ref"];
+  MAP.forEach(function(m){css+=m[0]+'.npart::before{background-image:'+ART[m[1]]+(FIXED.indexOf(m[1])>-1?';background-size:360px auto;background-position:right top':'')+'}';if(m[2])css+=m[0]+'.npart{border-color:'+m[2]+'}'});
+  var st=document.createElement("style");st.id="npArtCss";st.textContent=css;document.head.appendChild(st);
+  function tag(){MAP.forEach(function(m){var list;try{list=document.querySelectorAll(m[0])}catch(e){return}list.forEach(function(el){
+    if(el.classList.contains("npart"))return;
+    if(getComputedStyle(el).position==="static")el.style.position="relative";
+    el.classList.add("npart")})})}
+  tag();window.addEventListener("load",tag);setTimeout(tag,1500);
+  var busy=false;new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;tag()})}).observe(document.body,{childList:true,subtree:true});
+})();
+
+/* ===== Clearer photos: lighter dark layer on photos (index.html), names keep a soft shadow so they stay readable ===== */
+(function(){if(document.getElementById("npPhotoCss"))return;var s=document.createElement("style");s.id="npPhotoCss";
+  s.textContent='.art .name,.art h2.name{text-shadow:0 2px 14px rgba(0,0,0,.7),0 1px 3px rgba(0,0,0,.6)!important}.art{image-rendering:auto}';document.head.appendChild(s)})();
+
+/* ===== Home: "Refer & earn" card above Empowered Girls (same size), and a compact Namaste Gold card ===== */
+(function(){
+  if(!document.getElementById("npRefCss")){var st=document.createElement("style");st.id="npRefCss";
+    st.textContent='.npreftile{width:100%;background:linear-gradient(135deg,rgba(29,158,117,.32),rgba(8,20,16,.92) 60%);border:1.5px solid rgba(93,202,165,.6);box-shadow:0 0 40px -12px #1D9E75;cursor:pointer}'+
+      '.npreftile>span{background:linear-gradient(135deg,#1D9E75,#5DCAA5);border:0;color:#fff}.npreftile b{font-size:17px}'+
+      '.npreftile .nprates{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.npreftile .nprates{flex-wrap:nowrap}.npreftile .nprates i{white-space:nowrap;font-style:normal;font-size:11.5px;font-weight:700;padding:3px 8px;border-radius:999px;background:rgba(93,202,165,.18);border:1px solid rgba(93,202,165,.5);color:#C9F2E2}'+
+      '.goldarea.npcompact{padding-top:14px;padding-bottom:14px}.goldarea.npcompact>*:not(.gtop):not(.gcta):not(.npgtog){display:none!important}.goldarea.npcompact .gtop{margin-bottom:10px}'+
+      '.npgtog{display:block;width:100%;margin:0 0 10px;padding:8px;border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:#E9D8A6;cursor:pointer;text-decoration:underline;text-underline-offset:3px}';
+    document.head.appendChild(st)}
+  function build(){
+    var lt=document.querySelector(".hubtile.ladies");
+    if(lt&&!document.getElementById("npRefTile")){
+      var holder=lt.closest(".homeblk")||lt.parentNode;
+      var w=document.createElement("div");w.className="homeblk";w.id="npRefWrap";w.style.marginBottom="12px";
+      w.innerHTML='<button type="button" class="hubtile npreftile" id="npRefTile"><span>'+(typeof ico==="function"?ico("gift"):"")+'</span><b>Refer &amp; earn</b><small>Earn on every booking made with your code</small>'+
+        '<div class="nprates"><i>Travellers 3%</i><i>Agents 5%</i><i>Promoters 5%</i></div></button>';
+      holder.parentNode.insertBefore(w,holder);
+      w.querySelector("button").onclick=function(){try{if(window.npTrack)window.npTrack("service_open","refer_earn")}catch(e){}if(typeof go==="function")go("earn")};
+    }
+    var g=document.querySelector(".goldarea");
+    if(g&&!g.dataset.npc){g.dataset.npc="1";g.classList.add("npcompact");
+      var t=document.createElement("button");t.type="button";t.className="npgtog";t.textContent="See all Gold benefits ▾";
+      var cta=g.querySelector(".gcta");if(cta)cta.insertAdjacentElement("beforebegin",t);else g.appendChild(t);
+      t.onclick=function(){var c=g.classList.toggle("npcompact");t.textContent=c?"See all Gold benefits ▾":"Show less ▴"}}
+  }
+  build();window.addEventListener("load",build);setTimeout(build,1500);
+})();
+
+/* ===== Map (1 Oct 2026): dark live map with photo pins, search, filters and "my location".
+   Works offline: the map library and every map area you have looked at are saved on the phone;
+   with no saved map it falls back to the simple Pattaya map. Pins show the venue's area. ===== */
+(function(){
+  var sec=document.getElementById("map");if(!sec||typeof CLUBS==="undefined")return;
+  var LIBJS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js",LIBCSS="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
+  var TILES="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png",ATTR='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>';
+  var TCACHE="np-map-tiles-v1",LCACHE="np-map-lib-v1",MAXT=900;
+  var AREA={"Naklua":[12.9645,100.8915],"North Pattaya":[12.9505,100.8875],"Pattaya Central":[12.9360,100.8830],"Central Pattaya":[12.9360,100.8830],"Soi Buakhao":[12.9330,100.8935],
+    "Walking Street":[12.9272,100.8718],"Bali Hai Pier":[12.9215,100.8690],"Pratumnak":[12.9150,100.8660],"Jomtien":[12.8865,100.8705],"Koh Larn":[12.9200,100.7820],
+    "East Pattaya":[12.9330,100.9150],"Thepprasit":[12.9105,100.8880],"U-Tapao Airport":[12.6800,101.0050],"Suvarnabhumi / U-Tapao":[12.9450,100.9300],"Pattaya":[12.9310,100.8820]};
+  var CHIPS=[["all","All"],["book","⚡ Book now"],["night","Night clubs",["nightlife"]],["beach","Beach clubs",["beach"]],["food","Indian food",["indian","restaurants","grocery"]],
+    ["hotel","Hotels",["hotels"]],["spa","Spa",["spa"]],["sea","Tours & sea",["tours","water","yacht","golf"]]];
+  var chip="all",q="",map=null,layer=null,me=null,LF=null,built=false;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function hash(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)}
+  function ll(c){if(c.lat&&c.lng)return [c.lat,c.lng];var a=AREA[c.area]||AREA.Pattaya,h=hash(c.id||c.name);return [a[0]+((h%41)-20)*0.00012,a[1]+(((h>>6)%41)-20)*0.00012]}
+  function photo(c){var p=null;try{p=(store.get("np_photos_"+c.id,[])||[])[0]}catch(e){}return p||c.photo||null}
+  function bookable(c){return (c.pkgs||[]).some(function(p){return p.p>0})}
+  function colour(c){var k=c.cat;return /nightlife|beach|events/.test(k)?"#ED93B1":/indian|restaurants|grocery/.test(k)?"#F0997B":/hotels/.test(k)?"#378ADD":/spa/.test(k)?"#AFA9EC":"#5DCAA5"}
+  function list(){var ch=CHIPS.find(function(x){return x[0]===chip}),t=q.trim().toLowerCase();
+    return CLUBS.filter(function(c){if(!c||c.id==="np-test-restaurant")return false;
+      if(chip==="book"&&!bookable(c))return false;if(ch&&ch[2]&&ch[2].indexOf(c.cat)<0)return false;
+      return !t||[c.name,c.area,c.music,c.sub,c.type,(c.tags||[]).join(" "),(typeof CATNAME!=="undefined"?CATNAME[c.cat]:"")].join(" ").toLowerCase().indexOf(t)>-1})}
+
+  /* ---------- styles + layout ---------- */
+  if(!document.getElementById("npMapCss")){var st=document.createElement("style");st.id="npMapCss";
+    st.textContent='#npMapWrap{position:relative;height:calc(100dvh - 210px);min-height:440px;border-radius:24px;overflow:hidden;border:1px solid rgba(255,255,255,.12);background:#0e0e12;margin:0 0 12px}'+
+      '#npMapEl{position:absolute;inset:0;background:#0e0e12}#npMapEl .leaflet-control-attribution{background:rgba(0,0,0,.55);color:#aaa;font-size:9px}#npMapEl .leaflet-control-attribution a{color:#ccc}'+
+      '.npmtop{position:absolute;left:10px;right:10px;top:10px;z-index:500;display:flex;flex-direction:column;gap:8px;pointer-events:none}.npmtop>*{pointer-events:auto}'+
+      '.npmsearch{display:flex;align-items:center;gap:8px;padding:0 14px;height:48px;border-radius:999px;background:rgba(10,10,14,.92);border:1px solid rgba(255,255,255,.14);box-shadow:0 6px 20px rgba(0,0,0,.4)}'+
+      '.npmsearch input{flex:1;min-width:0;border:0;background:none;color:#fff;font:inherit;font-size:15px;outline:none}.npmsearch button{border:0;background:none;color:#B4B2A9;font:inherit;font-size:14px}'+
+      '.npmchips{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}.npmchips::-webkit-scrollbar{display:none}.npmchips button{flex:0 0 auto;padding:9px 14px;border-radius:999px;font:inherit;font-size:13.5px;font-weight:600;color:#fff;background:rgba(10,10,14,.92);border:1px solid rgba(255,255,255,.16)}'+
+      '.npmchips button.on{background:#fff;color:#111;border-color:#fff}'+
+      '.npmloc{position:absolute;right:12px;bottom:16px;z-index:500;width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:rgba(10,10,14,.92);color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(0,0,0,.45)}'+
+      '.npmbadge{position:absolute;left:12px;bottom:18px;z-index:500;padding:7px 12px;border-radius:999px;background:rgba(10,10,14,.92);border:1px solid rgba(255,255,255,.16);color:#D3D1C7;font-size:12px}'+
+      '.npmpin{display:flex;align-items:center;gap:6px;white-space:nowrap}.npmpin .ph{position:relative;width:46px;height:46px;border-radius:12px;border:2px solid rgba(255,255,255,.85);background:#222 center/cover;box-shadow:0 4px 14px rgba(0,0,0,.6)}'+
+      '.npmpin .ph i{position:absolute;top:-8px;right:-8px;width:20px;height:20px;border-radius:50%;background:#EF9F27;color:#1a1026;font-style:normal;font-size:11px;display:flex;align-items:center;justify-content:center;border:2px solid #111}'+
+      '.npmpin b{font-size:12.5px;font-weight:600;color:#fff;text-shadow:0 1px 4px #000,0 0 2px #000}.npmzoomout .npmpin b{display:none}.npmpin.sel .ph{border-color:#EF9F27;transform:scale(1.15)}'+
+      '.npmdot{width:14px;height:14px;border-radius:50%;border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.6)}.npmdot.sel{transform:scale(1.5)}'+
+      '.npmme{width:18px;height:18px;border-radius:50%;background:#3d8bfd;border:3px solid #fff;box-shadow:0 0 0 8px rgba(61,139,253,.25)}'+
+      '#npMapCard{position:absolute;left:10px;right:70px;bottom:12px;z-index:600}#npMapCard .club{margin:0}#npMapCard .x{position:absolute;top:-10px;right:-10px;z-index:2;width:30px;height:30px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:#111;color:#fff}'+
+      '#npMapFallback{position:absolute;inset:0;overflow:auto;padding:110px 10px 10px;background:#0e0e12}#npMapFallback svg{width:100%;height:auto}';
+    document.head.appendChild(st)}
+  function build(){
+    if(built)return;built=true;
+    [].forEach.call(sec.children,function(ch){if(!/sectiontitle/.test(ch.className))ch.style.display="none"});
+    var w=document.createElement("div");w.id="npMapWrap";
+    w.innerHTML='<div id="npMapEl" role="application" aria-label="Map of Pattaya venues"></div>'+
+      '<div class="npmtop"><div class="npmsearch"><span aria-hidden="true">🔍</span><input id="npmQ" type="search" placeholder="Search venue, area, music, vibe..." aria-label="Search the map"><button id="npmClr" type="button">Clear</button></div>'+
+      '<div class="npmchips" role="tablist">'+CHIPS.map(function(c){return '<button type="button" data-c="'+c[0]+'"'+(c[0]===chip?' class="on"':'')+'>'+esc(c[1])+'</button>'}).join("")+'</div></div>'+
+      '<button class="npmloc" id="npmLoc" type="button" aria-label="Show my location">◎</button><div class="npmbadge" id="npmBadge" hidden></div><div id="npMapCard"></div>';
+    var t=sec.querySelector(".sectiontitle");if(t)t.insertAdjacentElement("afterend",w);else sec.insertBefore(w,sec.firstChild);
+    w.querySelector("#npmQ").oninput=function(){q=this.value;draw()};
+    w.querySelector("#npmClr").onclick=function(){q="";w.querySelector("#npmQ").value="";chip="all";chips();draw()};
+    w.querySelectorAll("[data-c]").forEach(function(b){b.onclick=function(){chip=b.dataset.c;chips();draw();fit()}});
+    w.querySelector("#npmLoc").onclick=locate;
+    start();
+  }
+  function chips(){document.querySelectorAll("#npMapWrap [data-c]").forEach(function(b){b.classList.toggle("on",b.dataset.c===chip)})}
+  function badge(t){var b=document.getElementById("npmBadge");if(!b)return;b.hidden=!t;b.textContent=t||""}
+
+  /* ---------- load the map library (saved on the phone for offline use) ---------- */
+  async function getText(url){
+    try{var r=await fetch(url,{mode:"cors"});if(r.ok){var c=r.clone();try{(await caches.open(LCACHE)).put(url,c)}catch(e){}return await r.text()}}catch(e){}
+    try{var m=await (await caches.open(LCACHE)).match(url);if(m)return await m.text()}catch(e){}
+    return null;
+  }
+  async function loadLib(){
+    if(window.L&&window.L.map)return true;
+    var css=await getText(LIBCSS),js=await getText(LIBJS);if(!js)return false;
+    if(css){var s=document.createElement("style");s.textContent=css;document.head.appendChild(s)}
+    try{var sc=document.createElement("script");sc.text=js;document.head.appendChild(sc)}catch(e){return false}
+    return !!(window.L&&window.L.map);
+  }
+
+  /* ---------- tiles: from the internet, saved for offline; offline uses the saved ones ---------- */
+  function tileLayer(){
+    var TL=L.TileLayer.extend({createTile:function(coords,done){
+      var img=document.createElement("img");img.alt="";img.setAttribute("role","presentation");
+      var url=this.getTileUrl(coords);
+      (async function(){
+        var cache=null;try{cache=await caches.open(TCACHE)}catch(e){}
+        async function fromCache(){if(!cache)return null;var m=await cache.match(url);return m?URL.createObjectURL(await m.blob()):null}
+        var src=null;
+        if(navigator.onLine!==false){try{var r=await fetch(url,{mode:"cors"});if(r.ok){var b=await r.clone().blob();src=URL.createObjectURL(b);if(cache){cache.put(url,r);trim(cache)}}}catch(e){}}
+        if(!src)src=await fromCache();
+        if(!src&&navigator.onLine!==false)src=url;   /* online but the tile server blocks saving: show it normally */
+        if(src){img.onload=function(){done(null,img)};img.onerror=function(){done(null,img)};img.src=src}
+        else{img.src="data:image/gif;base64,R0lGODlhAQABAAAAACw=";done(null,img)}
+      })();
+      return img;
+    }});
+    return new TL(TILES,{subdomains:"abcd",maxZoom:19,minZoom:10,attribution:ATTR});
+  }
+  var trimT=null;function trim(cache){clearTimeout(trimT);trimT=setTimeout(async function(){try{var k=await cache.keys();for(var i=0;i<k.length-MAXT;i++)await cache.delete(k[i])}catch(e){}},4000)}
+
+  async function start(){
+    var ok=await loadLib();
+    if(!ok){fallback();return}
+    LF=window.L;
+    map=LF.map("npMapEl",{zoomControl:false,attributionControl:true,preferCanvas:false}).setView([12.9272,100.8740],14);
+    tileLayer().addTo(map);
+    layer=LF.layerGroup().addTo(map);
+    map.on("zoomend",function(){document.getElementById("npMapWrap").classList.toggle("npmzoomout",map.getZoom()<14)});
+    map.on("click",function(){card(null)});
+    draw();
+    if(navigator.onLine===false)badge("Offline · showing saved map");
+    setTimeout(function(){map.invalidateSize()},300);
+  }
+  function fit(){if(!map)return;var l=list();if(!l.length)return;var b=LF.latLngBounds(l.map(ll));map.fitBounds(b.pad(0.15),{maxZoom:16})}
+  var sel=null;
+  function draw(){
+    if(!map){if(document.getElementById("npMapFallback"))fallbackDraw();return}
+    layer.clearLayers();var l=list();
+    l.forEach(function(c){
+      var p=photo(c),html,size,anchor;
+      if(p){html='<div class="npmpin'+(sel===c.id?' sel':'')+'"><div class="ph" style="background-image:url(\''+esc(p)+'\')">'+(bookable(c)?'<i>⚡</i>':'')+'</div><b>'+esc(c.name)+'</b></div>';size=[180,50];anchor=[23,25]}
+      else{html='<div class="npmdot'+(sel===c.id?' sel':'')+'" style="background:'+colour(c)+'"></div>';size=[14,14];anchor=[7,7]}
+      var m=LF.marker(ll(c),{icon:LF.divIcon({html:html,className:"",iconSize:size,iconAnchor:anchor}),title:c.name,keyboard:true,riseOnHover:true,zIndexOffset:p?500:0});
+      m.on("click",function(){sel=c.id;card(c);draw()});layer.addLayer(m);
+    });
+    badge(l.length?(navigator.onLine===false?"Offline · ":"")+l.length+" places":"Nothing found here");
+  }
+  function card(c){
+    var box=document.getElementById("npMapCard");if(!box)return;box.innerHTML="";if(!c){sel=null;return}
+    try{mapSel=c.id;var mc=document.getElementById("mapcard");if(typeof renderMapCard==="function"){renderMapCard();if(mc&&mc.firstChild){box.appendChild(mc.firstChild)}}}catch(e){}
+    if(!box.firstChild){var b=document.createElement("button");b.className="cta";b.textContent="Open "+c.name;b.onclick=function(){openClub(c)};box.appendChild(b)}
+    var x=document.createElement("button");x.className="x";x.setAttribute("aria-label","Close");x.textContent="×";x.onclick=function(e){e.stopPropagation();card(null);draw()};box.appendChild(x);
+  }
+  function locate(){
+    if(!navigator.geolocation){alert("Location is not available on this phone.");return}
+    navigator.geolocation.getCurrentPosition(function(p){
+      var at=[p.coords.latitude,p.coords.longitude];
+      if(map){if(me)me.remove();me=LF.marker(at,{icon:LF.divIcon({html:'<div class="npmme"></div>',className:"",iconSize:[18,18],iconAnchor:[9,9]}),zIndexOffset:1000}).addTo(map);map.setView(at,16)}
+      else alert("Your location: "+at[0].toFixed(4)+", "+at[1].toFixed(4));
+    },function(){alert("Please allow location for this site to see where you are.")},{enableHighAccuracy:true,timeout:12000,maximumAge:60000});
+  }
+
+  /* ---------- no map library and no saved copy: simple Pattaya map (always works offline) ---------- */
+  function fallback(){
+    var w=document.getElementById("npMapWrap");if(!w)return;
+    var f=document.createElement("div");f.id="npMapFallback";var mb=document.getElementById("mapbox");
+    if(mb){mb.style.display="";f.appendChild(mb)}var mc=document.getElementById("mapcard");if(mc){mc.style.display="";f.appendChild(mc)}w.insertBefore(f,w.firstChild);
+    badge("Offline · simple map");fallbackDraw();
+  }
+  function fallbackDraw(){try{if(typeof renderMap==="function")renderMap()}catch(e){}}
+
+  if(typeof go==="function"){var _go=go;go=function(t){_go(t);if(t==="map"){build();if(map)setTimeout(function(){map.invalidateSize()},200)}}}
+  if(!sec.hidden)build();
+  window.addEventListener("online",function(){badge("");if(!map&&built){var f=document.getElementById("npMapFallback");if(f)f.remove();start()}else if(map)draw()});
+  window.addEventListener("offline",function(){badge("Offline · showing saved map")});
+})();
+
+/* ===== Recent screens (1 Oct 2026): a multitasking / task switcher like the phone's Overview screen.
+   Every important screen you open is kept as a card: swipe between them, tap to jump back,
+   swipe a card up (or ✕) to close it, "Close all". Open it from More → Recent screens,
+   or press and hold any button in the bottom menu. ===== */
+(function(){
+  var KEY="np_recents",MAX=14,busyOpen=false;
+  var SEC={explore:["Home","me","#7F77DD","🏠"],map:["Map","services","#378ADD","🗺️"],bookings:["My bookings","me","#F0997B","🎟️"],earn:["Earn & referrals","agent","#1D9E75","💰"],
+    concierge:["Raju chat","me","#7F77DD","💬"],buddy:["Meet new people","me","#ED93B1","❤️"],ladies:["Empowered Girls","me","#ED93B1","🌸"],mall:["Namaste Mall","services","#F0997B","🛍️"],
+    packages:["Packages","services","#F0997B","🎁"],paybill:["Pay my bill","me","#1D9E75","🧾"],dash:["Partner dashboard","partner","#378ADD","📊"],clubs:["Clubs","services","#F0997B","🪩"]};
+  var GROUPS=[["all","All"],["services","Services"],["me","My app"],["partner","Partners"],["agent","Agents"],["admin","Admin"]];
+  var grp="all";
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function load(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}}
+  function save(a){try{localStorage.setItem(KEY,JSON.stringify(a.slice(0,MAX)))}catch(e){}}
+  function add(it){if(busyOpen)return;it.t=Date.now();var a=load().filter(function(x){return x.k!==it.k});a.unshift(it);save(a)}
+  function ago(t){var m=Math.round((Date.now()-t)/60000);return m<1?"just now":m<60?m+" min ago":m<1440?Math.round(m/60)+" h ago":Math.round(m/1440)+" d ago"}
+  function isAdmin(){var b=document.getElementById("npBell");return !!(b&&b.classList.contains("show"))}
+  function isStaff(){var d=document.getElementById("dVenue");return isAdmin()||!!(d&&[].some.call(d.options,function(o){return o.value&&o.value!=="__none"})&&d.dataset.allow)}
+
+  /* ---------- remember screens ---------- */
+  function wrap(name,fn){if(typeof window[name]!=="function")return;var orig=window[name];window[name]=function(){try{fn.apply(null,arguments)}catch(e){}return orig.apply(this,arguments)}}
+  if(typeof go==="function"){var _go=go;go=function(t){try{if(SEC[t])add({k:"go:"+t,ty:"sec",id:t})}catch(e){}return _go.apply(this,arguments)}}
+  if(typeof openClub==="function"){var _oc=openClub;openClub=function(c){try{if(c&&c.id)add({k:"v:"+c.id,ty:"venue",id:c.id})}catch(e){}return _oc.apply(this,arguments)}}
+  wrap("openService",function(cat){add({k:"s:"+cat,ty:"svc",id:cat})});
+  wrap("npControlCenter",function(){add({k:"f:cc",ty:"fn",id:"npControlCenter",ti:"Control Center",g:"admin",c:"#EF9F27",e:"🔔"})});
+  wrap("npMeetAdmin",function(){add({k:"f:meetadm",ty:"fn",id:"npMeetAdmin",ti:"Verify women & reports",g:"admin",c:"#EF9F27",e:"✅"})});
+  wrap("npAgentsAdmin",function(){add({k:"f:agadm",ty:"fn",id:"npAgentsAdmin",ti:"Agents (admin)",g:"admin",c:"#EF9F27",e:"🤝"})});
+  wrap("npOpenAgent",function(){add({k:"f:agent",ty:"fn",id:"npOpenAgent",ti:"Agent dashboard",g:"agent",c:"#1D9E75",e:"🤝"})});
+
+  /* ---------- what a card shows ---------- */
+  function info(x){
+    var C=typeof CLUBS!=="undefined"?CLUBS:[];
+    if(x.ty==="sec"){var s=SEC[x.id]||[x.id,"me","#7F77DD","•"];return {ti:s[0],sub:"Screen",g:s[1],c:s[2],e:s[3]}}
+    if(x.ty==="venue"){var v=C.find(function(c){return c.id===x.id});if(!v)return null;var ph=null;try{ph=(store.get("np_photos_"+v.id,[])||[])[0]}catch(e){}
+      return {ti:v.name,sub:[v.area,v.music||v.sub].filter(Boolean).join(" · "),g:"services",c:"#F0997B",e:"🪩",ph:ph||v.photo||null}}
+    if(x.ty==="svc"){var n=(typeof CATNAME!=="undefined"&&CATNAME[x.id])||x.id;return {ti:n,sub:"Service",g:"services",c:"#F0997B",e:"✨",ph:"photos/"+x.id+".jpg"}}
+    if(x.ty==="fn")return {ti:x.ti,sub:x.g==="admin"?"Admin":"Earnings",g:x.g,c:x.c,e:x.e};
+    return null;
+  }
+  function reopen(x){
+    busyOpen=true;try{
+      if(x.ty==="sec"&&typeof go==="function")go(x.id);
+      else if(x.ty==="venue"){var v=CLUBS.find(function(c){return c.id===x.id});if(v)openClub(v)}
+      else if(x.ty==="svc"&&window.openService)window.openService(x.id);
+      else if(x.ty==="fn"&&typeof window[x.id]==="function")window[x.id]();
+    }finally{busyOpen=false}
+    add(x);
+  }
+  function shortcuts(){
+    var s=[["Home",function(){go("explore")},"🏠"],["Map",function(){go("map")},"🗺️"],["Bookings",function(){go("bookings")},"🎟️"],["Meet",function(){go("buddy")},"❤️"],["Raju",function(){var r=document.querySelector("#rajuFab,.rajufab,[data-raju-open]");if(r)r.click();else go("concierge")},"💬"],
+      ["Earnings",function(){if(window.npOpenAgent)npOpenAgent();else go("earn")},"💰"]];
+    if(isStaff())s.push(["Club dashboard",function(){go("dash")},"📊"],["Restaurant",function(){location.href="restaurant.html"},"🍛"]);
+    if(isAdmin())s.push(["Control Center",function(){npControlCenter()},"🔔"]);
+    return s;
+  }
+
+  /* ---------- the switcher ---------- */
+  if(!document.getElementById("npRecCss")){var st=document.createElement("style");st.id="npRecCss";
+    st.textContent='#npRec{position:fixed;inset:0;z-index:10050;background:rgba(8,6,16,.86);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);display:flex;flex-direction:column;color:#fff;padding:calc(14px + env(safe-area-inset-top)) 0 calc(14px + env(safe-area-inset-bottom))}'+
+      '#npRec .hd{display:flex;align-items:center;justify-content:space-between;padding:0 18px}#npRec .hd b{font-size:20px}#npRec .hd button{border:0;background:rgba(255,255,255,.1);color:#fff;width:40px;height:40px;border-radius:50%;font-size:20px}'+
+      '#npRec .gr{display:flex;gap:8px;overflow-x:auto;padding:12px 18px 6px;scrollbar-width:none}#npRec .gr::-webkit-scrollbar{display:none}#npRec .gr button{flex:0 0 auto;padding:8px 14px;border-radius:999px;font:inherit;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.16)}#npRec .gr button.on{background:#fff;color:#111}'+
+      '#npRec .row{flex:1;display:flex;gap:16px;overflow-x:auto;scroll-snap-type:x mandatory;padding:18px 12%;align-items:center;scrollbar-width:none}#npRec .row::-webkit-scrollbar{display:none}'+
+      '#npRec .cd{position:relative;flex:0 0 76%;max-width:340px;height:min(62vh,520px);scroll-snap-align:center;display:flex;flex-direction:column;transition:transform .25s,opacity .25s}'+
+      '#npRec .cd .tp{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;font-size:14px;font-weight:600}#npRec .cd .tp i{font-style:normal;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px}'+
+      '#npRec .cd .bd{flex:1;border-radius:24px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.16);background:#141225;box-shadow:0 18px 40px rgba(0,0,0,.5);cursor:pointer}'+
+      '#npRec .cd .ph{position:absolute;inset:0;background:center/cover no-repeat}#npRec .cd .gl{position:absolute;inset:0}#npRec .cd .tx{position:absolute;left:0;right:0;bottom:0;padding:60px 18px 18px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.85))}'+
+      '#npRec .cd .tx b{display:block;font-size:22px}#npRec .cd .tx small{display:block;opacity:.85;font-size:13px;margin-top:4px}#npRec .cd .big{position:absolute;top:28%;left:0;right:0;text-align:center;font-size:72px;opacity:.9}'+
+      '#npRec .cd .x{position:absolute;top:34px;right:-8px;z-index:3;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.3);background:#111;color:#fff;font-size:16px}'+
+      '#npRec .cd.gone{transform:translateY(-120%);opacity:0}#npRec .emp{flex:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:0 30px;opacity:.85}'+
+      '#npRec .sc{display:flex;gap:8px;overflow-x:auto;padding:4px 18px 10px;scrollbar-width:none}#npRec .sc::-webkit-scrollbar{display:none}#npRec .sc button{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:4px;width:74px;padding:10px 4px;border-radius:16px;font:inherit;font-size:11.5px;color:#fff;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}#npRec .sc button span{font-size:22px}'+
+      '#npRec .ca{align-self:center;margin-top:6px;padding:12px 34px;border-radius:999px;border:0;font:inherit;font-size:16px;font-weight:700;background:rgba(255,255,255,.14);color:#fff}';
+    document.head.appendChild(st)}
+  function open(){
+    var old=document.getElementById("npRec");if(old)old.remove();
+    var o=document.createElement("div");o.id="npRec";o.setAttribute("role","dialog");o.setAttribute("aria-label","Recent screens");
+    document.body.appendChild(o);document.body.style.overflow="hidden";draw();
+    try{if(window.npTrack)npTrack("service_open","recent_screens")}catch(e){}
+  }
+  function closeSw(){var o=document.getElementById("npRec");if(o)o.remove();document.body.style.overflow=""}
+  window.npRecents=open;
+  function draw(){
+    var o=document.getElementById("npRec");if(!o)return;
+    var items=load().map(function(x){var i=info(x);return i?{x:x,i:i}:null}).filter(Boolean).filter(function(r){return r.i.g!=="admin"||isAdmin()});
+    var show=items.filter(function(r){return grp==="all"||r.i.g===grp});
+    var gs=GROUPS.filter(function(g){return g[0]==="all"||items.some(function(r){return r.i.g===g[0]})});
+    o.innerHTML='<div class="hd"><b>Recent screens</b><button type="button" id="rcX" aria-label="Close">×</button></div>'+
+      '<div class="gr">'+gs.map(function(g){return '<button type="button" data-g="'+g[0]+'" class="'+(g[0]===grp?"on":"")+'">'+g[1]+'</button>'}).join("")+'</div>'+
+      (show.length?'<div class="row">'+show.map(function(r,n){var i=r.i;
+        return '<div class="cd" data-n="'+n+'"><div class="tp"><i style="background:'+i.c+'">'+i.e+'</i>'+esc(i.ti)+'</div><div class="bd" data-open="'+n+'">'+
+          (i.ph?'<div class="ph" style="background-image:url(\''+esc(i.ph)+'\')"></div>':'<div class="gl" style="background:radial-gradient(circle at 75% 20%,'+i.c+'88,transparent 55%),radial-gradient(circle at 15% 85%,'+i.c+'44,transparent 50%),#141225"></div><div class="big">'+i.e+'</div>')+
+          '<div class="tx"><b>'+esc(i.ti)+'</b><small>'+esc(i.sub||"")+' · '+ago(r.x.t)+'</small></div></div><button type="button" class="x" data-x="'+n+'" aria-label="Close '+esc(i.ti)+'">✕</button></div>'}).join("")+'</div>'
+        :'<div class="emp">No recent screens yet. Open clubs, services or dashboards and they will appear here.</div>')+
+      '<div class="sc" aria-label="Quick open">'+shortcuts().map(function(s,n){return '<button type="button" data-s="'+n+'"><span>'+s[2]+'</span>'+esc(s[0])+'</button>'}).join("")+'</div>'+
+      (show.length?'<button type="button" class="ca" id="rcAll">Close all</button>':'');
+    o.querySelector("#rcX").onclick=closeSw;
+    o.querySelectorAll("[data-g]").forEach(function(b){b.onclick=function(){grp=b.dataset.g;draw()}});
+    var sc=shortcuts();o.querySelectorAll("[data-s]").forEach(function(b){b.onclick=function(){closeSw();try{sc[+b.dataset.s][1]()}catch(e){}}});
+    var ca=o.querySelector("#rcAll");if(ca)ca.onclick=function(){var keep=load().filter(function(x){var i=info(x);return i&&!(grp==="all"||i.g===grp)});save(keep);draw()};
+    function remove(n){var r=show[n];if(!r)return;var cd=o.querySelector('.cd[data-n="'+n+'"]');if(cd)cd.classList.add("gone");
+      setTimeout(function(){save(load().filter(function(x){return x.k!==r.x.k}));draw()},230)}
+    o.querySelectorAll("[data-x]").forEach(function(b){b.onclick=function(e){e.stopPropagation();remove(+b.dataset.x)}});
+    o.querySelectorAll("[data-open]").forEach(function(b){
+      var n=+b.dataset.open,y0=null,dy=0,cd=b.parentNode;
+      b.addEventListener("touchstart",function(e){y0=e.touches[0].clientY;dy=0;cd.style.transition="none"},{passive:true});
+      b.addEventListener("touchmove",function(e){if(y0===null)return;dy=Math.min(0,e.touches[0].clientY-y0);cd.style.transform="translateY("+dy+"px)";cd.style.opacity=String(1+dy/400)},{passive:true});
+      b.addEventListener("touchend",function(){cd.style.transition="";if(dy<-110){remove(n)}else{cd.style.transform="";cd.style.opacity=""}y0=null});
+      b.onclick=function(){if(dy<-20)return;var r=show[n];closeSw();try{if(typeof closeSheet==="function")closeSheet()}catch(e){}reopen(r.x)};
+    });
+    var row=o.querySelector(".row");if(row)row.scrollLeft=0;
+  }
+
+  /* ---------- ways to open it ---------- */
+  new MutationObserver(function(){
+    var m=document.querySelector("#npMoreSheet .in");if(!m||m.querySelector("#npRecBtn"))return;
+    var b=document.createElement("button");b.type="button";b.className="it";b.id="npRecBtn";
+    b.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="6" width="12" height="15" rx="2"/><path d="M8 3h11a2 2 0 0 1 2 2v12"/></svg>Recent screens';
+    b.onclick=function(){var s=document.getElementById("npMoreSheet");if(s)s.remove();open()};
+    var h=m.querySelector("h4");if(h)h.insertAdjacentElement("afterend",b);else m.insertBefore(b,m.firstChild);
+  }).observe(document.body,{childList:true});
+  /* press and hold any bottom-menu button */
+  var hold=null,held=false;
+  document.addEventListener("touchstart",function(e){var t=e.target.closest&&e.target.closest("nav button,nav a,.tabs button,#npMoreTab");if(!t)return;held=false;clearTimeout(hold);
+    hold=setTimeout(function(){held=true;try{navigator.vibrate&&navigator.vibrate(20)}catch(x){}open()},550)},{passive:true});
+  ["touchend","touchmove","touchcancel"].forEach(function(n){document.addEventListener(n,function(){clearTimeout(hold)},{passive:true})});
+  document.addEventListener("click",function(e){if(held&&e.target.closest&&e.target.closest("nav,.tabs")){e.preventDefault();e.stopPropagation();held=false}},true);
+  document.addEventListener("keydown",function(e){if(e.key==="Escape")closeSw()});
+})();
+
+/* ===== Booking rules table above the privacy tick on every service booking page (1 Oct 2026).
+   Rows depend on the type of venue; the tick now also accepts these rules. ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  var NIGHT=["nightlife","beach","events"],FOOD=["restaurants","indian","grocery"];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  if(!document.getElementById("npRulesCss")){var st=document.createElement("style");st.id="npRulesCss";
+    st.textContent='#npRulesPop{position:fixed;inset:0;z-index:10060;background:rgba(5,4,12,.72);display:flex;align-items:center;justify-content:center;padding:12px}'+
+      '#npRulesPop .bx{width:100%;max-width:520px;max-height:86vh;overflow:auto;background:#141225;border:1px solid rgba(237,147,177,.5);border-radius:22px;padding:16px 16px calc(16px + env(safe-area-inset-bottom));color:#F3EFFF}'+
+      '#npRulesPop .hd{display:flex;justify-content:space-between;align-items:center}#npRulesPop .hd b{font-size:18px}#npRulesPop .x{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:none;color:#fff;font-size:20px}'+
+      '#npRulesPop .vn{margin:2px 0 8px;font-size:13px;color:#F4C0D1}#npRulesPop table{width:100%;border-collapse:collapse;font-size:13px;line-height:1.4}'+
+      '#npRulesPop th{width:36%;text-align:left;vertical-align:top;font-weight:600;padding:8px 8px 8px 0;color:#F4C0D1}#npRulesPop td{vertical-align:top;padding:8px 0;color:#E6E1F5}'+
+      '#npRulesPop tr+tr th,#npRulesPop tr+tr td{border-top:1px solid rgba(255,255,255,.08)}#npRulesPop h5{margin:14px 0 4px;font-size:15px}#npRulesPop .pp{margin:0;font-size:13px;line-height:1.45;color:#E6E1F5}'+
+      '#npRulesPop .full{display:inline-block;margin:10px 0 14px;color:#EF9F27;font-weight:600;font-size:13px}#npRulesPop .ok{display:block;width:100%;padding:13px;border:0;border-radius:14px;background:#E9B949;color:#1a1026;font:inherit;font-weight:700;font-size:15px}'+
+      '.nppdpa .nprulesv{display:inline-block;margin-top:4px;color:#E5861A;font-weight:600}';
+    document.head.appendChild(st)}
+  function venue(){var t=panel.querySelector("#sheetTitle");if(!t||typeof CLUBS==="undefined")return null;var n=t.textContent.trim();return CLUBS.find(function(c){return c.name===n})||null}
+  function rows(c){
+    var cat=c?c.cat:"",pct=0;try{pct=(window.npAdvanceSettings||{})[c&&c.id]||0}catch(e){}
+    var r=[];
+    if(NIGHT.indexOf(cat)>-1)r.push(["👤 Age and ID","20+ only (Thai law). Bring your passport or a copy."]);
+    r.push(["💳 Payment",pct?pct+"% advance to reserve, paid online in the app. The rest is paid at the venue.":"No advance needed. You pay at the venue."]);
+    r.push(["❌ Cancellation",pct?"No cancellation or refund after the advance is paid.":"You can cancel in My bookings before your visit."]);
+    if(FOOD.indexOf(cat)>-1)r.push(["⏰ Time","Arrive on time. For delivery, someone must be at the address."]);
+    else if(NIGHT.indexOf(cat)>-1)r.push(["⏰ Arrival","Arrive on time. Late tables may be given to other guests."]);
+    else r.push(["⏰ Time","Be ready at the booked time. The provider confirms the details with you."]);
+    r.push(["🧾 Bill","Prices come from the venue. Service charge and VAT may be added on the bill."]);
+    if(NIGHT.indexOf(cat)>-1)r.push(["🚭 House rules","Dress code and venue rules apply. Illegal drugs are strictly not allowed (Thai law)."]);
+    else r.push(["📋 Venue rules","The venue's or provider's own rules apply."]);
+    r.push(["🔒 Your data","Your name and phone go only to this venue for this booking (PDPA). You can ask us to delete them."]);
+    return r;
+  }
+  function sync(){
+    if(!panel.querySelector("#pkgs"))return;
+    var book=panel.querySelector("#book"),lab=panel.querySelector(".nppdpa");
+    /* every service booking page gets the privacy tick (some pages were missing it) */
+    if(!lab&&book){lab=document.createElement("label");lab.className="nppdpa";
+      lab.innerHTML='<input type="checkbox"><span>I agree that Namaste Pattaya and this venue use my name, phone number only to handle this booking. <a href="privacy.html" target="_blank" rel="noopener">Privacy policy</a></span>';
+      book.insertAdjacentElement("beforebegin",lab)}
+    if(!lab)return;
+    var c=venue(),key=(c?c.id:"")+"|"+((window.npAdvanceSettings||{})[c&&c.id]||0);
+    if(lab.dataset.rk===key&&lab.querySelector(".nprulesv"))return;
+    lab.dataset.rk=key;
+    var sp=lab.querySelector("span");if(!sp)return;
+    var del=/address|location/i.test(sp.textContent)||!!panel.querySelector(".npdel");
+    sp.innerHTML='<b>I accept the rules of this booking</b> and the privacy policy'+(del?' (incl. my delivery address)':'')+'. <a href="#" class="nprulesv">View rules &amp; privacy policy</a>';
+    sp.querySelector(".nprulesv").onclick=function(e){e.preventDefault();e.stopPropagation();pop(c)};
+  }
+  function pop(c){
+    var old=document.getElementById("npRulesPop");if(old)old.remove();
+    var o=document.createElement("div");o.id="npRulesPop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Booking rules and privacy policy");
+    o.innerHTML='<div class="bx"><div class="hd"><b>Booking rules</b><button type="button" class="x" aria-label="Close">×</button></div>'+
+      (c?'<p class="vn">'+esc(c.name)+'</p>':'')+
+      '<table>'+rows(c).map(function(x){return '<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>'}).join("")+'</table>'+
+      '<h5>Privacy policy (short)</h5><p class="pp">We use your name and phone number only to handle this booking, and share them only with this venue. We do not sell your data. You can ask us to see or delete your data at any time (Thailand PDPA).</p>'+
+      '<a class="full" href="privacy.html" target="_blank" rel="noopener">Read the full privacy policy</a>'+
+      '<button type="button" class="ok">I understand</button></div>';
+    document.body.appendChild(o);
+    function close(){o.remove()}
+    o.querySelector(".x").onclick=close;o.querySelector(".ok").onclick=close;o.onclick=function(e){if(e.target===o)close()};
+    o.querySelector(".ok").focus();
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;try{sync()}catch(e){}})}).observe(panel,{childList:true,subtree:true});
 })();
