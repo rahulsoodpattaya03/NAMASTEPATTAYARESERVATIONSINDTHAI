@@ -3565,7 +3565,7 @@
     var cat=c?c.cat:"",pct=0;try{pct=(window.npAdvanceSettings||{})[c&&c.id]||0}catch(e){}
     var r=[];
     if(NIGHT.indexOf(cat)>-1)r.push(["👤 Age and ID","20+ only (Thai law). Bring your passport or a copy."]);
-    r.push(["💳 Payment",pct?pct+"% advance to reserve, paid online in the app. The rest is paid at the venue.":"No advance needed. You pay at the venue."]);
+    r.push(["💳 Payment",pct?pct+"% advance to reserve. The rest can be paid online or at the venue.":"No advance needed. You can pay online or at the venue."]);
     r.push(["❌ Cancellation",pct?"No cancellation or refund after the advance is paid.":"You can cancel in My bookings before your visit."]);
     if(FOOD.indexOf(cat)>-1)r.push(["⏰ Time","Arrive on time. For delivery, someone must be at the address."]);
     else if(NIGHT.indexOf(cat)>-1)r.push(["⏰ Arrival","Arrive on time. Late tables may be given to other guests."]);
@@ -3573,6 +3573,8 @@
     r.push(["🧾 Bill","Prices come from the venue. Service charge and VAT may be added on the bill."]);
     if(NIGHT.indexOf(cat)>-1)r.push(["🚭 House rules","Dress code and venue rules apply. Illegal drugs are strictly not allowed (Thai law)."]);
     else r.push(["📋 Venue rules","The venue's or provider's own rules apply."]);
+    r.push(["🤝 Our role","Namaste Pattaya is a booking platform. The venue or provider gives the service and is responsible for it."]);
+    r.push(["🙋 Behaviour","Be respectful to staff and other guests. No illegal activity. The venue may refuse entry or service."]);
     r.push(["🔒 Your data","Your name and phone go only to this venue for this booking (PDPA). You can ask us to delete them."]);
     return r;
   }
@@ -3589,13 +3591,13 @@
     lab.dataset.rk=key;
     var sp=lab.querySelector("span");if(!sp)return;
     var del=/address|location/i.test(sp.textContent)||!!panel.querySelector(".npdel");
-    sp.innerHTML='<b>I accept the rules of this booking</b> and the privacy policy'+(del?' (incl. my delivery address)':'')+'. <a href="#" class="nprulesv">View rules &amp; privacy policy</a>';
+    sp.innerHTML='<b>I agree to the Terms &amp; Conditions</b>'+(del?' (incl. my delivery address)':'')+'. <a href="#" class="nprulesv">Read Terms &amp; Conditions</a>';
     sp.querySelector(".nprulesv").onclick=function(e){e.preventDefault();e.stopPropagation();pop(c)};
   }
   function pop(c){
     var old=document.getElementById("npRulesPop");if(old)old.remove();
-    var o=document.createElement("div");o.id="npRulesPop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Booking rules and privacy policy");
-    o.innerHTML='<div class="bx"><div class="hd"><b>Booking rules</b><button type="button" class="x" aria-label="Close">×</button></div>'+
+    var o=document.createElement("div");o.id="npRulesPop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Terms and Conditions");
+    o.innerHTML='<div class="bx"><div class="hd"><b>Terms &amp; Conditions</b><button type="button" class="x" aria-label="Close">×</button></div>'+
       (c?'<p class="vn">'+esc(c.name)+'</p>':'')+
       '<table>'+rows(c).map(function(x){return '<tr><th scope="row">'+esc(x[0])+'</th><td>'+esc(x[1])+'</td></tr>'}).join("")+'</table>'+
       '<h5>Privacy policy (short)</h5><p class="pp">We use your name and phone number only to handle this booking, and share them only with this venue. We do not sell your data. You can ask us to see or delete your data at any time (Thailand PDPA).</p>'+
@@ -3849,4 +3851,23 @@
     try{if(typeof CLUBS!=="undefined"&&Array.isArray(CLUBS))for(var i=CLUBS.length-1;i>=0;i--){var c=CLUBS[i];if(c&&(GONEID[c.id]||GONE.test(String(c.name||"").trim())))CLUBS.splice(i,1)}}catch(e){}
   }
   clean();window.addEventListener("load",clean);setTimeout(clean,1500);setTimeout(clean,4000);
+})();
+
+/* ===== Privacy notice when the app opens for the first time (PDPA, 7 Oct 2026). One button. Nothing removed. ===== */
+(function(){
+  var KEY="np_privacy_ok";
+  try{if(localStorage.getItem(KEY))return}catch(e){return}
+  function show(){
+    if(document.getElementById("npPrivNote"))return;
+    var o=document.createElement("div");o.id="npPrivNote";o.setAttribute("role","dialog");o.setAttribute("aria-label","Your privacy");
+    o.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:100001;display:flex;justify-content:center";
+    o.innerHTML='<div style="width:100%;max-width:520px;background:#17132a;color:#f2eefc;border-top:1px solid #534AB7;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.5)">'+
+      '<div style="font-weight:700;font-size:16px;margin-bottom:6px">🔒 Your privacy</div>'+
+      '<p style="margin:0;font-size:13px;line-height:1.5;color:#d9d2f2">We save a few things on your phone (your language, bookings and login) so the app works, and we count app visits anonymously to improve it. Raju\'s answers and translations use Google services, and our data is stored by Supabase, which may be outside Thailand. '+
+      '<a href="privacy.html" target="_blank" rel="noopener" style="color:#E9B949;font-weight:600">Privacy policy</a></p>'+
+      '<button type="button" id="npPrivOk" style="width:100%;margin-top:12px;border:0;border-radius:14px;padding:13px;font-weight:700;font-size:15px;background:#f2eefc;color:#1a1530;cursor:pointer">OK, got it</button></div>';
+    document.body.appendChild(o);
+    o.querySelector("#npPrivOk").onclick=function(){try{localStorage.setItem(KEY,new Date().toISOString())}catch(e){}o.remove()};
+  }
+  if(document.readyState==="complete")setTimeout(show,1200);else window.addEventListener("load",function(){setTimeout(show,1200)});
 })();
