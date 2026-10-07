@@ -2971,16 +2971,49 @@
 /* ===== Booking form: clear help when no spot is chosen yet (the "Choose your spot" list is above, off screen) ===== */
 (function(){
   if(typeof panel==="undefined")return;
+  /* 7 Oct 2026: words that match each service. Clubs, beach clubs and events keep the original "spot" words.
+     [heading, item, example, button, date "today" word, time label, people label] (null = keep the original) */
+  var WORDS={
+    airport:["Choose your ride","ride","car or van","Show rides","Today","Pickup time","Passengers"],
+    rental:["Choose your vehicle","vehicle","car or scooter","Show vehicles","Today","Pickup time","People"],
+    restaurants:["Choose your table","table","","Show tables",null,null,null],
+    indian:["Choose your table","table","","Show tables",null,null,null],
+    hotels:["Choose your room","room","","Show rooms",null,"Check-in time",null],
+    spa:["Choose your treatment","treatment","massage or spa","Show treatments","Today","Time","People"],
+    tours:["Choose your tour","tour","","Show tours","Today","Pickup time","People"],
+    water:["Choose your activity","activity","","Show activities","Today","Time","People"],
+    golf:["Choose your game","game","golf or shooting","Show games","Today","Tee time","Players"],
+    yacht:["Choose your charter","charter","","Show charters","Today","Boarding time",null],
+    shopping:["Choose your service","service","","Show services","Today","Time","People"],
+    grocery:["Choose your items","item","","Show items","Today","Delivery time",null],
+    medical:["Choose your option","option","","Show options","Today","Time","People"],
+    concierge:["Choose your service","service","","Show services",null,"Time",null],
+    visa:["Choose your service","service","","Show services","Today","Time","People"],
+    jet:["Choose your flight","flight","","Show flights","Today","Departure time","Passengers"],
+    property:["Choose your option","option","","Show options","Today","Viewing time","People"]
+  };
+  function npVenue(){var t=panel.querySelector("#sheetTitle");if(!t||typeof CLUBS==="undefined")return null;var n=t.textContent.trim();return CLUBS.find(function(c){return c.name===n})||null}
+  function npWords(){var v=npVenue();if(!v)return null;var w=WORDS[v.cat];if(!w)return null;return {head:w[0],item:w[1],eg:w[2],btn:w[3],today:w[4],time:w[5],people:w[6]}}
+  function setLead(label,txt){if(!label||!txt)return;var n=label.firstChild;if(n&&n.nodeType===3&&n.nodeValue.trim()!==txt)n.nodeValue=txt}
+  function relabel(){
+    var w=npWords();if(!w)return;
+    var pk=panel.querySelector("#pkgs");if(pk){var hd=pk.previousElementSibling;if(hd&&hd.tagName==="H3"&&hd.textContent.trim()!==w.head)hd.textContent=w.head}
+    var ft=panel.querySelector("#fTime");if(ft)setLead(ft.closest("label"),w.time);
+    var go=panel.querySelector("#gOut");if(go)setLead(go.closest("label"),w.people);
+    var fd=panel.querySelector("#fDay");if(fd&&w.today&&fd.options[0]&&fd.options[0].text==="Tonight")fd.options[0].text=w.today;
+  }
   if(!document.getElementById("npSpotCss")){var s=document.createElement("style");s.id="npSpotCss";
     s.textContent='#npSpotHint{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:0 0 10px;padding:12px 14px;border-radius:14px;background:rgba(233,185,73,.14);border:1px solid rgba(233,185,73,.6);font-size:14px;line-height:1.35}'+
       '#npSpotHint button{flex:0 0 auto;padding:9px 14px;border-radius:999px;border:0;font:inherit;font-weight:700;background:#E9B949;color:#1a1026;cursor:pointer}'+
       '#pkgs.npflash{outline:2px solid #E9B949;outline-offset:6px;border-radius:14px;transition:outline-color .3s}';document.head.appendChild(s)}
   function sync(){
+    try{relabel()}catch(e){}
     var book=panel.querySelector("#book"),pk=panel.querySelector("#pkgs");if(!book||!pk)return;
     var chosen=!!pk.querySelector('.pkg[aria-pressed="true"]'),h=panel.querySelector("#npSpotHint");
     if(chosen||!book.disabled){if(h)h.remove();return}
     if(!h){h=document.createElement("div");h.id="npSpotHint";h.setAttribute("role","note");
-      h.innerHTML='<span>👆 First tap a <b>spot</b> (table, entry or package) in <b>"Choose your spot"</b> above.</span><button type="button">Show spots</button>';
+      var w=npWords();
+      h.innerHTML=w?'<span>👆 First tap your <b>'+w.item+'</b>'+(w.eg?' ('+w.eg+')':'')+' above.</span><button type="button">'+w.btn+'</button>':'<span>👆 First tap a <b>spot</b> (table, entry or package) in <b>"Choose your spot"</b> above.</span><button type="button">Show spots</button>';
       book.insertAdjacentElement("beforebegin",h);
       h.querySelector("button").onclick=function(){var t=panel.querySelector("#pkgs");if(!t)return;var hd=t.previousElementSibling||t;
         hd.scrollIntoView({behavior:"smooth",block:"start"});t.classList.add("npflash");setTimeout(function(){t.classList.remove("npflash")},2200)}}
