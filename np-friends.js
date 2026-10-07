@@ -3557,3 +3557,91 @@
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;try{sync()}catch(e){}})}).observe(panel,{childList:true,subtree:true});
 })();
+
+/* ===== Raju language button (7 Oct 2026): a "🌐 English ▾" button in the Home Raju box and in the bottom-right Raju chat.
+   It uses the SAME language setting as the app menu, so Raju and the full app change together. Nothing removed. ===== */
+(function(){
+  var L=[["en","English","English"],["hi","हिंदी","Hindi"],["pa","ਪੰਜਾਬੀ","Punjabi"],["gu","ગુજરાતી","Gujarati"],["ta","தமிழ்","Tamil"],["mr","मराठी","Marathi"],["th","ไทย","Thai"]];
+  var NAME=/Raju|राजू|ਰਾਜੂ|રાજુ|ராஜு|ராஜூ|ราจู/;
+  var POP="#panel,.sheet,#npMoreSheet,#npLangSheet";
+  function cur(){var l="en";try{l=localStorage.getItem("np_lang")||"en"}catch(e){}for(var i=0;i<L.length;i++)if(L[i][0]===l)return L[i];return L[0]}
+  function vis(el){return !!(el&&el.getClientRects().length)}
+  if(!document.getElementById("npLangBtnCss")){
+    var st=document.createElement("style");st.id="npLangBtnCss";
+    st.textContent='.nplrow{display:flex;justify-content:flex-end;margin:6px 0}'+
+      '.nplbtn{display:inline-flex;align-items:center;gap:6px;border:1px solid #7F77DD;background:#26215C;color:#CECBF6;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;min-height:34px}'+
+      '#npLangSheet{position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}'+
+      '#npLangSheet .in{width:100%;max-width:480px;background:#17132a;color:#f2eefc;border-radius:20px 20px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px))}'+
+      '#npLangSheet .hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-weight:700;font-size:17px}'+
+      '#npLangSheet .x{background:none;border:0;color:#f2eefc;font-size:22px;width:40px;height:40px;cursor:pointer}'+
+      '#npLangSheet .g{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}'+
+      '#npLangSheet .o{border:1px solid #3a2f5c;background:#1f1a36;color:#f2eefc;border-radius:14px;padding:12px;text-align:left;font-size:16px;cursor:pointer}'+
+      '#npLangSheet .o small{display:block;color:#b3a9d6;font-size:12px;margin-top:2px}#npLangSheet .o.on{border-color:#7F77DD;background:#26215C;color:#CECBF6}#npLangSheet .in{border-top:1px solid #534AB7}';
+    document.head.appendChild(st);
+  }
+  /* change the language exactly like the app menu does: open the app's own language window and tap the choice */
+  function setLang(code){
+    var target=null;L.forEach(function(x){if(x[0]===code)target=x});if(!target||code===cur()[0])return;
+    var label=[].slice.call(document.querySelectorAll("body *")).find(function(el){
+      return el.children.length===0&&/^\s*(Language|भाषा|ਭਾਸ਼ਾ|ભાષા|மொழி|ภาษา)\s*$/i.test(el.textContent||"")&&!el.closest(POP+",#rajuChat");
+    });
+    function fallback(){try{localStorage.setItem("np_lang",code)}catch(e){}location.reload()}
+    if(!label)return fallback();
+    var card=label.closest("button,a,[role=button],[onclick]")||label.parentElement||label;
+    try{card.click()}catch(e){return fallback()}
+    var tries=0;
+    (function look(){
+      tries++;
+      var boxes=[].slice.call(document.querySelectorAll("body *")).filter(function(el){
+        var t=el.textContent||"";return vis(el)&&/Punjabi|ਪੰਜਾਬੀ/.test(t)&&/Gujarati|ગુજરાતી/.test(t)&&/Tamil|தமிழ்/.test(t)&&/Thai|ไทย/.test(t)&&!el.closest("#npLangSheet");
+      });
+      boxes.sort(function(a,b){return a.textContent.length-b.textContent.length});
+      var box=boxes[0];
+      if(box){
+        var re=new RegExp("("+target[2]+"|"+target[1]+")");
+        var opts=[].slice.call(box.querySelectorAll("*")).filter(function(el){return re.test(el.textContent||"")&&el.textContent.length<40});
+        opts.sort(function(a,b){return a.textContent.length-b.textContent.length});
+        var o=opts[0];
+        if(o){var c=o.closest("button,[role=button],[onclick],label")||o;c.click();
+          setTimeout(function(){try{if((localStorage.getItem("np_lang")||"en")!==code){localStorage.setItem("np_lang",code)}}catch(e){}refresh()},400);return}
+      }
+      if(tries<20)setTimeout(look,100);else fallback();
+    })();
+  }
+  function openSheet(){
+    var old=document.getElementById("npLangSheet");if(old)old.remove();
+    var c=cur()[0],o=document.createElement("div");o.id="npLangSheet";
+    o.innerHTML='<div class="in" role="dialog" aria-label="Choose language"><div class="hd"><span>🌐 Choose language</span><button class="x" aria-label="Close">×</button></div><div class="g">'+
+      L.map(function(x){return '<button class="o'+(x[0]===c?" on":"")+'" data-l="'+x[0]+'">'+x[1]+'<small>'+x[2]+'</small></button>'}).join("")+'</div></div>';
+    document.body.appendChild(o);
+    function close(){o.remove()}
+    o.querySelector(".x").onclick=close;o.onclick=function(e){if(e.target===o)close()};
+    [].forEach.call(o.querySelectorAll(".o"),function(b){b.onclick=function(){var l=b.getAttribute("data-l");close();setLang(l)}});
+  }
+  function refresh(){var c=cur();[].forEach.call(document.querySelectorAll(".nplbtn span"),function(s){if(s.textContent!==c[1])s.textContent=c[1]})}
+  /* find Raju's text boxes: the Home Raju box and the bottom-right Raju chat */
+  function targets(){
+    return [].slice.call(document.querySelectorAll('input[type="text"],input:not([type]),input[type="search"],textarea')).filter(function(inp){
+      if(inp.closest(POP))return false;
+      if(inp.closest("#rajuChat"))return true;
+      var a=inp;for(var i=0;i<4&&a.parentElement;i++){a=a.parentElement;var t=a.textContent||"";if(t.length>1500)return false;if(NAME.test(t))return true}
+      return false;
+    });
+  }
+  function attach(){
+    targets().forEach(function(inp){
+      var row=(inp.parentElement&&inp.parentElement.querySelector("button")&&inp.parentElement.tagName!=="FORM")?inp.parentElement:inp;
+      var prev=row.previousElementSibling;if(prev&&prev.classList.contains("nplrow"))return;
+      if(row.parentElement&&row.parentElement.querySelector(":scope > .nplrow"))return;
+      var r=document.createElement("div");r.className="nplrow";
+      r.innerHTML='<button type="button" class="nplbtn" aria-label="Change language">🌐 <span>'+cur()[1]+'</span> ▾</button>';
+      r.querySelector("button").onclick=function(e){e.preventDefault();e.stopPropagation();openSheet()};
+      row.insertAdjacentElement("beforebegin",r);
+    });
+    refresh();
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{attach()}catch(e){}},250)}).observe(document.body,{childList:true,subtree:true});
+  window.addEventListener("storage",refresh);
+  try{attach()}catch(e){}
+})();
