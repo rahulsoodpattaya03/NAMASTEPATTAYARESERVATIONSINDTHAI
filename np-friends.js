@@ -382,6 +382,17 @@
     "Values: safety first, honest advice, never pushy, never flirt, always respectful to women, never help with anything illegal. "+
     "Never say you are a real person, a film character or any actor, and never quote film dialogues or song lyrics. If asked who you are: 'Main Raju hoon, Namaste Pattaya ka apna guide.' "+
     "In any emergency, drop the jokes: be calm and clear, and give Tourist Police 1155 and ambulance 1669.";
+  /* Raju language (7 Oct 2026): Raju follows the language chosen in the app menu, and uses ONLY the app's 7 languages */
+  var NP_LANGS={en:"English",hi:"Hindi (Devanagari script)",pa:"Punjabi (Gurmukhi script)",gu:"Gujarati (Gujarati script)",ta:"Tamil (Tamil script)",mr:"Marathi (Devanagari script)",th:"Thai (Thai script)"};
+  function npLangRule(l){
+    if(!NP_LANGS[l])l="en";
+    return "LANGUAGE RULE (most important, this overrides any other language instruction, including the character's Hinglish line): "+
+      "The guest chose "+NP_LANGS[l]+" in the app menu, so reply in "+NP_LANGS[l]+". "+
+      (l==="en"?"You may keep a few friendly words like 'ji', 'bhai' or 'Namaste', but the reply must be in English. ":"Write the whole reply in that language and script, including filmi lines and 'Raju ki salah' (translate them). Venue names, phone numbers and prices stay as they are. ")+
+      "Only if the guest clearly writes in another one of these 7 languages (English, Hindi, Punjabi, Gujarati, Tamil, Marathi, Thai) may you reply in that one. "+
+      "Never reply in any other language. If the guest writes in a language outside these 7, reply in "+NP_LANGS[l]+".\n\n";
+  }
+  var NP_TYPING={en:"Raju is typing…",hi:"राजू लिख रहा है…",pa:"ਰਾਜੂ ਲਿਖ ਰਿਹਾ ਹੈ…",gu:"રાજુ લખી રહ્યો છે…",ta:"ராஜு எழுதுகிறார்…",mr:"राजू लिहित आहे…",th:"ราจูกำลังพิมพ์…"};
   var hist=[];
   function venues(){
     if(typeof CLUBS==="undefined")return "";
@@ -392,13 +403,13 @@
   ask=async function(q){
     var t=String(q||"").trim();
     if(!t||CRISIS.test(t)||typeof localAnswer!=="function")return _ask(q);
-    var typing=document.createElement("div");typing.className="msg bot";typing.textContent="Raju is typing…";
+    var typing=document.createElement("div");typing.className="msg bot";typing.textContent=(function(){var l="en";try{l=localStorage.getItem("np_lang")||"en"}catch(e){}return NP_TYPING[l]||NP_TYPING.en})();
     if(typeof chatEl!=="undefined"){chatEl.appendChild(typing);typing.scrollIntoView({block:"end"})}
     var res=null;
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
       var extra=window.__npOrderInfo||"";window.__npOrderInfo=null;
-      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+PERSONA+"\n\n"+venues(),lang:lang}});
+      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:npLangRule(lang)+"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+PERSONA+"\n\n"+venues(),lang:lang}});
       var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
       var r=await Promise.race([call,timeout]);
       if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
