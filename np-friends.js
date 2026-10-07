@@ -388,9 +388,11 @@
     if(!NP_LANGS[l])l="en";
     return "LANGUAGE RULE (most important, this overrides any other language instruction, including the character's Hinglish line): "+
       "The guest chose "+NP_LANGS[l]+" in the app menu, so reply in "+NP_LANGS[l]+". "+
-      (l==="en"?"You may keep a few friendly words like 'ji', 'bhai' or 'Namaste', but the reply must be in English. ":"Write the whole reply in that language and script, including filmi lines and 'Raju ki salah' (translate them). Venue names, phone numbers and prices stay as they are. ")+
+      (l==="en"?"Reply in Hinglish: a natural mix of Hindi and English, written only in English letters (Roman script), the way young Indians chat, e.g. 'Arre waah ji! Aaj raat full masti ka plan hai?'. Never use Devanagari script in this mode. ":"Write the whole reply in that language and script, including filmi lines and 'Raju ki salah' (translate them). Venue names, phone numbers and prices stay as they are. ")+
       "Only if the guest clearly writes in another one of these 7 languages (English, Hindi, Punjabi, Gujarati, Tamil, Marathi, Thai) may you reply in that one. "+
-      "Never reply in any other language. If the guest writes in a language outside these 7, reply in "+NP_LANGS[l]+".\n\n";
+      "Never reply in any other language. If the guest writes in a language outside these 7, reply in "+NP_LANGS[l]+". "+
+      "PERSONALITY (always): Raju is confident, funny, friendly, full of energy and trustworthy. Short lively sentences, a light joke or filmi touch when it fits, warm like a good friend. "+
+      "Trustworthy means: never invent prices, venues or promises, never pressure the guest, and say honestly when you are not sure.\n\n";
   }
   /* read Raju's answer in any format Supabase sends (JSON, text or file) */
   async function npReadReply(r){
@@ -3639,7 +3641,7 @@
   function openSheet(){
     var old=document.getElementById("npLangSheet");if(old)old.remove();
     var c=cur()[0],o=document.createElement("div");o.id="npLangSheet";
-    o.innerHTML='<div class="in" role="dialog" aria-label="Choose language"><div class="hd"><span>🌐 Choose language</span><button class="x" aria-label="Close">×</button></div><div class="g">'+
+    o.className="notranslate";o.setAttribute("translate","no");o.innerHTML='<div class="in" role="dialog" aria-label="Choose language"><div class="hd"><span>🌐 Choose language</span><button class="x" aria-label="Close">×</button></div><div class="g">'+
       L.map(function(x){return '<button class="o'+(x[0]===c?" on":"")+'" data-l="'+x[0]+'">'+x[1]+'<small>'+x[2]+'</small></button>'}).join("")+'</div></div>';
     document.body.appendChild(o);
     function close(){o.remove()}
@@ -3661,7 +3663,7 @@
       var row=(inp.parentElement&&inp.parentElement.querySelector("button")&&inp.parentElement.tagName!=="FORM")?inp.parentElement:inp;
       var prev=row.previousElementSibling;if(prev&&prev.classList.contains("nplrow"))return;
       if(row.parentElement&&row.parentElement.querySelector(":scope > .nplrow"))return;
-      var r=document.createElement("div");r.className="nplrow";
+      var r=document.createElement("div");r.className="nplrow notranslate";r.setAttribute("translate","no");
       r.innerHTML='<button type="button" class="nplbtn" aria-label="Change language">🌐 <span>'+cur()[1]+'</span> ▾</button>';
       r.querySelector("button").onclick=function(e){e.preventDefault();e.stopPropagation();openSheet()};
       row.insertAdjacentElement("beforebegin",r);
@@ -3938,7 +3940,7 @@
     if(/[\u0B80-\u0BFF]/.test(t))return "ta";
     if(/[\u0E00-\u0E7F]/.test(t))return "th";
     if(/[\u0900-\u097F]/.test(t))return appLang()==="mr"?"mr":"hi";
-    return "en";
+    return appLang()==="en"?"hi":"en";
   }
   function clean(t){
     return String(t||"").replace(/\[[^\]]*\]/g," ").replace(/[*_#>`]/g," ")
@@ -3953,8 +3955,8 @@
   if(!document.getElementById("npVoiceCss")){
     var st=document.createElement("style");st.id="npVoiceCss";
     st.textContent='.npvoice{display:inline-flex;align-items:center;gap:6px;margin:4px 0 2px;border:1px solid #7F77DD;background:#26215C;color:#CECBF6;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;cursor:pointer;min-height:32px}'+
-      '.npvoice[disabled]{opacity:.6}.npvoice .b{display:inline-flex;gap:2px;align-items:flex-end;height:12px}.npvoice .b i{width:3px;height:4px;background:#CECBF6;border-radius:2px}'+
-      '.npvoice.on .b i{animation:npvb .6s infinite alternate}.npvoice.on .b i:nth-child(2){animation-delay:.2s}.npvoice.on .b i:nth-child(3){animation-delay:.4s}'+
+      '.npvoice[disabled]{opacity:.6}.npvoice .b{display:none;gap:2px;align-items:flex-end;height:12px}.npvoice .b i{width:3px;height:4px;background:#CECBF6;border-radius:2px}'+
+      '.npvoice.on .b{display:inline-flex}.npvoice.on .b i{animation:npvb .6s infinite alternate}.npvoice.on .b i:nth-child(2){animation-delay:.2s}.npvoice.on .b i:nth-child(3){animation-delay:.4s}'+
       '@keyframes npvb{to{height:12px}}.npvwrap{margin:-2px 0 6px}';
     document.head.appendChild(st);
   }
@@ -3962,9 +3964,12 @@
   function setLabel(btn,txt){var s=btn.querySelector(".t");if(s)s.textContent=txt||LABEL[appLang()]||LABEL.en}
   async function getAudio(text,l){
     var ck=l+"|"+text;if(cache[ck])return cache[ck];
-    var r=await fetch(FN,{method:"POST",headers:{"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+KEY},
-      body:JSON.stringify({text:text,voice:VOICES[l],voice_id:VOICES[l],voiceId:VOICES[l],lang:l})});
-    if(!r.ok)throw new Error("voice "+r.status);
+    var payload=JSON.stringify({text:text,voice:VOICES[l],voice_id:VOICES[l],voiceId:VOICES[l],lang:l});
+    var hdr={"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+KEY};
+    /* 8 Oct 2026: try the new "raju-voice" function first (7 voices, faster); if it isn't there, use quick-api as before */
+    var r=null;
+    try{r=await fetch(FN.replace("/quick-api","/raju-voice"),{method:"POST",headers:hdr,body:payload});if(!r.ok)r=null}catch(e){r=null}
+    if(!r){r=await fetch(FN,{method:"POST",headers:hdr,body:payload});if(!r.ok)throw new Error("voice "+r.status)}
     var ct=(r.headers.get("content-type")||"").toLowerCase(),url;
     if(ct.indexOf("json")>-1){
       var j=await r.json(),b64=j&&(j.audio||j.audioContent||j.audio_base64||j.data);
@@ -3998,6 +4003,9 @@
     return true;
   }
   function scan(){
+    [].slice.call(chatEl.querySelectorAll(":scope > .npvwrap")).forEach(function(w){
+      var pv=w.previousElementSibling;if(!pv||!isAnswer(pv))w.remove();
+    });
     [].forEach.call(chatEl.children,function(el){
       if(!isAnswer(el))return;
       var nx=el.nextElementSibling;if(nx&&nx.classList&&nx.classList.contains("npvwrap"))return;
@@ -4012,4 +4020,45 @@
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{scan()}catch(e){}},300)}).observe(chatEl,{childList:true,subtree:true,characterData:true});
   try{scan()}catch(e){}
+})();
+
+/* ===== Guest can speak to Raju (8 Oct 2026, on Rahul's OK): a 🎤 button in the Home Raju box and in the Raju chat.
+   Uses the phone's own free voice typing in the app's chosen language. The words appear in the box; the guest taps Send.
+   Never sends by itself. Hidden on phones that don't support it. Nothing removed. ===== */
+(function(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+  var LOC={en:"en-IN",hi:"hi-IN",pa:"pa-IN",gu:"gu-IN",mr:"mr-IN",ta:"ta-IN",th:"th-TH"};
+  var TXT={en:"Listening…",hi:"सुन रहा हूँ…",pa:"ਸੁਣ ਰਿਹਾ ਹਾਂ…",gu:"સાંભળું છું…",mr:"ऐकतोय…",ta:"கேட்கிறேன்…",th:"กำลังฟัง…"};
+  function lang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
+  if(!document.getElementById("npMicCss")){var st=document.createElement("style");st.id="npMicCss";
+    st.textContent='button.npmic{flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;border-radius:50%!important;border:1px solid #7F77DD!important;background:#26215C!important;color:#CECBF6!important;font-size:19px!important;display:inline-flex!important;align-items:center;justify-content:center;cursor:pointer;padding:0!important;margin:0 8px 0 0!important;box-shadow:none!important;align-self:center}'+
+      'button.npmic.on{background:#D85A30!important;border-color:#D85A30!important;color:#fff!important;animation:npmicp 1s infinite}@keyframes npmicp{50%{box-shadow:0 0 0 8px rgba(216,90,48,.25)}}';
+    document.head.appendChild(st)}
+  var rec=null,activeBtn=null;
+  function stop(){try{if(rec)rec.stop()}catch(e){}}
+  function start(btn,input){
+    if(activeBtn===btn){stop();return}
+    stop();
+    var l=lang(),r=new SR();rec=r;activeBtn=btn;
+    r.lang=LOC[l]||"en-IN";r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+    var before=input.value,ph=input.placeholder,finalTxt="";
+    btn.classList.add("on");input.placeholder=TXT[l]||TXT.en;
+    r.onresult=function(e){var interim="";for(var i=e.resultIndex;i<e.results.length;i++){var t=e.results[i][0].transcript;if(e.results[i].isFinal)finalTxt+=t;else interim+=t}
+      input.value=((before?before+" ":"")+finalTxt+interim).trim()};
+    r.onerror=function(e){if(e&&(e.error==="not-allowed"||e.error==="service-not-allowed"))alert("Please allow the microphone for this app to speak to Raju.")};
+    r.onend=function(){btn.classList.remove("on");input.placeholder=ph;if(activeBtn===btn){activeBtn=null;rec=null}try{input.focus()}catch(e){}};
+    try{r.start()}catch(e){r.onend()}
+  }
+  function add(inputId){
+    var input=document.getElementById(inputId);if(!input||input.dataset.npMic)return;
+    input.dataset.npMic="1";
+    var b=document.createElement("button");b.type="button";b.className="npmic notranslate";b.setAttribute("translate","no");
+    b.setAttribute("aria-label","Speak to Raju");b.textContent="🎤";
+    b.onclick=function(e){e.preventDefault();e.stopPropagation();start(b,input)};
+    input.insertAdjacentElement("beforebegin",b);
+  }
+  function run(){add("rajuIn");add("chatIn")}
+  run();
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{run()}catch(e){}},400)}).observe(document.body,{childList:true,subtree:true});
 })();
