@@ -3853,21 +3853,3 @@
   clean();window.addEventListener("load",clean);setTimeout(clean,1500);setTimeout(clean,4000);
 })();
 
-/* ===== Privacy notice when the app opens for the first time (PDPA, 7 Oct 2026). One button. Nothing removed. ===== */
-(function(){
-  var KEY="np_privacy_ok";
-  try{if(localStorage.getItem(KEY))return}catch(e){return}
-  function show(){
-    if(document.getElementById("npPrivNote"))return;
-    var o=document.createElement("div");o.id="npPrivNote";o.setAttribute("role","dialog");o.setAttribute("aria-label","Your privacy");
-    o.style.cssText="position:fixed;left:0;right:0;bottom:0;z-index:100001;display:flex;justify-content:center";
-    o.innerHTML='<div style="width:100%;max-width:520px;background:#17132a;color:#f2eefc;border-top:1px solid #534AB7;border-radius:20px 20px 0 0;padding:16px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 40px rgba(0,0,0,.5)">'+
-      '<div style="font-weight:700;font-size:16px;margin-bottom:6px">🔒 Your privacy</div>'+
-      '<p style="margin:0;font-size:13px;line-height:1.5;color:#d9d2f2">We save a few things on your phone (your language, bookings and login) so the app works, and we count app visits anonymously to improve it. Raju\'s answers and translations use Google services, and our data is stored by Supabase, which may be outside Thailand. '+
-      '<a href="privacy.html" target="_blank" rel="noopener" style="color:#E9B949;font-weight:600">Privacy policy</a></p>'+
-      '<button type="button" id="npPrivOk" style="width:100%;margin-top:12px;border:0;border-radius:14px;padding:13px;font-weight:700;font-size:15px;background:#f2eefc;color:#1a1530;cursor:pointer">OK, got it</button></div>';
-    document.body.appendChild(o);
-    o.querySelector("#npPrivOk").onclick=function(){try{localStorage.setItem(KEY,new Date().toISOString())}catch(e){}o.remove()};
-  }
-  if(document.readyState==="complete")setTimeout(show,1200);else window.addEventListener("load",function(){setTimeout(show,1200)});
-})();
