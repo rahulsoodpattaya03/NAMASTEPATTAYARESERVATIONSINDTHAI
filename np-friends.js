@@ -392,6 +392,18 @@
       "Only if the guest clearly writes in another one of these 7 languages (English, Hindi, Punjabi, Gujarati, Tamil, Marathi, Thai) may you reply in that one. "+
       "Never reply in any other language. If the guest writes in a language outside these 7, reply in "+NP_LANGS[l]+".\n\n";
   }
+  /* read Raju's answer in any format Supabase sends (JSON, text or file) */
+  async function npReadReply(r){
+    try{
+      if(!r||r.error==="timeout")return null;
+      var d=r.data;
+      if(!d&&r.error&&r.error.context&&typeof r.error.context.text==="function"){try{d=await r.error.context.text()}catch(e){}}
+      if(d&&typeof Blob!=="undefined"&&d instanceof Blob)d=await d.text();
+      if(typeof d==="string"){var txt=d.trim();try{d=JSON.parse(txt)}catch(e){d=txt&&txt.charAt(0)!=="<"?{reply:txt,ids:[]}:null}}
+      if(d&&typeof d==="object"){var rep=d.reply||d.text||d.answer||d.message;if(typeof rep==="string"&&rep.trim())return {reply:rep.trim(),ids:Array.isArray(d.ids)?d.ids:[]}}
+    }catch(e){}
+    return null;
+  }
   var NP_TYPING={en:"Raju is typing…",hi:"राजू लिख रहा है…",pa:"ਰਾਜੂ ਲਿਖ ਰਿਹਾ ਹੈ…",gu:"રાજુ લખી રહ્યો છે…",ta:"ராஜு எழுதுகிறார்…",mr:"राजू लिहित आहे…",th:"ราจูกำลังพิมพ์…"};
   var hist=[];
   function venues(){
@@ -409,10 +421,17 @@
     try{
       var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
       var extra=window.__npOrderInfo||"";window.__npOrderInfo=null;
-      var call=sb.functions.invoke("bright-responder",{body:{messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:npLangRule(lang)+"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+PERSONA+"\n\n"+venues(),lang:lang}});
-      var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},15000)});
+      var npBody={messages:hist.concat([{role:"user",text:t+(extra?"\n\n[System order lookup, not written by the customer. Tell the customer this clearly and kindly in their language: "+extra+"]":"")}]),venues:npLangRule(lang)+"EXTRA RULES YOU MUST FOLLOW (Thai law): 1) Thai alcohol law (2025) bans alcohol advertising: never recommend, describe, price or promote alcoholic drinks, bottles, brands, cocktails, happy hours or drink deals. You may name a venue and its table/experience; if asked about drinks, say the venue shares its menu on site. 2) Never give prices for hospitals, clinics, treatments or medicines, and never recommend medicines. For health issues, suggest a licensed hospital or pharmacy by name/area only; for emergencies, call 1669.\n\n"+PERSONA+"\n\n"+venues(),lang:lang};
+      var call=sb.functions.invoke("bright-responder",{body:npBody});
+      var timeout=new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},35000)});
       var r=await Promise.race([call,timeout]);
-      if(r&&!r.error&&r.data&&r.data.reply)res=r.data;
+      res=await npReadReply(r);
+      /* one quick retry if the first answer failed (not after a timeout) */
+      if(!res&&!(r&&r.error==="timeout")){
+        var call2=sb.functions.invoke("bright-responder",{body:npBody});
+        var r2=await Promise.race([call2,new Promise(function(ok){setTimeout(function(){ok({error:"timeout"})},25000)})]);
+        res=await npReadReply(r2);
+      }
     }catch(e){}
     typing.remove();
     if(!res&&extra)res={reply:extra,ids:[]};
@@ -3579,35 +3598,8 @@
       '#npLangSheet .o small{display:block;color:#b3a9d6;font-size:12px;margin-top:2px}#npLangSheet .o.on{border-color:#7F77DD;background:#26215C;color:#CECBF6}#npLangSheet .in{border-top:1px solid #534AB7}';
     document.head.appendChild(st);
   }
-  /* change the language exactly like the app menu does: open the app's own language window and tap the choice */
-  function setLang(code){
-    var target=null;L.forEach(function(x){if(x[0]===code)target=x});if(!target||code===cur()[0])return;
-    var label=[].slice.call(document.querySelectorAll("body *")).find(function(el){
-      return el.children.length===0&&/^\s*(Language|भाषा|ਭਾਸ਼ਾ|ભાષા|மொழி|ภาษา)\s*$/i.test(el.textContent||"")&&!el.closest(POP+",#rajuChat");
-    });
-    function fallback(){try{localStorage.setItem("np_lang",code)}catch(e){}location.reload()}
-    if(!label)return fallback();
-    var card=label.closest("button,a,[role=button],[onclick]")||label.parentElement||label;
-    try{card.click()}catch(e){return fallback()}
-    var tries=0;
-    (function look(){
-      tries++;
-      var boxes=[].slice.call(document.querySelectorAll("body *")).filter(function(el){
-        var t=el.textContent||"";return vis(el)&&/Punjabi|ਪੰਜਾਬੀ/.test(t)&&/Gujarati|ગુજરાતી/.test(t)&&/Tamil|தமிழ்/.test(t)&&/Thai|ไทย/.test(t)&&!el.closest("#npLangSheet");
-      });
-      boxes.sort(function(a,b){return a.textContent.length-b.textContent.length});
-      var box=boxes[0];
-      if(box){
-        var re=new RegExp("("+target[2]+"|"+target[1]+")");
-        var opts=[].slice.call(box.querySelectorAll("*")).filter(function(el){return re.test(el.textContent||"")&&el.textContent.length<40});
-        opts.sort(function(a,b){return a.textContent.length-b.textContent.length});
-        var o=opts[0];
-        if(o){var c=o.closest("button,[role=button],[onclick],label")||o;c.click();
-          setTimeout(function(){try{if((localStorage.getItem("np_lang")||"en")!==code){localStorage.setItem("np_lang",code)}}catch(e){}refresh()},400);return}
-      }
-      if(tries<20)setTimeout(look,100);else fallback();
-    })();
-  }
+  /* change the language with the app's fast switch (see "Fast language change" below) */
+  function setLang(code){if(typeof window.npFastLang==="function")window.npFastLang(code);else{try{localStorage.setItem("np_lang",code)}catch(e){}location.reload()}}
   function openSheet(){
     var old=document.getElementById("npLangSheet");if(old)old.remove();
     var c=cur()[0],o=document.createElement("div");o.id="npLangSheet";
@@ -3644,4 +3636,175 @@
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{attach()}catch(e){}},250)}).observe(document.body,{childList:true,subtree:true});
   window.addEventListener("storage",refresh);
   try{attach()}catch(e){}
+})();
+
+/* ===== 7 Oct 2026: fast language change (no full reload), suggestion buttons in the chosen language,
+   and Raju's fixed English lines translated. Only added; the old reload way stays as backup. ===== */
+(function(){
+  var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi",th:"Thai"};
+  var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म",th:"ไท"};
+  var NATIVE={en:"English",hi:"हिंदी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
+  var WAITTXT={en:"Changing language…",hi:"भाषा बदल रही है…",pa:"ਭਾਸ਼ਾ ਬਦਲ ਰਹੀ ਹੈ…",gu:"ભાષા બદલાઈ રહી છે…",ta:"மொழி மாறுகிறது…",mr:"भाषा बदलत आहे…",th:"กำลังเปลี่ยนภาษา…"};
+  var SCRIPT={hi:/[\u0900-\u097F]/g,mr:/[\u0900-\u097F]/g,pa:/[\u0A00-\u0A7F]/g,gu:/[\u0A80-\u0AFF]/g,ta:/[\u0B80-\u0BFF]/g,th:/[\u0E00-\u0E7F]/g};
+  function getLang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
+  function setCookie(l){
+    var exp=(l==="en")?"; expires=Thu, 01 Jan 1970 00:00:00 GMT":"",v=(l==="en")?"":"/en/"+l;
+    document.cookie="googtrans="+v+"; path=/"+exp;
+    document.cookie="googtrans="+v+"; path=/; domain="+location.hostname+exp;
+  }
+  function overlay(l,on){
+    var o=document.getElementById("npLangWait");
+    if(!on){if(o)o.remove();return}
+    if(!o){o=document.createElement("div");o.id="npLangWait";o.className="notranslate";o.setAttribute("translate","no");
+      o.style.cssText="position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:100000;background:#26215C;color:#CECBF6;border:1px solid #7F77DD;border-radius:999px;padding:12px 20px;font-weight:600;font-size:15px;box-shadow:0 8px 30px rgba(0,0,0,.5)";
+      document.body.appendChild(o)}
+    o.textContent="🌐 "+(WAITTXT[l]||WAITTXT.en);
+  }
+  function labels(l){
+    var b=document.querySelector("#npxLang b");if(b)b.textContent=NAMES[l]||"English";
+    [].forEach.call(document.querySelectorAll(".langbtn"),function(btn){var n=btn.lastChild;if(n&&n.nodeType===3)n.nodeValue=SHORT[l]||"EN"});
+    [].forEach.call(document.querySelectorAll(".nplbtn span"),function(s){s.textContent=NATIVE[l]||"English"});
+  }
+  function reload(){setTimeout(function(){location.reload()},60)}
+  window.npLiveLang=function(l){
+    if(!NAMES[l])return;
+    var cur=getLang();
+    try{localStorage.setItem("np_lang",l)}catch(e){}
+    if(l===cur)return;
+    setCookie(l);document.documentElement.lang=l;overlay(l,true);
+    var sel=document.querySelector("select.goog-te-combo");
+    var has=sel&&[].some.call(sel.options,function(o){return o.value===l});
+    if(!has)return reload();
+    sel.value=l;sel.dispatchEvent(new Event("change",{bubbles:true}));
+    labels(l);
+    setTimeout(function(){overlay(l,false)},900);
+    /* safety: if the page did not change, do it the old way (reload) */
+    setTimeout(function(){
+      var tr=/translated-(ltr|rtl)/.test(document.documentElement.className);
+      if((l==="en"&&tr)||(l!=="en"&&!tr)){overlay(l,true);reload()}
+    },l==="en"?1800:4500);
+  };
+  /* the app's own language menu uses the fast way too */
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest(".langlist [data-l]");if(!b)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    try{if(typeof closeSheet==="function")closeSheet()}catch(err){}
+    window.npLiveLang(b.getAttribute("data-l"));
+  },true);
+  /* suggestion buttons: send the question in the language the guest sees */
+  document.addEventListener("click",function(e){
+    var b=e.target.closest&&e.target.closest("#quick button,#rajuQ button");if(!b||getLang()==="en")return;
+    var t=(b.innerText||b.textContent||"").trim();
+    if(!t||!/[^\x00-\x7F]/.test(t))return;
+    e.preventDefault();e.stopImmediatePropagation();
+    if(b.closest("#rajuQ")){var rin=document.getElementById("rajuIn"),go=document.getElementById("rajuGo");if(rin&&go){rin.value=t;go.click();return}}
+    if(typeof ask==="function")ask(t);
+  },true);
+  /* Raju's fixed English lines (sales tips, backup answers): translate them into the chosen language */
+  if(typeof ask!=="function"||typeof chatEl==="undefined")return;
+  var sb=null;try{if(window.supabase)sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0")}catch(e){}
+  function cache(l){try{return JSON.parse(localStorage.getItem("np_tr_"+l)||"{}")}catch(e){return {}}}
+  function saveCache(l,c){try{var k=Object.keys(c);if(k.length>300)k.slice(0,k.length-300).forEach(function(x){delete c[x]});localStorage.setItem("np_tr_"+l,JSON.stringify(c))}catch(e){}}
+  function needs(t,l){
+    var re=SCRIPT[l];if(!re)return false;
+    var own=(t.match(re)||[]).length,lat=(t.match(/[A-Za-z]/g)||[]).length;
+    return lat>=15&&own<lat*0.3&&!/typing|लिख रहा|soch raha/i.test(t);
+  }
+  function put(el,t){el.textContent=t;el.classList.add("notranslate");el.setAttribute("translate","no")}
+  async function fix(){
+    var l=getLang();if(l==="en"||!SCRIPT[l])return;
+    var kids=[].slice.call(chatEl.children),last=-1;
+    kids.forEach(function(el,i){if(el.classList&&el.classList.contains("me"))last=i});
+    var todo=kids.slice(last+1).filter(function(el){return el.classList&&el.classList.contains("bot")&&needs((el.textContent||"").trim(),l)});
+    if(!todo.length)return;
+    var c=cache(l),miss=[];
+    todo.forEach(function(el){var t=el.textContent.trim();if(c[t])put(el,c[t]);else miss.push(el)});
+    if(!miss.length||!sb)return;
+    var lines=miss.map(function(el,i){return (i+1)+") "+el.textContent.trim().replace(/\s+/g," ")}).join("\n");
+    var msg="TRANSLATION TASK (not a guest question). Translate each numbered line into "+NAMES[l]+" using "+NAMES[l]+" script. "+
+      "Keep the same meaning and friendly tone. Keep numbers, prices, ฿ amounts, venue names and phone numbers unchanged. "+
+      "Reply with ONLY the translated lines, same numbering, one per line, like '1) ...'. No greeting, no extra words, no tips, no IDS line.\n\n"+lines;
+    try{
+      var call=sb.functions.invoke("bright-responder",{body:{messages:[{role:"user",text:msg}],venues:"For this message you are only a translator. Do not act as Raju, do not add anything else.",lang:l}});
+      var r=await Promise.race([call,new Promise(function(ok){setTimeout(function(){ok(null)},25000)})]);
+      var rep=r&&!r.error&&r.data&&r.data.reply;if(!rep)return;
+      var got={};String(rep).split(/\n+/).forEach(function(line){var m=line.match(/^\s*(\d+)\s*[).:\-]\s*(.+)$/);if(m)got[+m[1]]=m[2].replace(/\*\*/g,"").trim()});
+      miss.forEach(function(el,i){var tr=got[i+1];if(tr&&!needs(tr,l)){c[el.textContent.trim()]=tr;put(el,tr)}});
+      saveCache(l,c);
+    }catch(e){}
+  }
+  var _a=ask;
+  ask=async function(q){var r=await _a.apply(this,arguments);try{await fix()}catch(e){}return r};
+})();
+
+/* ===== Fast language change (7 Oct 2026): switch the language instantly with Google Translate, without reloading the app.
+   Used by the app menu and the Raju 🌐 button. If anything fails, it falls back to the old reload. Nothing removed. ===== */
+(function(){
+  var NATIVE={en:"English",hi:"हिन्दी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
+  var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म",th:"ไท"};
+  var WAIT={en:"Changing language…",hi:"भाषा बदल रही है…",pa:"ਭਾਸ਼ਾ ਬਦਲ ਰਹੀ ਹੈ…",gu:"ભાષા બદલાઈ રહી છે…",ta:"மொழி மாறுகிறது…",mr:"भाषा बदलत आहे…",th:"กำลังเปลี่ยนภาษา…"};
+  function getL(){try{return localStorage.getItem("np_lang")||""}catch(e){return ""}}
+  function cookie(l){
+    var exp=(l==="en")?"; expires=Thu, 01 Jan 1970 00:00:00 GMT":"",v=(l==="en")?"":"/en/"+l;
+    document.cookie="googtrans="+v+"; path=/"+exp;
+    document.cookie="googtrans="+v+"; path=/; domain="+location.hostname+exp;
+  }
+  function labels(l){
+    try{var b=document.querySelector("#npxLang b");if(b)b.textContent=NATIVE[l]||"English"}catch(e){}
+    try{var t=document.querySelector(".langbtn");if(t){var n=t.lastChild;if(n&&n.nodeType===3)n.nodeValue=SHORT[l]||"EN"}}catch(e){}
+    try{[].forEach.call(document.querySelectorAll(".nplbtn span"),function(s){s.textContent=NATIVE[l]==="हिन्दी"?"हिंदी":NATIVE[l]})}catch(e){}
+  }
+  function wait(l,show){
+    var w=document.getElementById("npLangWait");
+    if(!show){if(w)w.remove();return}
+    if(!w){w=document.createElement("div");w.id="npLangWait";w.className="notranslate";w.setAttribute("translate","no");
+      w.style.cssText="position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:100000;background:#26215C;color:#CECBF6;border:1px solid #7F77DD;border-radius:16px;padding:14px 20px;font-size:15px;font-weight:600;box-shadow:0 10px 40px rgba(0,0,0,.5)";
+      document.body.appendChild(w)}
+    w.textContent="🌐 "+(WAIT[l]||WAIT.en);
+  }
+  function reload(l){wait(l,true);try{localStorage.setItem("np_lang",l)}catch(e){}cookie(l);location.reload()}
+  window.npFastLang=function(l){
+    if(!NATIVE[l])l="en";
+    var cur=getL();
+    if(!cur&&l==="en"){try{localStorage.setItem("np_lang","en")}catch(e){}return}
+    if((cur||"en")===l)return;
+    if(l==="en")return reload(l);              /* going back to English needs a fresh page */
+    var sel=document.querySelector("select.goog-te-combo");
+    if(!sel)return reload(l);
+    var has=[].some.call(sel.options,function(o){return o.value===l});
+    if(!has)return reload(l);
+    wait(l,true);
+    try{localStorage.setItem("np_lang",l)}catch(e){}
+    cookie(l);document.documentElement.lang=l;labels(l);
+    try{sel.value=l;sel.dispatchEvent(new Event("change"))}catch(e){return reload(l)}
+    var n=0;(function check(){n++;
+      var ok=/translated-(ltr|rtl)/.test(document.documentElement.className);
+      if(ok){setTimeout(function(){wait(l,false)},300);return}
+      if(n<40)setTimeout(check,100);else reload(l);   /* not switched after 4 s: use the old way */
+    })();
+  };
+  /* the app's own language menu uses the fast switch too */
+  document.addEventListener("click",function(e){
+    var b=e.target&&e.target.closest?e.target.closest(".langlist [data-l]"):null;if(!b)return;
+    e.preventDefault();e.stopImmediatePropagation();
+    try{if(typeof closeSheet==="function")closeSheet()}catch(err){}
+    window.npFastLang(b.getAttribute("data-l"));
+  },true);
+})();
+
+/* ===== Raju suggestion buttons (7 Oct 2026): send the question in the language the guest sees. Nothing removed. ===== */
+(function(){
+  if(typeof ask!=="function")return;
+  document.addEventListener("click",function(e){
+    var b=e.target&&e.target.closest?e.target.closest("#quick button,#rajuQ button"):null;if(!b)return;
+    var l="en";try{l=localStorage.getItem("np_lang")||"en"}catch(err){}
+    if(l==="en")return;
+    var seen=(b.innerText||"").trim();
+    if(seen&&seen!==(b.getAttribute("data-en")||"")){window.__npChipQ=seen;setTimeout(function(){window.__npChipQ=null},3000)}
+  },true);
+  var _a=ask;
+  ask=function(q){
+    if(window.__npChipQ){q=window.__npChipQ;window.__npChipQ=null}
+    return _a.call(this,q);
+  };
 })();
