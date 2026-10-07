@@ -465,33 +465,7 @@
     if(saved){var s0=list.find(function(x){return x.name===saved});if(s0)return s0}
     return list.find(function(x){return MALE.test(x.name)})||list.find(function(x){return !FEMALE.test(x.name)&&x.localService!==false})||list.find(function(x){return !FEMALE.test(x.name)})||list[0];
   }
-  /* ---- Sarvam AI voice (Bulbul v3, Indian voices) through the Supabase function "raju-voice"; phone voice is the backup ---- */
-  var SV_LANGS=["en-IN","hi-IN","bn-IN","ta-IN","te-IN","kn-IN","ml-IN","mr-IN","gu-IN","pa-IN","od-IN"];
-  var SV_VOICES=["shubh","ashutosh","aditya","rahul","kabir","ratan"];
-  var svClient=null,svOK=true,svFailAt=0,svAudio=null;
-  try{if(window.supabase)svClient=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0")}catch(e){}
-  function svVoice(){var v=null;try{v=localStorage.getItem("np_raju_sarvam_voice")}catch(e){}return SV_VOICES.indexOf(v)>-1?v:"shubh"}
-  function stopAll(){try{if(TTS)TTS.cancel()}catch(e){}try{if(svAudio){svAudio.pause();svAudio=null}}catch(e){}}
-  function sarvamSpeak(clean,lang){
-    if(!svClient||SV_LANGS.indexOf(lang)<0)return Promise.resolve(false);
-    if(!svOK&&Date.now()-svFailAt<10*60*1000)return Promise.resolve(false);
-    var call=svClient.functions.invoke("raju-voice",{body:{text:clean.slice(0,900),lang:lang,speaker:svVoice()}});
-    var timeout=new Promise(function(ok){setTimeout(function(){ok({timeout:true})},8000)});
-    return Promise.race([call,timeout]).then(function(r){
-      var a=r&&r.data&&r.data.audio;
-      if(!a){svOK=false;svFailAt=Date.now();return false}
-      svOK=true;stopAll();
-      svAudio=new Audio("data:"+((r.data&&r.data.mime)||"audio/wav")+";base64,"+a);window.__npRajuAudio=svAudio;
-      return svAudio.play().then(function(){return true},function(){return false});
-    },function(){svOK=false;svFailAt=Date.now();return false});
-  }
   function speak(t,forceLang){
-    if(!t)return;
-    var clean0=String(t).replace(/[*_#>`]/g,"").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"");
-    var lang0=forceLang||detect(clean0);
-    sarvamSpeak(clean0,lang0).then(function(done){if(!done)phoneSpeak(t,forceLang)});
-  }
-  function phoneSpeak(t,forceLang){
     if(!TTS||!t)return;
     try{
       TTS.cancel();
@@ -506,15 +480,7 @@
   }
   /* let the user choose Raju's voice: each tap on the voice button tries the next voice */
   function nextVoice(btn){
-    var lang=appLang();
-    if(svClient&&svOK&&SV_LANGS.indexOf(lang)>-1){
-      var cur=SV_VOICES.indexOf(svVoice()),nx=SV_VOICES[(cur+1)%SV_VOICES.length];
-      try{localStorage.setItem("np_raju_sarvam_voice",nx)}catch(e){}
-      btn.title="Voice "+((cur+1)%SV_VOICES.length+1)+" of "+SV_VOICES.length;
-      speak(lang==="hi-IN"?"Namaste bhai, main Raju hoon. Kya ye awaaz theek hai?":"Namaste, I am Raju. Does this voice sound good?",lang);
-      return;
-    }
-    var list=voicesFor(lang);
+    var lang=appLang(),list=voicesFor(lang);
     if(!list.length){alert("This phone has no voice for this language. Add one in the phone's Text-to-speech settings.");return}
     var cur=pickVoice(lang),i=list.indexOf(cur),nx=list[(i+1)%list.length];
     try{localStorage.setItem("np_raju_voice_"+lang.slice(0,2),nx.name)}catch(e){}
@@ -555,12 +521,12 @@
     spk.onclick=function(){
       voiceOn=!voiceOn;try{localStorage.setItem("np_raju_voice",voiceOn?"1":"0")}catch(e){}
       spk.className="npvbtn"+(voiceOn?" on":"");spk.innerHTML=voiceOn?SPK_ON:SPK_OFF;
-      if(!voiceOn)stopAll();else speak(appLang()==="hi-IN"?"नमस्ते! अब मैं बोलकर जवाब दूँगा।":"Namaste! I will read my answers out loud now.");
+      if(!voiceOn&&TTS)TTS.cancel();else speak(appLang()==="hi-IN"?"नमस्ते! अब मैं बोलकर जवाब दूँगा।":"Namaste! I will read my answers out loud now.");
     };
     mic.onclick=function(){
       if(!SR){alert("Voice typing doesn't work in this browser. Please use Chrome.");return}
       if(rec){rec.stop();return}
-      stopAll();
+      if(TTS)TTS.cancel();
       var ph=inp.placeholder,finalText="";
       rec=new SR();rec.lang=appLang();rec.interimResults=true;rec.maxAlternatives=1;
       mic.classList.add("rec");inp.placeholder="Listening… speak now";
@@ -1152,7 +1118,12 @@
   function scan(){
     var btns=[].slice.call(document.querySelectorAll("button")).filter(function(b){
       if(!vis(b)||!BTN.test(b.textContent)||b.closest("#dash,.npdel,nav,header,.nppdpa"))return false;
-      var box=containerOf(b);return box&&(box.querySelector('input[type="date"],input[type="datetime-local"]')||/guest|people|person|pax/i.test(box.textContent||""));
+      var box=containerOf(b);if(!box)return false;
+      /* only real booking forms: never the home page or a list of venue cards */
+      var form=box.closest("#panel,.sheet,.pbody")||box.matches("#panel,.sheet,.pbody");
+      var hasDate=box.querySelector('input[type="date"],input[type="datetime-local"]');
+      if(!form&&(!hasDate||box.querySelectorAll("[data-id]").length>1))return false;
+      return hasDate||/guest|people|person|pax/i.test(box.textContent||"");
     });
     btns.forEach(function(b){
       var box=containerOf(b);if(box.querySelector(".nppdpa"))return;
@@ -1254,88 +1225,334 @@
   run();
 })();
 
-/* ===== Raju character: face in the Home box, talking head in chat, wardrobe on service pages, booking celebration ===== */
+/* ===== Home upgrade (29 Sep 2026): Tonight in Pattaya, Pattaya today + safety, quick actions,
+   club rows you can swipe, "Tables from" price label, smaller Raju above the nav bar,
+   5-tab nav with a "More" tab (nothing deleted), readable text over the neon sign,
+   clearer consent box, and bottom space so nothing hides behind the nav bar ===== */
 (function(){
-  var IMG="photos/";
-  function img(name,cls,alt){var i=document.createElement("img");i.src=IMG+name+".webp";i.alt=alt||"";i.className=cls;i.loading="lazy";i.onerror=function(){i.remove()};return i}
-  if(!document.getElementById("npRajuCss")){
-    var st=document.createElement("style");st.id="npRajuCss";
+  var SVC=["grocery","indian","restaurants","hotels","spa","tours","water","golf","yacht","rental","airport","shopping","events","medical","concierge"];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function norm(t){return String(t||"").replace(/\s+/g," ").trim()}
+  function inPop(el){return !!(el&&el.closest&&el.closest("#panel,.sheet,#rajuChat,#svcPage,#npMoreSheet"))}
+  function list(){return (typeof CLUBS!=="undefined"&&CLUBS)||[]}
+  function isNight(c){return c&&SVC.indexOf(c.cat)<0&&!/restaurant/i.test(c.type||"")}
+  function smallest(re,root,max){
+    var h=[].slice.call((root||document).querySelectorAll("body *")).filter(function(el){
+      var t=el.textContent||"";return re.test(t)&&(!max||t.length<max)&&!inPop(el)&&!/^(SCRIPT|STYLE)$/.test(el.tagName)});
+    h.sort(function(a,b){return a.textContent.length-b.textContent.length});return h[0]||null;
+  }
+
+  /* ---------- styles (match the app: dark glass, purple-pink glow, gold text) ---------- */
+  if(!document.getElementById("npHomeCss")){
+    var st=document.createElement("style");st.id="npHomeCss";
     st.textContent=
-      '.nprj-home{float:left;height:84px;width:auto;margin:-4px 10px 0 -4px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}'+
-      '.nprj-head{display:flex;align-items:center;gap:10px;padding:8px 10px;border-bottom:1px solid var(--line,rgba(255,255,255,.12))}'+
-      '.nprj-face{width:52px;height:52px;border-radius:50%;overflow:hidden;flex:0 0 52px;background:#1d2340;border:2px solid #CDA64E}'+
-      '.nprj-face img{width:100%;height:100%;object-fit:cover;object-position:center 18%}'+
-      '.nprj-head b{display:block;font-size:14px}.nprj-head small{opacity:.7;font-size:12px}'+
-      '.nprj-head.talking .nprj-face{box-shadow:0 0 0 3px rgba(205,166,78,.45)}'+
-      '.nprj-hero{position:absolute;right:6px;bottom:0;height:92%;max-height:220px;width:auto;pointer-events:none;filter:drop-shadow(0 6px 12px rgba(0,0,0,.4))}'+
-      '.nprj-pop{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:9999;display:flex;align-items:flex-end;gap:8px;background:#17120D;color:#F5EFE3;border:1px solid #CDA64E;border-radius:18px;padding:8px 16px 8px 8px;box-shadow:0 10px 30px rgba(0,0,0,.45);max-width:92vw;animation:nprjIn .35s ease-out}'+
-      '.nprj-pop img{height:96px;width:auto;margin-top:-40px}.nprj-pop b{display:block;color:#E3BE63;font-size:15px}.nprj-pop span{font-size:13px}'+
-      '@keyframes nprjIn{from{opacity:0;transform:translate(-50%,20px)}to{opacity:1;transform:translate(-50%,0)}}'+
-      '@media (prefers-reduced-motion:reduce){.nprj-pop{animation:none}}';
+    '#npHomeFill{margin:14px 0 6px;position:relative;z-index:1}'+
+    '#npHomeFill .nph{display:flex;justify-content:space-between;align-items:baseline;margin:0 2px 10px}'+
+    '#npHomeFill .nph h3{margin:0;font-size:19px;font-weight:700;color:var(--ink,#fff)}'+
+    '#npHomeFill .nph span{font-size:13px;color:#E9B949;font-weight:600}'+
+    '.nptrow{display:flex;gap:12px;overflow-x:auto;scroll-snap-type:x mandatory;padding:2px 2px 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}'+
+    '.nptrow::-webkit-scrollbar{display:none}'+
+    '.nptcard{flex:0 0 72%;max-width:280px;scroll-snap-align:start;border-radius:20px;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:var(--ink,#fff);font:inherit;'+
+      'background:rgba(16,13,28,.62);border:1px solid rgba(199,160,255,.38);box-shadow:0 0 18px rgba(170,110,255,.16);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}'+
+    '.nptcard .ph{height:92px;background-size:cover;background-position:center;position:relative}'+
+    '.nptcard .ph:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,0) 30%,rgba(10,8,20,.85))}'+
+    '.nptcard .bd{padding:10px 12px 12px}'+
+    '.nptcard .tm{font-size:12px;color:#E9B949;font-weight:600}'+
+    '.nptcard .nm{font-size:16px;font-weight:700;margin:2px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '.nptcard .sb{font-size:12.5px;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '.nptcard .go{display:inline-block;margin-top:9px;font-size:12.5px;font-weight:600;padding:5px 12px;border-radius:999px;border:1px solid rgba(237,147,177,.6);color:#F7C4D8}'+
+    '.npstrip{display:flex;flex-wrap:wrap;gap:8px;justify-content:space-between;align-items:center;margin:8px 0 0;padding:10px 12px;border-radius:16px;'+
+      'background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);font-size:13px;color:var(--ink,#fff)}'+
+    '.npstrip .wx{display:flex;align-items:center;gap:6px;opacity:.9}'+
+    '.npstrip .sos{display:flex;gap:6px}'+
+    '.npstrip .sos a{text-decoration:none;font-size:12px;font-weight:600;padding:4px 9px;border-radius:999px;border:1px solid rgba(255,120,120,.55);color:#FFB4B4;white-space:nowrap}'+
+    '.npqa{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:10px}'+
+    '.npqa button{display:flex;flex-direction:column;align-items:center;gap:6px;padding:12px 4px;border-radius:16px;font:inherit;font-size:12px;font-weight:600;color:var(--ink,#fff);cursor:pointer;'+
+      'background:rgba(16,13,28,.62);border:1px solid rgba(255,255,255,.1);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}'+
+    '.npqa button svg{color:#ED93B1}'+
+    /* club rows you can swipe */
+    '.npswipe{display:flex!important;flex-wrap:nowrap!important;gap:12px!important;overflow-x:auto!important;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:6px}'+
+    '.npswipe::-webkit-scrollbar{display:none}'+
+    '.npswipe>*{flex:0 0 82%!important;max-width:340px!important;width:auto!important;scroll-snap-align:start;margin:0!important}'+
+    /* readable text over the neon background */
+    '.npreadable{background:rgba(12,10,22,.78)!important;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);position:relative;z-index:1}'+
+    /* consent box: solid panel, bright checkbox */
+    '.nppdpa{background:rgba(18,14,30,.94)!important;border:1px solid rgba(237,147,177,.5);border-radius:14px;padding:12px 14px!important;opacity:1!important;color:#F3EFFF;position:relative;z-index:2}'+
+    '.nppdpa input[type=checkbox]{-webkit-appearance:none;appearance:none;width:22px!important;height:22px!important;flex:0 0 22px!important;border:2px solid #ED93B1;border-radius:6px;background:transparent;margin:0!important;cursor:pointer}'+
+    '.nppdpa input[type=checkbox]:checked{background:#ED93B1 url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27 fill=%27none%27 stroke=%27%231a1026%27 stroke-width=%273.5%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27%3E%3Cpath d=%27M5 12l5 5 9-10%27/%3E%3C/svg%3E") center/16px no-repeat}'+
+    '.nppdpa.err{border-color:#ff6b5b}'+
+    /* More sheet */
+    '#npMoreSheet{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}'+
+    '#npMoreSheet .in{width:100%;max-width:520px;margin:0 10px calc(12px + env(safe-area-inset-bottom));padding:16px;border-radius:22px;background:rgba(18,14,30,.97);border:1px solid rgba(199,160,255,.38);box-shadow:0 0 24px rgba(170,110,255,.2);color:var(--ink,#fff)}'+
+    '#npMoreSheet h4{margin:0 0 12px;font-size:17px}'+
+    '#npMoreSheet .it{display:flex;align-items:center;gap:12px;width:100%;padding:14px;margin-top:8px;border-radius:14px;font:inherit;font-size:15px;font-weight:600;color:inherit;text-align:left;cursor:pointer;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1)}'+
+    '#npMoreSheet .it svg{color:#ED93B1;flex:0 0 auto}'+
+    '#npMoreSheet .x{width:100%;margin-top:12px;padding:12px;border-radius:14px;font:inherit;font-weight:600;color:inherit;background:transparent;border:1px solid rgba(255,255,255,.18);cursor:pointer}'+
+    '@media (prefers-reduced-motion:reduce){.nptrow,.npswipe{scroll-behavior:auto}}'+
+    /* compact version, as in the agreed preview */
+    '#npHomeFill .nph{margin-bottom:8px}#npHomeFill .nph h3{font-size:17px}#npHomeFill .npall{cursor:pointer;font-size:13px}'+
+    '.nptrow{gap:10px}'+
+    '.nptcard{flex:0 0 42%;max-width:170px;min-height:118px;position:relative;display:flex;flex-direction:column;justify-content:flex-end;border-radius:16px}'+
+    '.nptcard .ph{position:absolute;inset:0;height:auto}'+
+    '.nptcard .ph:after{background:linear-gradient(180deg,rgba(10,8,20,.25) 0%,rgba(10,8,20,.92) 70%)}'+
+    '.nptcard .bd{position:relative;z-index:1;padding:9px 10px 10px}'+
+    '.nptcard .tm{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}'+
+    '.nptcard .nm{font-size:14px;margin:1px 0}.nptcard .sb{font-size:11px}'+
+    '.nptcard .go{margin-top:4px;padding:0;border:0;border-radius:0;font-size:11px;color:#ED93B1}'+
+    '.npstrip{flex-wrap:nowrap;gap:6px;padding:7px 10px;border-radius:12px;font-size:12px}'+
+    '.npstrip .wx{gap:5px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.npstrip .wx span{overflow:hidden;text-overflow:ellipsis}'+
+    '.npstrip .sos{flex:0 0 auto;gap:5px}.npstrip .sos a{font-size:11px;padding:3px 8px}'+
+    '.npqa{gap:6px;margin-top:8px}'+
+    '.npqa button{gap:4px;padding:8px 2px;border-radius:12px;font-size:11px}.npqa button svg{width:18px;height:18px}';
     document.head.appendChild(st);
   }
-  /* 1. Raju's face in the main Raju box on Home */
-  function homeBox(){
-    var hits=[].slice.call(document.querySelectorAll("section *")).filter(function(el){
-      return el.children.length<12&&/Raju/.test(el.textContent||"")&&/(Hindi bhi|ask me anything|हिंदी)/i.test(el.textContent||"")&&!el.closest("#panel,.sheet")});
-    hits.sort(function(a,b){return a.textContent.length-b.textContent.length});
-    var card=hits[0];if(!card||card.querySelector(".nprj-home"))return;
-    card.insertBefore(img("raju-namaste","nprj-home","Raju, your Pattaya guide"),card.firstChild);
+
+  function ic(d){return '<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d+'</svg>'}
+  var I={
+    table:ic('<path d="M4 10h16M6 10v9M18 10v9M8 6h8l2 4H6z"/>'),
+    plane:ic('<path d="M3 20h18M4 14l16-4-1-3-6 1-5-5H6l2 6-4 1z"/>'),
+    food:ic('<path d="M6 3v8a2 2 0 0 0 4 0V3M8 11v10M16 3c-2 2-2 6 0 8v10"/>'),
+    island:ic('<path d="M3 20c3-2 6-2 9 0s6 2 9 0M12 18V8M12 8c-3-3-6-2-7 0M12 8c3-3 6-2 7 0M12 8c-1-3-3-4-5-4"/>'),
+    sun:ic('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+    dots:ic('<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>'),
+    chat:ic('<path d="M4 5h16v11H9l-5 4z"/>'),
+    wallet:ic('<path d="M3 7h16a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H3zM3 7l12-3v3M16 13h2"/>'),
+    plus:ic('<path d="M12 5v14M5 12h14"/>')
+  };
+
+  /* ---------- open a venue the same way a tap on its card does ---------- */
+  function openVenue(c){
+    var card=document.querySelector('[data-id="'+(window.CSS&&CSS.escape?CSS.escape(c.id):c.id)+'"]');
+    if(card){card.click();return}
+    if(typeof window.openService==="function"&&SVC.indexOf(c.cat)>-1){window.openService(c.cat);return}
+    scrollToClubs();
   }
-  /* 2. Talking head at the top of the bottom-right Raju chat, mouth moves while he speaks */
-  var MOUTH=["mouth-a","mouth-e","mouth-o","mouth-m","mouth-neutral"],face=null,head=null;
-  MOUTH.forEach(function(m){var i=new Image();i.src=IMG+m+".webp"});
-  function chatHead(){
-    if(typeof chatEl==="undefined"||!chatEl||!chatEl.parentNode)return;
-    if(chatEl.parentNode.querySelector(".nprj-head"))return;
-    head=document.createElement("div");head.className="nprj-head";
-    var f=document.createElement("div");f.className="nprj-face";
-    face=img("mouth-neutral","","Raju");f.appendChild(face);
-    var t=document.createElement("div");t.innerHTML='<b>Raju</b><small>Your Pattaya guide · AI assistant</small>';
-    head.appendChild(f);head.appendChild(t);
-    chatEl.parentNode.insertBefore(head,chatEl);
+  function scrollToClubs(){
+    var h=[].slice.call(document.querySelectorAll("h2,h3")).find(function(x){return /clubs/i.test(x.textContent)&&!inPop(x)});
+    if(h)h.scrollIntoView({behavior:"smooth",block:"start"});
   }
-  var last="";
-  setInterval(function(){
-    if(!face||!face.isConnected)return;
-    var au=window.__npRajuAudio,talking=(au&&!au.paused&&!au.ended)||(window.speechSynthesis&&speechSynthesis.speaking);
-    var want=talking?MOUTH[Math.floor(Math.random()*MOUTH.length)]:"mouth-neutral";
-    if(want!==last){face.src=IMG+want+".webp";last=want}
-    if(head)head.classList.toggle("talking",!!talking);
-  },120);
-  /* 3. Wardrobe: Raju dressed for each service page */
-  var WARDROBE={indian:"raju-sherwani",grocery:"raju-sherwani",restaurants:"raju-burgundy-suit",hotels:"raju-three-piece",
-    spa:"raju-tshirt-happy",tours:"raju-hoodie",water:"raju-beach",yacht:"raju-beach",golf:"raju-tracksuit",rental:"raju-hoodie",
-    airport:"raju-black-suit",shopping:"raju-hoodie",events:"raju-burgundy-suit",concierge:"raju-black-suit",nightlife:"raju-leather",
-    afterparty:"raju-leather",elite:"raju-gold-pinstripe",gold:"raju-gold-pinstripe",dating:"raju-velvet-blazer",buddy:"raju-velvet-blazer"};
-  function catNow(){var s=history.state;if(s&&s.np==="s"&&s.cat)return s.cat;var h=location.hash;return h.indexOf("#s/")===0?decodeURIComponent(h.slice(3)):null}
-  function wardrobe(){
-    var svc=document.getElementById("svcPage");if(!svc||svc.hidden)return;
-    var hero=svc.querySelector(".svchero");if(!hero)return;
-    var cat=catNow(),look=cat&&WARDROBE[cat];
-    var old=hero.querySelector(".nprj-hero");
-    if(old&&old.dataset.cat===cat)return;
-    if(old)old.remove();
-    if(!look)return;
-    if(getComputedStyle(hero).position==="static")hero.style.position="relative";
-    var i=img(look,"nprj-hero","");i.dataset.cat=cat;hero.appendChild(i);
+  function svc(cat){if(typeof window.openService==="function")window.openService(cat)}
+
+  /* ---------- Tonight in Pattaya + Pattaya today + quick actions ---------- */
+  var dayLabel="Tonight";
+  function tonightCards(){
+    var cl=list().filter(function(c){return c&&c.id!=="np-test-restaurant"});
+    var night=cl.filter(isNight),food=cl.filter(function(c){return c.cat==="indian"});
+    return night.slice(0,6).concat(food.slice(0,3));
   }
-  /* 4. Booking sent: Raju celebrates */
-  function celebrate(){
-    var old=document.querySelector(".nprj-pop");if(old)old.remove();
-    var hi=false;try{hi=(localStorage.getItem("np_lang")||"en")==="hi"}catch(e){}
-    var d=document.createElement("div");d.className="nprj-pop";d.setAttribute("role","status");
-    d.appendChild(img("raju-excited","","Raju celebrating"));
-    var t=document.createElement("div");t.innerHTML=hi?'<b>बुकिंग भेज दी!</b><span>Raju पर छोड़ दो, भाई।</span>':'<b>Booking sent!</b><span>Raju is on it, bhai.</span>';
-    d.appendChild(t);document.body.appendChild(d);setTimeout(function(){d.remove()},3200);
+  function cardHtml(c,i){
+    var bg=c.photo?'url(\''+esc(c.photo)+'\')':'linear-gradient(135deg,'+esc((c.art||[])[0]||"#534AB7")+','+esc((c.art||[])[1]||"#26215C")+')';
+    var open=norm(c.open||"").split(/\s[—–-]\s|[–]/)[0].trim();if(!/\d/.test(open))open=open.split(/[—,]/)[0].trim();
+    return '<button type="button" class="nptcard" data-npi="'+i+'"><div class="ph" style="background-image:'+bg+'"></div><div class="bd">'+
+      '<div class="tm">'+esc(/\d/.test(open)?("From "+open):(open||"Open late"))+(c.area?" · "+esc(c.area):"")+'</div>'+
+      '<div class="nm">'+esc(c.name)+'</div><div class="sb">'+esc(c.music||c.sub||"")+'</div>'+
+      '<span class="go">'+(isNight(c)?"Book a table":"Book now")+'</span></div></button>';
   }
-  if(typeof store!=="undefined"&&store.set){
-    var _set=store.set,prev=(typeof bookings!=="undefined"&&bookings)?bookings.length:0;
-    store.set=function(k,v){try{if(k==="np_bookings"&&Array.isArray(v)){if(v.length>prev)setTimeout(celebrate,150);prev=v.length}}catch(e){}return _set.apply(this,arguments)};
+  function renderTonight(box){
+    var cards=tonightCards(),row=box.querySelector(".nptrow"),h=box.querySelector(".nph h3");
+    if(h)h.textContent=(dayLabel==="Tonight"?"Tonight":dayLabel)+" in Pattaya";
+    if(!row)return;
+    row.innerHTML=cards.length?cards.map(cardHtml).join(""):'<div class="sb" style="opacity:.7;padding:8px">Venues appear here as partners join.</div>';
+    [].forEach.call(row.querySelectorAll(".nptcard"),function(b){b.onclick=function(){openVenue(cards[+b.dataset.npi])}});
+  }
+  var WX={0:"Clear",1:"Mostly clear",2:"Partly cloudy",3:"Cloudy",45:"Fog",48:"Fog",51:"Drizzle",53:"Drizzle",55:"Drizzle",61:"Light rain",63:"Rain",65:"Heavy rain",80:"Showers",81:"Showers",82:"Heavy showers",95:"Thunderstorm",96:"Thunderstorm",99:"Thunderstorm"};
+  var wxText=null;
+  function loadWeather(box){
+    var el=box.querySelector(".wx span");if(!el)return;
+    if(wxText){el.textContent=wxText;return}
+    try{
+      fetch("https://api.open-meteo.com/v1/forecast?latitude=12.93&longitude=100.88&current=temperature_2m,weather_code&daily=sunset&timezone=Asia%2FBangkok&forecast_days=1")
+      .then(function(r){return r.json()}).then(function(d){
+        var t=Math.round(d.current.temperature_2m),w=WX[d.current.weather_code]||"",ss=(d.daily&&d.daily.sunset&&d.daily.sunset[0]||"").slice(11,16);
+        wxText=t+"°C"+(w?" "+w.toLowerCase():"")+(ss?" · Sunset "+ss:"");
+        var e=document.querySelector("#npHomeFill .wx span");if(e)e.textContent=wxText;
+      }).catch(function(){});
+    }catch(e){}
+  }
+  function build(){
+    var box=document.createElement("div");box.id="npHomeFill";
+    box.innerHTML='<div class="nph"><h3>Tonight in Pattaya</h3><span class="npall" role="button" tabindex="0">See all</span></div><div class="nptrow"></div>'+
+      '<div class="npstrip"><div class="wx">'+I.sun.replace(/22/g,"16")+'<span>Pattaya today</span></div>'+
+      '<div class="sos"><a href="tel:1155">Police 1155</a><a href="tel:1669">SOS 1669</a></div></div>'+
+      '<div class="npqa">'+
+        '<button type="button" data-qa="table">'+I.table+'Table</button>'+
+        '<button type="button" data-qa="airport">'+I.plane+'Pickup</button>'+
+        '<button type="button" data-qa="indian">'+I.food+'Indian food</button>'+
+        '<button type="button" data-qa="tours">'+I.island+'Island tour</button></div>';
+    box.querySelector(".npall").onclick=scrollToClubs;
+    [].forEach.call(box.querySelectorAll("[data-qa]"),function(b){b.onclick=function(){
+      var q=b.dataset.qa;if(q==="table")scrollToClubs();else svc(q);
+      try{if(window.npTrack)window.npTrack("service_open","quick_"+q)}catch(e){}
+    }});
+    return box;
+  }
+  function placeFill(){
+    if(document.getElementById("npHomeFill"))return;
+    var conv=smallest(/approx\.?\s*rate/i,null,400)||smallest(/(currency|converter)/i,null,400);
+    if(!conv)return;
+    var emp=smallest(/Empowered Girls/i,null,400);
+    var anchor=conv;
+    if(emp){var p=conv.parentElement;while(p&&!p.contains(emp))p=p.parentElement;
+      if(p){anchor=conv;while(anchor.parentElement!==p)anchor=anchor.parentElement}}
+    else{while(anchor.parentElement&&anchor.parentElement.tagName!=="SECTION")anchor=anchor.parentElement}
+    var box=build();anchor.insertAdjacentElement("afterend",box);
+    renderTonight(box);loadWeather(box);
+  }
+  /* date chips (Tonight, Wed 30, ...) change the heading */
+  document.addEventListener("click",function(e){
+    var el=e.target;if(!el||!el.closest||inPop(el))return;
+    for(var i=0;i<4&&el;i++,el=el.parentElement){
+      var t=norm(el.textContent);var m=t.match(/^(tonight|today|mon|tue|wed|thu|fri|sat|sun)[a-z]*\s*(\d{1,2})$/i);
+      if(m){dayLabel=/tonight|today/i.test(m[1])?"Tonight":(m[1].charAt(0).toUpperCase()+m[1].slice(1,3).toLowerCase()+" "+m[2]);
+        var b=document.getElementById("npHomeFill");if(b)renderTonight(b);return}
+    }
+  },true);
+
+  /* ---------- club rows you can swipe ---------- */
+  function swipeRows(){
+    [].forEach.call(document.querySelectorAll("h2,h3"),function(h){
+      if(!/clubs/i.test(h.textContent)||inPop(h)||h.closest("#npHomeFill"))return;
+      var sc=h.parentElement,first=null;
+      for(var n=h.nextElementSibling,k=0;n&&k<4&&!first;n=n.nextElementSibling,k++){if(/^H[1-3]$/.test(n.tagName))break;first=n.matches("[data-id]")?n:n.querySelector("[data-id]")}
+      if(!first&&sc){var nx=sc.nextElementSibling;if(nx&&!nx.querySelector("h2"))first=nx.querySelector("[data-id]")}
+      if(!first)return;
+      var row=first.parentElement;
+      if(row&&!row.classList.contains("npswipe")&&row.querySelectorAll(":scope>[data-id]").length>1)row.classList.add("npswipe");
+    });
+  }
+
+  /* ---------- "from ₹7,800" becomes "Tables from ₹7,800" on nightlife cards ---------- */
+  function priceLabels(){
+    [].forEach.call(document.querySelectorAll("[data-id]"),function(card){
+      if(card.dataset.npTbl)return;
+      var c=list().find(function(x){return x.id===card.dataset.id});if(!isNight(c))return;
+      var w=document.createTreeWalker(card,NodeFilter.SHOW_TEXT,null),n;
+      while((n=w.nextNode())){if(/^\s*from\s*(?=[₹฿$\d])/i.test(n.nodeValue)||/^\s*from\s*$/i.test(n.nodeValue)&&n.parentElement&&/^\s*from\s*[₹฿]/i.test(n.parentElement.textContent)){
+        n.nodeValue=n.nodeValue.replace(/^(\s*)from/i,"$1Tables from");card.dataset.npTbl="1";break}}
+    });
+  }
+
+  /* ---------- bottom nav: 5 tabs + "More" (Concierge, Earn, For clubs stay, just moved) ---------- */
+  var MORE=["Concierge","Earn","For clubs"],moreBtn=null,navInfo=null;
+  function findNav(){
+    var navs=[].slice.call(document.querySelectorAll("nav, [role=navigation]")).filter(function(n){var t=norm(n.textContent);return /Explore/.test(t)&&/Bookings/.test(t)});
+    var nav=navs[0];if(!nav)return null;
+    function item(label){var h=[].slice.call(nav.querySelectorAll("*")).filter(function(el){return norm(el.textContent)===label});h.sort(function(a,b){return a.querySelectorAll("*").length-b.querySelectorAll("*").length});return h[0]}
+    var a=item("Explore"),b=item("Map");if(!a||!b)return null;
+    var p=a.parentElement;while(p&&!p.contains(b))p=p.parentElement;if(!p)return null;
+    function top(el){while(el&&el.parentElement!==p)el=el.parentElement;return el}
+    var items={};[].forEach.call(p.children,function(ch){var t=norm(ch.textContent);if(t)items[t]=ch});
+    return {nav:nav,row:p,items:items,top:top};
+  }
+  function setupNav(){
+    if(moreBtn&&document.body.contains(moreBtn))return;
+    var n=findNav();if(!n)return;
+    var hidden=MORE.map(function(l){return n.items[l]}).filter(Boolean);if(hidden.length<2)return;
+    var tpl=n.items["Buddy"]||n.items["Map"];if(!tpl)return;
+    moreBtn=tpl.cloneNode(true);
+    moreBtn.removeAttribute("onclick");moreBtn.removeAttribute("id");moreBtn.removeAttribute("href");
+    [].forEach.call(moreBtn.querySelectorAll("[onclick],[id]"),function(x){x.removeAttribute("onclick");x.removeAttribute("id")});
+    Object.keys(moreBtn.dataset).forEach(function(k){delete moreBtn.dataset[k]});
+    var tw=document.createTreeWalker(moreBtn,NodeFilter.SHOW_TEXT,null),tn,done=false,tns=[];
+    while((tn=tw.nextNode()))if(tn.nodeValue.trim())tns.push(tn);
+    tns.forEach(function(x){if(!done){x.nodeValue=x.nodeValue.replace(/\S[\s\S]*\S|\S/,"More");done=true}else x.nodeValue=""});
+    if(!done)moreBtn.appendChild(document.createTextNode("More"));
+    var sv=moreBtn.querySelector("svg,img,i");if(sv){var t=document.createElement("span");t.innerHTML=I.dots;var ns=t.firstChild;ns.setAttribute("width",sv.getAttribute("width")||"24");ns.setAttribute("height",sv.getAttribute("height")||"24");sv.replaceWith(ns)}
+    moreBtn.id="npMoreTab";moreBtn.setAttribute("aria-label","More");
+    moreBtn.addEventListener("click",function(e){e.preventDefault();e.stopPropagation();openMore(hidden)});
+    var base=tpl.className;
+    hidden.forEach(function(h){h.dataset.npBase=h.className;h.style.display="none";h.dataset.npMoved="more"});
+    var last=hidden[hidden.length-1];last.insertAdjacentElement("afterend",moreBtn);
+    base=base.split(/\s+/).filter(function(c){return !/^(on|active|sel|selected|current|cur)$/i.test(c)}).join(" ");
+    moreBtn.className=base;
+    var cs=getComputedStyle(n.row);if(cs.display==="grid")n.row.style.gridTemplateColumns="repeat("+[].filter.call(n.row.children,function(c){return c.style.display!=="none"}).length+",minmax(0,1fr))";
+    navInfo={row:n.row,hidden:hidden,tpl:tpl};
+    /* light up "More" when one of its tabs is the open page */
+    new MutationObserver(function(){
+      var extra=[];hidden.forEach(function(h){h.className.split(/\s+/).forEach(function(c){if(c&&h.dataset.npBase.split(/\s+/).indexOf(c)<0&&extra.indexOf(c)<0)extra.push(c)})});
+      var want=extra.length?base+" "+extra.join(" "):base;
+      if(moreBtn.className!==want)moreBtn.className=want;
+    }).observe(n.row,{attributes:true,subtree:true,attributeFilter:["class"]});
+  }
+  function openMore(hidden){
+    var old=document.getElementById("npMoreSheet");if(old)old.remove();
+    var ico={"Concierge":I.chat,"Earn":I.wallet,"For clubs":I.plus};
+    var sh=document.createElement("div");sh.id="npMoreSheet";
+    sh.innerHTML='<div class="in" role="dialog" aria-label="More"><h4>More</h4>'+hidden.map(function(h,i){var t=norm(h.textContent);return '<button type="button" class="it" data-i="'+i+'">'+(ico[t]||I.dots)+esc(t)+'</button>'}).join("")+'<button type="button" class="x">Close</button></div>';
+    sh.addEventListener("click",function(e){
+      var it=e.target.closest(".it");
+      if(it){sh.remove();var h=hidden[+it.dataset.i];var clk=h.matches("button,a,[onclick]")?h:(h.querySelector("button,a,[onclick]")||h);clk.click();return}
+      if(e.target===sh||e.target.closest(".x"))sh.remove();
+    });
+    document.body.appendChild(sh);
+  }
+
+  /* ---------- smaller floating Raju above the nav bar + bottom space ---------- */
+  function navGap(){
+    var n=document.querySelector("#npMoreTab");var nav=n&&n.closest("nav,[role=navigation]");
+    if(!nav){var f=findNav();nav=f&&f.nav}
+    if(!nav)return 0;var r=nav.getBoundingClientRect();if(!r.height)return 0;return Math.max(0,window.innerHeight-r.top);
+  }
+  var fab=null;
+  function findFab(){
+    if(fab&&document.body.contains(fab))return fab;
+    var W=window.innerWidth,H=window.innerHeight,best=null;
+    [].forEach.call(document.querySelectorAll("body *"),function(el){
+      if(el.closest("nav,[role=navigation],#panel,.sheet,#rajuChat,#npMoreSheet,#npHomeFill"))return;
+      if(getComputedStyle(el).position!=="fixed")return;
+      var r=el.getBoundingClientRect();
+      if(r.width<40||r.width>260||r.height<40||r.height>260||r.right<W*0.6||r.bottom<H*0.5)return;
+      if(!el.querySelector("img,svg,canvas,video")&&!/raju|help chahiye/i.test(el.textContent||""))return;
+      if(el.querySelector("nav")||best)return;
+      best=el;
+    });
+    var p=best;while(p&&p.parentElement&&p.parentElement!==document.body){if(getComputedStyle(p.parentElement).position==="fixed"){var pr=p.parentElement.getBoundingClientRect();if(pr.width<=260&&pr.height<=260)best=p.parentElement}p=p.parentElement}
+    return fab=best;
+  }
+  function placeRaju(){
+    var g=navGap();if(!g)return;
+    var f=findFab();
+    if(f){f.style.setProperty("scale","0.66");f.style.setProperty("transform-origin","100% 100%");
+      f.style.setProperty("top","auto","important");f.style.setProperty("bottom",(g+10)+"px","important");f.style.setProperty("right","12px","important");f.dataset.npFab="1"}
+    var pad=(g+28)+"px";
+    document.body.style.paddingBottom=pad;
+    [].forEach.call(document.querySelectorAll("main,section,#home,#explore,#night,#cats,.page,.screen,.view"),function(el){
+      if(el.closest("#panel,.sheet,#rajuChat"))return;
+      var cs=getComputedStyle(el);if(/(auto|scroll)/.test(cs.overflowY)&&el.clientHeight>window.innerHeight*0.6)el.style.paddingBottom=pad;
+    });
+  }
+
+  /* ---------- readable text over the neon sign ---------- */
+  function readable(){
+    [/Pattaya made easy for Indian travellers/i,/^\s*Tonight\b.{8,}/i].forEach(function(re){
+      var el=smallest(re,null,260);if(!el||el.closest("#npHomeFill")||el.dataset.npRead)return;
+      var box=el;
+      for(var i=0;i<3&&box.parentElement;i++){var cs=getComputedStyle(box);if(parseFloat(cs.borderTopWidth)>0||parseFloat(cs.borderTopLeftRadius)>=10)break;box=box.parentElement}
+      if(box.tagName==="SECTION"||box===document.body)box=el;
+      box.classList.add("npreadable");el.dataset.npRead="1";
+    });
+  }
+
+  function closeGap(){
+    var box=document.getElementById("npHomeFill");if(!box||!box.offsetParent)return;
+    var conv=smallest(/approx\.?\s*rate/i,null,400)||smallest(/(currency|converter)/i,null,400);if(!conv)return;
+    var row=conv;for(var i=0;i<6&&row.parentElement;i++){if(/Language/i.test(row.textContent)&&!row.contains(box))break;row=row.parentElement}
+    if(row.contains(box))row=conv;
+    var cur=parseFloat(box.style.marginTop)||0;
+    var stuff=box.getBoundingClientRect().top-row.getBoundingClientRect().bottom-cur;
+    var want=stuff>16?(16-stuff):14;
+    if(Math.abs(want-cur)>1)box.style.marginTop=Math.round(want)+"px";
+  }
+  function run(){
+    [placeFill,swipeRows,priceLabels,setupNav,placeRaju,readable,closeGap].forEach(function(f){try{f()}catch(e){}});
   }
   var busy=false;
-  function run(){try{homeBox();wardrobe()}catch(e){}}
-  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},200)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:["hidden"]});
-  window.addEventListener("hashchange",run);window.addEventListener("popstate",run);
-  run();
+  new MutationObserver(function(m){
+    if(busy)return;
+    if(m.every(function(x){return x.target&&x.target.closest&&x.target.closest("#npHomeFill,#npMoreSheet")}))return;
+    busy=true;setTimeout(function(){busy=false;run()},250);
+  }).observe(document.body,{childList:true,subtree:true});
+  window.addEventListener("resize",function(){setTimeout(function(){placeRaju();closeGap()},100)});
+  window.addEventListener("load",function(){setTimeout(closeGap,300)});
+  run();setTimeout(run,800);setTimeout(run,2500);
 })();
