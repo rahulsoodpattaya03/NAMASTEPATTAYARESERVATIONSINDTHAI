@@ -3853,3 +3853,66 @@
   clean();window.addEventListener("load",clean);setTimeout(clean,1500);setTimeout(clean,4000);
 })();
 
+
+/* ===== Refer & earn (8 Oct 2026, on Rahul's OK): Namaste credit for travellers, bank withdrawal for agents and promoters,
+   "Promoters" open to everyone, credit every Monday, and the Referral rules. Changes only these texts; nothing removed. ===== */
+(function(){
+  var TIER={
+    "Travellers":"Share your code. Earn 3% Namaste credit on your friends' bookings. Use it on your next booking in the app.",
+    "Indian & Thai agents":"Earn 5% on your clients' bookings. Withdraw to your verified bank account.",
+    "Promoters":"Earn 5% on bookings made with your code (bill ฿5,000 or more). Withdraw to your verified bank account."
+  };
+  if(!document.getElementById("npRefCss")){var st=document.createElement("style");st.id="npRefCss";
+    st.textContent='#npRefHow{margin:14px 0 6px}#npRefHow b{display:block;margin-bottom:6px}'+
+      '#npRefHow .fl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:12.5px}#npRefHow .fl span{border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:4px 10px}'+
+      '#npRefHow .fl span.last{border-color:#5DCAA5;color:#9FE1CB}#npRefHow small{display:block;margin-top:6px;opacity:.75;font-size:12px}'+
+      '#npRefRulesBtn{background:none;border:0;padding:0;margin:4px 0 8px;color:#E5861A;font-weight:600;text-decoration:underline;font:inherit;font-size:14px;cursor:pointer}'+
+      '#npRefPop{position:fixed;inset:0;z-index:10060;background:rgba(5,4,12,.75);display:flex;align-items:center;justify-content:center;padding:12px}'+
+      '#npRefPop .bx{width:100%;max-width:520px;max-height:86vh;overflow:auto;background:#141225;border:1px solid rgba(93,202,165,.5);border-radius:22px;padding:16px;color:#E6E1F5;font-size:13.5px;line-height:1.5}'+
+      '#npRefPop h4{margin:12px 0 4px;font-size:14.5px;color:#9FE1CB}#npRefPop ul{margin:0;padding-left:18px}'+
+      '#npRefPop .hd{display:flex;justify-content:space-between;align-items:center}#npRefPop .hd b{font-size:18px;color:#fff}'+
+      '#npRefPop .x{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.2);background:none;color:#fff;font-size:20px}'+
+      '#npRefPop .ok{display:block;width:100%;margin-top:14px;padding:13px;border:0;border-radius:14px;background:#5DCAA5;color:#04342C;font-weight:700;font-size:15px}';
+    document.head.appendChild(st)}
+  function rules(){
+    var old=document.getElementById("npRefPop");if(old)old.remove();
+    var o=document.createElement("div");o.id="npRefPop";o.setAttribute("role","dialog");o.setAttribute("aria-modal","true");o.setAttribute("aria-label","Referral rules");
+    o.innerHTML='<div class="bx"><div class="hd"><b>Referral rules</b><button type="button" class="x" aria-label="Close">×</button></div>'+
+      '<h4>When you earn</h4><ul><li>Only bookings made with your code, after your friend has paid for the service.</li>'+
+      '<li>Credit is added every Monday for bookings paid by Saturday, if the guest has not raised a complaint about the service. If there is a complaint, the credit waits until it is solved.</li>'+
+      '<li>Travellers: credit is used on bookings in the app.</li>'+
+      '<li>Agents and promoters: withdraw to a verified bank account in your own name. Minimum ฿500. Tax is deducted as Thai law requires.</li></ul>'+
+      '<h4>Namaste Pattaya may hold, reduce or cancel credit, commission or payouts if</h4><ul>'+
+      '<li>the booking is cancelled, refunded or charged back</li><li>the code is used on your own booking, or the booking is fake</li>'+
+      '<li>we find fraud, spam or misuse of the code</li><li>you break these rules, the app\'s Terms or Thai law (for example, promoting alcohol)</li>'+
+      '<li>a court, bank or Thai authority requires it</li></ul>'+
+      '<h4>Changes</h4><ul><li>We can change or end the program with 30 days\' notice. Credit already earned stays valid for 30 days after that.</li>'+
+      '<li>Promoters must never promote alcohol and must mark paid posts as #ad.</li></ul>'+
+      '<button type="button" class="ok">I understand</button></div>';
+    document.body.appendChild(o);
+    function close(){o.remove()}
+    o.querySelector(".x").onclick=close;o.querySelector(".ok").onclick=close;o.onclick=function(e){if(e.target===o)close()};
+  }
+  window.npReferralRules=rules;
+  function run(){
+    var earn=document.getElementById("earn");if(!earn)return;
+    [].forEach.call(earn.querySelectorAll(".tier"),function(t){
+      var s=t.querySelector("strong");if(!s)return;
+      if(/^\s*Women promoters\s*$/i.test(s.textContent))s.textContent="Promoters";
+      var name=s.textContent.trim(),p=t.querySelector("p");
+      if(TIER[name]&&p&&p.textContent!==TIER[name])p.textContent=TIER[name];
+    });
+    var op=document.querySelector('#aRole option[value="promoter"]');if(op&&/Woman/i.test(op.textContent))op.textContent="Promoter · 5%";
+    var tiers=earn.querySelector(".tiers");
+    if(tiers&&!document.getElementById("npRefHow")){
+      var h=document.createElement("div");h.id="npRefHow";
+      h.innerHTML='<b>How it works</b><div class="fl"><span>Friend books</span>→<span>Friend pays</span>→<span class="last">Credit every Monday</span></div>'+
+        '<small>Bookings paid by Saturday are added on Monday.</small><button type="button" id="npRefRulesBtn">Referral rules</button>';
+      tiers.insertAdjacentElement("afterend",h);
+      h.querySelector("#npRefRulesBtn").onclick=rules;
+    }
+  }
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{run()}catch(e){}},200)}).observe(document.body,{childList:true,subtree:true});
+  run();
+})();
