@@ -4082,7 +4082,7 @@
     r.onresult=function(e){var interim="";for(var i=e.resultIndex;i<e.results.length;i++){var t=e.results[i][0].transcript;if(e.results[i].isFinal)finalTxt+=t;else interim+=t}
       input.value=((before?before+" ":"")+finalTxt+interim).trim()};
     r.onerror=function(e){if(e&&(e.error==="not-allowed"||e.error==="service-not-allowed"))alert("Please allow the microphone for this app to speak to Raju.")};
-    r.onend=function(){btn.classList.remove("on");input.placeholder=ph;if(activeBtn===btn){activeBtn=null;rec=null}try{input.focus()}catch(e){}};
+    r.onend=function(){btn.classList.remove("on");input.placeholder=ph;if(activeBtn===btn){activeBtn=null;rec=null}};
     try{r.start()}catch(e){r.onend()}
   }
   function add(inputId){
@@ -4091,7 +4091,9 @@
     var b=document.createElement("button");b.type="button";b.className="npmic notranslate";b.setAttribute("translate","no");
     b.setAttribute("aria-label","Speak to Raju");
     b.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
-    b.onclick=function(e){e.preventDefault();e.stopPropagation();start(b,input)};
+    /* 9 Oct 2026: the mic must not open the keyboard; only tapping the typing bar does */
+    b.addEventListener("mousedown",function(e){e.preventDefault()});b.addEventListener("touchstart",function(){try{if(document.activeElement===input)input.blur()}catch(err){}},{passive:true});
+    b.onclick=function(e){e.preventDefault();e.stopPropagation();try{input.blur()}catch(err){}start(b,input)};
     input.insertAdjacentElement("afterend",b);
   }
   function run(){add("rajuIn");add("chatIn")}
