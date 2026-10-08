@@ -3998,20 +3998,33 @@
     }
     cache[ck]=url;return url;
   }
+  var reqId=0;
   async function play(btn,msg){
     if(playingBtn===btn){stop();return}
-    stop();
+    stop();var my=++reqId;
     var text=clean(msg.textContent),l=btn.dataset.l;if(!text)return;
     var ck=l+"|"+text;
     if(!cache[ck]&&usedToday()>=DAILY){setLabel(btn,"🔇 Voice limit for today");return}
     btn.disabled=true;setLabel(btn,"⏳ …");
     try{
-      var url=await getAudio(text,l);if(!cache.__counted||cache.__counted.indexOf(ck)<0){(cache.__counted=cache.__counted||[]).push(ck);usedToday(true)}
+      var url=await getAudio(text,l);if(my!==reqId){btn.disabled=false;setLabel(btn);return}if(!cache.__counted||cache.__counted.indexOf(ck)<0){(cache.__counted=cache.__counted||[]).push(ck);usedToday(true)}
       player=new Audio(url);playingBtn=btn;btn.classList.add("on");setLabel(btn);
       player.onended=player.onerror=function(){stop()};
       await player.play();
-    }catch(e){stop();setLabel(btn,"🔇 Voice not available right now");setTimeout(function(){setLabel(btn)},4000)}
+    }catch(e){if(my!==reqId){btn.disabled=false;setLabel(btn);return}stop();setLabel(btn,"🔇 Voice not available right now");setTimeout(function(){setLabel(btn)},4000)}
     btn.disabled=false;
+  }
+  function isLastAnswer(el){var k=[].filter.call(chatEl.children,function(x){return x.classList&&x.classList.contains("bot")});return k[k.length-1]===el}
+  /* wait until the answer text stops changing (translation finished), then speak it in the language it ends up in */
+  function playWhenSettled(btn,el){
+    var last=el.textContent,same=0,tries=0;
+    (function tick(){
+      if(!el.isConnected)return;
+      tries++;var now=el.textContent;
+      if(now===last)same++;else{same=0;last=now}
+      if(same>=3||tries>=15){btn.dataset.l=langOf(now||"");if(playingBtn!==btn)play(btn,el);return}
+      setTimeout(tick,400);
+    })();
   }
   function isAnswer(el){
     if(!el.classList||!el.classList.contains("bot"))return false;
@@ -4032,7 +4045,7 @@
       var btn=w.querySelector("button");setLabel(btn);
       btn.onclick=function(e){e.preventDefault();e.stopPropagation();btn.dataset.l=langOf(el.textContent||"");if(!voiceOn())setVoice(true);play(btn,el)};
       el.insertAdjacentElement("afterend",w);
-      if(ready&&voiceOn()){btn.dataset.l=langOf(el.textContent||"");setTimeout(function(){if(playingBtn!==btn)play(btn,el)},250)}
+      if(ready&&voiceOn()&&window.__npExpectAnswer&&isLastAnswer(el)){window.__npExpectAnswer=false;playWhenSettled(btn,el)}
     });
   }
   var busy=false;
@@ -4040,6 +4053,9 @@
   try{scan();pill()}catch(e){}
   ready=true;
   setInterval(function(){try{pill()}catch(e){}},2000);
+  if(typeof ask==="function"){var _askV=ask;ask=function(q){if(q&&String(q).trim())window.__npExpectAnswer=true;return _askV.apply(this,arguments)}}
+  var lastLang=appLang();
+  setInterval(function(){var l=appLang();if(l!==lastLang){lastLang=l;reqId++;stop();window.__npExpectAnswer=false}},500);
 })();
 
 /* ===== Guest can speak to Raju (8 Oct 2026, on Rahul's OK): a 🎤 button in the Home Raju box and in the Raju chat.
