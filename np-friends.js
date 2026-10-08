@@ -3932,7 +3932,24 @@
   var KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
   var VOICES={en:"nwj0s2LU9bDWRKND5yzA",hi:"3tEYR9ZLqHBQ9RrfcL1W",pa:"3BviNsioLYpM7Wt1hbN0",gu:"UHwU6ReRgTsCs68KHc6C",mr:"Xy2k22lbbOX8fqfkkHWb",ta:"oJtqFwbHKS0pFD03MNRd",th:"MeUerI8vM5Ce2GSTXsRT"};
   var LABEL={en:"🔊 Listen",hi:"🔊 सुनें",pa:"🔊 ਸੁਣੋ",gu:"🔊 સાંભળો",mr:"🔊 ऐका",ta:"🔊 கேளுங்கள்",th:"🔊 ฟัง"};
-  var DAILY=40,cache={},player=null,playingBtn=null;
+  var DAILY=40,cache={},player=null,playingBtn=null,ready=false;
+  /* Voice ON/OFF (8 Oct 2026): once the guest turns Raju's voice on, every new answer is read out automatically until they turn it off */
+  /* 8 Oct 2026, Rahul: guests should not have to tap the speaker, so voice is ON by default (guest can still turn it OFF) */
+  function voiceOn(){try{return localStorage.getItem("np_voice_on")!=="0"}catch(e){return true}}
+  function setVoice(on){try{localStorage.setItem("np_voice_on",on?"1":"0")}catch(e){}pill();if(!on)stop()}
+  var ONTXT={en:"🔊 Voice ON",hi:"🔊 आवाज़ चालू",pa:"🔊 ਆਵਾਜ਼ ਚਾਲੂ",gu:"🔊 અવાજ ચાલુ",mr:"🔊 आवाज चालू",ta:"🔊 குரல் ஆன்",th:"🔊 เปิดเสียง"};
+  var OFFTXT={en:"🔇 Voice OFF",hi:"🔇 आवाज़ बंद",pa:"🔇 ਆਵਾਜ਼ ਬੰਦ",gu:"🔇 અવાજ બંધ",mr:"🔇 आवाज बंद",ta:"🔇 குரல் ஆஃப்",th:"🔇 ปิดเสียง"};
+  function pill(){
+    var ci=document.getElementById("chatIn"),row=null;
+    if(ci){var ir=(ci.parentElement&&ci.parentElement.querySelector("button")&&ci.parentElement.tagName!=="FORM")?ci.parentElement:ci;
+      var pv=ir.previousElementSibling;if(pv&&pv.classList&&pv.classList.contains("nplrow"))row=pv}
+    var p=document.getElementById("npVoicePill");
+    if(p&&row&&p.parentElement!==row)row.insertBefore(p,row.firstChild);
+    if(!p){if(!row)return;p=document.createElement("button");p.type="button";p.id="npVoicePill";p.className="nplbtn npvpill notranslate";p.setAttribute("translate","no");
+      p.style.marginRight="8px";p.onclick=function(e){e.preventDefault();e.stopPropagation();setVoice(!voiceOn())};row.insertBefore(p,row.firstChild)}
+    var l=appLang();p.textContent=voiceOn()?(ONTXT[l]||ONTXT.en):(OFFTXT[l]||OFFTXT.en);
+    p.setAttribute("aria-pressed",voiceOn()?"true":"false");p.style.opacity=voiceOn()?"1":".75";
+  }
   function appLang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
   function langOf(t){
     if(/[\u0A00-\u0A7F]/.test(t))return "pa";
@@ -4013,13 +4030,16 @@
       var l=langOf(el.textContent||"");
       w.innerHTML='<button type="button" class="npvoice" data-l="'+l+'" aria-label="Listen to Raju"><span class="b"><i></i><i></i><i></i></span><span class="t"></span></button>';
       var btn=w.querySelector("button");setLabel(btn);
-      btn.onclick=function(e){e.preventDefault();e.stopPropagation();btn.dataset.l=langOf(el.textContent||"");play(btn,el)};
+      btn.onclick=function(e){e.preventDefault();e.stopPropagation();btn.dataset.l=langOf(el.textContent||"");if(!voiceOn())setVoice(true);play(btn,el)};
       el.insertAdjacentElement("afterend",w);
+      if(ready&&voiceOn()){btn.dataset.l=langOf(el.textContent||"");setTimeout(function(){if(playingBtn!==btn)play(btn,el)},250)}
     });
   }
   var busy=false;
-  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{scan()}catch(e){}},300)}).observe(chatEl,{childList:true,subtree:true,characterData:true});
-  try{scan()}catch(e){}
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{scan();pill()}catch(e){}},300)}).observe(chatEl,{childList:true,subtree:true,characterData:true});
+  try{scan();pill()}catch(e){}
+  ready=true;
+  setInterval(function(){try{pill()}catch(e){}},2000);
 })();
 
 /* ===== Guest can speak to Raju (8 Oct 2026, on Rahul's OK): a 🎤 button in the Home Raju box and in the Raju chat.
@@ -4031,7 +4051,7 @@
   var TXT={en:"Listening…",hi:"सुन रहा हूँ…",pa:"ਸੁਣ ਰਿਹਾ ਹਾਂ…",gu:"સાંભળું છું…",mr:"ऐकतोय…",ta:"கேட்கிறேன்…",th:"กำลังฟัง…"};
   function lang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
   if(!document.getElementById("npMicCss")){var st=document.createElement("style");st.id="npMicCss";
-    st.textContent='button.npmic{flex:0 0 44px!important;width:44px!important;height:44px!important;min-width:44px!important;border-radius:50%!important;border:1px solid #7F77DD!important;background:#26215C!important;color:#CECBF6!important;font-size:19px!important;display:inline-flex!important;align-items:center;justify-content:center;cursor:pointer;padding:0!important;margin:0 8px 0 0!important;box-shadow:none!important;align-self:center}'+
+    st.textContent='button.npmic{flex:0 0 46px!important;width:46px!important;height:46px!important;min-width:46px!important;border-radius:50%!important;border:0!important;background:rgba(255,255,255,.14)!important;color:#F2EEFC!important;font-size:19px!important;display:inline-flex!important;align-items:center;justify-content:center;cursor:pointer;padding:0!important;margin:0 8px!important;box-shadow:none!important;align-self:center}'+
       'button.npmic.on{background:#D85A30!important;border-color:#D85A30!important;color:#fff!important;animation:npmicp 1s infinite}@keyframes npmicp{50%{box-shadow:0 0 0 8px rgba(216,90,48,.25)}}';
     document.head.appendChild(st)}
   var rec=null,activeBtn=null;
@@ -4053,11 +4073,38 @@
     var input=document.getElementById(inputId);if(!input||input.dataset.npMic)return;
     input.dataset.npMic="1";
     var b=document.createElement("button");b.type="button";b.className="npmic notranslate";b.setAttribute("translate","no");
-    b.setAttribute("aria-label","Speak to Raju");b.textContent="🎤";
+    b.setAttribute("aria-label","Speak to Raju");
+    b.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></svg>';
     b.onclick=function(e){e.preventDefault();e.stopPropagation();start(b,input)};
-    input.insertAdjacentElement("beforebegin",b);
+    input.insertAdjacentElement("afterend",b);
   }
   function run(){add("rajuIn");add("chatIn")}
+  run();
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{run()}catch(e){}},400)}).observe(document.body,{childList:true,subtree:true});
+})();
+
+/* ===== Chat bar like the Claude app (8 Oct 2026, Rahul): one rounded typing bar with a small mic and a small send arrow inside it.
+   Home Raju box and Raju chat. Same buttons and actions as before; only the look changes. ===== */
+(function(){
+  if(!document.getElementById("npBarCss")){var st=document.createElement("style");st.id="npBarCss";
+    st.textContent='.npbar{display:flex!important;align-items:center!important;gap:6px!important;border:1px solid rgba(255,255,255,.2)!important;background:rgba(255,255,255,.06)!important;border-radius:26px!important;padding:5px 6px 5px 16px!important;box-shadow:none!important}'+
+      '.npbar:focus-within{border-color:rgba(206,203,246,.7)!important}'+
+      '.npbar>input,.npbar>textarea{flex:1 1 auto!important;min-width:0!important;border:0!important;background:transparent!important;box-shadow:none!important;outline:none!important;padding:9px 0!important;margin:0!important;height:auto!important;border-radius:0!important}'+
+      '.npbar button.npmic{flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;margin:0!important;background:rgba(255,255,255,.12)!important}'+
+      '.npbar button.npmic svg{width:18px;height:18px}'+
+      '.npbar button.npsend{flex:0 0 36px!important;width:36px!important;height:36px!important;min-width:36px!important;padding:0!important;margin:0!important;border-radius:50%!important;border:0!important;background:#F2EEFC!important;color:#1a1530!important;display:inline-flex!important;align-items:center!important;justify-content:center!important;box-shadow:none!important;font-size:0!important;line-height:0!important}'+
+      '.npbar button.npsend svg{width:18px;height:18px}';
+    document.head.appendChild(st)}
+  var ARROW='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>';
+  function make(inputId,sendId,label){
+    var input=document.getElementById(inputId),send=document.getElementById(sendId);if(!input||!send)return;
+    var row=input.parentElement;if(!row||row!==send.parentElement)return;
+    if(!row.classList.contains("npbar"))row.classList.add("npbar");
+    if(!send.classList.contains("npsend")){send.classList.add("npsend","notranslate");send.setAttribute("translate","no");send.setAttribute("aria-label",label);send.innerHTML=ARROW}
+    var mic=row.querySelector("button.npmic");if(mic&&mic.nextElementSibling!==send)row.insertBefore(mic,send);
+  }
+  function run(){make("rajuIn","rajuGo","Ask Raju");make("chatIn","chatSend","Send")}
   run();
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{run()}catch(e){}},400)}).observe(document.body,{childList:true,subtree:true});
