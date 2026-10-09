@@ -4127,3 +4127,57 @@
   var busy=false;
   new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;try{run()}catch(e){}},400)}).observe(document.body,{childList:true,subtree:true});
 })();
+
+/* ===== Install the app (9 Oct 2026): a "Get the app" card on Home under Raju (guest can close it with ×) and "Install app" in More.
+   Android: one tap install. iPhone and other phones: short steps. Hidden once the app is installed. Nothing removed. ===== */
+(function(){
+  var dp=null;
+  window.addEventListener("beforeinstallprompt",function(e){e.preventDefault();dp=e;run()});
+  window.addEventListener("appinstalled",function(){try{localStorage.setItem("np_installed","1")}catch(e){}hideAll()});
+  function installed(){try{if(window.matchMedia&&matchMedia("(display-mode: standalone)").matches)return true;if(navigator.standalone)return true;return localStorage.getItem("np_installed")==="1"&&!dp}catch(e){return false}}
+  function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
+  function dismissed(){try{var t=+localStorage.getItem("np_install_x")||0;return Date.now()-t<7*864e5}catch(e){return false}}
+  if(!document.getElementById("npInstCss")){var st=document.createElement("style");st.id="npInstCss";
+    st.textContent='#npInstCard{position:relative;display:flex;align-items:center;gap:12px;margin:12px 0;padding:12px 40px 12px 12px;border-radius:18px;border:1px solid rgba(233,185,73,.55);background:linear-gradient(135deg,rgba(233,185,73,.16),rgba(23,19,42,.92));color:#f2eefc}'+
+      '#npInstCard img{width:46px;height:46px;border-radius:12px;flex:0 0 46px}#npInstCard b{display:block;font-size:15px}#npInstCard small{display:block;opacity:.8;font-size:12.5px;margin-top:2px}'+
+      '#npInstCard .go{margin-left:auto;flex:0 0 auto;border:0;border-radius:999px;padding:9px 14px;background:#E9B949;color:#1a1026;font-weight:700;font-size:13.5px;cursor:pointer}'+
+      '#npInstCard .cl{position:absolute;top:6px;right:6px;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#d9d2f2;font-size:18px;cursor:pointer}'+
+      '#npInstHelp{position:fixed;inset:0;z-index:100002;background:rgba(0,0,0,.6);display:flex;align-items:flex-end;justify-content:center}'+
+      '#npInstHelp .in{width:100%;max-width:520px;background:#17132a;color:#f2eefc;border-top:1px solid #534AB7;border-radius:20px 20px 0 0;padding:18px 18px calc(18px + env(safe-area-inset-bottom,0px));font-size:15px;line-height:1.55}'+
+      '#npInstHelp ol{margin:8px 0 0;padding-left:20px}#npInstHelp .ok{display:block;width:100%;margin-top:14px;border:0;border-radius:14px;padding:13px;background:#E9B949;color:#1a1026;font-weight:700;font-size:15px}';
+    document.head.appendChild(st)}
+  function help(){
+    var o=document.getElementById("npInstHelp");if(o)o.remove();
+    o=document.createElement("div");o.id="npInstHelp";
+    var steps=isIOS()?'<li>Tap the <b>Share</b> button (square with an arrow) at the bottom of Safari</li><li>Tap <b>Add to Home Screen</b></li><li>Tap <b>Add</b></li>'
+      :'<li>Tap Chrome\u2019s <b>\u22ee</b> menu (top right)</li><li>Tap <b>Install app</b> or <b>Add to Home screen</b></li><li>Tap <b>Install</b></li>';
+    o.innerHTML='<div class="in"><b style="font-size:17px">\ud83d\udcf2 Install Namaste Pattaya</b><ol>'+steps+'</ol><button class="ok" type="button">OK</button></div>';
+    document.body.appendChild(o);o.onclick=function(e){if(e.target===o||e.target.classList.contains("ok"))o.remove()};
+  }
+  function install(){
+    if(dp){dp.prompt();dp.userChoice.then(function(c){if(c&&c.outcome==="accepted"){try{localStorage.setItem("np_installed","1")}catch(e){}hideAll()}dp=null}).catch(function(){});}
+    else help();
+  }
+  window.npInstall=install;
+  function hideAll(){var c=document.getElementById("npInstCard");if(c)c.remove();var m=document.getElementById("npInstMore");if(m)m.remove()}
+  function card(){
+    if(installed()||dismissed()||document.getElementById("npInstCard"))return;
+    var rc=document.getElementById("rajuCard");if(!rc||!rc.parentElement)return;
+    var c=document.createElement("div");c.id="npInstCard";c.className="notranslate";c.setAttribute("translate","no");
+    c.innerHTML='<img src="icon-192.png" alt=""><div><b>Get the app</b><small>Faster, full screen, one tap from home</small></div><button type="button" class="go">Install now</button><button type="button" class="cl" aria-label="Close">\u00d7</button>';
+    c.querySelector(".go").onclick=install;
+    c.querySelector(".cl").onclick=function(){try{localStorage.setItem("np_install_x",String(Date.now()))}catch(e){}c.remove()};
+    rc.insertAdjacentElement("afterend",c);
+  }
+  function more(){
+    if(installed())return;
+    var sh=document.querySelector("#npMoreSheet .in");if(!sh||document.getElementById("npInstMore"))return;
+    var b=document.createElement("button");b.type="button";b.className="it";b.id="npInstMore";b.innerHTML='<span style="font-size:20px">\ud83d\udcf2</span><span>Install app</span>';
+    b.onclick=function(){var s=document.getElementById("npMoreSheet");if(s)s.remove();install()};
+    var x=sh.querySelector(".x");if(x)sh.insertBefore(b,x);else sh.appendChild(b);
+  }
+  function run(){if(installed()){hideAll();return}try{card();more()}catch(e){}}
+  var busy=false;
+  new MutationObserver(function(){if(busy)return;busy=true;setTimeout(function(){busy=false;run()},300)}).observe(document.body,{childList:true,subtree:true});
+  run();
+})();
