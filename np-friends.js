@@ -1,3 +1,16 @@
+/* ===== EARLY (16 Oct 2026, Rahul): Jalwa Club first everywhere, free entry at every club. Runs before the lists are built. ===== */
+(function(){
+  function first(arr){if(!Array.isArray(arr))return;var i=arr.findIndex(function(c){return c&&/jalwa club/i.test(c.name||"")});if(i>0){var j=arr.splice(i,1)[0];arr.unshift(j)}}
+  try{
+    if(typeof CLUBS!=="undefined"){first(CLUBS);CLUBS.forEach(function(c){
+      if(!c||!c.pkgs)return;var has=false;
+      c.pkgs.forEach(function(p){if(/entry|day ?pass|cover|guest ?list/i.test(p.n||"")){p.p=0;has=true}});
+      if(!has&&(c.cat==="nightlife"||c.cat==="beach")){var base=c.pkgs[0]||{};c.pkgs.unshift(Object.assign({},base,{n:"Entry (guest list)",d:"Free entry",p:0}))}
+    })}
+    if(typeof NIGHT!=="undefined")first(NIGHT);
+    if(typeof PARTNERS!=="undefined")first(PARTNERS);
+  }catch(e){}
+})();
 /* Namaste Pattaya Reservations: Find a buddy (one feature, clear purpose), Find My Friends & Bill Splitter */
 (function(){
   var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
@@ -5,10 +18,10 @@
   function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
   function rer(list){list.forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
 
-  if(typeof INTENTS!=="undefined")INTENTS.forEach(function(i){if(i[0]==="dating")i[2]="Meet new people in social places"});
-  if(typeof LNAV!=="undefined")LNAV.forEach(function(n){if(n[0]==="friend")n[1]="Meet new people"});
+  if(typeof INTENTS!=="undefined")INTENTS.forEach(function(i){if(i[0]==="dating")i[2]="Boomer in social places"});
+  if(typeof LNAV!=="undefined")LNAV.forEach(function(n){if(n[0]==="friend")n[1]="Boomer"});
   var ht=document.querySelector('.hubtile[data-go="buddy"]');
-  if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Meet new people";if(hs)hs.textContent="Meet travellers, safely"}
+  if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Boomer";if(hs)hs.textContent="Meet travellers, safely"}
   var ga=document.querySelector(".goldarea");
   if(ga){
     var dt=ga.querySelector('[data-g="dating"]');if(dt)dt.hidden=true;
@@ -22,8 +35,8 @@
   var sec=document.getElementById("buddy");
   if(sec&&!document.getElementById("npPurpose")){
     var pc=document.createElement("div");pc.id="npPurpose";pc.className="lcard hl nppurpose";
-    pc.innerHTML='<span class="k">OUR PURPOSE</span><h4>Meet new people is a social feature</h4>'+
-      '<p>Meet new people helps travellers meet in groups and in public places: for a club night, a meal, sports or sightseeing. It is not an escort, companion or matchmaking service.</p>'+
+    pc.innerHTML='<span class="k">OUR PURPOSE</span><h4>Boomer is a social feature</h4>'+
+      '<p>Boomer helps travellers meet in groups and in public places: for a club night, a meal, sports or sightseeing. It is not an escort, companion or matchmaking service.</p>'+
       '<ul><li>18+ only. Meet only in public places.</li>'+
       '<li>No money, gifts or payment may be offered or asked for meeting anyone.</li>'+
       '<li>Offering or asking for paid companionship or sexual services is forbidden under Thai law (Prevention and Suppression of Prostitution Act B.E. 2539). Such accounts are removed and may be reported to the Thai police.</li>'+
@@ -35,18 +48,18 @@
   var gate=document.getElementById("buddyGate");
   if(gate&&!document.getElementById("bRules")){
     var lab=document.createElement("label");lab.style.cssText="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px";
-    lab.innerHTML='<input type="checkbox" id="bRules"> I agree to the Meet new people rules: social meetings in public places only, and no money or paid services of any kind.';
+    lab.innerHTML='<input type="checkbox" id="bRules"> I agree to the Boomer rules: social meetings in public places only, and no money or paid services of any kind.';
     var st=document.getElementById("bStart");if(st)st.insertAdjacentElement("beforebegin",lab);
     gate.addEventListener("click",function(e){
       if(!e.target.closest||!e.target.closest("#bStart"))return;
-      if(!document.getElementById("bRules").checked){e.stopImmediatePropagation();e.preventDefault();var er=document.getElementById("bErr");if(er)er.textContent="Please agree to the Meet new people rules."}
+      if(!document.getElementById("bRules").checked){e.stopImmediatePropagation();e.preventDefault();var er=document.getElementById("bErr");if(er)er.textContent="Please agree to the Boomer rules."}
     },true);
   }
 
   var BAD=/(money|cash|\bpay\b|\bpaid\b|payment|price|\brate\b|baht|฿|\btip\b|short ?time|long ?time|happy ending|escort|\bsex)/i;
   function blocked(){var i=panel.querySelector("#bIn");return i&&BAD.test(i.value)}
   function warn(){var w=panel.querySelector("#bWarn");if(!w){w=document.createElement("p");w.id="bWarn";w.className="err";var bar=panel.querySelector(".chatbar");if(bar)bar.insertAdjacentElement("afterend",w)}
-    w.textContent="For everyone's safety, messages about money, payment or paid services are not allowed in Meet new people. Please keep it social."}
+    w.textContent="For everyone's safety, messages about money, payment or paid services are not allowed in Boomer. Please keep it social."}
   panel.addEventListener("click",function(e){if(e.target.closest&&e.target.closest("#bSend")&&blocked()){e.stopImmediatePropagation();e.preventDefault();warn()}},true);
   panel.addEventListener("keydown",function(e){if(e.target&&e.target.id==="bIn"&&e.key==="Enter"&&blocked()){e.stopImmediatePropagation();e.preventDefault();warn()}},true);
 
@@ -236,7 +249,7 @@
   fix();
 })();
 
-/* ===== home: Namaste Gold (Meet new people) + Friends Location & Bill Splitter for everyone ===== */
+/* ===== home: Namaste Gold (Boomer) + Friends Location & Bill Splitter for everyone ===== */
 (function(){
   function vip(){try{return typeof isVIP==="function"&&!!isVIP()}catch(e){return false}}
   function css(){
@@ -252,14 +265,14 @@
     var ga=document.querySelector(".goldarea");
     if(ga){
       var b=ga.querySelector('[data-g="buddy"]');
-      if(b){b.querySelector("b").textContent="Meet new people";b.querySelector("small").textContent="Unlimited likes and swipes, shown first"}
+      if(b){b.querySelector("b").textContent="Boomer";b.querySelector("small").textContent="Unlimited likes and swipes, shown first"}
       var d=ga.querySelector('[data-g="dating"]');if(d)d.hidden=true;
       var f=ga.querySelector('[data-g="friend"]');if(f)f.hidden=true;
       var gt=ga.querySelector(".gtiles");if(gt)gt.style.gridTemplateColumns="1fr";
       var gp=ga.querySelector(".gtop p");if(gp)gp.textContent="Premium access for our most valued guests.";
       if(!ga.querySelector(".gperks")){
         var ul=document.createElement("ul");ul.className="gperks";
-        ul.innerHTML='<li>Unlimited likes and swipes in Meet new people, and your profile shown first</li>'+
+        ul.innerHTML='<li>Unlimited likes and swipes in Boomer, and your profile shown first</li>'+
           '<li>All Elite packages</li>'+
           '<li>Elite and luxury services (yacht, private jet, VIP concierge) with priority booking</li>'+
           '<li>One luxury photo and video shoot every month with our photographer</li>';
@@ -273,9 +286,9 @@
     /* Friends Location & Bill Splitter: moved to the All services grid (29 Sep 2026) */
     var oldFLB=document.getElementById("npFLB");if(oldFLB)oldFLB.remove();
     var ht=document.querySelector('.hubtile[data-go="buddy"]');
-    if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Meet new people";if(hs)hs.textContent="Social meetups, safely"}
-    var stt=document.querySelector("#buddy .sectiontitle");if(stt)stt.textContent="Meet new people";
-    var ph=document.querySelector("#npPurpose h4");if(ph)ph.textContent="Meet new people is a social feature";
+    if(ht){var hb=ht.querySelector("b"),hs=ht.querySelector("small");if(hb)hb.textContent="Boomer";if(hs)hs.textContent="Social meetups, safely"}
+    var stt=document.querySelector("#buddy .sectiontitle");if(stt)stt.textContent="Boomer";
+    var ph=document.querySelector("#npPurpose h4");if(ph)ph.textContent="Boomer is a social feature";
     var fb=document.getElementById("npFindBtn");if(fb)fb.textContent="Friends Location & Bill Splitter";
   }
   /* monthly luxury shoot for Gold members */
@@ -302,7 +315,7 @@
   run();window.addEventListener("load",run);setTimeout(run,1500);setTimeout(paintShoot,3000);
 })();
 
-/* ===== Meet new people: 10 free likes/swipes per 24 hours, unlimited for Gold ===== */
+/* ===== Boomer: 10 free likes/swipes per 24 hours, unlimited for Gold ===== */
 (function(){
   var LIM=10,KEY="np_swipes",DAY=864e5;
   function vip(){try{return typeof isVIP==="function"&&!!isVIP()}catch(e){return false}}
@@ -450,7 +463,7 @@
   function premium(){try{return (typeof isVIP==="function"&&!!isVIP())||(typeof isPremium==="function"&&!!isPremium())}catch(e){return false}}
   function auroraKey(){
     if(typeof SKINS==="undefined")return null;
-    for(var i=0;i<SKINS.length;i++){var s=SKINS[i];if(/aurora/i.test(String(s[0])+" "+String(s[1])))return s[0]}
+    for(var i=0;i<SKINS.length;i++){var s=SKINS[i];if(/holo/i.test(String(s[0])+" "+String(s[1])))return s[0]}
     return null;
   }
   var k=auroraKey();if(!k)return;
@@ -471,7 +484,7 @@
     if(premium())return;
     if(!panel.querySelector(".pskin")||panel.querySelector("#npSkinGold"))return;
     panel.innerHTML='<div class="pbody" id="npSkinGold"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">App colours</h2><button class="theme" id="skX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"×")+'</button></div>'+
-      '<p class="about">Your app uses the Aurora AI look.</p><p class="about">Choosing your own app colours is a Namaste Gold perk.</p>'+
+      '<p class="about">Your app uses the Obsidian Holo look.</p><p class="about">Choosing your own app colours is a Namaste Gold perk.</p>'+
       '<button class="cta" id="skGold">Become a Gold member</button></div>';
     panel.querySelector("#skX").onclick=closeSheet;
     panel.querySelector("#skGold").onclick=function(){closeSheet();setTimeout(function(){var b=document.getElementById("premBtn");if(b)b.click()},300)};
@@ -1518,7 +1531,7 @@
     if(moreBtn&&document.body.contains(moreBtn))return;
     var n=findNav();if(!n)return;
     var hidden=MORE.map(function(l){return n.items[l]}).filter(Boolean);if(hidden.length<2)return;
-    var tpl=n.items["Buddy"]||n.items["Map"];if(!tpl)return;
+    var tpl=n.items["Boomer"]||n.items["Buddy"]||n.items["Map"];if(!tpl)return;
     moreBtn=tpl.cloneNode(true);
     moreBtn.removeAttribute("onclick");moreBtn.removeAttribute("id");moreBtn.removeAttribute("href");
     [].forEach.call(moreBtn.querySelectorAll("[onclick],[id]"),function(x){x.removeAttribute("onclick");x.removeAttribute("id")});
@@ -1833,7 +1846,7 @@
   build();
 })();
 
-/* ===== Meet new people (REAL, 29 Sep 2026): one meeting feature for the whole app.
+/* ===== Boomer (REAL, 29 Sep 2026): one meeting feature for the whole app.
    Real profiles on Supabase, selfie check for women (admin approves), search, messages,
    block & report. The Empowered Girls lounge shows the same people (verified women only).
    Old demo screens (sample profiles saved only on one phone) are hidden, not deleted. ===== */
@@ -1915,12 +1928,12 @@
   function match(p,txt){if(!txt)return true;txt=txt.toLowerCase();
     return [p.name,p.city,p.languages,p.plan,intName(p.intent),p.when_txt].join(" ").toLowerCase().indexOf(txt)>-1}
 
-  /* ---------- main screen (Buddy / Meet new people) ---------- */
+  /* ---------- main screen (Buddy / Boomer) ---------- */
   function mount(){
     var s=document.getElementById("buddy");if(!s)return null;
     ["buddyGate","buddyMain","lob"].forEach(function(id){var e=document.getElementById(id);if(e)e.style.setProperty("display","none","important")});
     s.querySelectorAll(".howto").forEach(function(e){e.style.setProperty("display","none","important")});
-    var t=s.querySelector(".sectiontitle");if(t&&t.textContent!=="Meet new people")t.textContent="Meet new people";
+    var t=s.querySelector(".sectiontitle");if(t&&t.textContent!=="Boomer")t.textContent="Boomer";
     var root=document.getElementById("npMeet");
     if(!root){root=document.createElement("div");root.id="npMeet";
       if(t)t.insertAdjacentElement("afterend",root);else s.appendChild(root)}
@@ -1937,9 +1950,9 @@
         if(up)setTimeout(function(){var t=[].find.call(panel.querySelectorAll("button,a"),function(x){return /create account|sign up/i.test(x.textContent)&&!/free/i.test(x.textContent)});if(t)t.click()},250)}
       root.querySelector("#npmIn").onclick=function(){openAcc(false)};root.querySelector("#npmUp").onclick=function(){openAcc(true)};return}
     if(!loaded){root.innerHTML='<p class="npm-empty">Loading…</p>';return}
-    if(setupErr==="setup"){root.innerHTML='<div class="npm-card"><b>Almost ready</b><p class="npm-plan">Meet new people is being set up. Please check back soon.</p></div>';return}
+    if(setupErr==="setup"){root.innerHTML='<div class="npm-card"><b>Almost ready</b><p class="npm-plan">Boomer is being set up. Please check back soon.</p></div>';return}
     if(adminOK&&!mine&&!editing){
-      root.innerHTML='<div class="npm-card hl"><b>Admin view</b><p class="npm-plan">You see Meet new people exactly like the members do, including women-only areas. To say hi to someone, create your own profile first.</p><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button><button class="npm-btn" id="npmMake">Create my profile</button></div></div>'+
+      root.innerHTML='<div class="npm-card hl"><b>Admin view</b><p class="npm-plan">You see Boomer exactly like the members do, including women-only areas. To say hi to someone, create your own profile first.</p><div class="npm-acts"><button class="npm-btn pri" id="npmAdmin">Verify women & reports</button><button class="npm-btn" id="npmMake">Create my profile</button></div></div>'+
         '<div class="npm-search"><input id="npmQ" type="search" placeholder="Search name, city, language, plan…" value="'+esc(q.main)+'" aria-label="Search people"><select id="npmShow" aria-label="Show"><option value="all">Everyone</option><option value="woman">Women</option><option value="man">Men</option></select></div><div id="npmList"></div>';
       root.querySelector("#npmShow").value=show;
       root.querySelector("#npmQ").oninput=function(){q.main=this.value;list(root.querySelector("#npmList"),q.main,show)};
@@ -2012,7 +2025,7 @@
     var qd=queue(),p=qd[0];
     if(!p&&!people.length){var link="https://namastepattayareservationsindthai.vercel.app/";
       box.innerHTML='<div class="npm-deck"><div class="npm-photo npm-empty-card" style="height:240px;background:linear-gradient(160deg,#534AB7,#D4537E)"><span class="npm-big" style="font-size:70px">🎉</span>'+
-        '<div class="npm-over"><b>You are one of the first!</b><small>Meet new people just started. Invite your friends so you can meet in Pattaya.</small></div></div>'+
+        '<div class="npm-over"><b>You are one of the first!</b><small>Boomer just started. Invite your friends so you can meet in Pattaya.</small></div></div>'+
         '<div class="npm-acts" style="justify-content:center;margin-top:12px"><button class="npm-btn pri" id="npmInv">Invite friends on WhatsApp</button></div></div>';
       box.querySelector("#npmInv").onclick=function(){window.open("https://wa.me/?text="+encodeURIComponent("Going to Pattaya? Join me on Namaste Pattaya to meet travellers, book clubs and Indian food: "+link),"_blank")};return}
     if(!p){box.innerHTML='<div class="npm-card"><b>You have seen everyone for now</b><p class="npm-plan">New travellers join every day. Check again later, or search the full list below.</p>'+(Object.keys(skipped()).length?'<div class="npm-acts"><button class="npm-btn" id="npmReset">Show skipped people again</button></div>':'')+'</div>';
@@ -2030,7 +2043,7 @@
       addSeen();
       card.classList.add(like?"go-right":"go-left");
       if(like){
-        if(!mine){setTimeout(function(){alert("Create your Meet new people profile first, then you can like people.");editing=true;paintMain()},250);return}
+        if(!mine){setTimeout(function(){alert("Create your Boomer profile first, then you can like people.");editing=true;paintMain()},250);return}
         LIKED[p.user_id]=1;
         var r=await sb.from("np_meet_likes").insert({liked:p.user_id});
         if(!r.error){var m=await sb.from("np_meet_likes").select("liker").eq("liker",p.user_id).eq("liked",user.id).maybeSingle();
@@ -2140,7 +2153,7 @@
   }
   function addMsg(m){var box=panel.querySelector("#chBox");if(!box)return;var d=document.createElement("div");d.className="npm-m"+(m.sender===user.id?" me":"");d.textContent=m.body;box.appendChild(d);box.scrollTop=box.scrollHeight}
   async function openChat(p){
-    if(!mine){alert("Create your Meet new people profile first, then you can say hi.");closeSheet();if(typeof go==="function")go("buddy");editing=true;paintMain();return}
+    if(!mine){alert("Create your Boomer profile first, then you can say hi.");closeSheet();if(typeof go==="function")go("buddy");editing=true;paintMain();return}
     chatWith=p;delete unread[p.user_id];
     sheetOpen('<div class="pbody">'+head("Chat with "+esc(p.name),"chX")+'<p class="small">Meet only in public places. Never send money. Report anyone who asks for money or paid services.</p>'+
       '<div class="npm-msgs" id="chBox"><p class="npm-empty">Loading…</p></div><div class="post"><input id="chIn" maxlength="500" placeholder="Say hi…"><button id="chGo">Send</button></div><p class="err" id="chE"></p></div>');
@@ -2176,7 +2189,7 @@
   /* ---------- admin: verify women, see reports ---------- */
   async function openAdmin(){
     if(!adminOK){await checkAdmin();if(!adminOK)return}
-    sheetOpen('<div class="pbody">'+head("Admin · Meet new people","adX")+'<div id="adBody"><p class="npm-empty">Loading…</p></div></div>');
+    sheetOpen('<div class="pbody">'+head("Admin · Boomer","adX")+'<div id="adBody"><p class="npm-empty">Loading…</p></div></div>');
     panel.querySelector("#adX").onclick=closeSheet;
     var r=await sb.from("np_meet_profiles").select("*").eq("verify_status","pending").order("updated_at");
     var rep=await sb.from("np_meet_reports").select("*").eq("status","open").order("created_at",{ascending:false}).limit(50);
@@ -2220,12 +2233,12 @@
         [].forEach.call(gate.children,function(ch){if(ch!==box)ch.style.setProperty("display","none","important")})}
       var s=mine&&mine.verify_status;
       box.innerHTML='<p class="about" style="margin:0 0 10px">This lounge is for verified women only, so the space stays safe and private.</p>'+
-        '<p class="about">'+(!user?"Log in first, then create your Meet new people profile as a woman and send a quick selfie.":
-          !mine?"Create your Meet new people profile (as a woman) and send a quick selfie.":
+        '<p class="about">'+(!user?"Log in first, then create your Boomer profile as a woman and send a quick selfie.":
+          !mine?"Create your Boomer profile (as a woman) and send a quick selfie.":
           mine.gender!=="woman"?"Only women can enter this lounge.":
           s==="pending"?"Your selfie is being checked. You will get access soon.":
-          "Send a quick selfie from your Meet new people profile to get access.")+'</p>'+
-        (mine&&mine.gender!=="woman"?'':'<button class="cta" id="npLGo">Go to Meet new people</button>');
+          "Send a quick selfie from your Boomer profile to get access.")+'</p>'+
+        (mine&&mine.gender!=="woman"?'':'<button class="cta" id="npLGo">Go to Boomer</button>');
       var g=box.querySelector("#npLGo");if(g)g.onclick=function(){if(typeof go==="function")go("buddy")};
     }
     try{
@@ -2236,11 +2249,11 @@
   function paintLoungeFriend(){
     try{if(typeof lTab==="undefined"||lTab!=="friend"||!lady)return}catch(e){return}
     var v=document.getElementById("lview");if(!v||v.querySelector("#npLMeet"))return;
-    v.innerHTML='<div id="npLMeet"><div class="npm-card hl"><b>Meet new people · women</b><p class="npm-plan">The same Meet new people as outside, showing verified women only. Say hi, make a plan, meet in public places.</p><div class="npm-acts"><button class="npm-btn" id="npLAll">Open Meet new people</button></div></div>'+
+    v.innerHTML='<div id="npLMeet"><div class="npm-card hl"><b>Boomer · women</b><p class="npm-plan">The same Boomer as outside, showing verified women only. Say hi, make a plan, meet in public places.</p><div class="npm-acts"><button class="npm-btn" id="npLAll">Open Boomer</button></div></div>'+
       '<div class="npm-search"><input id="npLQ" type="search" placeholder="Search women by name, city, language, plan…" value="'+esc(q.lounge)+'" aria-label="Search women"></div><div id="npLList"></div></div>';
     v.querySelector("#npLAll").onclick=function(){go("buddy")};
     v.querySelector("#npLQ").oninput=function(){q.lounge=this.value;list(v.querySelector("#npLList"),q.lounge,"woman",true)};
-    if(!mine&&!adminOK)v.querySelector("#npLList").innerHTML='<p class="npm-empty">Create your Meet new people profile first.</p>';
+    if(!mine&&!adminOK)v.querySelector("#npLList").innerHTML='<p class="npm-empty">Create your Boomer profile first.</p>';
     else list(v.querySelector("#npLList"),q.lounge,"woman",true);
   }
   if(typeof renderLadies==="function"){var _rl=renderLadies;renderLadies=function(){paintLounge();_rl();paintLoungeFriend()}}
@@ -3426,7 +3439,7 @@
 (function(){
   var KEY="np_recents",MAX=14,busyOpen=false;
   var SEC={explore:["Home","me","#7F77DD","🏠"],map:["Map","services","#378ADD","🗺️"],bookings:["My bookings","me","#F0997B","🎟️"],earn:["Earn & referrals","agent","#1D9E75","💰"],
-    concierge:["Raju chat","me","#7F77DD","💬"],buddy:["Meet new people","me","#ED93B1","❤️"],ladies:["Empowered Girls","me","#ED93B1","🌸"],mall:["Namaste Mall","services","#F0997B","🛍️"],
+    concierge:["Raju chat","me","#7F77DD","💬"],buddy:["Boomer","me","#ED93B1","❤️"],ladies:["Empowered Girls","me","#ED93B1","🌸"],mall:["Namaste Mall","services","#F0997B","🛍️"],
     packages:["Packages","services","#F0997B","🎁"],paybill:["Pay my bill","me","#1D9E75","🧾"],dash:["Partner dashboard","partner","#378ADD","📊"],clubs:["Clubs","services","#F0997B","🪩"]};
   var GROUPS=[["all","All"],["services","Services"],["me","My app"],["partner","Partners"],["agent","Agents"],["admin","Admin"]];
   var grp="all";
@@ -4186,4 +4199,209 @@
 (function(){
   if(!("serviceWorker" in navigator))return;
   window.addEventListener("load",function(){try{navigator.serviceWorker.register("/np-sw.js").catch(function(){})}catch(e){}});
+})();
+
+/* ===== Boomer (16 Oct 2026, Rahul): one name, swipe screen first, Discover / Plan night out / Plan day out,
+   10 free profiles a day, messages for Boomer Premium and Namaste Gold only. Added on top; nothing removed. ===== */
+(function(){
+  var DEMO=true;   /* SAMPLE PROFILES for testing and investor demos. Set to false on launch day. */
+  var FREE=10;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function lsGet(k,f){try{var v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function flag(k,v){try{if(typeof store!=="undefined"&&store&&store.set)store.set(k,v);else lsSet(k,v)}catch(e){lsSet(k,v)}}
+  function isPrem(){try{return (typeof isPremium==="function"&&!!isPremium())||(typeof isVIP==="function"&&!!isVIP())}catch(e){return false}}
+  function today(){var d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate()}
+  function seenN(){var o=lsGet("np_meet_seen",{});return o&&o.d===today()?o.n:0}
+  function addSeen(){lsSet("np_meet_seen",{d:today(),n:seenN()+1})}
+  function hash(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)}
+  var BAD=/(money|cash|\bpay\b|\bpaid\b|payment|price|\brate\b|baht|฿|\btip\b)/i;
+
+  /* sample people: no real photos, no real names; clearly marked "Sample" */
+  var SAMPLE=[
+   {id:"s1",name:"Aman",age:27,city:"Delhi",lang:"Hindi, English",kind:"night",plan:"Bollywood club night on Walking Street, group of 3",when:"Tonight",c:"#E8417A"},
+   {id:"s2",name:"Priya",age:25,city:"Mumbai",lang:"Hindi, Marathi, English",kind:"night",plan:"Dinner and live music with a friend",when:"Tonight",c:"#7F77DD"},
+   {id:"s3",name:"Rohit",age:30,city:"Bengaluru",lang:"Kannada, English",kind:"day",plan:"Golf in the morning, solo, looking for a group",when:"Tomorrow",c:"#BA7517"},
+   {id:"s4",name:"Simran",age:26,city:"Chandigarh",lang:"Punjabi, Hindi",kind:"day",plan:"Coral Island trip with friends",when:"Saturday",c:"#1D9E75"},
+   {id:"s5",name:"Karan",age:34,city:"Ahmedabad",lang:"Gujarati, Hindi",kind:"night",plan:"Indian dinner, then a club night",when:"Friday",c:"#D85A30"},
+   {id:"s6",name:"Neha",age:29,city:"Pune",lang:"Hindi, English",kind:"day",plan:"Beach day and the night market",when:"Tomorrow",c:"#185FA5"},
+   {id:"s7",name:"Vikram",age:31,city:"Jaipur",lang:"Hindi, English",kind:"night",plan:"Birthday night out, need more people",when:"Saturday",c:"#993556"},
+   {id:"s8",name:"Ananya",age:24,city:"Hyderabad",lang:"Telugu, Hindi, English",kind:"day",plan:"Sightseeing and a spa afternoon",when:"Sunday",c:"#0F6E56"},
+   {id:"s9",name:"Gurpreet",age:28,city:"Ludhiana",lang:"Punjabi, Hindi",kind:"night",plan:"Club night with friends, open to join",when:"Tonight",c:"#534AB7"},
+   {id:"s10",name:"Meera",age:27,city:"Chennai",lang:"Tamil, English",kind:"day",plan:"Island trip and a seafood lunch",when:"Saturday",c:"#A32D2D"},
+   {id:"s11",name:"Harsh",age:32,city:"Surat",lang:"Gujarati, Hindi",kind:"day",plan:"Water sports in the morning",when:"Tomorrow",c:"#3B6D11"},
+   {id:"s12",name:"Tanya",age:26,city:"Kolkata",lang:"Bengali, Hindi",kind:"night",plan:"Dinner and dancing with 2 friends",when:"Friday",c:"#72243E"}
+  ];
+  var PLANS={
+   night:[["Bollywood club night","Walking Street · 10 PM",3],["Indian dinner, then live music","Pattaya Central · 8 PM",2],["Night market food walk","Central Pattaya · 7 PM",4],["Rooftop dinner with city lights","Pattaya Beach · 8:30 PM",2]],
+   day:[["Coral Island trip","Pier pick-up · 9 AM",4],["Golf morning","Pattaya golf course · 7 AM",2],["Beach day and water sports","Jomtien · 10 AM",5],["Shopping and Indian lunch","Central Pattaya · 12 PM",3]]
+  };
+  var tab="discover";
+
+  /* ---------- styles ---------- */
+  (function(){if(document.getElementById("npbCss"))return;var st=document.createElement("style");st.id="npbCss";
+   st.textContent='#npBoomer .npb-tabs{display:flex;gap:6px;margin:10px 0 14px}#npBoomer .npb-tabs button{flex:1;padding:11px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:transparent;color:inherit;font:inherit;font-weight:700;font-size:13px;cursor:pointer}'+
+   '#npBoomer .npb-tabs button[aria-selected=true]{background:#F2EEFC;color:#1a1530;border-color:#F2EEFC}'+
+   '#npBoomer .npb-sample{position:absolute;top:14px;left:14px;font-size:11px;font-weight:700;letter-spacing:.06em;background:rgba(0,0,0,.55);color:#F2EEFC;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:3px 10px;z-index:2}'+
+   '#npBoomer .npb-kind{position:absolute;top:14px;right:14px;font-size:11px;font-weight:700;background:#E9B949;color:#1a1026;border-radius:999px;padding:3px 10px;z-index:2}'+
+   '#npBoomer .npb-plan{border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:10px;background:rgba(255,255,255,.04)}'+
+   '#npBoomer .npb-plan b{display:block;font-size:15px}#npBoomer .npb-plan small{opacity:.8;display:block;margin-top:2px}'+
+   '#npBoomer .npb-btn{border:0;border-radius:999px;padding:9px 16px;font:inherit;font-weight:700;font-size:13px;background:#E9B949;color:#1a1026;cursor:pointer;white-space:nowrap}#npBoomer .npb-btn.alt{background:transparent;color:inherit;border:1px solid rgba(255,255,255,.3)}'+
+   '#npBoomer .npb-note{font-size:12px;opacity:.75;text-align:center;margin:8px 0}'+
+   '.npb-pcard{border:1px solid rgba(255,255,255,.2);border-radius:18px;padding:14px;margin-top:12px}.npb-pcard.gold{border:2px solid #E9B949;background:rgba(233,185,73,.08)}.npb-pcard h3{margin:0;font-size:16px}.npb-pcard .pr{font-size:24px;font-weight:700;margin:4px 0}.npb-pcard ul{margin:6px 0 0;padding-left:18px;font-size:13.5px;line-height:1.7}'+
+   '.npb-chat{display:flex;flex-direction:column;gap:6px;min-height:28vh;max-height:44vh;overflow:auto;margin:10px 0}.npb-chat div{max-width:80%;padding:8px 12px;border-radius:14px;font-size:14px}.npb-chat .me{align-self:flex-end;background:#F2EEFC;color:#1a1530}.npb-chat .them{align-self:flex-start;background:rgba(255,255,255,.12)}';
+   document.head.appendChild(st)})();
+
+  function sheetOpen(html){panel.innerHTML=html;try{lastFocus=document.activeElement}catch(e){}sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function closeX(){try{closeSheet()}catch(e){}}
+  function toast(m){var d=document.createElement("div");d.textContent=m;d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:#F2EEFC;color:#1a1530;padding:10px 18px;border-radius:999px;font-weight:700;font-size:14px;z-index:2147483000;box-shadow:0 6px 20px rgba(0,0,0,.4)";document.body.appendChild(d);setTimeout(function(){d.remove()},2400)}
+  function refreshPrem(){try{renderPremiumUI()}catch(e){}try{renderVipBar()}catch(e){}sync(true)}
+
+  /* ---------- the two plans ---------- */
+  function openPlans(reason){
+    var cur=lsGet("np_boomer_plan",null);
+    sheetOpen('<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Boomer plans</h2><button class="theme" id="npbX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"x")+'</button></div>'+
+     (reason?'<p class="about">'+esc(reason)+'</p>':'<p class="about">Free: '+FREE+' profiles a day, like and skip only. Upgrade to message people and see everyone.</p>')+
+     '<div class="npb-pcard"><h3>Boomer Premium</h3><div class="pr">฿1,499 <small style="font-size:13px;font-weight:400">per month</small></div><ul><li>Unlimited profiles</li><li>Message people you match with</li><li>Unlimited night out and day out plans</li><li>See who liked you</li></ul><button class="cta" id="npbA" style="margin-top:10px">'+(cur==="boomer"?"Your test plan":"Try free (test)")+'</button></div>'+
+     '<div class="npb-pcard gold"><h3>Namaste Gold · All access</h3><div class="pr" style="color:#E9B949">฿2,999 <small style="font-size:13px;font-weight:400">per month</small></div><ul><li>Everything in Boomer Premium</li><li>All Namaste Gold perks and offers</li><li>Priority bookings and VIP support</li><li>Your choice of app colours</li></ul><button class="cta" id="npbB" style="margin-top:10px">'+(cur==="gold"?"Your test plan":"Try free (test)")+'</button></div>'+
+     '<p class="npb-note">Payments are not live yet. During testing both plans are free to try.</p>'+(cur?'<button class="npb-btn alt" id="npbC" style="width:100%">Cancel my test plan</button>':'')+'</div>');
+    panel.querySelector("#npbX").onclick=closeX;
+    panel.querySelector("#npbA").onclick=function(){flag("np_vip_buddy",true);lsSet("np_boomer_plan","boomer");closeX();toast("Boomer Premium is on (test)");refreshPrem()};
+    panel.querySelector("#npbB").onclick=function(){flag("np_vip_buddy",true);flag("np_premium",true);lsSet("np_boomer_plan","gold");closeX();toast("Namaste Gold is on (test)");refreshPrem()};
+    var c=panel.querySelector("#npbC");if(c)c.onclick=function(){flag("np_vip_buddy",false);flag("np_premium",false);lsSet("np_boomer_plan",null);closeX();toast("Test plan cancelled");refreshPrem()};
+  }
+
+  /* ---------- sample chat (Premium only) ---------- */
+  function openChat(p){
+    if(!isPrem()){openPlans("Messages are for Boomer Premium and Namaste Gold members.");return}
+    sheetOpen('<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:18px">'+esc(p.name)+' <small style="font-weight:400;opacity:.7">(sample chat)</small></h2><button class="theme" id="npbX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"x")+'</button></div>'+
+     '<div class="npb-chat" id="npbMsgs"><div class="them">Hi! '+esc(p.plan)+'. Want to join? (sample message)</div></div>'+
+     '<div style="display:flex;gap:8px"><input id="npbIn" placeholder="Say hi, in a public place plan" style="flex:1;min-width:0" aria-label="Message"><button class="npb-btn" id="npbSend">Send</button></div><p class="npb-note" id="npbErr"></p>'+
+     '<p class="npb-note">Sample chat for testing. Real chats start when real members join. Meet only in public places.</p></div>');
+    panel.querySelector("#npbX").onclick=closeX;
+    var box=panel.querySelector("#npbMsgs"),inp=panel.querySelector("#npbIn"),err=panel.querySelector("#npbErr");
+    function send(){var v=inp.value.trim();if(!v)return;if(BAD.test(v)){err.textContent="No money or payment talk, please.";return}err.textContent="";
+      var m=document.createElement("div");m.className="me";m.textContent=v;box.appendChild(m);inp.value="";box.scrollTop=box.scrollHeight;
+      setTimeout(function(){var r=document.createElement("div");r.className="them";r.textContent="Sounds great! See you there (sample reply)";box.appendChild(r);box.scrollTop=box.scrollHeight},900)}
+    panel.querySelector("#npbSend").onclick=send;inp.onkeydown=function(e){if(e.key==="Enter")send()};
+  }
+  function matchSheet(p){
+    sheetOpen('<div class="pbody" style="text-align:center"><div style="display:flex;justify-content:flex-end"><button class="theme" id="npbX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"x")+'</button></div><h2 id="sheetTitle">It is a match!</h2><p class="about">You and '+esc(p.name)+' both liked each other (sample). Make a plan in a public place.</p><button class="cta" id="npbHi">Say hi to '+esc(p.name)+'</button></div>');
+    panel.querySelector("#npbX").onclick=closeX;panel.querySelector("#npbHi").onclick=function(){openChat(p)};
+  }
+
+  /* ---------- sample deck ---------- */
+  function st(){var o=lsGet("np_boomer_demo",null);return o&&o.liked?o:{liked:{},skip:{}}}
+  function queue(){var s=st();return SAMPLE.filter(function(p){return !s.liked[p.id]&&!s.skip[p.id]})}
+  function paintDeck(box){
+    if(!box)return;
+    if(!isPrem()&&seenN()>=FREE){
+      box.innerHTML='<div class="npm-deck"><div class="npm-photo" style="background:linear-gradient(160deg,#412402,#BA7517 55%,#FAC775)"><div class="npm-over"><b>You have seen your '+FREE+' free profiles today</b><small>Come back tomorrow for '+FREE+' more, or go unlimited now.</small></div></div><div class="npm-acts" style="justify-content:center;margin-top:12px"><button class="npb-btn" id="npbUp">See Boomer plans</button></div></div>';
+      box.querySelector("#npbUp").onclick=function(){openPlans("")};return}
+    var q=queue(),p=q[0];
+    if(!p){box.innerHTML='<div class="npm-card"><b>You have seen all sample profiles</b><p class="npm-plan">Real members will appear here after launch.</p><div class="npm-acts"><button class="npb-btn alt" id="npbReset">Show sample profiles again</button></div></div>';
+      box.querySelector("#npbReset").onclick=function(){lsSet("np_boomer_demo",{liked:{},skip:{}});paintDeck(box)};return}
+    box.innerHTML='<div class="npm-deck"><div class="npm-photo" id="npbCard" style="background:linear-gradient(160deg,'+p.c+',#141026);position:relative"><span class="npb-sample">SAMPLE</span><span class="npb-kind">'+(p.kind==="night"?"Night out":"Day out")+'</span><span class="npm-big">'+esc(p.name.charAt(0))+'</span><span class="npm-stamp like">LIKE</span><span class="npm-stamp nope">SKIP</span>'+
+      '<div class="npm-over"><b>'+esc(p.name)+', '+p.age+'</b><small>'+esc(p.city)+' · '+esc(p.lang)+'</small><small style="margin-top:6px"><b style="font-size:14px;display:inline">'+esc(p.when)+'</b> · '+esc(p.plan)+'</small></div></div>'+
+      '<div class="npm-dbtns"><button class="npm-round no" id="npbNo" aria-label="Skip"><i>✖</i></button><button class="npm-round hi" id="npbHiBtn" aria-label="Message">💬</button><button class="npm-round yes" id="npbYes" aria-label="Like"><i>❤</i></button></div>'+
+      '<p class="npm-count">'+q.length+' sample '+(q.length===1?"profile":"profiles")+(isPrem()?"":" · "+Math.max(0,FREE-seenN())+" free left today")+'</p></div>';
+    var card=box.querySelector("#npbCard");
+    function act(like){
+      addSeen();card.classList.add(like?"go-right":"go-left");
+      var s=st();if(like)s.liked[p.id]=1;else s.skip[p.id]=1;lsSet("np_boomer_demo",s);
+      setTimeout(function(){paintDeck(box);if(like&&hash(p.id+"np")%3!==0)setTimeout(function(){matchSheet(p)},120)},300);
+    }
+    box.querySelector("#npbNo").onclick=function(){act(false)};box.querySelector("#npbYes").onclick=function(){act(true)};
+    box.querySelector("#npbHiBtn").onclick=function(){openChat(p)};
+    var x0=null,dx=0;
+    card.addEventListener("touchstart",function(e){x0=e.touches[0].clientX;dx=0;card.style.transition="none"},{passive:true});
+    card.addEventListener("touchmove",function(e){if(x0===null)return;dx=e.touches[0].clientX-x0;card.style.transform="translateX("+dx+"px) rotate("+(dx/20)+"deg)";card.classList.toggle("show-like",dx>40);card.classList.toggle("show-nope",dx<-40)},{passive:true});
+    card.addEventListener("touchend",function(){card.style.transition="";if(Math.abs(dx)>90){act(dx>0)}else{card.style.transform="";card.classList.remove("show-like","show-nope")}x0=null});
+  }
+
+  /* ---------- plan lists ---------- */
+  function myPlans(k){return (lsGet("np_boomer_myplans",[])||[]).filter(function(x){return x.k===k})}
+  function paintPlans(box,k){
+    var joined=lsGet("np_boomer_joined",{}),mine=myPlans(k);
+    var rows=mine.map(function(m){return '<div class="npb-plan"><div><b>'+esc(m.t)+'</b><small>'+esc(m.w)+' · '+esc(m.p)+' · my plan (test)</small></div><span class="npb-note" style="margin:0">Yours</span></div>'}).join("");
+    rows+=PLANS[k].map(function(r,i){var id=k+i,j=!!joined[id];return '<div class="npb-plan"><div><b>'+esc(r[0])+'</b><small>'+esc(r[1])+' · '+(r[2]+(j?1:0))+' going (sample)</small></div><button class="npb-btn'+(j?" alt":"")+'" data-join="'+id+'">'+(j?"Joined ✓":"Join")+'</button></div>'}).join("");
+    box.innerHTML='<p class="npb-note" style="text-align:left;margin-top:0">Group plans in public places. 18+. No money or paid services. Sample plans for testing.</p>'+rows+'<button class="npb-btn" id="npbMake" style="width:100%;margin-top:6px">+ Create my '+(k==="night"?"night out":"day out")+' plan</button>';
+    [].forEach.call(box.querySelectorAll("[data-join]"),function(b){b.onclick=function(){var o=lsGet("np_boomer_joined",{});o[b.dataset.join]=!o[b.dataset.join];lsSet("np_boomer_joined",o);paintPlans(box,k)}});
+    box.querySelector("#npbMake").onclick=function(){makePlan(box,k)};
+  }
+  function makePlan(box,k){
+    var d=lsGet("np_boomer_planday",{});var made=d.d===today()?d.n:0;
+    if(!isPrem()&&made>=1){openPlans("Free members can create 1 plan a day. Boomer Premium has unlimited plans.");return}
+    sheetOpen('<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Create my '+(k==="night"?"night out":"day out")+' plan</h2><button class="theme" id="npbX" aria-label="Close">'+(typeof ico==="function"?ico("close"):"x")+'</button></div>'+
+     '<div class="fields"><label class="full">Plan<input id="npbT" maxlength="60" placeholder="'+(k==="night"?"e.g. Bollywood club night, group of 4":"e.g. Coral Island trip")+'"></label><label>When<select id="npbW"><option>Tonight</option><option>Tomorrow</option><option>This weekend</option></select></label><label>Public place<input id="npbP" maxlength="40" placeholder="e.g. Walking Street"></label></div>'+
+     '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px"><input type="checkbox" id="npbOk"> I am 18+, and I will meet only in public places. No money or paid services.</label><button class="cta" id="npbSave" style="margin-top:12px">Save plan</button><p class="npb-note" id="npbErr" role="alert"></p></div>');
+    panel.querySelector("#npbX").onclick=closeX;
+    panel.querySelector("#npbSave").onclick=function(){
+      var t=panel.querySelector("#npbT").value.trim(),w=panel.querySelector("#npbW").value,p=panel.querySelector("#npbP").value.trim(),e=panel.querySelector("#npbErr");
+      if(!t||!p){e.textContent="Please add a plan and a public place.";return}
+      if(BAD.test(t+" "+p)){e.textContent="No money or payment talk, please.";return}
+      if(!panel.querySelector("#npbOk").checked){e.textContent="Please tick the box to continue.";return}
+      var all=lsGet("np_boomer_myplans",[])||[];all.unshift({k:k,t:t,w:w,p:p});lsSet("np_boomer_myplans",all.slice(0,30));lsSet("np_boomer_planday",{d:today(),n:made+1});
+      closeX();toast("Plan saved (test mode)");paintPlans(box,k)};
+  }
+
+  /* ---------- the screen ---------- */
+  function root(){return document.getElementById("npBoomer")}
+  function build(){
+    var s=document.getElementById("buddy");if(!s)return false;
+    if(!root()){
+      var d=document.createElement("div");d.id="npBoomer";
+      d.innerHTML='<div class="npb-tabs" role="tablist" aria-label="Boomer"><button role="tab" data-t="discover" aria-selected="true">Discover</button><button role="tab" data-t="night" aria-selected="false">Plan night out</button><button role="tab" data-t="day" aria-selected="false">Plan day out</button></div><div id="npbDeck"></div><div id="npbPlans" hidden></div>';
+      var t=s.querySelector(".sectiontitle");if(t)t.insertAdjacentElement("afterend",d);else s.insertBefore(d,s.firstChild);
+      [].forEach.call(d.querySelectorAll(".npb-tabs button"),function(b){b.onclick=function(){tab=b.dataset.t;sync(true)}});
+    }
+    return true;
+  }
+  var lastKey="";
+  function sync(force){
+    if(!build())return;
+    var r=root(),meet=document.getElementById("npMeet"),title=document.querySelector("#buddy .sectiontitle");
+    if(title&&title.textContent!=="Boomer")title.textContent="Boomer";
+    if(meet&&r.nextElementSibling!==meet&&meet.parentNode===r.parentNode)meet.insertAdjacentElement("beforebegin",r);
+    [].forEach.call(r.querySelectorAll(".npb-tabs button"),function(b){var on=b.dataset.t===tab;if(b.getAttribute("aria-selected")!==String(on))b.setAttribute("aria-selected",on)});
+    var signedOut=!!(meet&&(meet.querySelector(".npm-teaser")||meet.querySelector("#npmIn")));
+    var realEmpty=!!(meet&&meet.querySelector(".npm-empty-card"));
+    var showDemo=DEMO&&tab==="discover"&&(signedOut||realEmpty||!meet);
+    var deck=r.querySelector("#npbDeck"),plans=r.querySelector("#npbPlans");
+    deck.hidden=!showDemo;plans.hidden=tab==="discover";
+    if(meet){meet.style.display=tab==="discover"?"":"none";
+      var te=meet.querySelector(".npm-teaser");if(te&&showDemo)te.style.display="none";
+      var hb=meet.querySelector(".npm-card.hl b");if(hb&&hb.textContent==="Sign in to meet people")hb.textContent="Sign in to like and meet real members";
+      var hp=meet.querySelector(".npm-card.hl .npm-plan");if(hp&&/See real travellers/.test(hp.textContent))hp.textContent="Create your profile to like people and join plans. Free, 18+, public places only."}
+    var key=tab+"|"+showDemo+"|"+isPrem()+"|"+seenN();
+    if(force||key!==lastKey){lastKey=key;
+      if(showDemo)paintDeck(deck);
+      if(tab!=="discover")paintPlans(plans,tab)}
+  }
+  /* real module's "Say hi" and Gold buttons: messages need Boomer Premium or Gold */
+  document.addEventListener("click",function(e){
+    var t=e.target&&e.target.closest?e.target.closest("#npmGold,[data-hi],#npmHi,#mbHi"):null;if(!t)return;
+    if(t.id==="npmGold"){e.preventDefault();e.stopImmediatePropagation();openPlans("");return}
+    if(!isPrem()){e.preventDefault();e.stopImmediatePropagation();openPlans("Messages are for Boomer Premium and Namaste Gold members.")}
+  },true);
+  var sec=document.getElementById("buddy");
+  if(sec){var mo=new MutationObserver(function(){clearTimeout(sync._t);sync._t=setTimeout(function(){sync(false)},60)});mo.observe(sec,{childList:true,subtree:true});}
+  sync(true);setTimeout(function(){sync(true)},800);setTimeout(function(){sync(true)},2500);
+  window.addEventListener("hashchange",function(){setTimeout(function(){sync(true)},200)});
+})();
+
+/* ===== Jalwa Club first, and free entry at every club (16 Oct 2026, Rahul) ===== */
+(function(){
+  function first(arr){if(!Array.isArray(arr))return;var i=arr.findIndex(function(c){return c&&/jalwa club/i.test(c.name||"")});if(i>0){var j=arr.splice(i,1)[0];arr.unshift(j)}}
+  try{
+    if(typeof CLUBS!=="undefined")first(CLUBS);
+    if(typeof NIGHT!=="undefined")first(NIGHT);
+    if(typeof CLUBS!=="undefined")CLUBS.forEach(function(c){
+      if(!c||!c.pkgs)return;var has=false;
+      c.pkgs.forEach(function(p){if(/entry|day ?pass|cover|guest ?list/i.test(p.n||"")){p.p=0;has=true}});
+      if(!has&&(c.cat==="nightlife"||c.cat==="beach")){var base=c.pkgs[0]||{};c.pkgs.unshift(Object.assign({},base,{n:"Entry (guest list)",d:"Free entry",p:0}))}
+    });
+  }catch(e){}
+  function rerender(){["renderGrid","renderTonight","renderTicker","renderTick","renderHome"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
+  rerender();setTimeout(rerender,600);
 })();

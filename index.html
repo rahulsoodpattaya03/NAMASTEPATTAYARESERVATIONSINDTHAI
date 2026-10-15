@@ -907,6 +907,9 @@ check(c.value).then(function(y){if(y)unlock();else m.textContent="Wrong code. As
 #npIntro.on img{opacity:1}</style>
 <div id="npIntro" class="notranslate" translate="no" aria-hidden="true" title="Tap to skip"><img src="open-gradient.jpg" alt="" fetchpriority="high"></div>
 <script>(function(){var s=document.getElementById("npIntro"),t0=Date.now(),im=s&&s.querySelector("img");
+/* 16 Oct 2026: coming back from Recent apps (page restored/reloaded) must NOT replay the opening artwork; only a fresh open shows it */
+try{var nav=(performance.getEntriesByType&&performance.getEntriesByType("navigation")[0])||{};
+ if(document.wasDiscarded||nav.type==="reload"||nav.type==="back_forward"){if(s)s.remove()}}catch(e){}
 function on(){s&&s.classList.add("on")}if(im){if(im.complete)on();else{im.onload=on;im.onerror=on}}setTimeout(on,400);
 var day=new Date().toISOString().slice(0,10),first=true;try{first=localStorage.getItem("np_intro_day")!==day;localStorage.setItem("np_intro_day",day)}catch(e){}
 var SHOW=first?1200:600,done=false;
@@ -998,7 +1001,7 @@ if(document.readyState!=="loading")hide();else document.addEventListener("DOMCon
     <section class="hub" aria-label="Super-app">
       <button class="hubtile ladies" data-go="ladies"><span data-i="female"></span><b>Pattaya's Empowered Girls</b><small>Ladies-only lounge</small></button>
       <button class="hubtile" data-go="packages"><span data-i="gift"></span><b>Packages</b><small>Standard to Elite</small></button>
-      <button class="hubtile" data-go="buddy"><span data-i="heart"></span><b>Dating &amp; buddies</b><small>Swipe, match, chat</small></button>
+      <button class="hubtile" data-go="buddy"><span data-i="heart"></span><b>Boomer</b><small>Swipe, match, plan</small></button>
       <button class="hubtile" data-go="mall"><span data-i="shopping"></span><b>Namaste Mall</b><small>Shop &amp; gift 24/7</small></button>
       <button class="hubtile" data-go="paybill"><span data-i="bill"></span><b>Pay my bill</b><small>Pay a friend's bill</small></button>
       <button class="hubtile" data-go="dash"><span data-i="chart"></span><b>Partner dashboard</b><small>Clubs &amp; restaurants</small></button>
@@ -1074,11 +1077,11 @@ if(document.readyState!=="loading")hide();else document.addEventListener("DOMCon
 
   <!-- BUDDY -->
   <section id="buddy" hidden>
-    <h2 class="sectiontitle">Find a buddy</h2>
+    <h2 class="sectiontitle">Boomer</h2>
     <details class="howto" open>
-      <summary>How Buddy works</summary>
+      <summary>How Boomer works</summary>
       <ol>
-        <li><b>Create your profile.</b> Name, age, city and languages. Ladies verify with an ID proof, so every woman on Buddy is real and safe.</li>
+        <li><b>Create your profile.</b> Name, age, city and languages. Ladies verify with an ID proof, so every woman on Boomer is real and safe.</li>
         <li><b>Say what you're doing and when.</b> Pick the activity (party, dinner, beach, yacht party…), the time you're free, for example 9:00 PM – 3:00 AM, and where you'll be.</li>
         <li><b>Go live.</b> People who want the same thing can see you. You choose who can see and message you.</li>
         <li><b>See who's doing what.</b> Every profile shows the activity, the time window and the place.</li>
@@ -1097,7 +1100,7 @@ if(document.readyState!=="loading")hide();else document.addEventListener("DOMCon
       </div>
       <div class="idbox" id="idBox" hidden>
         <b>ID proof for ladies</b>
-        <p class="small">For your safety, every woman on Buddy is verified. Your ID is only used to check you are who you say you are. It is never shown on your profile and is deleted after checking.</p>
+        <p class="small">For your safety, every woman on Boomer is verified. Your ID is only used to check you are who you say you are. It is never shown on your profile and is deleted after checking.</p>
         <div class="fields"><label class="full">ID type<select id="idType"><option>Passport</option><option>Aadhaar card</option><option>Thai ID card</option><option>Driving licence</option><option>PAN card</option></select></label>
         <label class="full">Photo of your ID<input type="file" id="idFile" accept="image/*"></label></div>
         <label class="chk"><input type="checkbox" id="idOk"> I agree my ID is used only for verification.</label>
@@ -1230,7 +1233,7 @@ if(document.readyState!=="loading")hide();else document.addEventListener("DOMCon
   <button data-tab="explore" aria-current="page"><span data-ico="explore"></span>Explore</button>
   <button data-tab="map"><span data-ico="map"></span>Map</button>
   <button data-tab="concierge"><span data-ico="concierge"></span>Concierge</button>
-  <button data-tab="buddy"><span data-ico="buddy"></span>Buddy</button>
+  <button data-tab="buddy"><span data-ico="buddy"></span>Boomer</button>
   <button data-tab="bookings"><span data-ico="bookings"></span><div>Bookings<span class="badge" id="count" hidden></span></div></button>
   <button data-tab="earn"><span data-ico="earn"></span>Earn</button>
   <button data-tab="clubs"><span data-ico="clubs"></span>For clubs</button>
@@ -1777,7 +1780,7 @@ const saveB=()=>{store.set("np_liked",liked);store.set("np_matched",matched);sto
 document.getElementById("bStart").onclick=()=>{
   const n=document.getElementById("bName").value.trim(),age=+document.getElementById("bAge").value,err=document.getElementById("bErr");
   if(!n){err.textContent="Add your first name.";return}
-  if(!age||age<18||!document.getElementById("b18").checked){err.textContent="Find a buddy is for adults 18 and over.";return}
+  if(!age||age<18||!document.getElementById("b18").checked){err.textContent="Boomer is for adults 18 and over.";return}
   me={name:n,age,from:document.getElementById("bFrom").value.trim(),sex:document.getElementById("bSex").value,lang:document.getElementById("bLang").value.trim()};
   store.set("np_buddy",me);renderBuddy();
 };
@@ -5249,7 +5252,7 @@ body{top:0!important}
   var gm=(typeof GOLDMARK!=="undefined")?'<img src="'+GOLDMARK+'" alt="">':'';
   g.innerHTML='<div class="gtop">'+gm+'<div><span class="gk notranslate" translate="no">NAMASTE GOLD</span><h2>Elite Members Area</h2><p>Meet people, date and make friends in Pattaya.</p></div></div>'+
     '<div class="gtiles">'+
-      '<button data-g="buddy">'+ico("buddy")+'<b>Find a buddy</b><small>Party, food, sports</small></button>'+
+      '<button data-g="buddy">'+ico("buddy")+'<b>Boomer</b><small>Swipe, match, plan</small></button>'+
       '<button data-g="dating">'+ico("heart")+'<b>Dating</b><small>Swipe and match</small></button>'+
       '<button data-g="friend">'+ico("chat")+'<b>Find a friend</b><small>Meet people nearby</small></button>'+
     '</div><button class="gcta" id="goldGo">Become a Gold member</button>';
