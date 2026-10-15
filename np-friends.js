@@ -3148,8 +3148,8 @@
 /* ===== no-flash: Home is arranged, show the page (index.html hides it for a moment while loading) ===== */
 (function(){
   function show(){document.documentElement.classList.remove("np-loading")}
-  requestAnimationFrame(function(){requestAnimationFrame(show)});
-  setTimeout(show,800);
+  /* 16 Oct 2026: wait until the later parts of this file (language button, chat bar, mic) have arranged Home, so the old layout never flashes */
+  setTimeout(show,550);
 })();
 
 /* ===== Card backgrounds (1 Oct 2026): soft artwork on the right side of 10 Home cards.

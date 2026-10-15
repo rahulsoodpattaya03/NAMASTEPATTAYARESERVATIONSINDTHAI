@@ -5,7 +5,7 @@
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- no-flash: keep the page hidden for a moment until np-friends.js has arranged Home (shows anyway after 2.5 s) -->
-<style>html.np-loading body{opacity:0}html body{transition:opacity .18s ease}html.np-loading{background:#0b0a14}</style>
+<style>/* 16 Oct 2026: while loading, hide only the app itself; the opening artwork and the Coming soon screen show straight away (no extra dark screen) */html.np-loading body>*:not(#npIntro):not(#npGate){opacity:0}html body>*{transition:opacity .18s ease}html.np-loading,html.np-loading body{background:#000}</style>
 <!-- one shared Supabase connection for the whole app (removes the "Multiple GoTrueClient instances" warning) -->
 <script>
 (function(){
@@ -30,7 +30,7 @@
   }catch(e){}
 })();
 </script>
-<script>document.documentElement.classList.add("np-loading");setTimeout(function(){document.documentElement.classList.remove("np-loading")},2500);</script>
+<script>document.documentElement.classList.add("np-loading");setTimeout(function(){document.documentElement.classList.remove("np-loading")},6000);/* 16 Oct 2026: 2.5 s -> 6 s so the old layout never flashes on slow internet; the opening artwork covers the wait */</script>
 <title>Namaste Pattaya Reservations · The Superapp</title>
 <link rel="manifest" href="manifest.json">
 <meta name="robots" content="noindex"><!-- pre-launch: hide from Google until 10 Dec 2026; remove at launch -->
@@ -910,7 +910,7 @@ check(c.value).then(function(y){if(y)unlock();else m.textContent="Wrong code. As
 function on(){s&&s.classList.add("on")}if(im){if(im.complete)on();else{im.onload=on;im.onerror=on}}setTimeout(on,400);
 var day=new Date().toISOString().slice(0,10),first=true;try{first=localStorage.getItem("np_intro_day")!==day;localStorage.setItem("np_intro_day",day)}catch(e){}
 var SHOW=first?1200:600,done=false;
-function close(){if(!s||!s.isConnected)return;s.style.opacity="0";setTimeout(function(){s.remove()},350)}
+function close(){if(!s||!s.isConnected)return;if(document.documentElement.classList.contains("np-loading")&&Date.now()-t0<6500){setTimeout(close,100);return}/* stay until the app is fully arranged */s.style.opacity="0";setTimeout(function(){s.remove()},350)}
 function hide(){if(done)return;done=true;setTimeout(close,Math.max(0,SHOW-(Date.now()-t0)))}
 if(s){s.addEventListener("click",close);s.addEventListener("touchstart",close,{passive:true})}
 if(document.readyState!=="loading")hide();else document.addEventListener("DOMContentLoaded",hide);setTimeout(hide,SHOW+800)})();</script>
