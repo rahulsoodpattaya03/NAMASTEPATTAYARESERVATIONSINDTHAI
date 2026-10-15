@@ -5,7 +5,7 @@
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <!-- no-flash: keep the page hidden for a moment until np-friends.js has arranged Home (shows anyway after 2.5 s) -->
-<style>/* 16 Oct 2026: while loading, hide only the app itself; the opening artwork and the Coming soon screen show straight away (no extra dark screen) */html.np-loading body>*:not(#npIntro):not(#npGate){opacity:0}html body>*{transition:opacity .18s ease}html.np-loading,html.np-loading body{background:#000}</style>
+<style>/* 16 Oct 2026: while loading, hide only the app itself; the opening artwork and the Coming soon screen show straight away (no extra dark screen) */html.np-loading body>*:not(#npIntro):not(#npGate){opacity:0!important;visibility:hidden!important}html.np-loading body::before,html.np-loading body::after{opacity:0!important}html body>*{transition:opacity .18s ease}html.np-loading,html.np-loading body{background:#000}</style>
 <!-- one shared Supabase connection for the whole app (removes the "Multiple GoTrueClient instances" warning) -->
 <script>
 (function(){
