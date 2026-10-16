@@ -4456,7 +4456,7 @@
     var mine=lsGet("np_rides",[])||[],veh="car";
     var d=new Date(),today=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
     panel.innerHTML='<div class="pbody npride"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Namaste Rides</h2><button class="theme" id="nprX" aria-label="Close">'+X()+'</button></div>'+
-      '<p class="nprnote">Car or motorbike, anywhere in Pattaya and airport transfers. Send your details and our team books your ride through GrabForBusiness, then confirms the price and driver with you.</p>'+
+      '<p class="nprnote">Car or motorbike, anywhere in Pattaya and airport transfers.</p>'+
       '<div class="nprv" role="group" aria-label="Vehicle">'+V.map(function(v){return '<button type="button" data-v="'+v[0]+'" aria-pressed="'+(v[0]===veh)+'"><b>'+v[1]+'</b><small>'+v[2]+'</small></button>'}).join("")+'</div>'+
       '<div class="fields">'+
        '<label class="full">Pickup<input id="nprFrom" list="nprPl" maxlength="160" placeholder="Type: hilton, walking, airport"></label><button type="button" class="nprloc" id="nprLoc">📍 Use my location</button>'+
@@ -4977,4 +4977,150 @@
     row.parentNode.insertBefore(d,row.nextSibling);d.querySelector("button").onclick=openCode;
   }
   addLockLink();setTimeout(addLockLink,1500);setTimeout(addLockLink,4000);
+})();
+
+
+/* ===== 17 Oct 2026 (Rahul): pickup / drop-off location search, added only.
+   Type word by word and places show in a dropdown (our 28 places first, then map search for any hotel, shop or street in Thailand).
+   "Use my location" on pickup AND drop-off. Picked places keep their map point, so the price estimate works for any place.
+   Map search: Photon (OpenStreetMap), free test server – for launch use a paid / own server. ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  var picked={},cache={},C=[12.9276,100.8771];
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  if(!document.getElementById("npaCss")){var st=document.createElement("style");st.id="npaCss";
+    st.textContent='.npa-wrap{position:relative}.npa-list{position:absolute;left:0;right:0;top:100%;margin-top:4px;z-index:60;background:#17122a;color:#F2EEFC;border:1px solid rgba(255,255,255,.2);border-radius:12px;max-height:280px;overflow-y:auto;box-shadow:0 10px 30px rgba(0,0,0,.5)}'+
+    '.npa-it{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid rgba(255,255,255,.08);background:transparent;color:inherit;font:inherit;padding:10px 12px;min-height:44px;cursor:pointer}'+
+    '.npa-it b{display:block;font-size:14px;font-weight:600}.npa-it small{display:block;font-size:12px;opacity:.7;line-height:1.35}.npa-it:active,.npa-it:focus{background:rgba(233,185,73,.15);outline:none}'+
+    '.npa-msg{padding:10px 12px;font-size:13px;opacity:.75}.npa-loc{border:0;background:transparent;color:#E9B949;font:inherit;font-weight:700;font-size:14px;padding:6px 0;min-height:40px;cursor:pointer;text-align:left}';
+    document.head.appendChild(st)}
+
+  /* price estimate: use the picked map point when the place is not in our list */
+  var orig=window.npRideQuote;
+  if(orig&&!orig._npa){var w=function(from,to,veh){var q=orig(from,to,veh);if(q)return q;
+      function sub(t){t=String(t||"");if(/\(-?\d{1,2}\.\d+\s*,/.test(t))return t;var ll=picked[t.trim()];return ll?t+" ("+ll[0].toFixed(5)+", "+ll[1].toFixed(5)+")":t}
+      return orig(sub(from),sub(to),veh)};w._npa=1;window.npRideQuote=w}
+
+  function local(q){var ws=q.toLowerCase().split(/\s+/).filter(Boolean);return (window.npRidePlaces||[]).filter(function(n){var l=n.toLowerCase();return ws.every(function(x){return l.indexOf(x)>=0})}).slice(0,5).map(function(n){return {name:n,sub:"Popular place"}})}
+  function label(f){var p=f.properties||{},n=p.name||[p.street,p.housenumber].filter(Boolean).join(" ")||"",
+      sub=[p.name&&p.street?p.street:"",p.district||p.locality||"",p.city||p.county||"",p.state||""].filter(function(x,i,a){return x&&a.indexOf(x)===i&&x!==n}).join(", ");
+    return {name:n,sub:sub,ll:[f.geometry.coordinates[1],f.geometry.coordinates[0]]}}
+  function search(q,cb){q=q.trim();if(cache[q]){cb(cache[q]);return}
+    fetch("https://photon.komoot.io/api/?q="+encodeURIComponent(q)+"&lat="+C[0]+"&lon="+C[1]+"&limit=7&lang=en&bbox=97.3,5.6,105.7,20.5")
+      .then(function(r){return r.json()}).then(function(j){var o=(j.features||[]).map(label).filter(function(x){return x.name});cache[q]=o;cb(o)}).catch(function(){cb(null)})}
+  function reverse(lat,lon,cb){fetch("https://photon.komoot.io/reverse?lat="+lat+"&lon="+lon+"&lang=en&limit=1").then(function(r){return r.json()}).then(function(j){var f=(j.features||[])[0];if(!f){cb("");return}var l=label(f);cb([l.name,l.sub].filter(Boolean).join(", "))}).catch(function(){cb("")})}
+  function fire(inp){try{inp.dispatchEvent(new Event("input",{bubbles:true}))}catch(e){}}
+
+  function attach(inp){
+    if(!inp||inp.dataset.npa)return;inp.dataset.npa="1";inp.removeAttribute("list");inp.setAttribute("autocomplete","off");
+    var host=inp.parentNode;host.classList.add("npa-wrap");
+    var box=document.createElement("div");box.className="npa-list";box.hidden=true;host.appendChild(box);box.addEventListener("pointerdown",function(e){e.preventDefault()});box.addEventListener("mousedown",function(e){e.preventDefault()});
+    var t=null,n=0;
+    function render(items,msg){if(!items.length&&!msg){box.hidden=true;return}
+      box.innerHTML=items.map(function(it,i){return '<button type="button" class="npa-it" data-i="'+i+'"><b>'+esc(it.name)+'</b>'+(it.sub?'<small>'+esc(it.sub)+'</small>':'')+'</button>'}).join("")+(msg?'<div class="npa-msg">'+esc(msg)+'</div>':'');
+      box.hidden=false;
+      [].forEach.call(box.querySelectorAll(".npa-it"),function(b){b.addEventListener("click",function(e){e.preventDefault();var it=items[+b.dataset.i];
+        var v=it.sub&&it.sub!=="Popular place"?it.name+", "+it.sub.split(", ")[0]:it.name;inp.value=v.slice(0,160);if(it.ll)picked[inp.value.trim()]=it.ll;box.hidden=true;fire(inp)})})}
+    inp.addEventListener("input",function(e){if(!e.isTrusted)return;var q=inp.value.trim(),my=++n;clearTimeout(t);
+      if(q.length<2){box.hidden=true;return}
+      var loc=local(q);if(window.npaAirportFilter)loc=window.npaAirportFilter(loc);render(loc,"Searching…");
+      t=setTimeout(function(){search(q,function(res){if(my!==n)return;
+        if(res===null){render(loc,loc.length?"":"Map search not available. Type the full address.");return}
+        var names={};loc.forEach(function(x){names[x.name.toLowerCase()]=1});
+        var all=loc.concat(res.filter(function(x){return !names[x.name.toLowerCase()]}));if(window.npaAirportFilter)all=window.npaAirportFilter(all);all=all.slice(0,8);
+        render(all,all.length?"":"No place found. Try another word or type the full address.")})},300)});
+    inp.addEventListener("blur",function(){setTimeout(function(){box.hidden=true},150)});
+    inp.addEventListener("focus",function(){if(inp.value.trim().length>=2&&box.innerHTML)box.hidden=false});
+  }
+  function locBtn(inp,errId){
+    if(!inp||inp.dataset.npaLoc)return;inp.dataset.npaLoc="1";
+    var lab=inp.closest("label");if(!lab)return;var nx=lab.nextElementSibling;if(nx&&(nx.classList.contains("nprloc")||nx.classList.contains("npa-loc")))return;
+    var b=document.createElement("button");b.type="button";b.className="npa-loc";b.textContent="📍 Use my location";lab.parentNode.insertBefore(b,lab.nextSibling);
+    b.onclick=function(){var e=panel.querySelector("#"+errId);if(!navigator.geolocation){if(e)e.textContent="Location is not available on this phone.";return}
+      if(e)e.textContent="Finding your location…";
+      navigator.geolocation.getCurrentPosition(function(p){var la=p.coords.latitude,lo=p.coords.longitude,ll="("+la.toFixed(5)+", "+lo.toFixed(5)+")";
+        inp.value="My location "+ll;fire(inp);if(e)e.textContent="";
+        reverse(la,lo,function(a){if(a&&inp.value==="My location "+ll){inp.value=("My location: "+a).slice(0,140)+" "+ll;fire(inp)}})},
+        function(){if(e)e.textContent="Location blocked. Allow location in Chrome, or type the place."},{enableHighAccuracy:true,timeout:15000,maximumAge:60000})}}
+  function scan(){
+    ["nprFrom","nprTo","npxFrom","npxTo","npxHotel"].forEach(function(id){attach(panel.querySelector("#"+id))});
+    var f=panel.querySelector("#nprFrom");if(f)f.dataset.npaLoc="1"; /* pickup already has its own button */
+    locBtn(panel.querySelector("#nprTo"),"nprErr");locBtn(panel.querySelector("#npxFrom"),"npxErr");locBtn(panel.querySelector("#npxTo"),"npxErr");
+  }
+  new MutationObserver(scan).observe(panel,{childList:true,subtree:true});
+})();
+
+/* ===== 17 Oct 2026 (Rahul): rides price card + motorbike clean-up + professional colours + ONE "Namaste Shopping Mall". Added only.
+   - Price shows on every vehicle button and in a clear "Your fare" card right under drop-off. Grab-based prices include tolls.
+   - Motorbike: flight number, luggage and airports are hidden.
+   - New ride screens use the app theme colour (no gold / white blocks).
+   - "Namaste Shopping" tile in All services is now "Namaste Shopping Mall" and opens the Namaste Mall (all items, checkout, gifts).
+     The separate "Namaste Mall" tile is hidden (Rahul: one place, not two). Markets guide is still inside, at the bottom of the Mall. ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  function thb(n){return "฿"+Math.round(n).toLocaleString("en-US")}
+  if(!document.getElementById("npqCss")){var st=document.createElement("style");st.id="npqCss";
+    st.textContent=
+    /* one calm style for all ride screens */
+    '.npride .nprv button,.npx .npxc{border:1px solid rgba(255,255,255,.14)!important;background:rgba(255,255,255,.03)!important;color:inherit!important;border-radius:14px}'+
+    '.npride .nprv button[aria-pressed=true],.npx .npxc[aria-pressed=true]{border:1.5px solid var(--glow,#8FD8FF)!important;background:color-mix(in srgb,var(--glow,#8FD8FF) 12%,transparent)!important;color:inherit!important}'+
+    '.npride .nprv button .npqp{display:block;margin-top:6px;font-size:14px;font-weight:700;opacity:1}.npride .nprv button .npqp.no{font-weight:400;opacity:.6;font-size:12px}'+
+    '.npxbar button{border:1px solid rgba(255,255,255,.14)!important;background:rgba(255,255,255,.03)!important;color:inherit!important}'+
+    '.npx .npxtag{background:color-mix(in srgb,var(--glow,#8FD8FF) 18%,transparent)!important;color:inherit!important}.npx .npxpass{border-color:rgba(255,255,255,.18)!important}.npx .npxpass small{color:inherit!important;opacity:.75}'+
+    '.npx .npxtot,.npride .nprest{background:rgba(255,255,255,.05)!important;border:1px solid rgba(255,255,255,.12)}.npxsup{background:rgba(255,255,255,.04)!important;border:1px solid rgba(255,255,255,.1)}'+
+    '.nprloc,.npa-loc,.npxlock button{color:var(--glow,#8FD8FF)!important;background:transparent!important;box-shadow:none!important}.npxlock{background:transparent!important}'+
+    '.npqfare{display:flex;justify-content:space-between;align-items:baseline;gap:10px}.npqfare b{font-size:22px}.npqfare span{font-size:13px;opacity:.8}.npqsm{display:block;font-size:12.5px;opacity:.75;line-height:1.5;margin-top:4px}';
+    document.head.appendChild(st)}
+
+  /* ---------- rides: fares on vehicle buttons + fare card ---------- */
+  function fare(){
+    var box=panel.querySelector(".npride");if(!box)return;var f=box.querySelector("#nprFrom"),t=box.querySelector("#nprTo"),est=box.querySelector("#nprEst");if(!f||!t||!est)return;
+    var on=box.querySelector(".nprv button[aria-pressed=true]"),veh=on?on.dataset.v:"car",Q=window.npRideQuote;
+    [].forEach.call(box.querySelectorAll(".nprv button"),function(b){var p=b.querySelector(".npqp");if(!p){p=document.createElement("span");p.className="npqp";b.appendChild(p)}
+      var q=Q&&f.value.trim()&&t.value.trim()?Q(f.value,t.value,b.dataset.v):null;
+      if(!q){p.textContent="";p.className="npqp"}else if(q.noBike){p.textContent="Not for this trip";p.className="npqp no"}else{p.textContent=thb(q.low)+"–"+thb(q.high).slice(1);p.className="npqp"}});
+    var q=Q&&f.value.trim()&&t.value.trim()?Q(f.value,t.value,veh):null;
+    if(!f.value.trim()||!t.value.trim()){est.innerHTML="";return}
+    if(!q){est.innerHTML='<div class="npqfare"><b>Price on request</b></div><span class="npqsm">Pick the place from the list so we can show the price. Or send the request and our team sends the price on WhatsApp.</span>';return}
+    if(q.noBike){est.innerHTML='<div class="npqfare"><b>Motorbike not available</b></div><span class="npqsm">This trip is too long or goes to an airport. Please choose a car, SUV or van.</span>';return}
+    est.innerHTML='<div class="npqfare"><span>Your fare</span><b>'+thb(q.low)+'–'+thb(q.high).slice(1)+'</b></div>'+
+      '<span class="npqsm">About '+q.km+' km · '+(on?on.querySelector("b").textContent:"Car")+' · tolls included · nothing extra to the driver.<br>Final price confirmed by our team before the ride.</span>';
+  }
+  /* ---------- motorbike: hide flight, luggage ---------- */
+  function bike(){
+    var box=panel.querySelector(".npride");if(!box)return;var on=box.querySelector(".nprv button[aria-pressed=true]"),isB=on&&on.dataset.v==="bike";
+    ["nprFlight","nprBag"].forEach(function(id){var i=box.querySelector("#"+id);if(i&&i.closest("label"))i.closest("label").style.display=isB?"none":""});
+    window.npaNoAirports=!!isB;
+    var ap=box.querySelector("#npxGoAp");if(ap){ap.style.display=isB?"none":"";ap.parentNode.style.gridTemplateColumns=isB?"1fr":""}
+  }
+  function wire(){
+    var box=panel.querySelector(".npride");if(!box||box.dataset.npq)return;box.dataset.npq="1";
+    var est=box.querySelector("#nprEst"),to=box.querySelector("#nprTo");
+    if(est&&to&&to.closest("label")){var lab=to.closest("label"),nx=lab.nextElementSibling;var anchor=(nx&&nx.classList.contains("npa-loc"))?nx:lab;anchor.parentNode.insertBefore(est,anchor.nextSibling);est.style.gridColumn="1 / -1"}
+    var run=function(){setTimeout(function(){bike();fare()},0)};
+    if(est)new MutationObserver(function(){if(/Estimated price|Our team will send|can\x27t do this trip/.test(est.textContent))run()}).observe(est,{childList:true});
+    box.addEventListener("input",run);box.addEventListener("click",function(e){if(e.target.closest(".nprv button"))run()});
+    run();
+  }
+  new MutationObserver(function(){wire();var b=panel.querySelector(".npride");if(b&&b.querySelector("#nprTo")&&!b.querySelector("#nprTo").dataset.npaLoc)setTimeout(wire,50)}).observe(panel,{childList:true});
+  /* airports out of the suggestion list for motorbike */
+  var oldPl=null;Object.defineProperty(window,"npaAirportFilter",{value:function(list){return window.npaNoAirports?list.filter(function(x){return !/airport|\(bkk\)|\(dmk\)|\(utp\)/i.test(x.name+" "+(x.sub||""))}):list}});
+
+  /* ---------- ONE Namaste Shopping Mall ---------- */
+  var NAME="Namaste Shopping Mall";
+  function openMall(){try{go("mall")}catch(e){}try{if(typeof renderMall==="function")renderMall()}catch(e){}window.scrollTo(0,0)}
+  function mall(){
+    var cats=document.getElementById("cats");
+    if(cats)[].forEach.call(cats.children,function(b){if(b.dataset.npq)return;var tx=b.lastChild&&b.lastChild.nodeType===3?b.lastChild:null;
+      if(tx&&/^\s*Namaste Shopping\s*$/.test(tx.nodeValue)){b.dataset.npq="1";tx.nodeValue=NAME;
+        b.addEventListener("click",function(e){if(window.__npqShop){window.__npqShop=false;return}e.preventDefault();e.stopImmediatePropagation();openMall()},true)}});
+    var hub=document.querySelector('.hubtile[data-go="mall"]');if(hub)hub.style.display="none";
+    var sec=document.getElementById("mall");if(sec){var h=sec.querySelector("h2.sectiontitle");if(h&&h.textContent!==NAME)h.textContent=NAME;
+      if(!sec.querySelector(".npqmk")){var d=document.createElement("button");d.type="button";d.className="npqmk";
+        d.style.cssText="display:block;width:100%;margin:22px 0 6px;padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);color:inherit;font:inherit;text-align:left;min-height:44px;cursor:pointer";
+        d.innerHTML='<b>Night markets &amp; malls guide</b><br><small style="opacity:.75">Shopping places in Pattaya, guided trips</small>';
+        d.onclick=function(){var t=cats&&[].find.call(cats.children,function(b){return b.dataset.npq});if(t){try{go("explore")}catch(e){}window.__npqShop=true;t.click()}};sec.appendChild(d)}}
+  }
+  mall();setTimeout(mall,1500);setTimeout(mall,4000);
+  var c=document.getElementById("cats");if(c)new MutationObserver(function(){setTimeout(mall,0)}).observe(c,{childList:true});
 })();
