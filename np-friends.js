@@ -3993,6 +3993,7 @@
   function stop(){try{if(player){player.pause();player=null}}catch(e){}if(playingBtn){playingBtn.classList.remove("on");setLabel(playingBtn);playingBtn=null}}
   function setLabel(btn,txt){var s=btn.querySelector(".t");if(s)s.textContent=txt||LABEL[appLang()]||LABEL.en}
   async function getAudio(text,l){
+    if(window.npMaskClubs)text=window.npMaskClubs(text);
     var ck=l+"|"+text;if(cache[ck])return cache[ck];
     var payload=JSON.stringify({text:text,voice:VOICES[l],voice_id:VOICES[l],voiceId:VOICES[l],lang:l});
     var hdr={"Content-Type":"application/json","apikey":KEY,"Authorization":"Bearer "+KEY};
@@ -4364,9 +4365,10 @@
     if(title&&title.textContent!=="Boomer")title.textContent="Boomer";
     if(meet&&r.nextElementSibling!==meet&&meet.parentNode===r.parentNode)meet.insertAdjacentElement("beforebegin",r);
     [].forEach.call(r.querySelectorAll(".npb-tabs button"),function(b){var on=b.dataset.t===tab;if(b.getAttribute("aria-selected")!==String(on))b.setAttribute("aria-selected",on)});
-    var signedOut=!!(meet&&(meet.querySelector(".npm-teaser")||meet.querySelector("#npmIn")));
-    var realEmpty=!!(meet&&meet.querySelector(".npm-empty-card"));
-    var showDemo=DEMO&&tab==="discover"&&(signedOut||realEmpty||!meet);
+    /* show sample cards whenever there is no real person to swipe (signed out, signed in without a profile, setup, or no members yet) */
+    var hasReal=!!(meet&&meet.querySelector("#npmCard,#npmGold"));
+    var showDemo=DEMO&&tab==="discover"&&!hasReal;
+    if(meet){var ec=meet.querySelector(".npm-empty-card");if(ec){var w=ec.closest(".npm-deck")||ec;w.style.display=showDemo?"none":""}}
     var deck=r.querySelector("#npbDeck"),plans=r.querySelector("#npbPlans");
     deck.hidden=!showDemo;plans.hidden=tab==="discover";
     if(meet){meet.style.display=tab==="discover"?"":"none";
@@ -4404,4 +4406,110 @@
   }catch(e){}
   function rerender(){["renderGrid","renderTonight","renderTicker","renderTick","renderHome"].forEach(function(f){try{if(typeof window[f]==="function")window[f]()}catch(e){}})}
   rerender();setTimeout(rerender,600);
+})();
+
+/* ===== Club names locked (blurred, with a lock) until each club gives permission (16 Oct 2026, Rahul).
+   To show a club's name: add its exact name to ALLOWED, e.g. ["Jalwa Club"]. To unlock all: NP_LOCK_CLUB_NAMES=false ===== */
+(function(){
+  var NP_LOCK_CLUB_NAMES=true;
+  var ALLOWED=[];
+  if(!NP_LOCK_CLUB_NAMES||typeof CLUBS==="undefined")return;
+  var names=[],tok={};
+  CLUBS.forEach(function(c){if(c&&(c.cat==="nightlife"||c.cat==="beach")&&c.name&&ALLOWED.indexOf(c.name)<0)names.push(c.name)});
+  names.forEach(function(n){var w=n.replace(/^The\s+/i,"").split(/\s+/)[0].replace(/['’]s$/,"");if(w&&w.length>=4&&!/^(club|beach|lounge|bar)$/i.test(w))tok[w]=1});
+  var all=names.concat(Object.keys(tok)).sort(function(a,b){return b.length-a.length});
+  if(!all.length)return;
+  function rx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}
+  var re=new RegExp("(?<![\\w])("+all.map(rx).join("|")+")(?![\\w])","g");
+  window.npMaskClubs=function(s){re.lastIndex=0;return String(s).replace(/🔒/g,"").replace(re,"a partner club")};
+  var st=document.createElement("style");st.textContent='.np-lockw{white-space:nowrap}.np-lockw i{font-style:normal;font-size:.8em;margin-right:.25em;filter:none}.np-lock{filter:blur(6px);-webkit-user-select:none;user-select:none}';document.head.appendChild(st);
+  var SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,OPTION:1,INPUT:1,NOSCRIPT:1,TITLE:1,SELECT:1};
+  function run(){
+    var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentElement;if(!p||SKIP[p.tagName]||p.closest(".np-lockw,svg,[contenteditable=true],#npGate"))return 2;re.lastIndex=0;return re.test(n.nodeValue)?1:2}});
+    var list=[],n;while((n=w.nextNode()))list.push(n);
+    list.forEach(function(n){var s=n.nodeValue,last=0,m,f=document.createDocumentFragment();re.lastIndex=0;
+      while((m=re.exec(s))){if(m.index>last)f.appendChild(document.createTextNode(s.slice(last,m.index)));
+        var o=document.createElement("span");o.className="np-lockw notranslate";o.setAttribute("translate","no");o.setAttribute("aria-label","Partner club, name coming soon");
+        o.innerHTML='<i aria-hidden="true">🔒</i>';var b=document.createElement("span");b.className="np-lock";b.setAttribute("aria-hidden","true");b.textContent=m[0];o.appendChild(b);f.appendChild(o);last=m.index+m[0].length}
+      if(last<s.length)f.appendChild(document.createTextNode(s.slice(last)));if(n.parentNode)n.parentNode.replaceChild(f,n)});
+  }
+  var tm=null;new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(run,120)}).observe(document.body,{childList:true,subtree:true,characterData:true});
+  run();setTimeout(run,1500);
+})();
+
+/* ===== Namaste Rides: cars and motorbike requests (16 Oct 2026, Rahul).
+   Guests send their ride details; the team receives them in the dashboard (np_orders, venue "Namaste Rides") and books in GrabForBusiness Concierge. ===== */
+(function(){
+  if(typeof panel==="undefined")return;
+  var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function lsGet(k,f){try{var v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  var V=[["bike","Motorbike","1 passenger",1],["car","Car","Up to 3 passengers",3],["suv","SUV","Up to 5 passengers",5],["van","Van","Up to 10 passengers",10]];
+  var X=function(){return typeof ico==="function"?ico("close"):"x"};
+  if(!document.getElementById("npRideCss")){var st=document.createElement("style");st.id="npRideCss";
+    st.textContent='.nprv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.nprv button{border:1px solid rgba(255,255,255,.22);background:transparent;color:inherit;border-radius:14px;padding:12px 10px;text-align:left;font:inherit;cursor:pointer}.nprv button b{display:block;font-size:15px}.nprv button small{opacity:.75;font-size:12px}.nprv button[aria-pressed=true]{background:#F2EEFC;color:#1a1530;border-color:#F2EEFC}'+
+      '.nprnote{font-size:12.5px;opacity:.8;line-height:1.5;margin:8px 0}.nprloc{border:0;background:transparent;color:#E9B949;font:inherit;font-weight:700;font-size:13px;padding:4px 0;cursor:pointer}.nprmine{border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:13px}.npride .nppdpa{display:none}';
+    document.head.appendChild(st)}
+  function open(){
+    try{lastFocus=document.activeElement}catch(e){}
+    var mine=lsGet("np_rides",[])||[],veh="car";
+    var d=new Date(),today=d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    panel.innerHTML='<div class="pbody npride"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Namaste Rides</h2><button class="theme" id="nprX" aria-label="Close">'+X()+'</button></div>'+
+      '<p class="nprnote">Car or motorbike, anywhere in Pattaya and airport transfers. Send your details and our team books your ride through GrabForBusiness, then confirms the price and driver with you.</p>'+
+      '<div class="nprv" role="group" aria-label="Vehicle">'+V.map(function(v){return '<button type="button" data-v="'+v[0]+'" aria-pressed="'+(v[0]===veh)+'"><b>'+v[1]+'</b><small>'+v[2]+'</small></button>'}).join("")+'</div>'+
+      '<div class="fields">'+
+       '<label class="full">Pickup<input id="nprFrom" maxlength="160" placeholder="Hotel, address or airport"></label><button type="button" class="nprloc" id="nprLoc">📍 Use my location</button>'+
+       '<label class="full">Drop-off<input id="nprTo" maxlength="160" placeholder="Where are you going?"></label>'+
+       '<label>Date<input id="nprDate" type="date" min="'+today+'" value="'+today+'"></label><label>Time<input id="nprTime" type="time"></label>'+
+       '<label>Passengers<input id="nprPax" type="number" min="1" max="10" value="1" inputmode="numeric"></label><label>Luggage<select id="nprBag"><option>No bags</option><option>1–2 bags</option><option>3–4 bags</option><option>5+ bags</option></select></label>'+
+       '<label class="full">Flight number (airport pickups)<input id="nprFlight" maxlength="12" placeholder="Optional, e.g. 6E 1053"></label>'+
+       '<label>Your name<input id="nprName" maxlength="80" autocomplete="name"></label><label>Phone / WhatsApp<input id="nprPhone" maxlength="30" inputmode="tel" autocomplete="tel" placeholder="+91 or +66"></label>'+
+       '<label class="full">Note for the driver<input id="nprNote" maxlength="200" placeholder="Optional, e.g. child seat, meet at lobby"></label></div>'+
+      '<label class="nppdpa" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px"><input type="checkbox" id="nprOk"> <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and to Namaste Pattaya using my details to book this ride (<a href="privacy.html" target="_blank" rel="noopener">Privacy</a>).</span></label>'+
+      '<button class="cta" id="nprSend" style="margin-top:12px">Get my ride</button><p class="err" id="nprErr" role="alert" style="min-height:18px"></p>'+
+      '<p class="nprnote">The price is confirmed by our team before your ride. The driver waits up to 15 minutes. Free cancellation up to 1 hour before.</p>'+
+      (mine.length?'<h3 style="font-size:15px;margin:14px 0 4px">My ride requests</h3>'+mine.slice(0,5).map(function(r){return '<div class="nprmine"><b>'+esc(r.code)+'</b> · '+esc(r.veh)+' · '+esc(r.date)+' '+esc(r.time)+'<br>'+esc(r.from)+' → '+esc(r.to)+'</div>'}).join(""):'')+'</div>';
+    sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
+    var $=function(id){return panel.querySelector("#"+id)};
+    $("nprX").onclick=function(){try{closeSheet()}catch(e){}};
+    [].forEach.call(panel.querySelectorAll(".nprv button"),function(b){b.onclick=function(){veh=b.dataset.v;[].forEach.call(panel.querySelectorAll(".nprv button"),function(x){x.setAttribute("aria-pressed",x===b)});var v=V.find(function(x){return x[0]===veh});var px=$("nprPax");if(+px.value>v[3])px.value=v[3];px.max=v[3]}});
+    $("nprLoc").onclick=function(){var e=$("nprErr");if(!navigator.geolocation){e.textContent="Location isn't available on this phone.";return}
+      e.textContent="Finding your location…";navigator.geolocation.getCurrentPosition(function(p){$("nprFrom").value="My location ("+p.coords.latitude.toFixed(5)+", "+p.coords.longitude.toFixed(5)+")";e.textContent=""},function(){e.textContent="Location is off. Please type your pickup."},{timeout:8000})};
+    $("nprSend").onclick=function(){
+      var e=$("nprErr"),v=V.find(function(x){return x[0]===veh}),r={from:$("nprFrom").value.trim(),to:$("nprTo").value.trim(),date:$("nprDate").value,time:$("nprTime").value,pax:+$("nprPax").value||1,bag:$("nprBag").value,flight:$("nprFlight").value.trim(),name:$("nprName").value.trim(),phone:$("nprPhone").value.trim(),note:$("nprNote").value.trim(),veh:v[1]};
+      if(!r.from||!r.to){e.textContent="Please add your pickup and drop-off.";return}
+      if(!r.date||!r.time){e.textContent="Please choose a date and time.";return}
+      if(r.pax<1||r.pax>v[3]){e.textContent=v[1]+" takes up to "+v[3]+" passenger"+(v[3]>1?"s":"")+".";return}
+      if(!r.name){e.textContent="Please add your name.";return}
+      if((r.phone.match(/\d/g)||[]).length<8){e.textContent="Please add a phone or WhatsApp number we can reach.";return}
+      if(!$("nprOk").checked){e.textContent="Please tick the box to agree.";return}
+      r.code="R"+Date.now().toString(36).toUpperCase().slice(-6);
+      var note=("PICKUP: "+r.from+" | DROP-OFF: "+r.to+" | Luggage: "+r.bag+(r.flight?" | Flight: "+r.flight:"")+(r.note?" | Note: "+r.note:"")).slice(0,500);
+      var row={code:r.code,venue_id:"np-rides",venue_name:"Namaste Rides",category:"rides",customer_name:r.name.slice(0,80),customer_phone:r.phone.slice(0,30),package:(r.veh+" ride").slice(0,200),guests:r.pax,booking_date:r.date,booking_time:r.time,total:null,note:note};
+      var all=lsGet("np_rides",[])||[];all.unshift(r);lsSet("np_rides",all.slice(0,20));
+      $("nprSend").disabled=true;e.textContent="Sending…";
+      function done(ok){
+        panel.innerHTML='<div class="pbody" style="text-align:center"><div style="display:flex;justify-content:flex-end"><button class="theme" id="nprX2" aria-label="Close">'+X()+'</button></div><h2 id="sheetTitle">'+(ok?"Ride requested ✓":"Saved on your phone")+'</h2>'+
+          '<p class="about">Your request code: <b>'+esc(r.code)+'</b></p><p class="about">'+esc(r.veh)+' · '+esc(r.date)+' '+esc(r.time)+'<br>'+esc(r.from)+' → '+esc(r.to)+'</p>'+
+          (ok?'<p class="about">Our team will confirm the price and driver details on '+esc(r.phone)+' soon.</p>':'<p class="about">We could not send it automatically right now. Please send your code and details to us on LINE: rahulsoodnpr247.</p>')+
+          '<button class="cta" id="nprOk2">OK</button></div>';
+        var c=function(){try{closeSheet()}catch(x){}};panel.querySelector("#nprX2").onclick=c;panel.querySelector("#nprOk2").onclick=c;
+      }
+      try{try{if(window.npTrack)window.npTrack("ride_request",r.veh)}catch(x){}
+        if(!sb){done(false);return}
+        sb.from("np_orders").insert(row).then(function(res){done(!(res&&res.error))},function(){done(false)});
+      }catch(x){done(false)}
+    };
+  }
+  window.npOpenRides=open;
+  /* Home tile opens the ride form (the existing "Pickup" button is unchanged) */
+  function tile(){
+    var hub=document.querySelector(".hub");if(!hub||document.getElementById("npRideTile"))return;
+    var b=document.createElement("button");b.className="hubtile";b.id="npRideTile";b.type="button";
+    b.innerHTML='<span aria-hidden="true" style="font-size:22px;line-height:1">🚕</span><b>Namaste Rides</b><small>Cars & motorbike</small>';
+    b.onclick=function(e){e.preventDefault();e.stopPropagation();open()};
+    var ref=hub.querySelector('.hubtile[data-go="mall"]');if(ref)hub.insertBefore(b,ref);else hub.appendChild(b);
+  }
+  tile();setTimeout(tile,1500);
 })();
