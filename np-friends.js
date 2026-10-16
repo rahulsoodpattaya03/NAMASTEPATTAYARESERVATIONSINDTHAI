@@ -4726,3 +4726,255 @@
     return {km:Math.round(km),air:air,tolls:air||km>60,low:r10(ours*0.92),high:r10(ours*1.08)};
   };
 })();
+
+/* ===== 17 Oct 2026 (Rahul) PROTOTYPE – added only, nothing removed:
+   1) Namaste Ride Pass (fixed plans + Build your own pass + book with pass, for me or a friend)
+   2) Airport pickup booked from India (pay in advance, ฿ or ₹) – payment is "Try free (test)" until the gateway is live
+   3) Club names unlock with access code CLUBS10 (or admin login). Link for investors: ?clubs=CLUBS10
+   4) "Support in 7 languages, 24/7" line on the ride screens
+   Prices: car pass prices = 30% over cost (city / area / bike) and Grab rate + about ฿350 for BKK (tolls included).
+   U-Tapao and DMK: price coming soon (waiting for Grab screenshots). ===== */
+(function(){
+  if(typeof panel==="undefined"||typeof sheet==="undefined")return;
+  var sb=window.supabase?window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0"):null;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function lsGet(k,f){try{var v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function X(){return typeof ico==="function"?ico("close"):"✕"}
+  function thb(n){return "฿"+Math.round(n).toLocaleString("en-US")}
+  var RATE=(typeof INR_PER_THB!=="undefined"?INR_PER_THB:2.89);
+  function inr(n){return "≈ ₹"+Math.round(n*RATE).toLocaleString("en-IN")}
+  function show(){try{lastFocus=document.activeElement}catch(e){}sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0}
+  function close(){try{closeSheet()}catch(e){}}
+  function today(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+  function fmtDate(t){try{return new Date(t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}catch(e){return ""}}
+  function code(p){return p+Date.now().toString(36).toUpperCase().slice(-6)}
+  function head(t){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="npxX" aria-label="Close">'+X()+'</button></div>'}
+  var SUPPORT='<div class="npxsup">💬 <b>Support in 7 languages, 24/7</b><br>Hindi · English · Thai · Punjabi · Gujarati · Marathi · Tamil<br><small>Talk to us in any of these languages, any time. LINE: rahulsoodnpr247</small></div>';
+  var CONSENT=function(id){return '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px"><input type="checkbox" id="'+id+'"> <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and to Namaste Pattaya using my details to book this ride (<a href="privacy.html" target="_blank" rel="noopener">Privacy</a>).</span></label>'};
+
+  if(!document.getElementById("npxCss")){var st=document.createElement("style");st.id="npxCss";
+    st.textContent='.npx .npxg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:10px 0}'+
+    '.npx .npxc{border:1px solid rgba(255,255,255,.18);background:transparent;color:inherit;border-radius:14px;padding:12px 10px;text-align:left;font:inherit;cursor:pointer;min-height:44px}'+
+    '.npx .npxc b{display:block;font-size:15px}.npx .npxc small{display:block;opacity:.75;font-size:12px;line-height:1.4}.npx .npxc .pr{display:block;font-size:17px;font-weight:700;margin-top:6px}'+
+    '.npx .npxc[aria-pressed=true]{background:#F2EEFC;color:#1a1530;border-color:#F2EEFC}.npx .npxc[disabled]{opacity:.45;cursor:default}'+
+    '.npx .npxtag{display:inline-block;font-size:11px;padding:2px 7px;border-radius:8px;background:rgba(233,185,73,.2);color:#E9B949;margin-bottom:4px}'+
+    '.npx h3{font-size:16px;margin:16px 0 4px}.npx .npxn{font-size:12.5px;opacity:.8;line-height:1.5;margin:6px 0}'+
+    '.npx .npxr{display:flex;align-items:center;gap:8px;border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:8px 10px;margin-bottom:6px}'+
+    '.npx .npxr .t{flex:1;min-width:0}.npx .npxr .t b{display:block;font-size:14px}.npx .npxr .t small{opacity:.75;font-size:12px}'+
+    '.npx .npxs{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.25);background:transparent;color:inherit;font-size:20px;cursor:pointer}'+
+    '.npx .npxq{min-width:24px;text-align:center;font-weight:700;font-size:16px}'+
+    '.npx .npxtot{margin-top:10px;padding:12px;border-radius:12px;background:rgba(93,202,165,.12);display:flex;justify-content:space-between;align-items:baseline;gap:8px}'+
+    '.npx .npxtot b{font-size:22px}.npx .npxrow{display:flex;gap:8px;flex-wrap:wrap}.npx .npxrow .npxc{flex:1;text-align:center}'+
+    '.npx .npxpass{border:1px solid rgba(233,185,73,.45);border-radius:14px;padding:12px;margin:10px 0}'+
+    '.npx .nppdpa:not(.npmine-ok){display:none}.npxsup{margin:14px 0 4px;padding:10px 12px;border-radius:12px;background:rgba(133,183,235,.12);font-size:13px;line-height:1.55}.npxsup small{opacity:.8;font-size:12px}'+
+    '.npxbar{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:10px 0}'+
+    '.npxbar button{border:1px solid rgba(233,185,73,.5);background:rgba(233,185,73,.1);color:inherit;border-radius:14px;padding:12px 10px;font:inherit;font-weight:700;text-align:left;cursor:pointer;min-height:44px}'+
+    '.npxbar button small{display:block;font-weight:400;opacity:.8;font-size:12px}'+
+    '.npxlock{margin:8px 0 4px;font-size:13px;opacity:.9}.npxlock button{border:0;background:transparent;color:#E9B949;font:inherit;font-weight:700;padding:8px 0;cursor:pointer;min-height:36px}';
+    document.head.appendChild(st)}
+
+  /* ---------- prices (car) ---------- */
+  var T={city:["City ride","up to 7 km",265],area:["Area ride","7–40 km",900],bkk:["Airport BKK","Suvarnabhumi ↔ Pattaya, tolls included",1850],air:["Airport ride","BKK or U-Tapao ↔ Pattaya",1850],bike:["Bike ride","city only",120]};
+  var SOON=[["U-Tapao airport","price coming soon"],["Don Mueang (DMK)","price coming soon"]];
+  var PLANS=[
+    ["city","City pass","10 city rides · 1 month",2190,{city:10},1],
+    ["explorer","Explorer","8 city + 2 area · 1 month",3290,{city:8,area:2},1,"Most popular"],
+    ["airport","Airport pass","2 airport + 6 city · 2 months",4990,{air:2,city:6},2],
+    ["bike","Bike pass","20 bike rides · 1 month",1490,{bike:20},1],
+    ["citysaver","City saver","5 city rides · 1 month",1350,{city:5},1],
+    ["cityplus","City plus","15 city rides · 1 month",3990,{city:15},1],
+    ["area","Area pack","4 area + 4 city · 1 month",4690,{area:4,city:4},1],
+    ["bike10","Bike 10","10 bike rides · 1 month",1200,{bike:10},1],
+    ["bkk","BKK return","2 BKK + 4 city · 2 months",4790,{bkk:2,city:4},2]];
+  function passes(){return (lsGet("np_ride_passes",[])||[]).filter(function(p){return p&&p.exp>Date.now()&&left(p)>0})}
+  function left(p){var n=0;for(var k in p.cr)n+=p.cr[k];return n}
+  function crText(p){return Object.keys(p.cr).filter(function(k){return T[k]}).map(function(k){return T[k][0].replace(" ride","")+" <b>"+p.cr[k]+"</b>/"+p.max[k]}).join(" · ")}
+  function saveOrder(row,cb){try{if(!sb){cb(false);return}sb.from("np_orders").insert(row).then(function(r){cb(!(r&&r.error))},function(){cb(false)})}catch(e){cb(false)}}
+  function result(ok,title,lines){
+    panel.innerHTML='<div class="pbody npx" style="text-align:center">'+head(ok?title+" ✓":"Saved on your phone")+lines+
+      (ok?'':'<p class="about">We could not send it automatically right now. Please send your code to us on LINE: rahulsoodnpr247.</p>')+SUPPORT+'<button class="cta" id="npxOk">OK</button></div>';
+    panel.querySelector("#npxX").onclick=close;panel.querySelector("#npxOk").onclick=close}
+
+  /* ---------- Ride Pass home ---------- */
+  function openPass(){
+    var mine=passes();
+    panel.innerHTML='<div class="pbody npx">'+head("Namaste Ride Pass")+
+      '<p class="npxn">Buy rides in advance. Book anytime, for you or a friend. Nothing to pay the driver. Car rides (SUV / van coming soon).</p>'+
+      (mine.length?'<h3>My passes</h3>'+mine.map(function(p,i){return '<div class="npxpass"><div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(p.name)+'</b><small style="color:#E9B949">Expires '+fmtDate(p.exp)+'</small></div><div class="npxn">'+crText(p)+'</div><div class="npxrow"><button class="npxc" data-book="'+p.id+'"><b>Book a ride</b></button><button class="npxc" data-ext="'+p.id+'"><b>Extend 1 month</b><small>Try free (test)</small></button></div></div>'}).join(""):"")+
+      '<h3>Choose a plan</h3><p class="npxn">City up to 7 km · Area 7–40 km · Airport = BKK, tolls included</p>'+
+      '<div class="npxg">'+PLANS.map(function(p){return '<button class="npxc" data-plan="'+p[0]+'">'+(p[6]?'<span class="npxtag">'+p[6]+'</span>':'')+'<b>'+p[1]+'</b><small>'+p[2]+'</small><span class="pr">'+thb(p[3])+'</span><small>'+inr(p[3])+'</small></button>'}).join("")+
+        '<button class="npxc" disabled><b>U-Tapao return</b><small>Price coming soon</small></button></div>'+
+      '<button class="cta" id="npxOwn" style="margin-top:6px">Build your own pass</button>'+
+      '<p class="npxn">No resale. The pass shows its expiry date clearly. Refund rules: coming soon.</p>'+SUPPORT+'</div>';
+    show();
+    panel.querySelector("#npxX").onclick=close;
+    panel.querySelector("#npxOwn").onclick=openBuilder;
+    [].forEach.call(panel.querySelectorAll("[data-plan]"),function(b){b.onclick=function(){var p=PLANS.find(function(x){return x[0]===b.dataset.plan});buy(p[1],p[4],p[5],p[3])}});
+    [].forEach.call(panel.querySelectorAll("[data-book]"),function(b){b.onclick=function(){bookWithPass(b.dataset.book)}});
+    [].forEach.call(panel.querySelectorAll("[data-ext]"),function(b){b.onclick=function(){var all=lsGet("np_ride_passes",[])||[];all.forEach(function(p){if(p.id===b.dataset.ext)p.exp+=30*864e5});lsSet("np_ride_passes",all);openPass()}});
+  }
+
+  /* ---------- Build your own pass ---------- */
+  function openBuilder(){
+    var q={city:4,area:0,bkk:0,bike:0},m=1,keys=["city","area","bkk","bike"];
+    panel.innerHTML='<div class="pbody npx">'+head("Build your own pass")+
+      '<p class="npxn">Choose how many rides you need. Car rides. Minimum 3 rides.</p>'+
+      keys.map(function(k){return '<div class="npxr"><div class="t"><b>'+T[k][0]+'</b><small>'+T[k][1]+' · '+thb(T[k][2])+' each</small></div><button class="npxs" data-k="'+k+'" data-d="-1" aria-label="Less">−</button><span class="npxq" id="npxq_'+k+'">0</span><button class="npxs" data-k="'+k+'" data-d="1" aria-label="More">+</button></div>'}).join("")+
+      SOON.map(function(s){return '<div class="npxr" style="opacity:.5"><div class="t"><b>'+s[0]+'</b><small>'+s[1]+'</small></div></div>'}).join("")+
+      '<p class="npxn" style="margin-top:10px">Valid for</p><div class="npxrow" id="npxM">'+[1,2,3].map(function(n){return '<button class="npxc" data-m="'+n+'" aria-pressed="'+(n===1)+'"><b>'+n+' month'+(n>1?"s":"")+'</b></button>'}).join("")+'</div>'+
+      '<div class="npxtot"><span id="npxSum"></span><span style="text-align:right"><b id="npxTot"></b><br><small id="npxInr"></small></span></div>'+
+      '<button class="cta" id="npxBuy">Try free (test)</button><p class="err" id="npxErr" role="alert" style="min-height:18px"></p>'+
+      '<button class="npxc" id="npxBack" style="width:100%;text-align:center"><b>Back to plans</b></button>'+SUPPORT+'</div>';
+    show();
+    var $=function(id){return panel.querySelector("#"+id)};
+    function calc(){var t=0,n=0;keys.forEach(function(k){t+=q[k]*T[k][2];n+=q[k];$("npxq_"+k).textContent=q[k]});
+      $("npxSum").textContent=n+" rides · "+m+" month"+(m>1?"s":"");$("npxTot").textContent=thb(t);$("npxInr").textContent=inr(t);$("npxErr").textContent="";return {t:t,n:n}}
+    [].forEach.call(panel.querySelectorAll(".npxs"),function(b){b.onclick=function(){var k=b.dataset.k;q[k]=Math.max(0,Math.min(30,q[k]+(+b.dataset.d)));calc()}});
+    [].forEach.call(panel.querySelectorAll("#npxM .npxc"),function(b){b.onclick=function(){m=+b.dataset.m;[].forEach.call(panel.querySelectorAll("#npxM .npxc"),function(x){x.setAttribute("aria-pressed",x===b)});calc()}});
+    $("npxX").onclick=close;$("npxBack").onclick=openPass;
+    $("npxBuy").onclick=function(){var c=calc();if(c.n<3){$("npxErr").textContent="Choose at least 3 rides.";return}var cr={};keys.forEach(function(k){if(q[k])cr[k]=q[k]});buy("My own pass",cr,m,c.t)};
+    calc();
+  }
+
+  /* ---------- buy (test) ---------- */
+  function buy(name,cr,months,price){
+    var p={id:code("P"),name:name,cr:JSON.parse(JSON.stringify(cr)),max:JSON.parse(JSON.stringify(cr)),exp:Date.now()+months*30*864e5,price:price,at:Date.now()};
+    var all=lsGet("np_ride_passes",[])||[];all.unshift(p);lsSet("np_ride_passes",all.slice(0,10));
+    try{if(window.npTrack)window.npTrack("ride_pass_test",name)}catch(e){}
+    saveOrder({code:p.id,venue_id:"np-ride-pass",venue_name:"Namaste Ride Pass",category:"rides",customer_name:"Pass buyer (test)",customer_phone:"-",package:(name+" · "+Object.keys(cr).map(function(k){return cr[k]+" "+k}).join(" + ")).slice(0,200),guests:1,booking_date:today(),booking_time:"00:00",total:price,note:"RIDE PASS – TEST, NOT PAID. Expires "+fmtDate(p.exp)},function(){});
+    result(true,"Pass ready",'<p class="about"><b>'+esc(name)+'</b> · '+thb(price)+' (test, not charged)</p><p class="about">Pass code: <b>'+esc(p.id)+'</b><br>Expires '+fmtDate(p.exp)+'</p>');
+    var ok=panel.querySelector("#npxOk");ok.textContent="Book a ride now";ok.onclick=function(){bookWithPass(p.id)};
+  }
+
+  /* ---------- book with pass (me or a friend) ---------- */
+  function bookWithPass(id){
+    var all=lsGet("np_ride_passes",[])||[],p=all.find(function(x){return x.id===id});if(!p){openPass();return}
+    var types=Object.keys(p.cr).filter(function(k){return p.cr[k]>0&&T[k]}),ty=types[0],who="me";
+    panel.innerHTML='<div class="pbody npx">'+head("Book with my pass")+
+      '<p class="npxn">'+esc(p.name)+' · '+crText(p)+'</p>'+
+      '<p class="npxn">Ride type</p><div class="npxg">'+types.map(function(k){return '<button class="npxc" data-t="'+k+'" aria-pressed="'+(k===ty)+'"><b>'+T[k][0]+'</b><small>'+T[k][1]+' · '+p.cr[k]+' left</small></button>'}).join("")+'</div>'+
+      '<p class="npxn">Who is riding?</p><div class="npxrow" id="npxW"><button class="npxc" data-w="me" aria-pressed="true"><b>Me</b></button><button class="npxc" data-w="friend" aria-pressed="false"><b>A friend</b></button></div>'+
+      '<div class="fields" style="margin-top:10px">'+
+       '<label class="full">Pickup<input id="npxFrom" list="nprPl" maxlength="160" placeholder="Type: hilton, walking, airport"></label>'+
+       '<label class="full">Drop-off<input id="npxTo" list="nprPl" maxlength="160" placeholder="Type: terminal 21, jomtien"></label>'+
+       '<label>Date<input id="npxDate" type="date" min="'+today()+'" value="'+today()+'"></label><label>Time<input id="npxTime" type="time"></label>'+
+       '<label>Passengers<input id="npxPax" type="number" min="1" max="'+(ty==="bike"?1:3)+'" value="1" inputmode="numeric"></label><label>Flight no. (airport)<input id="npxFl" maxlength="12" placeholder="Optional"></label>'+
+       '<label id="npxNmL">Your name<input id="npxName" maxlength="80" autocomplete="name"></label><label id="npxPhL">Phone / WhatsApp<input id="npxPhone" maxlength="30" inputmode="tel" placeholder="+91 or +66"></label></div>'+
+      '<datalist id="nprPl">'+(window.npRidePlaces||[]).map(function(n){return '<option value="'+esc(n)+'">'}).join("")+'</datalist>'+
+      CONSENT("npxOk1")+'<button class="cta" id="npxSend">Book this ride</button><p class="err" id="npxErr" role="alert" style="min-height:18px"></p>'+
+      '<p class="npxn">Nothing to pay the driver. Our team confirms the driver on WhatsApp.</p>'+SUPPORT+'</div>';
+    show();
+    var $=function(i){return panel.querySelector("#"+i)};$("npxX").onclick=close;
+    [].forEach.call(panel.querySelectorAll("[data-t]"),function(b){b.onclick=function(){ty=b.dataset.t;[].forEach.call(panel.querySelectorAll("[data-t]"),function(x){x.setAttribute("aria-pressed",x===b)});$("npxPax").max=ty==="bike"?1:3}});
+    [].forEach.call(panel.querySelectorAll("[data-w]"),function(b){b.onclick=function(){who=b.dataset.w;[].forEach.call(panel.querySelectorAll("[data-w]"),function(x){x.setAttribute("aria-pressed",x===b)});
+      $("npxNmL").firstChild.nodeValue=who==="me"?"Your name":"Friend's name";$("npxPhL").firstChild.nodeValue=who==="me"?"Phone / WhatsApp":"Friend's phone / WhatsApp"}});
+    $("npxSend").onclick=function(){
+      var e=$("npxErr"),r={from:$("npxFrom").value.trim(),to:$("npxTo").value.trim(),date:$("npxDate").value,time:$("npxTime").value,pax:+$("npxPax").value||1,fl:$("npxFl").value.trim(),name:$("npxName").value.trim(),phone:$("npxPhone").value.trim()};
+      if(!r.from||!r.to){e.textContent="Please add pickup and drop-off.";return}
+      if(!r.date||!r.time){e.textContent="Please choose a date and time.";return}
+      if(r.pax<1||r.pax>(ty==="bike"?1:3)){e.textContent=ty==="bike"?"A bike takes 1 passenger.":"A car takes up to 3 passengers.";return}
+      if(!r.name){e.textContent="Please add the rider's name.";return}
+      if((r.phone.match(/\d/g)||[]).length<8){e.textContent="Please add a phone or WhatsApp number.";return}
+      if(!$("npxOk1").checked){e.textContent="Please tick the box to agree.";return}
+      var c=code("R"),veh=ty==="bike"?"Motorbike":"Car";
+      var all2=lsGet("np_ride_passes",[])||[];all2.forEach(function(x){if(x.id===id&&x.cr[ty]>0)x.cr[ty]--});lsSet("np_ride_passes",all2);
+      var rides=lsGet("np_rides",[])||[];rides.unshift({code:c,veh:veh,date:r.date,time:r.time,from:r.from,to:r.to});lsSet("np_rides",rides.slice(0,20));
+      try{if("Notification" in window&&Notification.permission==="default")Notification.requestPermission()}catch(x){}
+      $("npxSend").disabled=true;e.textContent="Sending…";
+      saveOrder({code:c,venue_id:"np-rides",venue_name:"Namaste Rides",category:"rides",customer_name:r.name.slice(0,80),customer_phone:r.phone.slice(0,30),package:(veh+" ride · Ride Pass ("+T[ty][0]+")").slice(0,200),guests:r.pax,booking_date:r.date,booking_time:r.time,total:0,
+        note:("PAID BY RIDE PASS "+id+" (test) | "+(who==="friend"?"FOR A FRIEND | ":"")+"PICKUP: "+r.from+" | DROP-OFF: "+r.to+(r.fl?" | Flight: "+r.fl:"")).slice(0,500)},
+        function(ok){result(ok,"Ride booked",'<p class="about">Code: <b>'+esc(c)+'</b></p><p class="about">'+esc(T[ty][0])+' · '+esc(r.date)+' '+esc(r.time)+'<br>'+esc(r.from)+' → '+esc(r.to)+'</p><p class="about">Paid with your Ride Pass. Nothing to pay the driver.</p>')});
+    };
+  }
+
+  /* ---------- Airport pickup, booked from India, pay in advance ---------- */
+  var AP=[["bkk","Suvarnabhumi (BKK)",{car:1850,suv:2090,van:3150}],["dmk","Don Mueang (DMK)",null],["utp","U-Tapao (UTP)",null]];
+  var CARS=[["car","Car","Up to 3 people · Toyota Altis or similar",3],["suv","SUV / 6 seats","Up to 6 people · Toyota Fortuner or similar",6],["van","Van","Up to 10 people · Toyota Commuter or similar",10]];
+  function openAirport(){
+    var ap="bkk",car="car",cur="THB";
+    panel.innerHTML='<div class="pbody npx">'+head("Airport pickup")+
+      '<p class="npxn">Coming from India? Book before you fly. Your driver waits at arrivals with your name board. Pay now, nothing to pay the driver. Tolls included.</p>'+
+      '<p class="npxn">Airport</p><div class="npxg" id="npxAp">'+AP.map(function(a){return '<button class="npxc" data-a="'+a[0]+'" aria-pressed="'+(a[0]===ap)+'"><b>'+a[1]+'</b><small>'+(a[2]?"Fixed price":"Price coming soon")+'</small></button>'}).join("")+'</div>'+
+      '<p class="npxn">Car</p><div id="npxCars"></div>'+
+      '<div class="npxrow" style="margin:6px 0" id="npxCur"><button class="npxc" data-c="THB" aria-pressed="true"><b>฿ THB</b></button><button class="npxc" data-c="INR" aria-pressed="false"><b>₹ INR</b></button></div>'+
+      '<div class="fields" style="margin-top:6px">'+
+       '<label class="full">Drop-off (hotel in Pattaya)<input id="npxHotel" list="nprPl" maxlength="160" placeholder="Hotel name"></label>'+
+       '<label>Flight number<input id="npxFl" maxlength="12" placeholder="AI 332"></label><label>Landing date<input id="npxDate" type="date" min="'+today()+'" value="'+today()+'"></label>'+
+       '<label>Landing time<input id="npxTime" type="time"></label><label>Passengers<input id="npxPax" type="number" min="1" max="10" value="2" inputmode="numeric"></label>'+
+       '<label>Big bags<select id="npxBag"><option>0–1</option><option>2–3</option><option>4–5</option><option>6+</option></select></label><label>Your name<input id="npxName" maxlength="80" autocomplete="name"></label>'+
+       '<label>Country code<select id="npxCc"><option>+91</option><option>+66</option><option>Other</option></select></label><label>WhatsApp number<input id="npxPhone" maxlength="30" inputmode="tel" placeholder="98xxx xxxxx"></label></div>'+
+      '<datalist id="nprPl">'+(window.npRidePlaces||[]).map(function(n){return '<option value="'+esc(n)+'">'}).join("")+'</datalist>'+
+      '<div class="npxtot"><span>Total · tolls included</span><b id="npxTot"></b></div>'+
+      '<p class="npxn">Driver waits 60 minutes after landing. We watch your flight time.</p>'+
+      CONSENT("npxOk1")+'<button class="cta" id="npxSend">Pay now · Try free (test)</button><p class="err" id="npxErr" role="alert" style="min-height:18px"></p>'+
+      '<p class="npxn">Test mode: no money is taken yet. Online payment starts soon.</p>'+SUPPORT+'</div>';
+    show();
+    var $=function(i){return panel.querySelector("#"+i)};$("npxX").onclick=close;
+    function price(){var a=AP.find(function(x){return x[0]===ap});return a[2]?a[2][car]:null}
+    function fm(n){return cur==="INR"?inr(n):thb(n)}
+    function draw(){var a=AP.find(function(x){return x[0]===ap});
+      $("npxCars").innerHTML='<div class="npxg">'+CARS.map(function(c){return '<button class="npxc" data-v="'+c[0]+'" aria-pressed="'+(c[0]===car)+'"><b>'+c[1]+'</b><small>'+c[2]+'</small><span class="pr">'+(a[2]?fm(a[2][c[0]]):"Coming soon")+'</span></button>'}).join("")+'</div>';
+      [].forEach.call($("npxCars").querySelectorAll("[data-v]"),function(b){b.onclick=function(){car=b.dataset.v;draw()}});
+      var p=price();$("npxTot").textContent=p?fm(p):"We send the price on WhatsApp";$("npxSend").textContent=p?"Pay now · Try free (test)":"Send request";$("npxErr").textContent=""}
+    [].forEach.call(panel.querySelectorAll("[data-a]"),function(b){b.onclick=function(){ap=b.dataset.a;[].forEach.call(panel.querySelectorAll("[data-a]"),function(x){x.setAttribute("aria-pressed",x===b)});draw()}});
+    [].forEach.call(panel.querySelectorAll("[data-c]"),function(b){b.onclick=function(){cur=b.dataset.c;[].forEach.call(panel.querySelectorAll("[data-c]"),function(x){x.setAttribute("aria-pressed",x===b)});draw()}});
+    draw();
+    $("npxSend").onclick=function(){
+      var e=$("npxErr"),cc=$("npxCc").value,v=CARS.find(function(x){return x[0]===car}),a=AP.find(function(x){return x[0]===ap}),p=price(),
+        r={hotel:$("npxHotel").value.trim(),fl:$("npxFl").value.trim(),date:$("npxDate").value,time:$("npxTime").value,pax:+$("npxPax").value||1,bag:$("npxBag").value,name:$("npxName").value.trim(),phone:$("npxPhone").value.trim()};
+      if(!r.hotel){e.textContent="Please add your hotel in Pattaya.";return}
+      if(!r.fl){e.textContent="Please add your flight number.";return}
+      if(!r.date||!r.time){e.textContent="Please add landing date and time.";return}
+      if(r.pax<1||r.pax>v[3]){e.textContent=v[1]+" takes up to "+v[3]+" people.";return}
+      if(!r.name){e.textContent="Please add your name.";return}
+      if((r.phone.match(/\d/g)||[]).length<8){e.textContent="Please add your WhatsApp number.";return}
+      if(!$("npxOk1").checked){e.textContent="Please tick the box to agree.";return}
+      var phone=(cc==="Other"?"":cc+" ")+r.phone,c=code("R");
+      var rides=lsGet("np_rides",[])||[];rides.unshift({code:c,veh:v[1],date:r.date,time:r.time,from:a[1],to:r.hotel});lsSet("np_rides",rides.slice(0,20));
+      try{if(window.npTrack)window.npTrack("airport_pickup",ap+"_"+car)}catch(x){}
+      $("npxSend").disabled=true;e.textContent="Sending…";
+      saveOrder({code:c,venue_id:"np-rides",venue_name:"Namaste Rides",category:"rides",customer_name:r.name.slice(0,80),customer_phone:phone.slice(0,30),package:("Airport pickup · "+v[1]+" · "+a[1]).slice(0,200),guests:r.pax,booking_date:r.date,booking_time:r.time,total:p,
+        note:("AIRPORT PICKUP"+(cc==="+91"?" (booked from India)":"")+" | Flight: "+r.fl+" | Landing: "+r.date+" "+r.time+" | DROP-OFF: "+r.hotel+" | Big bags: "+r.bag+" | "+(p?"ADVANCE PAYMENT: TEST, NOT PAID ("+thb(p)+")":"PRICE TO SEND ON WHATSAPP")+" | Driver waits 60 min").slice(0,500)},
+        function(ok){result(ok,p?"Pickup booked":"Request sent",'<p class="about">Code: <b>'+esc(c)+'</b></p><p class="about">'+esc(a[1])+' → '+esc(r.hotel)+'<br>'+esc(v[1])+' · Flight '+esc(r.fl)+' · '+esc(r.date)+' '+esc(r.time)+'</p>'+(p?'<p class="about">'+thb(p)+' ('+inr(p)+') · test, not charged</p>':'')+'<p class="about">We confirm your driver on WhatsApp '+esc(phone)+'.</p>')});
+    };
+  }
+  window.npOpenRidePass=openPass;window.npOpenAirportPickup=openAirport;
+
+  /* ---------- buttons + support line inside the existing Namaste Rides screen ---------- */
+  function addBar(){
+    var box=panel.querySelector(".npride");if(!box||box.querySelector(".npxbar"))return;
+    var bar=document.createElement("div");bar.className="npxbar";
+    bar.innerHTML='<button type="button" id="npxGoAp">✈️ Airport pickup<small>Book from India · pay now</small></button><button type="button" id="npxGoPass">🎫 Ride Pass<small>Plans or build your own</small></button>';
+    var note=box.querySelector(".nprnote");if(note&&note.nextSibling)box.insertBefore(bar,note.nextSibling);else box.appendChild(bar);
+    bar.querySelector("#npxGoAp").onclick=openAirport;bar.querySelector("#npxGoPass").onclick=openPass;
+    var s=document.createElement("div");s.innerHTML=SUPPORT;box.appendChild(s.firstChild);
+  }
+  new MutationObserver(function(){addBar()}).observe(panel,{childList:true});
+
+  /* ---------- Club names: unlock with code CLUBS10 or admin login ---------- */
+  var CODE="CLUBS10",KEY="np_clubs_unlocked";
+  function unlock(){
+    if(!document.getElementById("npxUnl")){var s=document.createElement("style");s.id="npxUnl";s.textContent='.np-lock{filter:none!important;-webkit-user-select:auto!important;user-select:auto!important}.np-lockw::before{content:none!important}.npxlock{display:none!important}';document.head.appendChild(s)}
+    window.npMaskClubs=function(t){return String(t).replace(/🔒/g,"")};
+  }
+  try{var qs=new URLSearchParams(location.search).get("clubs");if(qs&&qs.trim().toUpperCase()===CODE)lsSet(KEY,1)}catch(e){}
+  if(lsGet(KEY,0))unlock();
+  if(sb)try{sb.auth.getSession().then(function(s){if(s&&s.data&&s.data.session)return sb.rpc("np_is_admin").then(function(r){if(!r.error&&r.data===true)unlock()})}).catch(function(){})}catch(e){}
+  function openCode(){
+    panel.innerHTML='<div class="pbody npx">'+head("Club names")+'<p class="npxn">Club names are hidden until each club confirms. Partner or investor? Enter your access code.</p>'+
+      '<div class="fields"><label class="full">Access code<input id="npxCode" maxlength="20" autocomplete="off" autocapitalize="characters"></label></div>'+
+      '<button class="cta" id="npxGo">Unlock</button><p class="err" id="npxErr" role="alert" style="min-height:18px"></p><p class="npxn">Admin? Sign in and the names show automatically.</p></div>';
+    show();var $=function(i){return panel.querySelector("#"+i)};$("npxX").onclick=close;
+    $("npxCode").oninput=function(){$("npxErr").textContent=""};
+    $("npxGo").onclick=function(){var v=$("npxCode").value.trim().toUpperCase();if(!v){$("npxErr").textContent="Enter a code first.";return}
+      if(v!==CODE){$("npxErr").textContent="Wrong code. Try again.";return}lsSet(KEY,1);unlock();result(true,"Unlocked",'<p class="about">Club names now show on this phone.</p>')};
+  }
+  window.npOpenClubCode=openCode;
+  function addLockLink(){
+    if(lsGet(KEY,0))return;var row=document.querySelector("#npHomeFill .nptrow");if(!row||document.querySelector(".npxlock"))return;
+    var d=document.createElement("div");d.className="npxlock";d.innerHTML='🔒 Club names hidden · <button type="button">Partner or investor? Enter code</button>';
+    row.parentNode.insertBefore(d,row.nextSibling);d.querySelector("button").onclick=openCode;
+  }
+  addLockLink();setTimeout(addLockLink,1500);setTimeout(addLockLink,4000);
+})();
