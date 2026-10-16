@@ -861,6 +861,7 @@ h1,h2,h3{font-weight:600;letter-spacing:-.035em}
 .mapbox svg rect:first-child{fill:#070914}
 :root[data-theme="light"] .mapbox svg rect:first-child{fill:#E8ECF6}
 </script>
+<style>.npbrk .row{display:flex;justify-content:space-between;font-size:14px;opacity:.85;margin:4px 0}.npbrk .row.ok{color:#5DCAA5;opacity:1}.npbrk .row.over{color:#F0997B;opacity:1}.npbrk .tiers{font-size:12.5px;opacity:.8;margin:6px 0 2px}.npbrk .tiers summary{cursor:pointer;color:#E9B949}</style>
 </head>
 <body class="has-scene">
 <!-- PRE-LAUNCH ACCESS GATE (13 Oct 2026, Rahul): everyone sees "Coming soon"; owner and invited investors enter the code once.
@@ -1528,6 +1529,14 @@ function closeSheet(){sheet.classList.remove("open");document.body.style.overflo
 sheet.addEventListener("click",e=>{if(e.target===sheet)closeSheet()});
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&sheet.classList.contains("open"))closeSheet()});
 
+/* 16 Oct 2026 (Rahul): club booking discounts, referral share and 3% service charge */
+const NP_TIERS=[[100001,.30],[50001,.25],[30001,.20],[20001,.15],[10001,.10],[5001,.05]];
+const NP_AGENT_CODES=[]; /* add agent / promoter / Pattaya girls codes here (5%); all other referral codes take 3% */
+function npTierPct(a){for(const [m,r] of NP_TIERS)if(a>=m)return r;return 0}
+/* card fee added only when the guest pays by card at the club; per club id, e.g. {"jalwa":0.05}. Others use the default until you confirm */
+const NP_CARD_FEE={},NP_CARD_FEE_DEFAULT=0.03;
+function npCardFee(c){return (c&&NP_CARD_FEE[c.id]!=null)?NP_CARD_FEE[c.id]:NP_CARD_FEE_DEFAULT}
+function npRefCut(code){return NP_AGENT_CODES.map(x=>String(x).toUpperCase()).includes(String(code).toUpperCase())?.05:.03}
 function openClub(c){
   lastFocus=document.activeElement;
   const b={pkg:null,guests:2,time:"22:00",day:state.day};
@@ -1552,6 +1561,8 @@ function openClub(c){
         <label class="full">WhatsApp / phone<input id="fPhone" inputmode="tel" autocomplete="tel" placeholder="+66"></label>
         <label class="full">Referral code (optional)<input id="fRef" autocapitalize="characters" placeholder="e.g. IN7K2QX"></label>
       </div>
+      ${(c.cat==="nightlife"||c.cat==="beach")?`<h3>Payment</h3><div class="fields"><label>Pay by<select id="fPay"><option value="cash">Cash at the club</option><option value="card">Card at the club (+${Math.round(npCardFee(c)*100)}%)</option><option value="online" disabled>Online (coming soon)</option></select></label><label>Currency<select id="fCur"><option value="THB">Thai baht (฿)</option><option value="INR">Indian rupee (₹)</option></select></label></div>`:""}
+      <div id="npBrk" class="npbrk"></div>
       <div class="total"><span>Total</span><strong id="tot">—</strong></div>
       <button class="cta" id="book" disabled>Choose a spot to continue</button>
       <p class="err" id="err" role="alert"></p>
@@ -1573,26 +1584,38 @@ function openClub(c){
   panel.querySelector("#fDay").onchange=e=>b.day=+e.target.value;
   panel.querySelector("#fTime").onchange=e=>b.time=e.target.value;
   const btn=panel.querySelector("#book");
-  function total(){if(b.pkg===null)return 0;const p=c.pkgs[b.pkg];let t=p.per?p.p*b.guests:p.p;if(c.disc&&t)t=Math.round(t*(1-c.disc/100));
-    const s1=panel.querySelector("#adScreen"),s2=panel.querySelector("#adSong");if(s1&&s1.checked)t+=1000;if(s2&&s2.checked)t+=1000;return t}
+  function brk(){if(b.pkg===null)return null;const p=c.pkgs[b.pkg];const sub=p.per?p.p*b.guests:p.p;const club=(c.cat==="nightlife"||c.cat==="beach");
+    let pct=0,refCut=0;
+    if(club){pct=npTierPct(sub);const rf=((panel.querySelector("#fRef")||{}).value||"").trim();if(rf&&sub>=30001){refCut=npRefCut(rf);pct=Math.max(0,pct-refCut)}}
+    else if(c.disc&&sub)pct=c.disc/100;
+    const after=Math.round(sub*(1-pct));
+    const s1=panel.querySelector("#adScreen"),s2=panel.querySelector("#adSong");let add=0;if(s1&&s1.checked)add+=1000;if(s2&&s2.checked)add+=1000;
+    const svc=(club&&after+add)?Math.round((after+add)*0.03):0;
+    const pay=((panel.querySelector("#fPay")||{}).value)||"cash",pcur=((panel.querySelector("#fCur")||{}).value)||"THB";
+    const feePct=(club&&pay==="card")?npCardFee(c):0,fee=Math.round((after+add+svc)*feePct);
+    return {sub,pct,refCut,after,add,svc,pay,pcur,feePct,fee,total:after+add+svc+fee}}
+  function total(){const k=brk();return k?k.total:0}
   panel.querySelectorAll("#adScreen,#adSong").forEach(x=>x.onchange=()=>update());
   function update(){
     panel.querySelector("#tot").textContent=b.pkg===null?"—":money(total());
+    {const k=brk(),bx=panel.querySelector("#npBrk");if(bx){bx.innerHTML=(!k||!k.sub)?"":`<div class="row"><span>Booking amount</span><span>${money(k.sub)}</span></div>`+(k.pct?`<div class="row ok"><span>Your discount ${Math.round(k.pct*100)}%${k.refCut?" (after referral share)":""}</span><span>−${money(k.sub-k.after)}</span></div>`:"")+(k.add?`<div class="row"><span>Extras</span><span>${money(k.add)}</span></div>`:"")+(k.svc?`<div class="row"><span>Service charge 3%</span><span>${money(k.svc)}</span></div>`:"")+(k.fee?`<div class="row"><span>Card fee ${Math.round(k.feePct*100)}% (set by the club)</span><span>${money(k.fee)}</span></div>`:"")+(k.pcur==="INR"&&k.total?`<div class="row"><span>You pay in rupees</span><span>≈ ₹${Math.round(k.total*INR_PER_THB).toLocaleString("en-IN")}</span></div>`:"")+((window.npSpendLimit&&window.npSpendLimit())?`<div class="row ${k.total>window.npSpendLimit()?"over":"ok"}"><span>Your spending limit per booking</span><span>${money(window.npSpendLimit())}</span></div>`:"")+((c.cat==="nightlife"||c.cat==="beach")?`<details class="tiers"><summary>Book more, save more</summary><p>${money(5001)}–${money(10000)}: 5% · ${money(10001)}–${money(20000)}: 10% · ${money(20001)}–${money(30000)}: 15% · ${money(30001)}–${money(50000)}: 20% · ${money(50001)}–${money(100000)}: 25% · ${money(100001)}+: 30%. From ${money(30001)}, a referral code shares 3–5% of the discount with the person who referred you.</p></details>`:"")}}
     btn.disabled=b.pkg===null;btn.textContent=b.pkg===null?"Choose a spot to continue":(total()?`Book for ${money(total())}`:"Send request");
   }
+  {const fr=panel.querySelector("#fRef");if(fr)fr.addEventListener("input",update);panel.querySelectorAll("#fPay,#fCur").forEach(x=>x.addEventListener("change",update))}
   btn.onclick=()=>{
     const name=panel.querySelector("#fName").value.trim(), phone=panel.querySelector("#fPhone").value.trim(), err=panel.querySelector("#err");
     if(!name){err.textContent="Add your name so the club can find you at the door.";return}
     if(phone.replace(/\D/g,"").length<8){err.textContent="Add a phone or WhatsApp number with at least 8 digits.";return}
+    {const lim=window.npSpendLimit?window.npSpendLimit():null;if(lim&&total()>lim){err.textContent=`This booking (${money(total())}) is above your spending limit of ${money(lim)} per booking. Choose a smaller spot, or change your limit in My account.`;return}}
     const code="NP"+Math.random().toString(36).slice(2,7).toUpperCase();
     const ref=(panel.querySelector("#fRef").value||"").trim().toUpperCase();
     const hostEl=panel.querySelector("#fHost");
-    const bk={code,host:hostEl?hostEl.value:"",addons:[...panel.querySelectorAll("#adScreen:checked,#adSong:checked")].map(x=>x.id),club:c.id,pkg:c.pkgs[b.pkg].n,guests:b.guests,date:dates[b.day].toISOString(),time:b.time,name,phone,total:total(),ref,cat:c.cat};
+    const bk={code,host:hostEl?hostEl.value:"",addons:[...panel.querySelectorAll("#adScreen:checked,#adSong:checked")].map(x=>x.id),club:c.id,pkg:c.pkgs[b.pkg].n,guests:b.guests,date:dates[b.day].toISOString(),time:b.time,name,phone,total:total(),ref,cat:c.cat,brk:brk(),limit:(window.npSpendLimit?window.npSpendLimit():null)};
     bookings.unshift(bk);store.set("np_bookings",bookings);renderBookings();
     panel.innerHTML=`<div class="done"><div class="okmark">${ico("check")}</div><h2 id="sheetTitle">You're booked</h2>
       <p class="about">Show this code at the door</p><div class="code">${code}</div>
       <p class="about"></p><button class="cta" id="okBtn">See my bookings</button></div>`;
-    panel.querySelectorAll(".about")[1].textContent=`${c.name} · ${bk.pkg} · ${fmtLong(dates[b.day])} at ${b.time} · ${b.guests} guest${b.guests>1?"s":""}`;
+    panel.querySelectorAll(".about")[1].textContent=`${c.name} · ${bk.pkg} · ${fmtLong(dates[b.day])} at ${b.time} · ${b.guests} guest${b.guests>1?"s":""}${bk.brk&&bk.brk.pay?" · Pay by "+(bk.brk.pay==="card"?"card":"cash")+" in "+bk.brk.pcur:""}${bk.limit?" · Spending limit "+money(bk.limit):""}`;
     panel.querySelector("#okBtn").onclick=()=>{closeSheet();go("bookings")};
   };
   sheet.classList.add("open");document.body.style.overflow="hidden";

@@ -2553,7 +2553,7 @@
 
   /* referral links: ?ref=CODE fills the booking form automatically */
   try{var rq=new URLSearchParams(location.search).get("ref");if(rq&&/^[A-Z0-9]{4,12}$/i.test(rq))localStorage.setItem("np_ref_in",rq.toUpperCase())}catch(e){}
-  function fillRef(){var f=document.getElementById("fRef");if(!f||f.value)return;var r="";try{r=localStorage.getItem("np_ref_in")||""}catch(e){}if(r&&r!==myCode())f.value=r}
+  function fillRef(){var f=document.getElementById("fRef");if(!f||f.value)return;var r="";try{r=localStorage.getItem("np_ref_in")||""}catch(e){}if(r&&r!==myCode()){f.value=r;try{f.dispatchEvent(new Event("input",{bubbles:true}))}catch(e){}}}
 
   /* ---------- agent dashboard ---------- */
   async function openAgent(){
@@ -2698,7 +2698,7 @@
     var map={};
     (b.data||[]).forEach(function(x){map[x.code||("b"+x.id)]={t:"b",id:x.id,code:x.code,venue:x.venue_id,vname:vname(x.venue_id),cat:catName(x.venue_id),name:x.name,phone:x.phone,night:x.night,time:x.time,guests:x.guests,pkg:x.package,total:Number(x.final_bill!=null?x.final_bill:x.total)||0,status:x.status,source:x.source,ref:x.ref,seen:!!x.admin_seen,created:x.created_at,guest:!x.customer_id,advPct:x.advance_pct||0,advAmt:x.advance_amount,advPaid:!!x.advance_paid}});
     (o.data||[]).forEach(function(x){var k=x.code||("o"+x.id),e=map[k];
-      var row={t:"o",id:x.id,code:x.code,venue:x.venue_id,vname:x.venue_name||vname(x.venue_id),cat:catName(x.venue_id,x.category),name:x.customer_name,phone:x.customer_phone,night:String(x.booking_date||"").slice(0,10),time:x.booking_time,guests:x.guests,pkg:x.package,total:Number(x.total)||0,status:x.status,source:"app",order_type:x.order_type,address:x.delivery_address,seen:!!x.admin_seen,created:x.created_at};
+      var row={t:"o",id:x.id,code:x.code,venue:x.venue_id,vname:x.venue_name||vname(x.venue_id),cat:catName(x.venue_id,x.category),name:x.customer_name,phone:x.customer_phone,night:String(x.booking_date||"").slice(0,10),time:x.booking_time,guests:x.guests,pkg:x.package,total:Number(x.total)||0,status:x.status,source:"app",order_type:x.order_type,address:x.delivery_address||((x.category==="rides"||x.category==="mall")?x.note:null),ocat:x.category,seen:!!x.admin_seen,created:x.created_at};
       if(e){e.order=row;e.order_type=x.order_type;e.address=x.delivery_address;e.seen=e.seen&&row.seen;e.ostatus=x.status}else map[k]=row});
     items=Object.keys(map).map(function(k){return map[k]}).sort(function(a,b){return String(b.created||b.night).localeCompare(String(a.created||a.night))});
     unseen=items.filter(function(x){return !x.seen&&x.status!=="cancelled"}).length;loaded=true;bell();
@@ -2707,7 +2707,7 @@
     if(chan){sb.removeChannel(chan);chan=null}
     chan=sb.channel("np-admin-inbox")
       .on("postgres_changes",{event:"INSERT",schema:"public",table:"np_bookings"},function(ev){fresh("New booking",ev.new.name,ev.new.venue_id,ev.new.night,ev.new.guests)})
-      .on("postgres_changes",{event:"INSERT",schema:"public",table:"np_orders"},function(ev){fresh("New restaurant order",ev.new.customer_name,ev.new.venue_id,ev.new.booking_date,ev.new.guests,ev.new.venue_name)})
+      .on("postgres_changes",{event:"INSERT",schema:"public",table:"np_orders"},function(ev){fresh(ev.new.category==="rides"?"New ride request":ev.new.category==="mall"?"New Namaste Mall order":"New restaurant order",ev.new.customer_name,ev.new.venue_id,ev.new.booking_date,ev.new.guests,ev.new.venue_name)})
       .on("postgres_changes",{event:"UPDATE",schema:"public",table:"np_bookings"},function(){soft()})
       .on("postgres_changes",{event:"UPDATE",schema:"public",table:"np_orders"},function(){soft()})
       .subscribe();
@@ -2763,7 +2763,7 @@
     if(!loaded){box.innerHTML='<p class="small">Loading…</p>';return}
     var today=ymd(new Date());
     var F={new:["New",function(x){return !x.seen&&x.status!=="cancelled"}],today:["Tonight / today",function(x){return x.night===today}],up:["Upcoming",function(x){return x.night>=today&&x.status!=="cancelled"}],
-      adv:["Awaiting advance",function(x){return x.advPct&&!x.advPaid&&x.status!=="cancelled"}],food:["Restaurant orders",function(x){return x.t==="o"||!!x.order}],guest:["Guests (no account)",function(x){return !!x.guest}],all:["All (60 days)",function(){return true}]};
+      adv:["Awaiting advance",function(x){return x.advPct&&!x.advPaid&&x.status!=="cancelled"}],food:["Restaurant orders",function(x){return (x.t==="o"||!!x.order)&&x.ocat!=="rides"&&x.ocat!=="mall"}],rides:["Rides",function(x){return x.ocat==="rides"}],mall:["Namaste Mall",function(x){return x.ocat==="mall"}],deliv:["Deliveries",function(x){return x.order_type==="delivery"}],guest:["Guests (no account)",function(x){return !!x.guest}],all:["All (60 days)",function(){return true}]};
     var tn=items.filter(function(x){return x.night===today&&x.status!=="cancelled"});
     var l=items.filter(F[filter][1]).filter(function(x){if(!q)return true;var t=[x.code,x.name,x.phone,x.vname,x.cat,x.pkg].join(" ").toLowerCase();return t.indexOf(q.toLowerCase())>-1});
     box.innerHTML='<div class="npcc-kpi"><div><b>'+unseen+'</b><small>New</small></div><div><b>'+tn.length+'</b><small>Today</small></div><div><b>'+M(tn.reduce(function(s,x){return s+x.total},0))+'</b><small>Today value</small></div></div>'+
@@ -2782,7 +2782,7 @@
   }
   function card(x){
     var st=x.ostatus||x.status,wa=String(x.phone||"").replace(/\D/g,""),food=x.t==="o"||!!x.order;
-    var type=x.order_type==="delivery"?"🛵 Delivery":x.order_type==="takeaway"?"🥡 Takeaway":food?"🍽 Dine-in":x.venue==="vip"?"🎁 Package":"🎟 Booking";
+    var type=x.ocat==="rides"?"🚕 Ride":x.ocat==="mall"?(x.order_type==="delivery"?"🛍️ Mall · GrabExpress delivery":"🛍️ Mall · pick up"):x.order_type==="delivery"?"🛵 Delivery":x.order_type==="takeaway"?"🥡 Takeaway":food?"🍽 Dine-in":x.venue==="vip"?"🎁 Package":"🎟 Booking";
     return '<div class="npcc-it'+(x.seen?'':' new')+'" data-k="'+esc(x.code||x.id)+'"><div class="top"><div style="min-width:0"><h4>'+(x.seen?'':'<span class="dot"></span>')+esc(x.name||"Guest")+(x.guests?' · '+x.guests+' pax':'')+'</h4>'+
       '<p>'+type+' · <b>'+esc(x.vname)+'</b>'+(x.cat?' · '+esc(x.cat):'')+'</p>'+
       '<p>📅 '+(x.night?new Date(x.night+"T12:00").toLocaleDateString("en-GB",{weekday:"short",day:"numeric",month:"short"}):"")+(x.time?' · '+esc(x.time):'')+(x.total?' · '+M(x.total):'')+'</p>'+
@@ -4422,7 +4422,7 @@
   function rx(s){return s.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")}
   var re=new RegExp("(?<![\\w])("+all.map(rx).join("|")+")(?![\\w])","g");
   window.npMaskClubs=function(s){re.lastIndex=0;return String(s).replace(/🔒/g,"").replace(re,"a partner club")};
-  var st=document.createElement("style");st.textContent='.np-lockw{white-space:nowrap}.np-lockw i{font-style:normal;font-size:.8em;margin-right:.25em;filter:none}.np-lock{filter:blur(6px);-webkit-user-select:none;user-select:none}';document.head.appendChild(st);
+  var st=document.createElement("style");st.textContent='.np-lockw{white-space:nowrap}.np-lockw::before{content:"\\1F512";font-size:.8em;margin-right:.25em}.np-lock{filter:blur(6px);-webkit-user-select:none;user-select:none}';document.head.appendChild(st);
   var SKIP={SCRIPT:1,STYLE:1,TEXTAREA:1,OPTION:1,INPUT:1,NOSCRIPT:1,TITLE:1,SELECT:1};
   function run(){
     var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentElement;if(!p||SKIP[p.tagName]||p.closest(".np-lockw,svg,[contenteditable=true],#npGate"))return 2;re.lastIndex=0;return re.test(n.nodeValue)?1:2}});
@@ -4430,7 +4430,7 @@
     list.forEach(function(n){var s=n.nodeValue,last=0,m,f=document.createDocumentFragment();re.lastIndex=0;
       while((m=re.exec(s))){if(m.index>last)f.appendChild(document.createTextNode(s.slice(last,m.index)));
         var o=document.createElement("span");o.className="np-lockw notranslate";o.setAttribute("translate","no");o.setAttribute("aria-label","Partner club, name coming soon");
-        o.innerHTML='<i aria-hidden="true">🔒</i>';var b=document.createElement("span");b.className="np-lock";b.setAttribute("aria-hidden","true");b.textContent=m[0];o.appendChild(b);f.appendChild(o);last=m.index+m[0].length}
+        var b=document.createElement("span");b.className="np-lock";b.setAttribute("aria-hidden","true");b.textContent=m[0];o.appendChild(b);f.appendChild(o);last=m.index+m[0].length}
       if(last<s.length)f.appendChild(document.createTextNode(s.slice(last)));if(n.parentNode)n.parentNode.replaceChild(f,n)});
   }
   var tm=null;new MutationObserver(function(){clearTimeout(tm);tm=setTimeout(run,120)}).observe(document.body,{childList:true,subtree:true,characterData:true});
@@ -4449,7 +4449,7 @@
   var X=function(){return typeof ico==="function"?ico("close"):"x"};
   if(!document.getElementById("npRideCss")){var st=document.createElement("style");st.id="npRideCss";
     st.textContent='.nprv{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0}.nprv button{border:1px solid rgba(255,255,255,.22);background:transparent;color:inherit;border-radius:14px;padding:12px 10px;text-align:left;font:inherit;cursor:pointer}.nprv button b{display:block;font-size:15px}.nprv button small{opacity:.75;font-size:12px}.nprv button[aria-pressed=true]{background:#F2EEFC;color:#1a1530;border-color:#F2EEFC}'+
-      '.nprnote{font-size:12.5px;opacity:.8;line-height:1.5;margin:8px 0}.nprloc{border:0;background:transparent;color:#E9B949;font:inherit;font-weight:700;font-size:13px;padding:4px 0;cursor:pointer}.nprmine{border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:13px}.npride .nppdpa{display:none}';
+      '.nprnote{font-size:12.5px;opacity:.8;line-height:1.5;margin:8px 0}.nprloc{border:0;background:transparent;color:#E9B949;font:inherit;font-weight:700;font-size:13px;padding:4px 0;cursor:pointer}.nprmine{border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:13px}.npride .nppdpa:not(.npmine-ok){display:none}.nprest{margin:10px 0 0;padding:10px 12px;border-radius:12px;background:rgba(93,202,165,.12);font-size:14px}.nprest:empty{display:none}.nprest small{display:block;opacity:.75;font-size:12px;margin-top:3px}.fields .nprloc{grid-column:1/-1;justify-self:start}';
     document.head.appendChild(st)}
   function open(){
     try{lastFocus=document.activeElement}catch(e){}
@@ -4459,23 +4459,31 @@
       '<p class="nprnote">Car or motorbike, anywhere in Pattaya and airport transfers. Send your details and our team books your ride through GrabForBusiness, then confirms the price and driver with you.</p>'+
       '<div class="nprv" role="group" aria-label="Vehicle">'+V.map(function(v){return '<button type="button" data-v="'+v[0]+'" aria-pressed="'+(v[0]===veh)+'"><b>'+v[1]+'</b><small>'+v[2]+'</small></button>'}).join("")+'</div>'+
       '<div class="fields">'+
-       '<label class="full">Pickup<input id="nprFrom" maxlength="160" placeholder="Hotel, address or airport"></label><button type="button" class="nprloc" id="nprLoc">📍 Use my location</button>'+
-       '<label class="full">Drop-off<input id="nprTo" maxlength="160" placeholder="Where are you going?"></label>'+
+       '<label class="full">Pickup<input id="nprFrom" list="nprPl" maxlength="160" placeholder="Type: hilton, walking, airport"></label><button type="button" class="nprloc" id="nprLoc">📍 Use my location</button>'+
+       '<label class="full">Drop-off<input id="nprTo" list="nprPl" maxlength="160" placeholder="Type: airport, jomtien, bangkok"></label>'+
        '<label>Date<input id="nprDate" type="date" min="'+today+'" value="'+today+'"></label><label>Time<input id="nprTime" type="time"></label>'+
        '<label>Passengers<input id="nprPax" type="number" min="1" max="10" value="1" inputmode="numeric"></label><label>Luggage<select id="nprBag"><option>No bags</option><option>1–2 bags</option><option>3–4 bags</option><option>5+ bags</option></select></label>'+
        '<label class="full">Flight number (airport pickups)<input id="nprFlight" maxlength="12" placeholder="Optional, e.g. 6E 1053"></label>'+
        '<label>Your name<input id="nprName" maxlength="80" autocomplete="name"></label><label>Phone / WhatsApp<input id="nprPhone" maxlength="30" inputmode="tel" autocomplete="tel" placeholder="+91 or +66"></label>'+
        '<label class="full">Note for the driver<input id="nprNote" maxlength="200" placeholder="Optional, e.g. child seat, meet at lobby"></label></div>'+
-      '<label class="nppdpa" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px"><input type="checkbox" id="nprOk"> <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and to Namaste Pattaya using my details to book this ride (<a href="privacy.html" target="_blank" rel="noopener">Privacy</a>).</span></label>'+
+      '<datalist id="nprPl">'+(window.npRidePlaces||[]).map(function(n){return '<option value="'+esc(n)+'">'}).join("")+'</datalist>'+
+      '<div id="nprEst" class="nprest" aria-live="polite"></div>'+
+      '<label class="nppdpa npmine-ok" style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px"><input type="checkbox" id="nprOk"> <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and to Namaste Pattaya using my details to book this ride (<a href="privacy.html" target="_blank" rel="noopener">Privacy</a>).</span></label>'+
       '<button class="cta" id="nprSend" style="margin-top:12px">Get my ride</button><p class="err" id="nprErr" role="alert" style="min-height:18px"></p>'+
       '<p class="nprnote">The price is confirmed by our team before your ride. The driver waits up to 15 minutes. Free cancellation up to 1 hour before.</p>'+
       (mine.length?'<h3 style="font-size:15px;margin:14px 0 4px">My ride requests</h3>'+mine.slice(0,5).map(function(r){return '<div class="nprmine"><b>'+esc(r.code)+'</b> · '+esc(r.veh)+' · '+esc(r.date)+' '+esc(r.time)+'<br>'+esc(r.from)+' → '+esc(r.to)+'</div>'}).join(""):'')+'</div>';
     sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
     var $=function(id){return panel.querySelector("#"+id)};
     $("nprX").onclick=function(){try{closeSheet()}catch(e){}};
-    [].forEach.call(panel.querySelectorAll(".nprv button"),function(b){b.onclick=function(){veh=b.dataset.v;[].forEach.call(panel.querySelectorAll(".nprv button"),function(x){x.setAttribute("aria-pressed",x===b)});var v=V.find(function(x){return x[0]===veh});var px=$("nprPax");if(+px.value>v[3])px.value=v[3];px.max=v[3]}});
+    var quote=null;
+    function est(){var b=$("nprEst");quote=window.npRideQuote?window.npRideQuote($("nprFrom").value,$("nprTo").value,veh):null;
+      if(!quote){b.innerHTML=($("nprFrom").value.trim()&&$("nprTo").value.trim())?'<span>Our team will send you the price for this route.</span>':'';return}
+      if(quote.noBike){b.innerHTML='<span>A motorbike can\'t do this trip. Please choose a car, SUV or van.</span>';return}
+      b.innerHTML='<b>Estimated price ฿'+quote.low.toLocaleString("en-US")+'–'+quote.high.toLocaleString("en-US")+'</b>'+(quote.tolls?' + tolls':'')+'<small>About '+quote.km+' km. Our team confirms the final price before booking.</small>'}
+    $("nprFrom").addEventListener("input",est);$("nprTo").addEventListener("input",est);
+    [].forEach.call(panel.querySelectorAll(".nprv button"),function(b){b.onclick=function(){veh=b.dataset.v;[].forEach.call(panel.querySelectorAll(".nprv button"),function(x){x.setAttribute("aria-pressed",x===b)});var v=V.find(function(x){return x[0]===veh});var px=$("nprPax");if(+px.value>v[3])px.value=v[3];px.max=v[3];est()}});
     $("nprLoc").onclick=function(){var e=$("nprErr");if(!navigator.geolocation){e.textContent="Location isn't available on this phone.";return}
-      e.textContent="Finding your location…";navigator.geolocation.getCurrentPosition(function(p){$("nprFrom").value="My location ("+p.coords.latitude.toFixed(5)+", "+p.coords.longitude.toFixed(5)+")";e.textContent=""},function(){e.textContent="Location is off. Please type your pickup."},{timeout:8000})};
+      e.textContent="Finding your location…";navigator.geolocation.getCurrentPosition(function(p){$("nprFrom").value="My location ("+p.coords.latitude.toFixed(5)+", "+p.coords.longitude.toFixed(5)+")";e.textContent="";est()},function(){e.textContent="Location is off. Please type your pickup."},{timeout:8000})};
     $("nprSend").onclick=function(){
       var e=$("nprErr"),v=V.find(function(x){return x[0]===veh}),r={from:$("nprFrom").value.trim(),to:$("nprTo").value.trim(),date:$("nprDate").value,time:$("nprTime").value,pax:+$("nprPax").value||1,bag:$("nprBag").value,flight:$("nprFlight").value.trim(),name:$("nprName").value.trim(),phone:$("nprPhone").value.trim(),note:$("nprNote").value.trim(),veh:v[1]};
       if(!r.from||!r.to){e.textContent="Please add your pickup and drop-off.";return}
@@ -4484,10 +4492,13 @@
       if(!r.name){e.textContent="Please add your name.";return}
       if((r.phone.match(/\d/g)||[]).length<8){e.textContent="Please add a phone or WhatsApp number we can reach.";return}
       if(!$("nprOk").checked){e.textContent="Please tick the box to agree.";return}
+      if(quote&&quote.noBike){e.textContent="A motorbike can't do this trip. Please choose a car, SUV or van.";return}
+      r.est=quote&&!quote.noBike?("฿"+quote.low+"–"+quote.high+(quote.tolls?" + tolls":"")):"";
       r.code="R"+Date.now().toString(36).toUpperCase().slice(-6);
-      var note=("PICKUP: "+r.from+" | DROP-OFF: "+r.to+" | Luggage: "+r.bag+(r.flight?" | Flight: "+r.flight:"")+(r.note?" | Note: "+r.note:"")).slice(0,500);
-      var row={code:r.code,venue_id:"np-rides",venue_name:"Namaste Rides",category:"rides",customer_name:r.name.slice(0,80),customer_phone:r.phone.slice(0,30),package:(r.veh+" ride").slice(0,200),guests:r.pax,booking_date:r.date,booking_time:r.time,total:null,note:note};
+      var note=("PICKUP: "+r.from+" | DROP-OFF: "+r.to+" | Luggage: "+r.bag+(r.flight?" | Flight: "+r.flight:"")+(r.note?" | Note: "+r.note:"")+(r.est?" | Price shown: "+r.est:"")).slice(0,500);
+      var row={code:r.code,venue_id:"np-rides",venue_name:"Namaste Rides",category:"rides",customer_name:r.name.slice(0,80),customer_phone:r.phone.slice(0,30),package:(r.veh+" ride").slice(0,200),guests:r.pax,booking_date:r.date,booking_time:r.time,total:(quote&&!quote.noBike)?Math.round((quote.low+quote.high)/2):null,note:note};
       var all=lsGet("np_rides",[])||[];all.unshift(r);lsSet("np_rides",all.slice(0,20));
+      try{if("Notification" in window&&Notification.permission==="default")Notification.requestPermission()}catch(x){}
       $("nprSend").disabled=true;e.textContent="Sending…";
       function done(ok){
         panel.innerHTML='<div class="pbody" style="text-align:center"><div style="display:flex;justify-content:flex-end"><button class="theme" id="nprX2" aria-label="Close">'+X()+'</button></div><h2 id="sheetTitle">'+(ok?"Ride requested ✓":"Saved on your phone")+'</h2>'+
@@ -4512,4 +4523,206 @@
     var ref=hub.querySelector('.hubtile[data-go="mall"]');if(ref)hub.insertBefore(b,ref);else hub.appendChild(b);
   }
   tile();setTimeout(tile,1500);
+})();
+
+/* ===== My spending limit at clubs (16 Oct 2026, Rahul): per booking, set in My account.
+   Lowering is instant. Raising or removing it needs the account password. Saved on the account (Supabase), shown on each booking for the club. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var KEY="np_spend_limit",user=null;
+  function get(){try{var v=JSON.parse(localStorage.getItem(KEY)||"null");return v&&v.uid&&user&&v.uid===user.id&&v.v>0?v.v:null}catch(e){return null}}
+  function setLocal(v){try{if(v>0&&user)localStorage.setItem(KEY,JSON.stringify({uid:user.id,v:v}));else localStorage.removeItem(KEY)}catch(e){}}
+  window.npSpendLimit=get;
+  function B(n){return "฿"+Math.round(n).toLocaleString("en-US")}
+  function X(){return typeof ico==="function"?ico("close"):"x"}
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function load(){sb.auth.getUser().then(function(r){user=r&&r.data&&r.data.user||null;
+    if(user){var m=(user.user_metadata||{}).spend_limit;setLocal(+m>0?+m:0)}else{try{localStorage.removeItem(KEY)}catch(e){}}
+  },function(){})}
+  try{sb.auth.onAuthStateChange(function(){load()})}catch(e){}
+  load();
+  function save(v){return sb.auth.updateUser({data:{spend_limit:v>0?v:null}}).then(function(r){if(r&&r.error)throw r.error;setLocal(v);return true})}
+  function open(){
+    if(!user){alert("Please log in first. Only the account owner can set a spending limit.");return}
+    var cur=get();try{lastFocus=document.activeElement}catch(e){}
+    panel.innerHTML='<div class="pbody"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">My spending limit</h2><button class="theme" id="slX" aria-label="Close">'+X()+'</button></div>'+
+      '<p class="about">Set the most you want to spend on one club booking. We share it with the club on your booking. Lowering it works right away. Raising or removing it needs your password.</p>'+
+      '<p class="about" style="font-size:16px"><b>Now: '+(cur?B(cur)+" per booking":"No limit set")+'</b></p>'+
+      '<div class="fields"><label class="full">New limit in Thai baht<input id="slV" type="number" inputmode="numeric" min="1000" step="500" placeholder="e.g. 10000" value="'+(cur||"")+'"></label>'+
+      '<label class="full" id="slPwL" hidden>Your password (needed to raise the limit)<input id="slPw" type="password" autocomplete="current-password"></label></div>'+
+      '<p class="about" id="slInr" style="font-size:13px"></p>'+
+      '<button class="cta" id="slSave">Save limit</button>'+(cur?'<button class="pill" id="slOff" style="display:block;margin:10px auto 0">Remove my limit</button>':'')+
+      '<p class="err" id="slE" role="alert" style="min-height:18px"></p></div>';
+    sheet.classList.add("open");document.body.style.overflow="hidden";
+    var $=function(id){return panel.querySelector("#"+id)},E=$("slE");
+    $("slX").onclick=function(){try{closeSheet()}catch(e){}};
+    function needPw(v){return !cur?false:(v===0||v>cur)}
+    function refresh(){var v=+$("slV").value||0;$("slPwL").hidden=!needPw(v);$("slInr").textContent=v?"≈ ₹"+Math.round(v*(typeof INR_PER_THB!=="undefined"?INR_PER_THB:2.89)).toLocaleString("en-IN")+" per booking":""}
+    $("slV").oninput=refresh;refresh();
+    function go(v){
+      E.textContent="";
+      if(v!==0&&(!v||v<1000)){E.textContent="Please enter at least ฿1,000.";return}
+      var p=Promise.resolve(true);
+      if(needPw(v)){var pw=$("slPw").value;if(!pw){$("slPwL").hidden=false;E.textContent="Please enter your password to raise or remove your limit.";return}
+        p=sb.auth.signInWithPassword({email:user.email,password:pw}).then(function(r){if(r&&r.error)throw new Error("That password is not right.");return true})}
+      $("slSave").disabled=true;
+      p.then(function(){return save(v)}).then(function(){
+        try{closeSheet()}catch(e){}
+        alert(v?"Your spending limit is now "+B(v)+" per booking.":"Your spending limit is removed.");
+      }).catch(function(e){$("slSave").disabled=false;E.textContent=(e&&e.message)||"Could not save. Please try again."});
+    }
+    $("slSave").onclick=function(){go(+$("slV").value||0)};
+    var off=$("slOff");if(off)off.onclick=function(){$("slV").value="";refresh();$("slPwL").hidden=false;if(!$("slPw").value){E.textContent="Please enter your password to remove your limit.";return}go(0)};
+  }
+  window.npOpenSpendLimit=open;
+  /* button on the account screen (only when logged in) */
+  function add(){
+    if(panel.querySelector("#npSpendBtn"))return;
+    var out=[].slice.call(panel.querySelectorAll("button")).find(function(b){return /log ?out/i.test(b.textContent)});if(!out)return;
+    var b=document.createElement("button");b.id="npSpendBtn";b.type="button";b.className=out.className||"pill";
+    var cur=get();b.textContent="My spending limit: "+(cur?B(cur)+" per booking":"not set");b.style.cssText="display:block;margin:0 0 10px";
+    var anchor=panel.querySelector("#npChangePw")||out;anchor.insertAdjacentElement("beforebegin",b);b.onclick=open;
+  }
+  var busy=false;new MutationObserver(function(){if(busy)return;busy=true;requestAnimationFrame(function(){busy=false;add()})}).observe(panel,{childList:true,subtree:true});
+})();
+
+/* ===== Namaste Mall checkout + GrabExpress delivery (16 Oct 2026, Rahul).
+   "Buy" and "Gift" now open a checkout (name, phone, delivery address or pick up). The order goes to Supabase np_orders
+   (venue "Namaste Mall", category "mall") so the Admin Control Center rings. The team books the delivery through GrabExpress. ===== */
+(function(){
+  if(!window.supabase||typeof panel==="undefined"||typeof window.order!=="function")return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  var _order=window.order;
+  function esc(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+  function B(n){return typeof money==="function"?money(n):"฿"+n}
+  function X(){return typeof ico==="function"?ico("close"):"x"}
+  function lsGet(k,f){try{var v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  window.order=function(m,to){
+    if(!m)return;try{lastFocus=document.activeElement}catch(e){}
+    var mode="delivery";
+    panel.innerHTML='<div class="pbody npride"><div style="display:flex;justify-content:space-between;align-items:center"><h2 id="sheetTitle" style="font-size:20px">Checkout</h2><button class="theme" id="moX" aria-label="Close">'+X()+'</button></div>'+
+      '<p class="about"><b>'+esc(m.n)+'</b>'+(to?' · gift for '+esc(to):'')+'<br>'+B(m.p)+' each</p>'+
+      '<div class="nprv" role="group" aria-label="How to receive"><button type="button" data-m="delivery" aria-pressed="true"><b>Delivery</b><small>By GrabExpress to your hotel or address</small></button><button type="button" data-m="pickup" aria-pressed="false"><b>Pick up</b><small>Collect from our team</small></button></div>'+
+      '<div class="fields"><label>Quantity<select id="moQ"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label><label>When<select id="moW"><option>As soon as possible</option><option>Today evening</option><option>Tomorrow</option></select></label>'+
+      '<label class="full" id="moAL">Delivery address<input id="moA" maxlength="200" placeholder="Hotel name and room, or full address"></label><button type="button" class="nprloc" id="moLoc">📍 Use my location</button>'+
+      '<label>Your name<input id="moN" maxlength="80" autocomplete="name"></label><label>Phone / WhatsApp<input id="moP" maxlength="30" inputmode="tel" autocomplete="tel" placeholder="+91 or +66"></label>'+
+      '<label class="full">Note<input id="moNote" maxlength="200" placeholder="Optional, e.g. call me at the lobby"></label></div>'+
+      '<p class="about" id="moT" style="font-size:16px"></p>'+
+      '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:6px;font-size:14px"><input type="checkbox" id="moOk"> I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and to Namaste Pattaya using my details for this order (<a href="privacy.html" target="_blank" rel="noopener">Privacy</a>).</label>'+
+      '<button class="cta" id="moGo" style="margin-top:12px">Place my order</button><p class="err" id="moE" role="alert" style="min-height:18px"></p>'+
+      '<p class="nprnote">Delivery fee and time are confirmed by our team before we send it. You pay when we confirm.</p></div>';
+    sheet.classList.add("open");document.body.style.overflow="hidden";panel.scrollTop=0;
+    var $=function(i){return panel.querySelector("#"+i)},E=$("moE");
+    function tot(){var q=+$("moQ").value||1;$("moT").innerHTML='Total: <b>'+B(m.p*q)+'</b>'+(mode==="delivery"?' + delivery fee':'');return q}
+    tot();$("moQ").onchange=tot;
+    $("moX").onclick=function(){try{closeSheet()}catch(e){}};
+    [].forEach.call(panel.querySelectorAll(".nprv button"),function(b){b.onclick=function(){mode=b.dataset.m;[].forEach.call(panel.querySelectorAll(".nprv button"),function(x){x.setAttribute("aria-pressed",x===b)});$("moAL").hidden=$("moLoc").hidden=mode!=="delivery";tot()}});
+    $("moLoc").onclick=function(){if(!navigator.geolocation){E.textContent="Location isn't available on this phone.";return}E.textContent="Finding your location…";
+      navigator.geolocation.getCurrentPosition(function(p){$("moA").value="My location ("+p.coords.latitude.toFixed(5)+", "+p.coords.longitude.toFixed(5)+")";E.textContent=""},function(){E.textContent="Location is off. Please type your address."},{timeout:8000})};
+    $("moGo").onclick=function(){
+      var q=tot(),a=$("moA").value.trim(),n=$("moN").value.trim(),p=$("moP").value.trim();
+      if(mode==="delivery"&&a.length<5){E.textContent="Please add your delivery address.";return}
+      if(!n){E.textContent="Please add your name.";return}
+      if((p.match(/\d/g)||[]).length<8){E.textContent="Please add a phone or WhatsApp number we can reach.";return}
+      if(!$("moOk").checked){E.textContent="Please tick the box to agree.";return}
+      try{if("Notification" in window&&Notification.permission==="default")Notification.requestPermission()}catch(e){}
+      var d=new Date(),code="M"+Date.now().toString(36).toUpperCase().slice(-6);
+      var note=((mode==="delivery"?"GRABEXPRESS DELIVERY to: "+a:"PICK UP")+" | When: "+$("moW").value+(to?" | Gift for: "+to:"")+($("moNote").value.trim()?" | Note: "+$("moNote").value.trim():"")).slice(0,500);
+      var row={code:code,venue_id:"np-mall",venue_name:"Namaste Mall",category:"mall",customer_name:n.slice(0,80),customer_phone:p.slice(0,30),package:(q+" × "+m.n).slice(0,200),guests:q,
+        booking_date:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"),booking_time:String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0"),total:m.p*q,note:note};
+      var full=Object.assign({},row,{order_type:mode==="delivery"?"delivery":"takeaway",delivery_address:mode==="delivery"?a.slice(0,200):null});
+      $("moGo").disabled=true;E.textContent="Sending…";
+      var mine=lsGet("np_mall_codes",[]);mine.unshift(code);lsSet("np_mall_codes",mine.slice(0,20));
+      try{_order(m,to)}catch(e){}
+      function done(ok){
+        panel.innerHTML='<div class="pbody" style="text-align:center"><div style="display:flex;justify-content:flex-end"><button class="theme" id="moX2" aria-label="Close">'+X()+'</button></div><h2 id="sheetTitle">'+(ok?"Order placed ✓":"Saved on your phone")+'</h2>'+
+          '<p class="about">Your order code: <b>'+esc(code)+'</b></p><p class="about">'+esc(q+" × "+m.n)+' · '+B(m.p*q)+'<br>'+(mode==="delivery"?"Delivery by GrabExpress":"Pick up")+'</p>'+
+          (ok?'<p class="about">Our team will confirm the delivery fee and time on '+esc(p)+'. You will get a notification here when it is confirmed.</p>':'<p class="about">We could not send it automatically. Please send your code to us on LINE: rahulsoodnpr247.</p>')+'<button class="cta" id="moOk2">OK</button></div>';
+        var c=function(){try{closeSheet()}catch(x){}};panel.querySelector("#moX2").onclick=c;panel.querySelector("#moOk2").onclick=c;
+      }
+      try{try{if(window.npTrack)window.npTrack("mall_order",m.n)}catch(x){}
+        sb.from("np_orders").insert(full).then(function(r){
+          if(r&&r.error&&/order_type|delivery_address|column/i.test(r.error.message||""))return sb.from("np_orders").insert(row);return r;
+        }).then(function(r){done(!(r&&r.error))},function(){done(false)});
+      }catch(x){done(false)}
+    };
+  };
+})();
+
+/* ===== Guest notifications: when the team confirms or updates a ride, Mall order or restaurant order (16 Oct 2026).
+   Checks every 45 s while the app is open, then shows a phone notification and a message in the app. ===== */
+(function(){
+  if(!window.supabase)return;
+  var sb=window.supabase.createClient("https://mymtgbmcjbwsnetzwgoy.supabase.co","sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0");
+  function lsGet(k,f){try{var v=localStorage.getItem(k);return v==null?f:JSON.parse(v)}catch(e){return f}}
+  function lsSet(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+  function codes(){
+    var c=[];(lsGet("np_rides",[])||[]).forEach(function(r){if(r&&r.code)c.push(r.code)});
+    (lsGet("np_mall_codes",[])||[]).forEach(function(x){c.push(x)});
+    (lsGet("np_bookings",[])||[]).forEach(function(b){if(b&&b.code&&/restaurant|indian/.test(b.cat||""))c.push(b.code)});
+    return c.filter(function(v,i,a){return a.indexOf(v)===i}).slice(0,30);
+  }
+  var MSG={rides:{confirmed:"Your ride is confirmed ✓",in_progress:"Your driver is booked and on the way 🚕",done:"Ride completed. Thank you!",cancelled:"Your ride request was cancelled. Please contact us."},
+    mall:{confirmed:"Your Namaste Mall order is confirmed ✓",in_progress:"Your order is on the way with GrabExpress 🛵",done:"Your order is delivered. Enjoy!",cancelled:"Your Mall order was cancelled. Please contact us."},
+    other:{confirmed:"Your order is confirmed ✓",in_progress:"Your order is being prepared",done:"Your order is ready / done ✓",cancelled:"Your order was cancelled. Please contact us."}};
+  function kind(code){return /^R/.test(code)&&(lsGet("np_rides",[])||[]).some(function(r){return r.code===code})?"rides":(lsGet("np_mall_codes",[])||[]).indexOf(code)>=0?"mall":"other"}
+  function show(title,body){
+    try{var d=document.createElement("div");d.className="npcc-toast";d.style.cssText="position:fixed;left:12px;right:12px;top:calc(12px + env(safe-area-inset-top,0px));z-index:9999;background:#1b1530;color:#F2EEFC;border:1px solid #5DCAA5;border-radius:14px;padding:12px 14px;font-size:14px";
+      d.textContent=title+" · "+body;d.onclick=function(){d.remove()};document.body.appendChild(d);setTimeout(function(){d.remove()},9000)}catch(e){}
+    try{if(navigator.vibrate)navigator.vibrate([120,60,120])}catch(e){}
+    try{if("Notification" in window&&Notification.permission==="granted"){var o={body:body,icon:"icon-192.png",tag:"np-"+body};
+      if(navigator.serviceWorker&&navigator.serviceWorker.ready)navigator.serviceWorker.ready.then(function(r){r.showNotification(title,o)}).catch(function(){new Notification(title,o)});else new Notification(title,o)}}catch(e){}
+  }
+  function check(){
+    var c=codes();if(!c.length||document.hidden)return;
+    sb.rpc("np_order_status",{codes:c}).then(function(r){
+      if(!r||r.error||!r.data)return;var seen=lsGet("np_status_seen",{})||{};
+      r.data.forEach(function(x){var code=String(x.code||"").toUpperCase(),st=String(x.status||"");if(!code||!st)return;
+        if(seen[code]&&seen[code]!==st){var k=kind(code),m=(MSG[k]||MSG.other)[st];if(m)show(m,"Order "+code)}
+        seen[code]=st});
+      lsSet("np_status_seen",seen);
+    },function(){});
+  }
+  setTimeout(check,4000);setInterval(check,45000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)setTimeout(check,800)});
+  window.npCheckOrderStatus=check;
+})();
+
+/* ===== Namaste Rides price estimate (16 Oct 2026, Rahul).
+   Grab-like estimate by distance, then OUR price: airport rides = estimate + ฿300; other rides = estimate + 30%.
+   Places list also gives pickup / drop-off suggestions. Estimates only: the team confirms the final price. ===== */
+(function(){
+  var C=[12.9276,100.8771]; /* Pattaya centre */
+  /* [name, lat, lng, road km from Pattaya (far places only), airport?] */
+  var P=[["Suvarnabhumi Airport (BKK)",13.6900,100.7501,120,1],["Don Mueang Airport (DMK)",13.9126,100.6068,160,1],["U-Tapao Airport (UTP)",12.6799,101.0050,45,1],
+    ["Walking Street",12.9275,100.8740],["Central Festival Pattaya",12.9346,100.8836],["Hilton Pattaya",12.9343,100.8832],["Terminal 21 Pattaya",12.9505,100.8885],
+    ["Beach Road (Central)",12.9370,100.8810],["Second Road",12.9330,100.8850],["Soi Buakhao",12.9300,100.8920],["Jomtien Beach",12.8870,100.8710],["Pratumnak Hill",12.9170,100.8680],
+    ["Naklua",12.9640,100.8890],["Wong Amat Beach",12.9600,100.8850],["Bali Hai Pier",12.9220,100.8700],["Thepprasit Night Market",12.9050,100.8930],
+    ["Pattaya Bus Terminal",12.9500,100.8980],["Pattaya Railway Station",12.9230,100.9050],["Sanctuary of Truth",12.9727,100.8890],["Nong Nooch Garden",12.7650,100.9340],
+    ["Sriracha",13.1740,100.9300,35],["Rayong city",12.6814,101.2816,70],["Ban Phe pier (Koh Samet)",12.6280,101.4370,85],["Koh Chang ferry pier (Trat)",12.1800,102.3300,300],
+    ["Bangkok Sukhumvit",13.7400,100.5550,150],["Bangkok Khao San Road",13.7590,100.4970,160],["Bangkok Siam / Pratunam",13.7500,100.5390,155],["Hua Hin",12.5684,99.9577,340]];
+  window.npRidePlaces=P.map(function(p){return p[0]});
+  function hav(a,b){var R=6371,r=Math.PI/180,dLa=(b[0]-a[0])*r,dLo=(b[1]-a[1])*r,x=Math.sin(dLa/2)*Math.sin(dLa/2)+Math.cos(a[0]*r)*Math.cos(b[0]*r)*Math.sin(dLo/2)*Math.sin(dLo/2);return 2*R*Math.asin(Math.sqrt(x))}
+  function find(s){s=String(s||"").trim();if(!s)return null;
+    var m=s.match(/(-?\d{1,2}\.\d+)\s*,\s*(-?\d{1,3}\.\d+)/);if(m)return {ll:[+m[1],+m[2]]};
+    var l=s.toLowerCase();for(var i=0;i<P.length;i++){var n=P[i][0].toLowerCase();if(l===n||l.indexOf(n)>=0||(n.indexOf(l)>=0&&l.length>=5))return {ll:[P[i][1],P[i][2]],km:P[i][3],air:!!P[i][4],name:P[i][0]}}
+    if(/suvarna|\bbkk\b/.test(l))return find("Suvarnabhumi Airport (BKK)");if(/don ?mu|\bdmk\b/.test(l))return find("Don Mueang Airport (DMK)");if(/u-?tapao|\butp\b/.test(l))return find("U-Tapao Airport (UTP)");
+    return null}
+  function road(a,b){
+    var nearA=hav(a.ll,C)<25,nearB=hav(b.ll,C)<25;
+    if(b.km&&nearA)return b.km+hav(a.ll,C)*1.2;if(a.km&&nearB)return a.km+hav(b.ll,C)*1.2;
+    return Math.max(1.5,hav(a.ll,b.ll)*1.35)}
+  function grab(km){var f=50+22*Math.min(km,10);if(km>10)f+=14*(Math.min(km,50)-10);if(km>50)f+=8*(km-50);return f}
+  var MUL={bike:0.45,car:1,suv:1.35,van:1.8};
+  function r10(n){return Math.round(n/10)*10}
+  /* returns null when we can't estimate (unknown place) */
+  window.npRideQuote=function(from,to,veh){
+    var a=find(from),b=find(to);if(!a||!b)return null;
+    var km=road(a,b),air=!!(a.air||b.air);
+    if(veh==="bike"&&(air||km>40))return {km:Math.round(km),air:air,noBike:true};
+    var g=grab(km)*(MUL[veh]||1),ours=air?g+300:g*1.3;
+    return {km:Math.round(km),air:air,tolls:air||km>60,low:r10(ours*0.92),high:r10(ours*1.08)};
+  };
 })();
