@@ -10,8 +10,11 @@
 #npBoot i{width:28px;height:28px;border-radius:50%;border:2.5px solid rgba(255,255,255,.15);border-top-color:#F2EEFC;animation:npBootSpin .8s linear infinite}
 @keyframes npBootSpin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){#npBoot i{animation:none}}</style>
 <script>(function(){var d=document.createElement("div");d.id="npBoot";d.setAttribute("role","status");d.setAttribute("aria-label","Loading Namaste Pattaya");
-d.innerHTML='<img src="icon-192.png" alt="" onerror="this.style.display=\'none\'"><b>NAMASTE PATTAYA</b><i></i><small>Loading\u2026</small>';
+d.innerHTML='<img src="icon-192.png" alt="" onerror="this.style.display=\'none\'"><b>NAMASTE PATTAYA</b><i></i><small id="npBootLn" style="min-height:38px;max-width:280px;text-align:center;line-height:1.45;padding:0 16px;transition:opacity .3s">Indian clubs on Walking Street, up to 30% off tables</small>';
 document.documentElement.appendChild(d);var gone=false;
+/* 17 Oct 2026 (Rahul): one line for each of our 20 services, changes every 1.5 s while loading */
+var NPL=["Indian clubs on Walking Street, up to 30% off tables","VIP beach clubs, your table ready when you arrive","Indian restaurants, veg and non-veg, near your hotel","Indian groceries delivered to your hotel","Hotels in Pattaya, picked for Indian travellers","Spa and massage at trusted places","Tours and island trips with Hindi-speaking guides","Water sports on Pattaya\u2019s best beaches","Golf and shooting range bookings","Yacht and boat charters for your group","Cars and bikes, anywhere in Pattaya","Airport pickup with your name board","Namaste Shopping Mall, shop and gift 24/7","Events, groups and gala parties","Clinics and pharmacies near you","Concierge and VIP services","Visa, legal and ticket help","Private jet charters","Buy, sell and rent property","Raju Guide, your Pattaya guide in Hindi"],npi=0;
+var npT=setInterval(function(){var l=document.getElementById("npBootLn");if(!l||gone){clearInterval(npT);return}l.style.opacity="0";setTimeout(function(){npi=(npi+1)%NPL.length;l.textContent=NPL[npi];l.style.opacity="1"},300)},1500);
 function hide(){if(gone)return;gone=true;d.style.opacity="0";setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},300)}
 function ready(){var h=document.documentElement,i=document.getElementById("npIntro"),g=document.getElementById("npGate");
   if((i&&i.offsetParent!==null)||(g&&g.offsetParent!==null)||!h.classList.contains("np-loading")){hide();return true}return false}
