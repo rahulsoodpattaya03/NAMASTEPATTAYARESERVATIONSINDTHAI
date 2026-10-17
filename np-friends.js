@@ -4957,7 +4957,16 @@
   function unlock(){
     if(!document.getElementById("npxUnl")){var s=document.createElement("style");s.id="npxUnl";s.textContent='.np-lock{filter:none!important;-webkit-user-select:auto!important;user-select:auto!important}.np-lockw::before{content:none!important}.npxlock{display:none!important}';document.head.appendChild(s)}
     window.npMaskClubs=function(t){return String(t).replace(/🔒/g,"")};
+    window.npClubsUnlocked=true;[].forEach.call(document.querySelectorAll("option[data-npm]"),function(o){o.text=o.dataset.npm;o.removeAttribute("data-npm")});
   }
+  /* 17 Oct 2026 (Rahul): phone dropdown lists (Pay my bill, Partner dashboard, Boomer, gifts) can't be blurred, so club names there show as "🔒 Partner club 1, 2…" while locked. The value stays the same, so the right club is still chosen. */
+  var VSEL={bClub:1,billVenue:1,dVenue:1,gClub:1};
+  function looksClub(t,sel){t=String(t||"");if(sel&&VSEL[sel.id]&&/\b(club|lounge|bar|barone|space)\b/i.test(t))return true;try{return typeof window.npMaskClubs==="function"&&!window.npClubsUnlocked&&window.npMaskClubs(t)!==t.replace(/🔒/g,"")}catch(e){return false}}
+  function maskSelects(){if(window.npClubsUnlocked)return;
+    [].forEach.call(document.querySelectorAll("select"),function(sel){var k=sel.querySelectorAll("option[data-npm]").length;
+      [].forEach.call(sel.options,function(o){if(o.dataset.npm||!o.text.trim()||!looksClub(o.text,sel))return;if(!o.hasAttribute("value"))o.value=o.text;o.dataset.npm=o.text;k++;o.text="🔒 Partner club "+k})})}
+  var mt=null;new MutationObserver(function(){if(window.npClubsUnlocked)return;clearTimeout(mt);mt=setTimeout(maskSelects,80)}).observe(document.body,{childList:true,subtree:true});
+  setTimeout(maskSelects,300);setTimeout(maskSelects,2000);
   try{var qs=new URLSearchParams(location.search).get("clubs");if(qs&&qs.trim().toUpperCase()===CODE)lsSet(KEY,1)}catch(e){}
   if(lsGet(KEY,0))unlock();
   /* 17 Oct 2026 (Rahul): ONLY rahulsood30071990@gmail.com sees club names without the code; everyone else (other admins too) must enter the code */
