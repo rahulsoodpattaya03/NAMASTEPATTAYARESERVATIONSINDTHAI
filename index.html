@@ -4,6 +4,20 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<!-- 17 Oct 2026 (Rahul): instant logo while the app loads, instead of a black empty screen. Added only. -->
+<style>#npBoot{position:fixed;inset:0;z-index:2147483646;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#F2EEFC;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .25s ease}
+#npBoot img{width:84px;height:84px;border-radius:22px}#npBoot b{font-size:20px;letter-spacing:.06em}#npBoot small{font-size:13px;opacity:.6}
+#npBoot i{width:28px;height:28px;border-radius:50%;border:2.5px solid rgba(255,255,255,.15);border-top-color:#F2EEFC;animation:npBootSpin .8s linear infinite}
+@keyframes npBootSpin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){#npBoot i{animation:none}}</style>
+<script>(function(){var d=document.createElement("div");d.id="npBoot";d.setAttribute("role","status");d.setAttribute("aria-label","Loading Namaste Pattaya");
+d.innerHTML='<img src="icon-192.png" alt="" onerror="this.style.display=\'none\'"><b>NAMASTE PATTAYA</b><i></i><small>Loading\u2026</small>';
+document.documentElement.appendChild(d);var gone=false;
+function hide(){if(gone)return;gone=true;d.style.opacity="0";setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},300)}
+function ready(){var h=document.documentElement,i=document.getElementById("npIntro"),g=document.getElementById("npGate");
+  if((i&&i.offsetParent!==null)||(g&&g.offsetParent!==null)||!h.classList.contains("np-loading")){hide();return true}return false}
+document.addEventListener("DOMContentLoaded",function(){if(ready())return;
+  try{new MutationObserver(function(){ready()}).observe(document.documentElement,{attributes:true,attributeFilter:["class"]})}catch(e){}});
+window.addEventListener("load",function(){setTimeout(ready,300)});setTimeout(hide,9000);})();</script>
 <!-- no-flash: keep the page hidden for a moment until np-friends.js has arranged Home (shows anyway after 2.5 s) -->
 <style>/* 16 Oct 2026: while loading, hide only the app itself; the opening artwork and the Coming soon screen show straight away (no extra dark screen) */html.np-loading body>*:not(#npIntro):not(#npGate){opacity:0!important;visibility:hidden!important}html.np-loading body::before,html.np-loading body::after{opacity:0!important}html body>*{transition:opacity .18s ease}html.np-loading,html.np-loading body{background:#000}</style>
 <!-- one shared Supabase connection for the whole app (removes the "Multiple GoTrueClient instances" warning) -->

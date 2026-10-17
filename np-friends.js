@@ -4960,11 +4960,14 @@
   }
   try{var qs=new URLSearchParams(location.search).get("clubs");if(qs&&qs.trim().toUpperCase()===CODE)lsSet(KEY,1)}catch(e){}
   if(lsGet(KEY,0))unlock();
-  if(sb)try{sb.auth.getSession().then(function(s){if(s&&s.data&&s.data.session)return sb.rpc("np_is_admin").then(function(r){if(!r.error&&r.data===true)unlock()})}).catch(function(){})}catch(e){}
+  /* 17 Oct 2026 (Rahul): ONLY rahulsood30071990@gmail.com sees club names without the code; everyone else (other admins too) must enter the code */
+  var OWNER="rahulsood30071990@gmail.com";
+  function ownerCheck(){if(sb)try{sb.auth.getSession().then(function(s){var u=s&&s.data&&s.data.session&&s.data.session.user;if(u&&String(u.email||"").toLowerCase()===OWNER)unlock()}).catch(function(){})}catch(e){}}
+  ownerCheck();if(sb)try{sb.auth.onAuthStateChange(function(){ownerCheck()})}catch(e){}
   function openCode(){
     panel.innerHTML='<div class="pbody npx">'+head("Club names")+'<p class="npxn">Club names are hidden until each club confirms. Partner or investor? Enter your access code.</p>'+
       '<div class="fields"><label class="full">Access code<input id="npxCode" maxlength="20" autocomplete="off" autocapitalize="characters"></label></div>'+
-      '<button class="cta" id="npxGo">Unlock</button><p class="err" id="npxErr" role="alert" style="min-height:18px"></p><p class="npxn">Admin? Sign in and the names show automatically.</p></div>';
+      '<button class="cta" id="npxGo">Unlock</button><p class="err" id="npxErr" role="alert" style="min-height:18px"></p></div>';
     show();var $=function(i){return panel.querySelector("#"+i)};$("npxX").onclick=close;
     $("npxCode").oninput=function(){$("npxErr").textContent=""};
     $("npxGo").onclick=function(){var v=$("npxCode").value.trim().toUpperCase();if(!v){$("npxErr").textContent="Enter a code first.";return}
