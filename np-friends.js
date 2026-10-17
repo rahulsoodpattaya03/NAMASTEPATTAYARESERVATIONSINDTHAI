@@ -396,14 +396,16 @@
     "Never say you are a real person, a film character or any actor, and never quote film dialogues or song lyrics. If asked who you are: 'Main Raju hoon, Namaste Pattaya ka apna guide.' "+
     "In any emergency, drop the jokes: be calm and clear, and give Tourist Police 1155 and ambulance 1669.";
   /* Raju language (7 Oct 2026): Raju follows the language chosen in the app menu, and uses ONLY the app's 7 languages */
-  var NP_LANGS={en:"English",hi:"Hindi (Devanagari script)",pa:"Punjabi (Gurmukhi script)",gu:"Gujarati (Gujarati script)",ta:"Tamil (Tamil script)",mr:"Marathi (Devanagari script)",th:"Thai (Thai script)"};
+  var NP_LANGS={en:"English",hi:"Hindi (Devanagari script)",pa:"Punjabi (Gurmukhi script)",gu:"Gujarati (Gujarati script)",ta:"Tamil (Tamil script)",mr:"Marathi (Devanagari script)",th:"Thai (Thai script)",bn:"Bengali (Bengali script)",te:"Telugu (Telugu script)",bho:"Bhojpuri (Devanagari script)"};
   function npLangRule(l){
     if(!NP_LANGS[l])l="en";
     return "LANGUAGE RULE (most important, this overrides any other language instruction, including the character's Hinglish line): "+
       "The guest chose "+NP_LANGS[l]+" in the app menu, so reply in "+NP_LANGS[l]+". "+
-      (l==="en"?"Reply in Hinglish: a natural mix of Hindi and English, written only in English letters (Roman script), the way young Indians chat, e.g. 'Arre waah ji! Aaj raat full masti ka plan hai?'. Never use Devanagari script in this mode. ":"Write the whole reply in that language and script, including filmi lines and 'Raju ki salah' (translate them). Venue names, phone numbers and prices stay as they are. ")+
-      "Only if the guest clearly writes in another one of these 7 languages (English, Hindi, Punjabi, Gujarati, Tamil, Marathi, Thai) may you reply in that one. "+
-      "Never reply in any other language. If the guest writes in a language outside these 7, reply in "+NP_LANGS[l]+". "+
+      (l==="en"?"Reply in clear, friendly English. BUT if the guest writes in Hinglish (Hindi words typed in English letters, e.g. 'bhai aaj raat kya scene hai'), reply in Hinglish the same way: a natural mix of Hindi and English, written only in English letters (Roman script), e.g. 'Arre waah ji! Aaj raat full masti ka plan hai?'. Never use Devanagari script in English mode. ":"Write the whole reply in that language and script, including filmi lines and 'Raju ki salah' (translate them). Venue names, phone numbers and prices stay as they are. ")+
+      /* 17 Oct 2026 (Rahul): Raju must ALWAYS write (and so speak) in the language chosen in the app, whatever language the guest types in */
+      /* 17 Oct 2026 (Rahul): English mode = English, or Hinglish only when the guest writes Hinglish. Other languages = always that language. */
+      (l==="en"?"In English mode reply only in English or Hinglish (as above), never in any other language or script. ":"ALWAYS reply in "+NP_LANGS[l]+", even if the guest writes in English, Hinglish or any other language. Understand the guest in any language, but answer only in "+NP_LANGS[l]+". ")+
+      "Earlier messages in this chat may be in another language because the guest just changed the app language: ignore that and follow this rule from now on. "+
       "PERSONALITY (always): Raju is confident, funny, friendly, full of energy and trustworthy. Short lively sentences, a light joke or filmi touch when it fits, warm like a good friend. "+
       "Trustworthy means: never invent prices, venues or promises, never pressure the guest, and say honestly when you are not sure.\n\n";
   }
@@ -419,7 +421,7 @@
     }catch(e){}
     return null;
   }
-  var NP_TYPING={en:"Raju is typing…",hi:"राजू लिख रहा है…",pa:"ਰਾਜੂ ਲਿਖ ਰਿਹਾ ਹੈ…",gu:"રાજુ લખી રહ્યો છે…",ta:"ராஜு எழுதுகிறார்…",mr:"राजू लिहित आहे…",th:"ราจูกำลังพิมพ์…"};
+  var NP_TYPING={en:"Raju is typing…",hi:"राजू लिख रहा है…",pa:"ਰਾਜੂ ਲਿਖ ਰਿਹਾ ਹੈ…",gu:"રાજુ લખી રહ્યો છે…",ta:"ராஜு எழுதுகிறார்…",mr:"राजू लिहित आहे…",th:"ราจูกำลังพิมพ์…",bn:"রাজু লিখছে…",te:"రాజు టైప్ చేస్తున్నాడు…",bho:"राजू लिखत बा…"};
   var hist=[];
   function venues(){
     if(typeof CLUBS==="undefined")return "";
@@ -503,7 +505,7 @@
   if(!NP_RAJU_TALK){try{if(window.speechSynthesis)window.speechSynthesis.cancel()}catch(e){}return}
   if(typeof ask!=="function")return;
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition,TTS=window.speechSynthesis;
-  var LANGS={en:"en-IN",hi:"hi-IN",pa:"pa-IN",gu:"gu-IN",ta:"ta-IN",mr:"mr-IN",th:"th-TH"};
+  var LANGS={en:"en-IN",hi:"hi-IN",pa:"pa-IN",gu:"gu-IN",ta:"ta-IN",mr:"mr-IN",th:"th-TH",bn:"bn-IN",te:"te-IN",bho:"hi-IN"};
   var voiceOn=false,fromMic=false,rec=null;
   try{voiceOn=localStorage.getItem("np_raju_voice")==="1"}catch(e){}
   function appLang(){var l="en";try{l=localStorage.getItem("np_lang")||"en"}catch(e){}return LANGS[l]||"en-IN"}
@@ -512,6 +514,8 @@
     if(/[\u0A00-\u0A7F]/.test(t))return "pa-IN";
     if(/[\u0A80-\u0AFF]/.test(t))return "gu-IN";
     if(/[\u0B80-\u0BFF]/.test(t))return "ta-IN";
+    if(/[\u0980-\u09FF]/.test(t))return "bn-IN";
+    if(/[\u0C00-\u0C7F]/.test(t))return "te-IN";
     if(/[\u0900-\u097F]/.test(t))return appLang()==="mr-IN"?"mr-IN":"hi-IN";
     return "en-IN";
   }
@@ -3631,7 +3635,7 @@
 /* ===== Raju language button (7 Oct 2026): a "🌐 English ▾" button in the Home Raju box and in the bottom-right Raju chat.
    It uses the SAME language setting as the app menu, so Raju and the full app change together. Nothing removed. ===== */
 (function(){
-  var L=[["en","English","English"],["hi","हिंदी","Hindi"],["pa","ਪੰਜਾਬੀ","Punjabi"],["gu","ગુજરાતી","Gujarati"],["ta","தமிழ்","Tamil"],["mr","मराठी","Marathi"],["th","ไทย","Thai"]];
+  var L=[["en","English","English"],["hi","हिंदी","Hindi"],["pa","ਪੰਜਾਬੀ","Punjabi"],["gu","ગુજરાતી","Gujarati"],["ta","தமிழ்","Tamil"],["mr","मराठी","Marathi"],["th","ไทย","Thai"],["bn","বাংলা","Bengali"],["te","తెలుగు","Telugu"],["bho","भोजपुरी","Bhojpuri"]];
   var NAME=/Raju|राजू|ਰਾਜੂ|રાજુ|ராஜு|ராஜூ|ราจู/;
   var POP="#panel,.sheet,#npMoreSheet,#npLangSheet";
   function cur(){var l="en";try{l=localStorage.getItem("np_lang")||"en"}catch(e){}for(var i=0;i<L.length;i++)if(L[i][0]===l)return L[i];return L[0]}
@@ -3692,11 +3696,11 @@
 /* ===== 7 Oct 2026: fast language change (no full reload), suggestion buttons in the chosen language,
    and Raju's fixed English lines translated. Only added; the old reload way stays as backup. ===== */
 (function(){
-  var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi",th:"Thai"};
-  var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म",th:"ไท"};
-  var NATIVE={en:"English",hi:"हिंदी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
-  var WAITTXT={en:"Changing language…",hi:"भाषा बदल रही है…",pa:"ਭਾਸ਼ਾ ਬਦਲ ਰਹੀ ਹੈ…",gu:"ભાષા બદલાઈ રહી છે…",ta:"மொழி மாறுகிறது…",mr:"भाषा बदलत आहे…",th:"กำลังเปลี่ยนภาษา…"};
-  var SCRIPT={hi:/[\u0900-\u097F]/g,mr:/[\u0900-\u097F]/g,pa:/[\u0A00-\u0A7F]/g,gu:/[\u0A80-\u0AFF]/g,ta:/[\u0B80-\u0BFF]/g,th:/[\u0E00-\u0E7F]/g};
+  var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi",th:"Thai",bn:"Bengali",te:"Telugu",bho:"Bhojpuri"};
+  var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म",th:"ไท",bn:"বা",te:"తె",bho:"भो"};
+  var NATIVE={en:"English",hi:"हिंदी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย",bn:"বাংলা",te:"తెలుగు",bho:"भोजपुरी"};
+  var WAITTXT={en:"Changing language…",hi:"भाषा बदल रही है…",pa:"ਭਾਸ਼ਾ ਬਦਲ ਰਹੀ ਹੈ…",gu:"ભાષા બદલાઈ રહી છે…",ta:"மொழி மாறுகிறது…",mr:"भाषा बदलत आहे…",th:"กำลังเปลี่ยนภาษา…",bn:"ভাষা বদলাচ্ছে…",te:"భాష మారుతోంది…",bho:"भाषा बदलत बा…"};
+  var SCRIPT={hi:/[\u0900-\u097F]/g,mr:/[\u0900-\u097F]/g,pa:/[\u0A00-\u0A7F]/g,gu:/[\u0A80-\u0AFF]/g,ta:/[\u0B80-\u0BFF]/g,th:/[\u0E00-\u0E7F]/g,bn:/[\u0980-\u09FF]/g,te:/[\u0C00-\u0C7F]/g,bho:/[\u0900-\u097F]/g};
   function getLang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
   function setCookie(l){
     var exp=(l==="en")?"; expires=Thu, 01 Jan 1970 00:00:00 GMT":"",v=(l==="en")?"":"/en/"+l;
@@ -3791,9 +3795,9 @@
 /* ===== Fast language change (7 Oct 2026): switch the language instantly with Google Translate, without reloading the app.
    Used by the app menu and the Raju 🌐 button. If anything fails, it falls back to the old reload. Nothing removed. ===== */
 (function(){
-  var NATIVE={en:"English",hi:"हिन्दी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
-  var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म",th:"ไท"};
-  var WAIT={en:"Changing language…",hi:"भाषा बदल रही है…",pa:"ਭਾਸ਼ਾ ਬਦਲ ਰਹੀ ਹੈ…",gu:"ભાષા બદલાઈ રહી છે…",ta:"மொழி மாறுகிறது…",mr:"भाषा बदलत आहे…",th:"กำลังเปลี่ยนภาษา…"};
+  var NATIVE={en:"English",hi:"हिन्दी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย",bn:"বাংলা",te:"తెలుగు",bho:"भोजपुरी"};
+  var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म",th:"ไท",bn:"বা",te:"తె",bho:"भो"};
+  var WAIT={en:"Changing language…",hi:"भाषा बदल रही है…",pa:"ਭਾਸ਼ਾ ਬਦਲ ਰਹੀ ਹੈ…",gu:"ભાષા બદલાઈ રહી છે…",ta:"மொழி மாறுகிறது…",mr:"भाषा बदलत आहे…",th:"กำลังเปลี่ยนภาษา…",bn:"ভাষা বদলাচ্ছে…",te:"భాష మారుతోంది…",bho:"भाषा बदलत बा…"};
   function getL(){try{return localStorage.getItem("np_lang")||""}catch(e){return ""}}
   function cookie(l){
     var exp=(l==="en")?"; expires=Thu, 01 Jan 1970 00:00:00 GMT":"",v=(l==="en")?"":"/en/"+l;
@@ -3943,15 +3947,15 @@
   if(typeof chatEl==="undefined"||!chatEl)return;
   var FN="https://mymtgbmcjbwsnetzwgoy.supabase.co/functions/v1/quick-api";
   var KEY="sb_publishable_ViFodxG8kAENr78Fyp-BwQ_iA_BfAD0";
-  var VOICES={en:"nwj0s2LU9bDWRKND5yzA",hi:"3tEYR9ZLqHBQ9RrfcL1W",pa:"3BviNsioLYpM7Wt1hbN0",gu:"UHwU6ReRgTsCs68KHc6C",mr:"Xy2k22lbbOX8fqfkkHWb",ta:"oJtqFwbHKS0pFD03MNRd",th:"MeUerI8vM5Ce2GSTXsRT"};
-  var LABEL={en:"🔊 Listen",hi:"🔊 सुनें",pa:"🔊 ਸੁਣੋ",gu:"🔊 સાંભળો",mr:"🔊 ऐका",ta:"🔊 கேளுங்கள்",th:"🔊 ฟัง"};
+  var VOICES={en:"nwj0s2LU9bDWRKND5yzA",hi:"3tEYR9ZLqHBQ9RrfcL1W",pa:"3BviNsioLYpM7Wt1hbN0",gu:"UHwU6ReRgTsCs68KHc6C",mr:"Xy2k22lbbOX8fqfkkHWb",ta:"oJtqFwbHKS0pFD03MNRd",th:"MeUerI8vM5Ce2GSTXsRT",bn:"3vl8X3o2mxL44uBIHGkS",te:"cJNS4o1cTYqUBmoytzUH",bho:"NhwTI3t2DXME1ogDNGJX"};
+  var LABEL={en:"🔊 Listen",hi:"🔊 सुनें",pa:"🔊 ਸੁਣੋ",gu:"🔊 સાંભળો",mr:"🔊 ऐका",ta:"🔊 கேளுங்கள்",th:"🔊 ฟัง",bn:"🔊 শুনুন",te:"🔊 వినండి",bho:"🔊 सुनीं"};
   var DAILY=40,cache={},player=null,playingBtn=null,ready=false;
   /* Voice ON/OFF (8 Oct 2026): once the guest turns Raju's voice on, every new answer is read out automatically until they turn it off */
   /* 8 Oct 2026, Rahul: guests should not have to tap the speaker, so voice is ON by default (guest can still turn it OFF) */
   function voiceOn(){try{return localStorage.getItem("np_voice_on")!=="0"}catch(e){return true}}
   function setVoice(on){try{localStorage.setItem("np_voice_on",on?"1":"0")}catch(e){}pill();if(!on)stop()}
-  var ONTXT={en:"🔊 Voice ON",hi:"🔊 आवाज़ चालू",pa:"🔊 ਆਵਾਜ਼ ਚਾਲੂ",gu:"🔊 અવાજ ચાલુ",mr:"🔊 आवाज चालू",ta:"🔊 குரல் ஆன்",th:"🔊 เปิดเสียง"};
-  var OFFTXT={en:"🔇 Voice OFF",hi:"🔇 आवाज़ बंद",pa:"🔇 ਆਵਾਜ਼ ਬੰਦ",gu:"🔇 અવાજ બંધ",mr:"🔇 आवाज बंद",ta:"🔇 குரல் ஆஃப்",th:"🔇 ปิดเสียง"};
+  var ONTXT={en:"🔊 Voice ON",hi:"🔊 आवाज़ चालू",pa:"🔊 ਆਵਾਜ਼ ਚਾਲੂ",gu:"🔊 અવાજ ચાલુ",mr:"🔊 आवाज चालू",ta:"🔊 குரல் ஆன்",th:"🔊 เปิดเสียง",bn:"🔊 ভয়েস চালু",te:"🔊 వాయిస్ ఆన్",bho:"🔊 आवाज चालू"};
+  var OFFTXT={en:"🔇 Voice OFF",hi:"🔇 आवाज़ बंद",pa:"🔇 ਆਵਾਜ਼ ਬੰਦ",gu:"🔇 અવાજ બંધ",mr:"🔇 आवाज बंद",ta:"🔇 குரல் ஆஃப்",th:"🔇 ปิดเสียง",bn:"🔇 ভয়েস বন্ধ",te:"🔇 వాయిస్ ఆఫ్",bho:"🔇 आवाज बंद"};
   function pill(){
     var ci=document.getElementById("chatIn"),row=null;
     if(ci){var ir=(ci.parentElement&&ci.parentElement.querySelector("button")&&ci.parentElement.tagName!=="FORM")?ci.parentElement:ci;
@@ -4077,8 +4081,8 @@
    Never sends by itself. Hidden on phones that don't support it. Nothing removed. ===== */
 (function(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
-  var LOC={en:"en-IN",hi:"hi-IN",pa:"pa-IN",gu:"gu-IN",mr:"mr-IN",ta:"ta-IN",th:"th-TH"};
-  var TXT={en:"Listening…",hi:"सुन रहा हूँ…",pa:"ਸੁਣ ਰਿਹਾ ਹਾਂ…",gu:"સાંભળું છું…",mr:"ऐकतोय…",ta:"கேட்கிறேன்…",th:"กำลังฟัง…"};
+  var LOC={en:"en-IN",hi:"hi-IN",pa:"pa-IN",gu:"gu-IN",mr:"mr-IN",ta:"ta-IN",th:"th-TH",bn:"bn-IN",te:"te-IN",bho:"hi-IN"};
+  var TXT={en:"Listening…",hi:"सुन रहा हूँ…",pa:"ਸੁਣ ਰਿਹਾ ਹਾਂ…",gu:"સાંભળું છું…",mr:"ऐकतोय…",ta:"கேட்கிறேன்…",th:"กำลังฟัง…",bn:"শুনছি…",te:"వింటున్నాను…",bho:"सुनत बानी…"};
   function lang(){try{return localStorage.getItem("np_lang")||"en"}catch(e){return "en"}}
   if(!document.getElementById("npMicCss")){var st=document.createElement("style");st.id="npMicCss";
     st.textContent='button.npmic{flex:0 0 46px!important;width:46px!important;height:46px!important;min-width:46px!important;border-radius:50%!important;border:0!important;background:rgba(255,255,255,.14)!important;color:#F2EEFC!important;font-size:19px!important;display:inline-flex!important;align-items:center;justify-content:center;cursor:pointer;padding:0!important;margin:0 8px!important;box-shadow:none!important;align-self:center}'+
@@ -4750,7 +4754,7 @@
   function fmtDate(t){try{return new Date(t).toLocaleDateString("en-GB",{day:"numeric",month:"short",year:"numeric"})}catch(e){return ""}}
   function code(p){return p+Date.now().toString(36).toUpperCase().slice(-6)}
   function head(t){return '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h2 id="sheetTitle" style="font-size:20px">'+t+'</h2><button class="theme" id="npxX" aria-label="Close">'+X()+'</button></div>'}
-  var SUPPORT='<div class="npxsup">💬 <b>Support in 7 languages, 24/7</b><br>Hindi · English · Thai · Punjabi · Gujarati · Marathi · Tamil<br><small>Talk to us in any of these languages, any time. LINE: rahulsoodnpr247</small></div>';
+  var SUPPORT='<div class="npxsup">💬 <b>Support in 10 languages, 24/7</b><br>Hindi · English · Thai · Punjabi · Gujarati · Marathi · Tamil · Bengali · Telugu · Bhojpuri<br><small>Talk to us in any of these languages, any time. LINE: rahulsoodnpr247</small></div>';
   var CONSENT=function(id){return '<label style="display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-size:14px"><input type="checkbox" id="'+id+'"> <span>I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a> and to Namaste Pattaya using my details to book this ride (<a href="privacy.html" target="_blank" rel="noopener">Privacy</a>).</span></label>'};
 
   if(!document.getElementById("npxCss")){var st=document.createElement("style");st.id="npxCss";

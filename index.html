@@ -2676,7 +2676,7 @@ body{top:0!important}
   var LANGS=[["en","English","English"],["hi","हिन्दी","Hindi"],["pa","ਪੰਜਾਬੀ","Punjabi"],["gu","ગુજરાતી","Gujarati"],["ta","தமிழ்","Tamil"],["mr","मराठी","Marathi"]];
   var NAMES={en:"English",hi:"Hindi",pa:"Punjabi",gu:"Gujarati",ta:"Tamil",mr:"Marathi"};
   var SHORT={en:"EN",hi:"हि",pa:"ਪੰ",gu:"ગુ",ta:"த",mr:"म"};
- LANGS.push(["th","ไทย","Thai"]);NAMES.th="Thai";SHORT.th="ไท";window.googleTranslateElementInit=function(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,hi,pa,gu,ta,mr,th",autoDisplay:false},"google_translate_element")};
+ LANGS.push(["th","ไทย","Thai"]);NAMES.th="Thai";SHORT.th="ไท";LANGS.push(["bn","বাংলা","Bengali"],["te","తెలుగు","Telugu"],["bho","भोजपुरी","Bhojpuri"]);NAMES.bn="Bengali";NAMES.te="Telugu";NAMES.bho="Bhojpuri";SHORT.bn="বা";SHORT.te="తె";SHORT.bho="भो";window.googleTranslateElementInit=function(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,hi,pa,gu,ta,mr,th,bn,te,bho",autoDisplay:false},"google_translate_element")};
   function getLang(){try{return localStorage.getItem("np_lang")||""}catch(e){return ""}}
   function setCookie(l){
     var exp=(l==="en")?"; expires=Thu, 01 Jan 1970 00:00:00 GMT":"";
@@ -2715,7 +2715,7 @@ body{top:0!important}
       return s(turns,opts)}});
   }
 })();
-function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,hi,pa,gu,ta,mr",autoDisplay:false},"google_translate_element")}
+function googleTranslateElementInit(){new google.translate.TranslateElement({pageLanguage:"en",includedLanguages:"en,hi,pa,gu,ta,mr,bn,te,bho",autoDisplay:false},"google_translate_element")}
 </script>
 <script async src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 <!-- ===== v17: sign in / sign up (add-on) ===== -->
@@ -3015,7 +3015,7 @@ function googleTranslateElementInit(){new google.translate.TranslateElement({pag
   var days=document.getElementById("days");
   if(days){
     var rate=(typeof INR_PER_THB!=="undefined")?INR_PER_THB:2.89;
-    var NAMES={en:"English",hi:"हिन्दी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย"};
+    var NAMES={en:"English",hi:"हिन्दी",pa:"ਪੰਜਾਬੀ",gu:"ગુજરાતી",ta:"தமிழ்",mr:"मराठी",th:"ไทย",bn:"বাংলা",te:"తెలుగు",bho:"भोजपुरी"};
     var lang="en";try{lang=localStorage.getItem("np_lang")||"en"}catch(e){}
     var row=document.createElement("section");row.className="npx-row";row.setAttribute("aria-label","Language, time and currency");
     row.innerHTML='<button class="npx-lang" id="npxLang">'+I(P_GLOBE)+'<small>Language</small><b translate="no" class="notranslate">'+(NAMES[lang]||"English")+'</b></button>'+
