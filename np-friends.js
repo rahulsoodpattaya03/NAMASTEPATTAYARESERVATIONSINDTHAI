@@ -5140,3 +5140,29 @@
   mall();setTimeout(mall,1500);setTimeout(mall,4000);
   var c=document.getElementById("cats");if(c)new MutationObserver(function(){setTimeout(mall,0)}).observe(c,{childList:true});
 })();
+
+/* ===== 17 Oct 2026 (Rahul, approved preview): new Raju (bald, beard, navy suit) in the chat box, the bottom-right button and every Raju avatar.
+   Uses raju/raju-face.webp. The old drawn Raju stays in the code and comes back automatically if the photo cannot load. Nothing deleted. ===== */
+(function(){
+  /* 17 Oct 2026 (Rahul): "abhi sirf welcome mein" – new Raju only on the opening screen for now; set true to show him in chat box and corner button */
+  var NP_RAJU_NEW_FACE=false;if(!NP_RAJU_NEW_FACE)return;
+  var SRC="raju/raju-face.webp";
+  if(!document.getElementById("npRajuNewCss")){var st=document.createElement("style");st.id="npRajuNewCss";
+    st.textContent='.npRajuNew>svg.raju{display:none!important}.npRajuImg{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 12%;border-radius:50%;background:radial-gradient(circle at 50% 40%,#3a2f6e,#191433)}'+
+    '#rajuStage .npRajuImg{animation:npRjBr 3s ease-in-out infinite}.rajufab .npRajuImg{animation:npRjFl 2.4s ease-in-out infinite}'+
+    '@keyframes npRjBr{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}@keyframes npRjFl{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}'+
+    '@media (prefers-reduced-motion:reduce){.npRajuImg{animation:none!important}}';
+    document.head.appendChild(st)}
+  var ok=null;/* null = not known yet */
+  var probe=new Image();probe.onload=function(){ok=true;scan()};probe.onerror=function(){ok=false};probe.src=SRC;
+  function scan(){
+    if(!ok)return;
+    [].forEach.call(document.querySelectorAll("svg.raju"),function(sv){
+      var p=sv.parentNode;if(!p||p.classList.contains("npRajuNew"))return;
+      var im=document.createElement("img");im.className="npRajuImg";im.alt="Raju";im.src=SRC;im.decoding="async";
+      im.onerror=function(){p.classList.remove("npRajuNew");im.remove()};
+      p.insertBefore(im,sv);p.classList.add("npRajuNew");
+    });
+  }
+  var t=null;new MutationObserver(function(){clearTimeout(t);t=setTimeout(scan,60)}).observe(document.body,{childList:true,subtree:true});
+})();

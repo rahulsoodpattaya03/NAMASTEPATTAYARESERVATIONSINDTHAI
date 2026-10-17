@@ -4,21 +4,38 @@
 <meta charset="utf-8">
 <meta name="color-scheme" content="dark">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<!-- 17 Oct 2026 (Rahul): instant logo while the app loads, instead of a black empty screen. Added only. -->
-<style>#npBoot{position:fixed;inset:0;z-index:2147483646;background:#000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#F2EEFC;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;transition:opacity .25s ease}
-#npBoot img{width:84px;height:84px;border-radius:22px}#npBoot b{font-size:20px;letter-spacing:.06em}#npBoot small{font-size:13px;opacity:.6}
-#npBoot i{width:28px;height:28px;border-radius:50%;border:2.5px solid rgba(255,255,255,.15);border-top-color:#F2EEFC;animation:npBootSpin .8s linear infinite}
-@keyframes npBootSpin{to{transform:rotate(360deg)}}@media (prefers-reduced-motion:reduce){#npBoot i{animation:none}}</style>
+<!-- 17 Oct 2026 (Rahul, approved preview): opening = Android screen, then this (only while the app loads): logo, "Namaste" in 10 languages, 20 service icons and Raju; then straight into the app. The old opening artwork (#npIntro) is switched off, not deleted. -->
+<style>#npIntro{display:none!important}
+#npBoot{position:fixed;inset:0;z-index:2147483646;background:#000;color:#F2EEFC;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;overflow:hidden;transition:opacity .25s ease}
+#npBoot .bt{position:absolute;top:max(34px,env(safe-area-inset-top));left:0;right:0;display:flex;flex-direction:column;align-items:center;gap:6px;z-index:2}
+#npBoot .bt img{width:58px;height:58px;border-radius:16px;box-shadow:0 0 34px rgba(242,48,110,.35)}
+#npBoot .bt b{font-size:14px;letter-spacing:.07em}#npBootHi{font-size:20px;font-weight:600;min-height:28px;transition:opacity .2s}
+#npBoot .rg{position:absolute;left:50%;top:39%;width:0;height:0;z-index:1}
+#npBoot .ic{position:absolute;width:44px;height:44px;margin:-22px;border-radius:14px;background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.22);box-shadow:0 6px 16px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.3);transition:opacity .3s,transform .45s cubic-bezier(.2,1.5,.4,1)}
+#npBoot .ic svg{width:24px;height:24px;fill:none;stroke:#F5E1A4;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}#npBoot .ic.v{opacity:1;transform:scale(1)}
+#npBootRj{position:absolute;bottom:max(46px,env(safe-area-inset-bottom));left:50%;height:min(40vh,300px);transform:translate(-50%,130%);transition:transform .7s cubic-bezier(.2,1.3,.4,1);z-index:3}
+#npBootRj.in{transform:translate(-50%,0);transition:transform .7s cubic-bezier(.2,1.3,.4,1),opacity .16s}
+#npBoot .cp{position:absolute;bottom:max(16px,env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:13px;opacity:.85;z-index:4}
+@media (prefers-reduced-motion:reduce){#npBoot .ic,#npBootRj{transition:none}}</style>
 <script>(function(){var d=document.createElement("div");d.id="npBoot";d.setAttribute("role","status");d.setAttribute("aria-label","Loading Namaste Pattaya");
-d.innerHTML='<img src="icon-192.png" alt="" onerror="this.style.display=\'none\'"><b>NAMASTE PATTAYA</b><i></i><small id="npBootLn" style="min-height:38px;max-width:280px;text-align:center;line-height:1.45;padding:0 16px;transition:opacity .3s">Indian clubs on Walking Street, up to 30% off tables</small>';
-document.documentElement.appendChild(d);var gone=false;
-/* 17 Oct 2026 (Rahul): one line for each of our 20 services, changes every 1.5 s while loading */
-var NPL=["Indian clubs on Walking Street, up to 30% off tables","VIP beach clubs, your table ready when you arrive","Indian restaurants, veg and non-veg, near your hotel","Indian groceries delivered to your hotel","Hotels in Pattaya, picked for Indian travellers","Spa and massage at trusted places","Tours and island trips with Hindi-speaking guides","Water sports on Pattaya\u2019s best beaches","Golf and shooting range bookings","Yacht and boat charters for your group","Cars and bikes, anywhere in Pattaya","Airport pickup with your name board","Namaste Shopping Mall, shop and gift 24/7","Events, groups and gala parties","Clinics and pharmacies near you","Concierge and VIP services","Visa, legal and ticket help","Private jet charters","Buy, sell and rent property","Raju Guide, your Pattaya guide in Hindi"],npi=0;
-var npT=setInterval(function(){var l=document.getElementById("npBootLn");if(!l||gone){clearInterval(npT);return}l.style.opacity="0";setTimeout(function(){npi=(npi+1)%NPL.length;l.textContent=NPL[npi];l.style.opacity="1"},300)},1500);
-function hide(){if(gone)return;gone=true;d.style.opacity="0";setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},300)}
-function ready(){var h=document.documentElement,i=document.getElementById("npIntro"),g=document.getElementById("npGate");
-  if((i&&i.offsetParent!==null)||(g&&g.offsetParent!==null)||!h.classList.contains("np-loading")){hide();return true}return false}
-document.addEventListener("DOMContentLoaded",function(){if(ready())return;
+var SV=[["M12 1v4 M12 5a7.5 7.5 0 1 0 .01 0 M4.5 12.5h15 M6 8.5h12 M6 16.5h12 M12 5c-3.2 2.5-3.2 12.5 0 15 M12 5c3.2 2.5 3.2 12.5 0 15", "Night clubs"], ["M3 11a9 9 0 0 1 18 0z M12 11v8 M3 20c2 0 2-1 4.5-1s2.5 1 4.5 1 2-1 4.5-1 2.5 1 4.5 1", "Beach clubs"], ["M3 12h18a9 9 0 0 1-18 0z M8 9c0-1.5 1.2-1.8 1.2-3S8 4.5 8 3 M12 9c0-1.5 1.2-1.8 1.2-3S12 4.5 12 3 M16 9c0-1.5 1.2-1.8 1.2-3S16 4.5 16 3", "Indian veg"], ["M7 3v18 M4.5 3v5a2.5 2.5 0 0 0 5 0V3 M17 21V3c-2.5 1-3.5 4-3.5 8h3.5", "Indian restaurants"], ["M4 9h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z M17 10.5h1.5a2.5 2.5 0 0 1 0 5H17 M3 21h16 M8.5 3v3.5 M12.5 3v3.5", "Groceries"], ["M4 21V5l8-2 8 2v16 M2 21h20 M8.5 8h1.5 M14 8h1.5 M8.5 12h1.5 M14 12h1.5 M10 21v-4h4v4", "Hotels"], ["M3 16v-3l2.2-5h13.6l2.2 5v3z M3 13h18 M5.5 16v2.5 M18.5 16v2.5 M7 14.5h.01 M17 14.5h.01", "Cars & bikes"], ["M21 15.5 13 11V4.5a1.5 1.5 0 0 0-3 0V11l-8 4.5V17l8-2.5v4l-2 1.5v1l3.5-1 3.5 1v-1l-2-1.5v-4l8 2.5z", "Airport pickup"], ["M12 20c-4.5 0-8.2-3.2-9-8 3.2 0 6.3 1.3 9 4.2 2.7-2.9 5.8-4.2 9-4.2-.8 4.8-4.5 8-9 8z M12 16.2c-2.2-3.4-2.2-7.6 0-11.7 2.2 4.1 2.2 8.3 0 11.7", "Spa"], ["M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z M9 4v14 M15 6v14", "Tours"], ["M2 7.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2 M2 12.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2 M2 17.5c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2", "Water sports"], ["M7 21V3l10 4-10 4 M3 21h12 M19 16.5a1.8 1.8 0 1 1 0 3.6a1.8 1.8 0 1 1 0-3.6z", "Golf"], ["M2.5 16h19l-3.2 4.5H5.7z M12 3v13 M12 4.5l6.5 9.5H12 M12 7l-5 7h5", "Yachts"], ["M5 8h14l-1.2 13H6.2z M9 8V6.5a3 3 0 0 1 6 0V8", "Shopping Mall"], ["M12 3v4 M12 17v4 M3 12h4 M17 12h4 M5.6 5.6l2.8 2.8 M15.6 15.6l2.8 2.8 M5.6 18.4l2.8-2.8 M15.6 8.4l2.8-2.8", "Events"], ["M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3z M10.3 8h3.4v2.6h2.6v3.4h-2.6v2.6h-3.4V14H7.7v-3.4h2.6z", "Pharmacy"], ["M4 17.5h16 M5.5 17.5a6.5 6.5 0 0 1 13 0 M12 11V8.5 M10 8.5h4 M3 21h18", "Concierge"], ["M6 3h12v18H6z M12 7.5a3 3 0 1 1 0 6a3 3 0 1 1 0-6z M9 17h6", "Visa help"], ["M2 12h13l4.5-3H22l-2 3 2 3h-2.5L15 12 M8 12 5 6.5h2.2L12.5 12 M8 12l-3 5.5h2.2L12.5 12", "Private jet"], ["M3 11 12 4l9 7 M5 9.5V20h14V9.5 M10 20v-5h4v5", "Property"]],LG=["Namaste", "नमस्ते", "ਸਤ ਸ੍ਰੀ ਅਕਾਲ", "નમસ્તે", "नमस्कार", "வணக்கம்", "สวัสดี", "নমস্কার", "నమస్కారం", "प्रणाम"];
+d.innerHTML='<div class="bt"><img src="icon-192.png" alt="" onerror="this.style.visibility=\'hidden\'"><b>NAMASTE PATTAYA</b><div id="npBootHi">Namaste</div></div><div class="rg"></div><img id="npBootRj" src="raju/raju-welcome.webp" alt="" onerror="this.remove()"><div class="cp" id="npBootCp"></div>';
+/* 17 Oct 2026 (Rahul): Raju changes pose while the app opens */
+var POSES=["raju/raju-welcome.webp","raju/raju-point-right.webp","raju/raju-point-up.webp","raju/raju-phone-call.webp","raju/raju-running.webp"];
+POSES.forEach(function(p){var im=new Image();im.src=p});
+document.documentElement.appendChild(d);var gone=false,T=[];
+var rg=d.querySelector(".rg"),vw=Math.min(window.innerWidth||390,440),R1=Math.min(150,vw*0.38),R2=R1*0.8;
+SV.forEach(function(s,i){var a=i/SV.length*Math.PI*2-Math.PI/2,r=i%2?R1:R2,e=document.createElement("div");e.className="ic";e.style.left=(Math.cos(a)*r)+"px";e.style.top=(Math.sin(a)*r*0.92)+"px";e.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="'+s[0]+'"/></svg>';rg.appendChild(e)});
+var ics=rg.children,cp=d.querySelector("#npBootCp"),hi=d.querySelector("#npBootHi"),rj=d.querySelector("#npBootRj");
+T.push(setTimeout(function(){if(rj)rj.className="in"},120));
+var pi=0;T.push(setInterval(function(){var r=document.getElementById("npBootRj");if(!r)return;r.style.opacity="0";setTimeout(function(){pi=(pi+1)%POSES.length;r.onerror=function(){pi=0;r.src=POSES[0]};r.src=POSES[pi];r.style.opacity="1"},160)},750));
+for(var i=0;i<ics.length;i++)(function(i){T.push(setTimeout(function(){ics[i].className="ic v";cp.textContent=SV[i][1]},200+i*85))})(i);
+T.push(setTimeout(function(){cp.textContent="20 services \u00b7 10 languages \u00b7 24/7"},200+SV.length*85+150));
+var k=0;T.push(setInterval(function(){k=(k+1)%LG.length;hi.textContent=LG[k]},450));
+function hide(){if(gone)return;gone=true;T.forEach(function(t){clearTimeout(t);clearInterval(t)});d.style.opacity="0";setTimeout(function(){if(d.parentNode)d.parentNode.removeChild(d)},300)}
+function ready(){var h=document.documentElement,g=document.getElementById("npGate");
+  if((g&&g.offsetParent!==null)||!h.classList.contains("np-loading")){hide();return true}return false}
+document.addEventListener("DOMContentLoaded",function(){var it=document.getElementById("npIntro");if(it)it.remove();if(ready())return;
   try{new MutationObserver(function(){ready()}).observe(document.documentElement,{attributes:true,attributeFilter:["class"]})}catch(e){}});
 window.addEventListener("load",function(){setTimeout(ready,300)});setTimeout(hide,9000);})();</script>
 <!-- no-flash: keep the page hidden for a moment until np-friends.js has arranged Home (shows anyway after 2.5 s) -->
